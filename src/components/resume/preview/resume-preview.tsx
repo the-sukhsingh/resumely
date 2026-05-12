@@ -6,7 +6,7 @@ import PDFError from "./helper/pdf-error";
 import PDFLoading from "./helper/pdf-loading";
 import { Document, Page, pdfjs } from "react-pdf";
 import { ResumeData, ResumeTemplate } from "@/types/resume";
-import { cloneDeep, debounce, isEqual, set } from "lodash";
+import { cloneDeep, debounce, isEqual } from "lodash";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -18,12 +18,6 @@ const PDFViewer = ({ url }: { url: string | null; }) => {
     if (!url) {
         return null;
     };
-
-    const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-        setNumPages(numPages);
-    };
-
-
 
     return (
         <div className="flex h-full w-full items-center justify-center">

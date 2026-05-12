@@ -33,7 +33,7 @@ export function DataTable<T extends { id: string }>({
           <tr>
             {onReorder && <th className="w-8 px-2 py-2"></th>}
             {columns.map((col) => (
-              <th key={col.key} className="text-left px-3 py-2 text-xs font-medium ">
+              <th key={col.key} className="text-left px-3 py-2.5 text-xs font-medium ">
                 {col.label}
               </th>
             ))}
@@ -51,18 +51,18 @@ export function DataTable<T extends { id: string }>({
               }`}
             >
               {onReorder && (
-                <td className="px-2 py-2.5">
+                <td className="px-2 py-1.5">
                   <div className="cursor-grab active:cursor-grabbing text-primary/90">
                     <GripVertical className="w-4 h-4" />
                   </div>
                 </td>
               )}
               {columns.map((col) => (
-                <td key={col.key} className="px-3 py-2.5 bg-background">
+                <td key={col.key} className="px-3 py-1.5 bg-background">
                   {col.render ? col.render(item) : (item as any)[col.key]}
                 </td>
               ))}
-              <td className="px-3 py-2.5 bg-background">
+              <td className="px-3 py-1.5 bg-background">
                 <div className="flex items-center gap-1">
                   <Button
                     onClick={() => onEdit(item)}

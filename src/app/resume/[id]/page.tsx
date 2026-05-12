@@ -18,7 +18,8 @@ import { ResumeData, ResumeSettings } from '@/types/resume';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SettingsPanel, { DEFAULT_SETTINGS } from '@/components/resume/SettingsPanel';
 import debounce from 'lodash/debounce';
-import ResumePreview from '@/components/resume/preview/resume-preview';
+import dynamic from 'next/dynamic';
+const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
 import { Clipboard, Message2, Settings } from '@duo-icons/react';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';
 import { createBlobUrl } from '@/lib/pdf/create-blob-url';
@@ -213,7 +214,7 @@ function ResumeEditorContent({
               <div className={activeTab === 'setting' ? 'h-full' : 'hidden'}>
                 <SettingsPanel
                   resumeId={resumeId}
-                  isVersion={isVersion}
+                  isVersion={isVersion} 
                   settings={settings}
                   onChange={setSettings}
                 />
@@ -221,7 +222,8 @@ function ResumeEditorContent({
             </ResizablePanel>
             {/* <ResizableHandle withHandle /> */}
             <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative border'>
-              <div className='h-10 bg-background flex justify-end' >
+              <div className='h-10 bg-background flex justify-between px-3' >
+                {previewDraft && <span className='text-sm flex justify-center items-center'>{previewDraft.name}</span>}
                 <Manager handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} />
               </div>
               <ResumePreview resumeData={previewDraft} theme="classic" />

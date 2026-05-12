@@ -40,7 +40,7 @@ export default function ResumeVersionList({ userId }: Props) {
         <Link
           href={`/resume/${item.id}`}
           key={item.id}
-          className="group relative grid grid-cols-5 px-4 py-4 h-44 rounded-xl cursor-pointer bg-[#202020ce] backdrop-blur transition-colors border border-border/60 hover:bg-[#202020]"
+          className="group relative grid grid-cols-5 px-4 py-4 h-44 rounded-xl cursor-pointer bg-[#f0f0f0] dark:bg-[#202020ce] backdrop-blur-sm transition-colors border border-border/60 hover:bg-[#f7f7f7] dark:hover:bg-[#202020] shadow-sm"
         >
           <div className="col-span-4 flex flex-col flex-1 justify-between items-start">
             <div className="space-y-1">
@@ -89,7 +89,7 @@ export default function ResumeVersionList({ userId }: Props) {
           {Array.from({ length: 6 - items.length }, (_, i) => (
             <div
               key={i}
-              className="h-44 rounded-xl bg-muted/60 dark:bg-muted/30 border border-dashed border-border/60"
+              className="h-44 rounded-xl bg-muted/20 dark:bg-muted/10 border border-dashed border-border"
             >
             </div>
           ))}

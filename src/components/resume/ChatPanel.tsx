@@ -161,7 +161,7 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
       </ScrollArea>
 
       {/* Input */}
-      <div className="border-t bg-accent/70">
+      <div className="border-t bg-[#202020]/10">
         <div className="flex items-end gap-2">
           <textarea
             ref={textareaRef}
@@ -174,7 +174,7 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
           />
           <Button
             size="icon"
-            className="h-8 w-8 shrink-0 rounded-lg"
+            className="h-8 w-8 shrink-0 rounded-md rounded-br-[13px]"
             onClick={handleSend}
             disabled={loading || !input.trim()}
           >

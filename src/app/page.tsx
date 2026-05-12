@@ -1,9 +1,9 @@
-'use client';
+import React from 'react'
 
-export default function Home() {
+const Helo = () => {
   return (
-    <div className="h-screen flex flex-col">
-      HEllo
-    </div>
-  );
+    <div>Helo</div>
+  )
 }
+
+export default Helo
