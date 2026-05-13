@@ -220,9 +220,8 @@ function ResumeEditorContent({
                 />
               </div>
             </ResizablePanel>
-            {/* <ResizableHandle withHandle /> */}
             <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative border'>
-              <div className='h-10 bg-background flex justify-between px-3' >
+              <div className='h-10 bg-background flex justify-between pl-3 pr-1' >
                 {previewDraft && <span className='text-sm flex justify-center items-center'>{previewDraft.name}</span>}
                 <Manager handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} />
               </div>

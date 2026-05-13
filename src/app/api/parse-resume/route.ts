@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-const pdf = require('pdf-parse-new');
+import pdf from 'pdf-parse-new';
 
 export async function POST(req: NextRequest) {
   try {

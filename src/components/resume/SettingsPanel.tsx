@@ -237,7 +237,7 @@ export default function SettingsPanel({
           <div className="">
             <Reorder.Group axis="y" values={settings.order || Object.keys(SECTION_LABELS)} onReorder={updateOrder} className="divide-y divide-border border border-border rounded-lg shadow-xs overflow-hidden">
               {(settings.order || Object.keys(SECTION_LABELS) as (keyof ResumeSettings['sections'])[]).map((key) => (
-                <Reorder.Item key={key} value={key} className="flex items-center gap-2 bg-muted px-2.5 py-2.5 cursor-grab active:cursor-grabbing">
+                <Reorder.Item key={key} value={key} className="flex items-center gap-2 bg-background backdrop-blur-sm px-2.5 py-2.5 cursor-grab active:cursor-grabbing">
                   <GripVertical className="h-4 w-4 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
                   <div className="flex-1 flex items-center justify-between">
                     <Label htmlFor={`section-${key}`} className="text-xs font-medium text-primary/90 cursor-pointer">

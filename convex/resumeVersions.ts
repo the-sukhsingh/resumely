@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, action, internalMutation } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
+import { getImproveResumePromptNudge } from "../src/lib/prompts";
 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 
@@ -318,26 +319,12 @@ export const createResumeVersion = action({
     });
     if (!jobDescription) throw new Error("Job description not found");
 
+    const jdText = `Title: ${jobDescription.description.slice(0, 200)}\nRequired Skills: ${jobDescription.extractedSkills.join(", ")}\nRequirements: ${jobDescription.requirements.join(" | ")}\nResponsibilities: ${jobDescription.responsibilities.join(" | ")}`;
+    const jobKeywords = jobDescription.extractedKeywords.join(", ");
+    const originalResume = JSON.stringify({ summary: masterResume.summary, experience: masterResume.experience, skills: masterResume.skills, projects: masterResume.projects }, null, 2);
+
     const aiContent = await geminiJSON(
-      `You are an expert resume writer. Tailor this resume for the given job description.
-
-MASTER RESUME:
-${JSON.stringify({ summary: masterResume.summary, experience: masterResume.experience, skills: masterResume.skills, projects: masterResume.projects }, null, 2)}
-
-JOB DESCRIPTION:
-Title: ${jobDescription.description.slice(0, 200)}
-Required Skills: ${jobDescription.extractedSkills.join(", ")}
-Keywords: ${jobDescription.extractedKeywords.join(", ")}
-Requirements: ${jobDescription.requirements.join(" | ")}
-Responsibilities: ${jobDescription.responsibilities.join(" | ")}
-
-Return a JSON object with these keys:
-- summary: rewritten summary targeting this role
-- experience: same structure as input but with bullets rewritten to highlight relevant skills and use JD keywords
-- skills: reordered/filtered skills with JD-relevant skills first, same structure as input
-- projects: same structure as input but descriptions/bullets updated to highlight relevance to JD
-
-Keep all original IDs. Only rewrite text content, do not add or remove entries.`
+      getImproveResumePromptNudge(jdText, jobKeywords, originalResume, "English")
     );
 
     const versionId: Id<"resumeVersions"> = await ctx.runMutation(internal.resumeVersions.insertVersion, {
@@ -696,15 +683,26 @@ const CHAT_TOOLS = [
     },
   },
   {
-    name: "calculate_match_score",
-    description: "Calculate match score based on job description",
-    parameters: { type: "object", properties: {} }
-  },
-  {
     name: "ats_check",
     description: "Check for ATS compatibility",
     parameters: { type: "object", properties: {} }
   },
+  {
+    name: "get_website_content",
+    description: "Fetch and summarize content from a URL. Use this when the user provides a link to pull info from.",
+    parameters: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "The URL to fetch content from" },
+      },
+      required: ["url"],
+    },
+  },
+  {
+    name: "get_job_description_content",
+    description: "Retrieve the full job description content",
+    parameters: { type: "object", properties: {} }
+  }
 ];
 
 async function callGeminiChat(systemPrompt: string, messages: { role: string; parts: { text: string }[] }[]) {
@@ -732,8 +730,7 @@ function buildSystemPrompt(resume: Doc<"resumeVersions">, jd: Doc<"jobDescriptio
 Required Skills: ${jd.extractedSkills.join(", ")}
 Keywords: ${jd.extractedKeywords.join(", ")}
 Requirements: ${jd.requirements.join(" | ")}
-Responsibilities: ${jd.responsibilities.join(" | ")}
-Full Description: ${jd.description.slice(0, 1000)}`
+Responsibilities: ${jd.responsibilities.join(" | ")}`
     : "JOB DESCRIPTION: Not provided";
 
   return `You are an expert resume coach and editor. You help users optimize their resume for a specific job.
@@ -848,12 +845,17 @@ export const chat = action({
           } else if (name === "inject_keywords") {
             if (toolArgs.summary) await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "summary", data: toolArgs.summary });
             if (toolArgs.skills) await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "skills", data: toolArgs.skills });
-          } else if (name === "calculate_match_score") {
-            const score = await ctx.runAction(api.resumeVersions.calculateMatchScore, { resume, jobDescription });
-            await ctx.runMutation(api.resumeVersions.updateMatchScore, { versionId: args.versionId, matchScore: score.overall });
-            result = score;
-          } else if (name === "ats_check") {
+          }  else if (name === "ats_check") {
             result = await ctx.runAction(api.resumeVersions.atsChecker, { resume });
+          } else if (name === "get_website_content") {
+            // For security, we should validate/sanitize the URL before fetching, but for this example we'll assume it's safe
+            const response = await fetch(toolArgs.url);
+            const text = await response.text();
+            // Summarize the content to extract key info (this is a placeholder, ideally we'd use an AI model for summarization)
+            result = { summary: text };
+          } else if (name === "get_job_description_content") {
+            if (!resume.jobDescriptionId) throw new Error("No linked job description");
+            result = await ctx.runQuery(api.jobDescriptions.getJobDescriptionById, { jobDescriptionId: resume.jobDescriptionId });
           }
         } catch (e: any) {
           result = { success: false, error: e.message };

@@ -80,7 +80,7 @@ export default function AddJobDescriptionDialog({
         />
         {description.trim() && (
           <div className="p-4">
-              {description.length} characters, {description.split(/\s+/).length} words
+            {description.length} characters, {description.split(/\s+/).length} words
           </div>
         )}
         <DialogFooter className='space-x-2 py-1.5'>

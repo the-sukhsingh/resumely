@@ -36,6 +36,12 @@
       "sourceType": "github",
       "skillPath": "skills/convex-setup-auth/SKILL.md",
       "computedHash": "b1a940758751c5b2fdc6ced105b19927a1655f0c1d4bd2fd5536dc3264202c00"
+    },
+    "landing-page-optimizer": {
+      "source": "aiagentskills/skills",
+      "sourceType": "github",
+      "skillPath": "skills/landing-page-optimizer/SKILL.md",
+      "computedHash": "ff228e27ef31cb139f956632a4bd70869d1a37e52be953aef4ce2d9853ea3f30"
     }
   }
 }

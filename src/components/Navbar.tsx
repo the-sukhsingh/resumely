@@ -14,7 +14,6 @@ import { usePathname } from "next/navigation";
 
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
-    const pathname = usePathname();
 
     const links = [
         { href: "/resume", label: "Resume" },
@@ -29,7 +28,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-12">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2 group">
-                        <span className="text-2xl font-bold font-serif tracking-tighter">
+                        <span className="text-2xl font-bold font-mono tracking-tighter">
                             Resumely
                         </span>
                     </Link>
@@ -43,9 +42,7 @@ const Navbar = () => {
                                     href={link.href}
                                     className={cn(
                                         "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
-                                        pathname === link.href
-                                            ? "bg-accent text-foreground"
-                                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                                        "text-muted-foreground hover:bg-accent hover:text-foreground"
                                     )}
                                 >
                                     {link.label}
@@ -75,9 +72,7 @@ const Navbar = () => {
                                                             href={link.href}
                                                             className={cn(
                                                                 "flex items-center gap-3 px-4 py-3 rounded-md transition-colors font-medium",
-                                                                pathname === link.href
-                                                                    ? "bg-accent text-foreground"
-                                                                    : "hover:bg-accent"
+                                                                "text-muted-foreground hover:bg-accent hover:text-foreground"
                                                             )}
                                                         >
                                                             {link.label}
