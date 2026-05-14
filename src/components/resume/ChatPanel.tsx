@@ -79,7 +79,7 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-destructive absolute top-1 right-2 p-1 cursor-pointer z-10"
+            className="h-7 w-7 text-muted-foreground hover:text-destructive absolute top-1 right-1 p-1 cursor-pointer z-10"
             onClick={handleClear}
             title="Clear conversation"
           >
@@ -161,7 +161,7 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
       </ScrollArea>
 
       {/* Input */}
-      <div className="border-t bg-[#202020]/10">
+      <div className="border-t bg-[#202020]/5 dark:bg-[#202020]/20">
         <div className="flex items-end gap-2">
           <textarea
             ref={textareaRef}

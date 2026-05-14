@@ -5,18 +5,30 @@ import { pdf } from "@react-pdf/renderer";
 interface CreatePdfBlobProps {
   resumeData: ResumeData;
   type?: "pdf" | "image";
+  theme?: ResumeTemplate;
 }
 
-export const createPdfBlob = async ({ resumeData, type }: CreatePdfBlobProps) => {
-  const Template = getPdfTemplate("classic");
+export const createPdfBlob = async ({ resumeData, type, theme }: CreatePdfBlobProps) => {
+  console.log("Creating PDF blob with theme:", theme);
+  const Template = getPdfTemplate((theme ?? "classic") as "classic" | "twoColumn");
+  console.log("Using PDF template:", Template.name);
   const pdfDocument = <Template data={resumeData} />;
   const blob = await pdf(pdfDocument).toBlob();
 
   return blob;
 };
 
-const getPdfTemplate = (template: "classic" | "vercel" | "designer") => {
-  // if there is no template or the template isn't registered, fallback to default (designer)
-  const variant = variantRegistry[template as string as keyof typeof variantRegistry];
-  return variant ? variant.component : variantRegistry.designer.component;
+const getPdfTemplate = (template: "classic" | "twoColumn") => {
+  const normalizedTemplate = String(template)
+    .trim()
+    .replace(/[-_\s]+/g, "")
+    .toLowerCase();
+
+  const variantKey = Object.keys(variantRegistry).find(
+    (key) => key.replace(/[-_\s]+/g, "").toLowerCase() === normalizedTemplate,
+  ) as keyof typeof variantRegistry | undefined;
+
+  const variant = variantKey ? variantRegistry[variantKey] : undefined;
+
+  return variant?.component ?? variantRegistry.classic.component;
 };

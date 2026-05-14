@@ -33,15 +33,15 @@ export default function ResumeVersionPage() {
     versionId: id as Id<'resumeVersions'>,
   });
 
-  
+
   if (resume === undefined) {
     return (
       <>
         <div className='h-dvh p-3 space-y-2 fixed inset-0 z-20 flex flex-col pt-14'>
 
           <div className="flex gap-2 flex-1">
-            <Skeleton className="w-150 h-full rounded-lg" />
             <Skeleton className="flex-1 h-full rounded-lg" />
+            <Skeleton className="w-130 h-full rounded-lg" />
           </div>
         </div>
       </>
@@ -140,7 +140,7 @@ function ResumeEditorContent({
 
 
   const handleDownloadPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
     const newUrl = createBlobUrl({ blob });
     const link = document.createElement('a');
     link.href = newUrl;
@@ -152,7 +152,7 @@ function ResumeEditorContent({
   const handleDownloadImage = async () => {
     setIsDownloading(true);
     try {
-      const pdfBlob = await createPdfBlob({ resumeData: previewDraft });
+      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
       const blob = await createPdfToImage({ pdfBlob, scale: 3 });
       const url = createBlobUrl({ blob });
       downloadFile({ url, fileName: `${previewDraft.personalInfo.name || 'resume'}.png` });
@@ -165,70 +165,70 @@ function ResumeEditorContent({
   };
 
   const handleViewPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
   }
 
   return (
     <>
+      <div className="flex flex-col h-dvh p-2 pt-14 bg-muted">
+        <ResizablePanelGroup
+          orientation="horizontal"
+          className="w-full h-full gap-2"
+        >
+          <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
+            <div className='h-10 bg-background flex justify-between pl-3 pr-1' >
+              {previewDraft && <span className='text-sm flex justify-center items-center'>{previewDraft.name}</span>}
+              <Manager handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} />
+            </div>
+            <ResumePreview resumeData={previewDraft} theme={resume.settings?.layout ?? "classic"} />
+          </ResizablePanel>
 
-      <div className="flex flex-col h-dvh p-2 pt-14">
-          <ResizablePanelGroup
-            orientation="horizontal"
-            className="w-full h-full gap-2"
-          >
-            <ResizablePanel minSize="30%" defaultSize="40%" className='nobar relative pt-10 rounded-xl border'>
-              <Tabs defaultValue={activeTab} onValueChange={(val) => {
-                setActiveTab(val as 'editor' | 'agent' | 'setting');
-              }} className='absolute top-0 inset-x-0 border-b z-10' >
-                <TabsList variant={"line"} className=''>
-                  <TabsTrigger value="editor">
-                    <span className="flex items-center gap-2">
-                      <Clipboard size={18} />
-                      Editor
-                    </span>
-                  </TabsTrigger>
-                  <TabsTrigger value="agent">
-                    <span className="flex items-center gap-2">
-                      <Message2 size={18} />
-                      Agent
-                    </span>
-                  </TabsTrigger>
-                  <TabsTrigger value="setting">
-                    <span className="flex items-center gap-2">
-                      <Settings size={18} />
-                      Settings
-                    </span>
-                  </TabsTrigger>
-                </TabsList>
+          <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>
+            <Tabs defaultValue={activeTab} onValueChange={(val) => {
+              setActiveTab(val as 'editor' | 'agent' | 'setting');
+            }} className='absolute top-0 inset-x-0 border-b z-10' >
+              <TabsList variant={"line"} className=''>
+                <TabsTrigger value="editor">
+                  <span className="flex items-center gap-2">
+                    <Clipboard size={18} />
+                    Editor
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="agent">
+                  <span className="flex items-center gap-2">
+                    <Message2 size={18} />
+                    Agent
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="setting">
+                  <span className="flex items-center gap-2">
+                    <Settings size={18} />
+                    Settings
+                  </span>
+                </TabsTrigger>
+              </TabsList>
 
-              </Tabs>
+            </Tabs>
 
-              <div className={activeTab === 'editor' ? 'h-full' : 'hidden'}>
-                <EditorForm data={draft} onChange={handleDraftChange} />
-              </div>
-              <div className={activeTab === 'agent' ? 'h-full' : 'hidden'}>
-                <ChatPanel versionId={resumeId as Id<'resumeVersions'>} />
-              </div>
-              <div className={activeTab === 'setting' ? 'h-full' : 'hidden'}>
-                <SettingsPanel
-                  resumeId={resumeId}
-                  isVersion={isVersion} 
-                  settings={settings}
-                  onChange={setSettings}
-                />
-              </div>
-            </ResizablePanel>
-            <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative border'>
-              <div className='h-10 bg-background flex justify-between pl-3 pr-1' >
-                {previewDraft && <span className='text-sm flex justify-center items-center'>{previewDraft.name}</span>}
-                <Manager handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} />
-              </div>
-              <ResumePreview resumeData={previewDraft} theme="classic" />
-            </ResizablePanel>
+            <div className={activeTab === 'editor' ? 'h-full' : 'hidden'}>
+              <EditorForm data={draft} onChange={handleDraftChange} />
+            </div>
+            <div className={activeTab === 'agent' ? 'h-full' : 'hidden'}>
+              <ChatPanel versionId={resumeId as Id<'resumeVersions'>} />
+            </div>
+            <div className={activeTab === 'setting' ? 'h-full' : 'hidden'}>
+              <SettingsPanel
+                resumeId={resumeId}
+                isVersion={isVersion}
+                settings={settings}
+                onChange={setSettings}
+              />
+            </div>
+          </ResizablePanel>
 
-          </ResizablePanelGroup>
+        </ResizablePanelGroup>
       </div>
     </>
   );

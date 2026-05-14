@@ -32,7 +32,7 @@ const PDFViewer = ({ url }: { url: string | null; }) => {
                     setError(null);
                     setNumPages(d.numPages);
                 }}
-                className="nobar dark:bg-background flex flex-col gap-4 h-full max-h-full w-full items-center justify-start py-4 overflow-y-scroll"
+                className="nobar flex flex-col gap-4 h-full max-h-full w-full items-center justify-start py-4 overflow-y-scroll"
             >
                 {!error && numPages && Array.from(new Array(numPages), (el, index) => (
                     <Page
@@ -77,7 +77,7 @@ const ResumePreview = ({ resumeData, theme }: { resumeData: ResumeData, theme: R
         setPdfError(null);
         (async () => {
             try {
-                const blob = await createPdfBlob({ resumeData: data});
+                const blob = await createPdfBlob({ resumeData: data, theme: theme});
                 const newUrl = createBlobUrl({ blob });
                 setGeneratedPdfUrl(newUrl);
             } catch (err) {

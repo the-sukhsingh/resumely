@@ -13,8 +13,8 @@ import { GripVertical } from 'lucide-react';
 import { Reorder } from 'motion/react';
 
 const SvgSingleColumn = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/40"/>
+  <svg className='size-16' viewBox="0 0 24 24" fill="none">
+    <rect x="5" y="4" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/40"/>
     <rect x="7" y="7" width="10" height="2" rx="1" fill="currentColor"/>
     <rect x="7" y="11" width="10" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
     <rect x="7" y="15" width="7" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
@@ -22,18 +22,16 @@ const SvgSingleColumn = () => (
 );
 
 const SvgTwoColumns = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <svg className='size-16' viewBox="0 0 24 24" fill="none">
     <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground opacity-30"/>
-    <path d="M12 4.6V19.4" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground opacity-30"/>
-    <rect x="6" y="7" width="4" height="2" rx="1" fill="currentColor"/>
-    <rect x="14" y="7" width="4" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
-    <rect x="6" y="11" width="4" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
-    <rect x="14" y="11" width="4" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
+    <rect x="6" y="7" width="5" height="2" rx="1" fill="currentColor"/>
+    <rect x="13" y="7" width="5" height="2" rx="1"  fill="currentColor"/>
+    <rect x="6" y="11" width="5" height="2" rx="1"  fill="currentColor"/>
+    <rect x="13" y="11" width="5" height="2" rx="1"  fill="currentColor"/>
+    <rect x="6" y="15" width="5" height="2" rx="1"  fill="currentColor"/>
+    <rect x="13" y="15" width="5" height="2" rx="1"  fill="currentColor"/>
   </svg>
 );
-
-
-// &#x2500;&#x2500;&#x2500; Defaults &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;─────────────────────────────────────────────────────
 
 export const DEFAULT_SETTINGS: ResumeSettings = {
   font: 'Inter',
@@ -157,14 +155,14 @@ export default function SettingsPanel({
               <button
                 key={l}
                 onClick={() => update({ layout: l })}
-                className={`flex h-11 items-center gap-3 rounded-md border px-3 text-left text-xs font-medium transition-colors
+                className={`flex flex-col items-center gap-3 rounded-lg border py-3 text-left text-xs font-medium transition-colors
                   ${settings.layout === l
-                    ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary/20'
+                    ? 'border-primary/40 bg-primary/10 text-primary ring-1 ring-primary/20'
                     : 'border-border bg-accent/40 text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`}
               >
-                {l === 'one-column' ? <SvgSingleColumn /> : <SvgTwoColumns />}
-                <span>{l === 'one-column' ? 'Single Column' : 'Two Columns'}</span>
+                {l === 'one-column' ? <SvgSingleColumn  /> : <SvgTwoColumns />}
+                <span className='text-base'>{l === 'one-column' ? 'Single Column' : 'Two Columns'}</span>
               </button>
             ))}
           </div>

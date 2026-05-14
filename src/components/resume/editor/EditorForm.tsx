@@ -362,7 +362,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
             onChange={(e) => updateSummary(e.target.value)}
             placeholder="Brief overview of your professional background and key strengths..."
             rows={6}
-            className="resize-none"
+            className="resize-none max-h-40"
           />
         </CollapsibleSection>
 

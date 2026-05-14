@@ -19,7 +19,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
-        neo: "bg-linear-to-b border-0 from-[#ffffff] to-[#f3f3f3] dark:from-[#202020] dark:to-[#191919] dark:shadow-[0_0.5px_0px_#ffffff1a_inset,0_1px_0.5px_#ffffff25_inset,0_10px_10px_-9px_#00000070,0_20px_20px_-14px_#00000060,0_0px_6px_0px_#00000060] focus-visible:ring-1 ring-[#f3f3f3] dark:ring-[#202020] shadow-[0_0.8px_0px_#0000001a_inset,0_1px_0.5px_#ffffff25_inset]"
+        neo: "bg-linear-to-b border-0 from-[#ffffff] to-[#f3f3f3] dark:from-[#202020] dark:to-[#191919] dark:shadow-[0_0.5px_0px_#ffffff1a_inset,0_1px_0.5px_#ffffff25_inset,0_10px_10px_-9px_#00000070,0_20px_20px_-14px_#00000060,0_0px_6px_0px_#00000060] focus-visible:ring-1 ring-[#f3f3f325] dark:ring-[#202020] shadow-[0_0.8px_0px_#0000001a_inset,0_1px_0.5px_#ffffff25_inset]"
       },
       size: {
         default:
