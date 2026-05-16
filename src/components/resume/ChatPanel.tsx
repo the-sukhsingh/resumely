@@ -22,6 +22,7 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
   const clearHistory = useMutation(api.chatHistory.clearChatHistory);
 
   const suggestions = [
+    'Write cover letter for this resume.',
     'Rewrite my summary to sound more senior and concise.',
     'Add keywords for a Product Manager role in fintech.',
     'Improve this bullet: "Led migrations for legacy systems".',

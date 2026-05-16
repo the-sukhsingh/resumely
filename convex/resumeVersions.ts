@@ -79,24 +79,13 @@ const resumeContentSchema = {
       })
     )
   ),
+  coverLetter: v.optional(v.union(v.string(), v.null())),
 };
 
 // ─── Settings Schema ──────────────────────────────────────────────────────────
 
 const resumeSettingsSchema = {
   font: v.string(),
-  color: v.string(),
-  sections: v.object({
-    personalInfo: v.boolean(),
-    summary: v.boolean(),
-    experience: v.boolean(),
-    education: v.boolean(),
-    skills: v.boolean(),
-    projects: v.boolean(),
-    achievements: v.boolean(),
-    certifications: v.boolean(),
-  }),
-  order: v.array(v.string()),
   layout: v.union(v.literal("one-column"), v.literal("two-column")),
 };
 
@@ -136,6 +125,7 @@ export const insertVersion = internalMutation({
       projects: args.projects ?? masterResume.projects,
       certifications: masterResume.certifications,
       achievements: masterResume.achievements,
+      coverLetter: masterResume.coverLetter,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -342,6 +332,12 @@ export const createResumeVersion = action({
       api.resumeVersions.getResumeVersionById,
       { versionId }
     );
+
+    await ctx.runMutation(internal.users.deductCredits, {
+      userId: masterResume.userId,
+      amount: 10,
+      reason: "Tailored resume generation",
+    });
 
     return { versionId, resume };
   },
@@ -702,6 +698,15 @@ const CHAT_TOOLS = [
     name: "get_job_description_content",
     description: "Retrieve the full job description content",
     parameters: { type: "object", properties: {} }
+  },
+  {
+    name: "update_cover_letter",
+    description: "Write, update, or clear the cover letter for this resume",
+    parameters: {
+      type: "object",
+      properties: { coverLetter: { type: "string", description: "The new cover letter text" } },
+      required: ["coverLetter"],
+    },
   }
 ];
 
@@ -739,7 +744,7 @@ CURRENT RESUME VERSION: "${resume.name}"
 CANDIDATE: ${resume.personalInfo.name}
 
 RESUME DATA:
-${JSON.stringify({ name: resume.name, personalInfo: resume.personalInfo, summary: resume.summary, experience: resume.experience, education: resume.education, skills: resume.skills, projects: resume.projects, certifications: resume.certifications, achievements: resume.achievements, settings: resume.settings, matchScore: resume.matchScore }, null, 2)}
+${JSON.stringify({ name: resume.name, personalInfo: resume.personalInfo, summary: resume.summary, experience: resume.experience, education: resume.education, skills: resume.skills, projects: resume.projects, certifications: resume.certifications, achievements: resume.achievements, settings: resume.settings, matchScore: resume.matchScore, coverLetter: resume.coverLetter }, null, 2)}
 
 ${jdSection}
 
@@ -826,6 +831,8 @@ export const chat = action({
             await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "certifications", data: toolArgs.certifications });
           } else if (name === "update_achievements") {
             await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "achievements", data: toolArgs.achievements });
+          } else if (name === "update_cover_letter") {
+            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "coverLetter", data: toolArgs.coverLetter });
           } else if (name === "update_resume_settings") {
             await ctx.runMutation(api.resumeVersions.updateResumeVersionSettings, { versionId: args.versionId, settings: toolArgs.settings });
           } else if (name === "update_resume_name") {
@@ -885,6 +892,20 @@ export const chat = action({
       resumeVersionId: args.versionId,
       role: "assistant",
       content: replyText,
+    });
+
+    if (toolsUsed.includes("update_cover_letter")) {
+      await ctx.runMutation(internal.users.deductCredits, {
+        userId: resume.userId,
+        amount: 5,
+        reason: "Cover letter generation",
+      });
+    }
+
+    await ctx.runMutation(internal.users.deductCredits, {
+      userId: resume.userId,
+      amount: 1,
+      reason: "AI chat message",
     });
 
     return { reply: replyText, toolsUsed };

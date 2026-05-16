@@ -78,22 +78,11 @@ export type ResumeData = {
   settings?: ResumeSettings;
   matchScore?: number | null;
   name?: string;
+  coverLetter?: string | null;
 };
 
 
 export type ResumeSettings = {
   font: string;
-  color: string;
-  sections: {
-    personalInfo: boolean;
-    summary: boolean;
-    experience: boolean;
-    education: boolean;
-    skills: boolean;
-    projects: boolean;
-    achievements: boolean;
-    certifications: boolean;
-  };
-  order: string[]; // e.g. ['personalInfo', 'summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'achievements']
   layout: 'one-column' | 'two-column';
 }

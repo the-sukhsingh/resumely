@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse-new';
+import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -12,8 +18,6 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const data = await pdf(buffer);
-
-    const text = await data.text;
 
     return NextResponse.json({ text: data.text });
   } catch (error) {

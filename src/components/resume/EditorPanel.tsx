@@ -10,9 +10,6 @@ export default function EditorPanel({ data }: { data: ResumeData }) {
   const [collapsed, setCollapsed] = useState(false);
   const [draft, setDraft] = useState<ResumeData>(data);
 
-  useEffect(() => {
-    setDraft(data);
-  }, [data]);
 
   if (collapsed) {
     return (

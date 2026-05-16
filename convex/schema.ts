@@ -4,18 +4,6 @@ import { v } from "convex/values";
 const settingsValidator = v.optional(
   v.object({
     font: v.string(),
-    color: v.string(),
-    sections: v.object({
-      personalInfo: v.boolean(),
-      summary: v.boolean(),
-      experience: v.boolean(),
-      education: v.boolean(),
-      skills: v.boolean(),
-      projects: v.boolean(),
-      achievements: v.boolean(),
-      certifications: v.boolean(),
-    }),
-    order: v.array(v.string()),
     layout: v.union(v.literal("one-column"), v.literal("two-column")),
   })
 );
@@ -28,6 +16,14 @@ export default defineSchema({
     credits: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_email", ["email"]),
+
+  creditLogs: defineTable({
+    userId: v.id("users"),
+    amount: v.number(),
+    reason: v.string(),
+    status: v.string(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
 
   jobDescriptions: defineTable({
     userId: v.id("users"),
@@ -119,6 +115,7 @@ export default defineSchema({
     ),
     matchScore: v.optional(v.union(v.number(), v.null())),
     settings: settingsValidator,
+    coverLetter: v.optional(v.union(v.string(), v.null())),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

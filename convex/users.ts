@@ -1,5 +1,31 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
+
+export const deductCredits = internalMutation({
+  args: {
+    userId: v.id("users"),
+    amount: v.number(),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+    
+    const currentCredits = user.credits ?? 25;
+    
+    await ctx.db.patch(args.userId, {
+      credits: currentCredits - args.amount,
+    });
+    
+    await ctx.db.insert("creditLogs", {
+      userId: args.userId,
+      amount: -args.amount,
+      reason: args.reason,
+      status: "success",
+      createdAt: Date.now(),
+    });
+  },
+});
 
 export const getUserByEmail = query({
   args: {
@@ -45,7 +71,7 @@ export const upsertUser = mutation({
       email: args.email,
       name: args.name,
       picture: pictureToUse,
-      credits: 50,
+      credits: 25,
       createdAt: Date.now(),
     });
   },

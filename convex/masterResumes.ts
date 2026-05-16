@@ -76,6 +76,7 @@ const resumeContentSchema = {
       })
     )
   ),
+  coverLetter: v.optional(v.union(v.string(), v.null())),
 };
 
 const resumeSettingsSchema = {
@@ -281,44 +282,166 @@ export const rewriteBullets = action({
   },
 });
 
+const CREATE_RESUME_TOOL = {
+  name: "create_resume",
+  description: "Create a new resume with the given personal information and return the resume ID",
+  parameters: {
+    type: "object", // Changed to lowercase
+    properties: {
+      personalInfo: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          email: { type: "string" },
+          phone: { type: "string" },
+          location: { type: "string" },
+          linkedin: { type: "string" },
+          github: { type: "string" },
+          website: { type: "string" },
+        },
+        required: ["name"],
+      },
+      summary: { type: "string" },
+      experience: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            company: { type: "string" },
+            position: { type: "string" },
+            location: { type: "string" },
+            startDate: { type: "string" },
+            endDate: { type: "string" },
+            description: { type: "string" },
+            bullets: { type: "array", items: { type: "string" } },
+          },
+          required: ["id", "company", "position", "startDate", "bullets"],
+        },
+      },
+      education: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            institution: { type: "string" },
+            degree: { type: "string" },
+            field: { type: "string" },
+            location: { type: "string" },
+            startDate: { type: "string" },
+            endDate: { type: "string" },
+            gpa: { type: "string" },
+          },
+          required: ["id", "institution", "degree", "startDate"],
+        },
+      },
+      skills: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            category: { type: "string" },
+            items: { type: "array", items: { type: "string" } },
+          },
+          required: ["category", "items"],
+        },
+      },
+      projects: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            description: { type: "string" },
+            technologies: { type: "array", items: { type: "string" } },
+            link: { type: "string" },
+            bullets: { type: "array", items: { type: "string" } },
+          },
+          required: ["id", "name", "description", "technologies", "bullets"],
+        },
+      },
+      certifications: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            issuer: { type: "string" },
+            date: { type: "string" },
+            link: { type: "string" },
+          },
+          required: ["id", "name", "issuer"],
+        },
+      },
+      achievements: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            title: { type: "string" },
+            description: { type: "string" },
+          },
+          required: ["id", "title", "description"],
+        },
+      },
+    },
+    required: ["personalInfo", "experience", "education", "skills", "projects", "certifications", "achievements"],
+  },
+}
+
 export const parseResumeText = action({
   args: {
     text: v.string(),
     userId: v.id("users"),
   },
   handler: async (ctx, args): Promise<unknown> => {
-    // TODO: Replace hardcoded data with live Gemini parsing once API is stable
-    const parsedResume = {
-      personalInfo: {
-        name: "SUKJIT SINGH",
-        email: null,
-        phone: "+91 7814261486",
-        location: "Punjab, India",
-        linkedin: null,
-        github: null,
-        website: "sukhjitsingh.me",
-      },
-      summary:
-        "Passionate full-stack developer and Computer Science student, focused on building real products using modern web development practices and AI tools.",
-      experience: [],
-      education: [
-        { id: "edu1", institution: "GNDU", degree: "B.Tech", field: "CSE", location: null, startDate: "2023", endDate: "2027", gpa: "8.63" },
-        { id: "edu2", institution: "PSEB", degree: "12th", field: "Science", location: null, startDate: "2022", endDate: "2023", gpa: "9.2" },
-      ],
-      skills: [
-        { category: "Technical Skills", items: ["Javascript", "React", "Next.js", "Motion", "TypeScript", "Convex", "ImageKit", "Inngest", "Tailwind", "Node.js", "MongoDB"] },
-        { category: "Languages", items: ["English", "Punjabi", "Hindi"] },
-        { category: "Awards", items: ["Winner, NFS 1.0", "Runner Up, GDG GNDU BuildFest", "Top 100, HackHazards 2025"] },
-      ],
-      projects: [
-        { id: "proj1", name: "Media", description: "Transform your ideas into engaging, tailored posts for X and LinkedIn, and auto-generate eye-catching thumbnails. Train the AI with your unique style and watch it write exactly like you do.", technologies: ["Next.js", "API", "Gemini"], link: null, bullets: ["Transform your ideas into engaging, tailored posts for X and LinkedIn, and auto-generate eye-catching thumbnails.", "Train the AI with your unique style and watch it write exactly like you do."] },
-        { id: "proj2", name: "Resumely", description: "Build résumé that stands out. Edit, preview, and export in one clean flow.", technologies: ["Next.js", "React-PDF"], link: null, bullets: ["Build résumé that stands out. Edit, preview, and export in one clean flow."] },
-        { id: "proj3", name: "Plann", description: "Plann uses advanced AI to transform your learning goals into practical, organized plans.", technologies: ["Convex", "Gemini"], link: null, bullets: ["Plann uses advanced AI to transform your learning goals into practical, organized plans.", "Upload documents, chat with your assistant, and track your progress in real-time."] },
-        { id: "proj4", name: "HackRadar", description: "Discover hackathons from multiple platforms, all in one place.", technologies: ["Next.js", "Convex"], link: null, bullets: ["Discover hackathons from multiple platforms, all in one place."] },
-        { id: "proj5", name: "Doc Crafter", description: "Use Generative AI to create complete, editable project documentation.", technologies: ["Inngest", "AgentKit"], link: null, bullets: ["Use Generative AI to create complete, editable project documentation including chapters, images, and .docx export."] },
-      ],
-      certifications: [],
-    };
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
+    const prompt = `You are an expert resume parser. Extract the structured information from the following resume text and call the create_resume tool with the extracted data.
+
+    Resume Text:
+    ${args.text}`;
+
+    const response = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        tools: [{ functionDeclarations: [CREATE_RESUME_TOOL] }],
+        toolConfig: {
+          functionCallingConfig: {
+            mode: "ANY",
+            allowedFunctionNames: ["create_resume"]
+          }
+        }
+      }),
+    });
+    
+    const data = await response.json();
+    if (!data.candidates?.[0]) {
+      throw new Error(`Gemini error: ${JSON.stringify(data.error ?? data)}`);
+    }
+    
+    const functionCall = data.candidates[0].content.parts.find((p: any) => p.functionCall)?.functionCall;
+    if (!functionCall || functionCall.name !== "create_resume") {
+      throw new Error("Gemini did not return a valid tool call for create_resume");
+    }
+
+    let parsedResume = functionCall.args;
+    if (!parsedResume.certifications) parsedResume.certifications = [];
+    if (!parsedResume.achievements) parsedResume.achievements = [];
+    if (!parsedResume.coverLetter) parsedResume.coverLetter = null;
+
+    // ensure boolean for 'current' since schema expects it but tool might miss it
+    if (parsedResume.experience) {
+      parsedResume.experience = parsedResume.experience.map((exp: any) => ({
+        ...exp,
+        current: exp.endDate === null || String(exp.endDate).toLowerCase().includes("present")
+      }));
+    }
 
     await ctx.runMutation(api.masterResumes.createMasterResume, {
       userId: args.userId,

@@ -20,6 +20,7 @@ import SettingsPanel, { DEFAULT_SETTINGS } from '@/components/resume/SettingsPan
 import debounce from 'lodash/debounce';
 import dynamic from 'next/dynamic';
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
+import CoverLetterPreview from '@/components/resume/preview/CoverLetterPreview';
 import { Clipboard, Message2, Settings } from '@duo-icons/react';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';
 import { createBlobUrl } from '@/lib/pdf/create-blob-url';
@@ -78,6 +79,7 @@ function ResumeEditorContent({
   resumeId: string;
 }) {
   const [activeTab, setActiveTab] = useState<'editor' | 'agent' | 'setting'>('editor');
+  const [activeView, setActiveView] = useState<'resume' | 'cover-letter'>('resume');
   const [draft, setDraft] = useState<ResumeData>(resume);
   const [previewDraft, setPreviewDraft] = useState<ResumeData>(resume);
   const isEditingRef = useRef(false);
@@ -87,10 +89,7 @@ function ResumeEditorContent({
     (resume as ResumeData & { settings?: ResumeSettings }).settings ?? DEFAULT_SETTINGS
   );
 
-  const updateMasterResume = useMutation(api.masterResumes.updateMasterResume);
   const updateResumeVersion = useMutation(api.resumeVersions.updateResumeVersion);
-
-  const isVersion = 'masterResumeId' in resume;
 
   const debouncedPreviewUpdate = useMemo(
     () =>
@@ -117,7 +116,7 @@ function ResumeEditorContent({
         },
         3000
       ),
-    [resumeId, updateMasterResume, updateResumeVersion]
+    [resumeId, updateResumeVersion]
   );
 
   // Sync preview (and draft) when Convex data changes externally (e.g. AI edits)
@@ -168,21 +167,29 @@ function ResumeEditorContent({
     const blob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
-  }
+  };
+
+  const handleCopyCoverLetter = () => {
+    navigator.clipboard.writeText(previewDraft.coverLetter || '');
+    // alert("Copied to clipboard")
+  };
 
   return (
     <>
-      <div className="flex flex-col h-dvh p-2 pt-14 bg-muted">
+      <div className="flex flex-col h-dvh p-2 pt-14 bg-muted/80">
         <ResizablePanelGroup
           orientation="horizontal"
           className="w-full h-full gap-2"
         >
           <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
-            <div className='h-10 bg-background flex justify-between pl-3 pr-1' >
-              {previewDraft && <span className='text-sm flex justify-center items-center'>{previewDraft.name}</span>}
-              <Manager handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} />
+            <div className='h-10 bg-background flex justify-between px-1' >
+              <Manager resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter}  />
             </div>
-            <ResumePreview resumeData={previewDraft} theme={resume.settings?.layout ?? "classic"} />
+            {activeView === 'resume' ? (
+              <ResumePreview resumeData={previewDraft} theme={resume.settings?.layout ?? "classic"} />
+            ) : (
+              <CoverLetterPreview resumeData={previewDraft} />
+            )}
           </ResizablePanel>
 
           <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>
@@ -221,7 +228,6 @@ function ResumeEditorContent({
             <div className={activeTab === 'setting' ? 'h-full' : 'hidden'}>
               <SettingsPanel
                 resumeId={resumeId}
-                isVersion={isVersion}
                 settings={settings}
                 onChange={setSettings}
               />
