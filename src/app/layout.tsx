@@ -95,6 +95,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased no-scrollbar`}
     >
       <head>

@@ -12,12 +12,17 @@ const WorkflowSection = () => {
         <p className="text-lg text-muted-foreground">From a single master record to endless targeted applications.</p>
       </div>
 
-      <div className="flex items-center gap-16 mx-auto max-w-7xl">
-        <div className="w-full max-w-4xl aspect-video bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl flex items-center justify-center group cursor-pointer hover:bg-card/60 transition-all duration-500 shadow-[0_0_50px_rgba(255,255,255,0.02)] relative overflow-hidden">
-          <div className="absolute inset-0 bg-linear-to-tr from-transparent via-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="w-16 h-16 rounded-full bg-foreground/10 flex items-center justify-center backdrop-blur-md border border-foreground/20 group-hover:scale-110 transition-transform duration-300">
-            <Play className="w-6 h-6 text-foreground" />
-          </div>
+      <div className="flex flex-col-reverse lg:flex-row  items-center gap-16 mx-auto max-w-7xl">
+        <div className="w-full max-w-4xl aspect-video bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.02)] ">
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.youtube.com/embed/jZMa3juiB9U" 
+            title="Workflow demo" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowFullScreen
+            className="absolute inset-0 border-0"
+          ></iframe>
         </div>
 
         <div className="flex flex-col gap-4 w-full max-w-4xl">

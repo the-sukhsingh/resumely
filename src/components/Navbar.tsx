@@ -27,7 +27,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-12">
                     {/* Logo */}
                     <Link href="/" className="flex items-center group font-mono font-medium tracking-tight text-xl">
-                       re.
+                        re.
                     </Link>
 
                     {/* Desktop Links */}
@@ -60,7 +60,7 @@ const Navbar = () => {
                                 </PopoverTrigger>
                                 <PopoverContent className="w-[calc(100vw-2rem)] p-4 mt-2 border-border/50 shadow-2xl rounded-3xl bg-background/95 backdrop-blur-xl" align="end">
                                     <div className="space-y-4">
-                                        {isAuthenticated ? (
+                                        {isAuthenticated && user ? (
                                             <>
                                                 <div className="grid grid-cols-1 gap-1">
                                                     {links.map((link) => (
@@ -80,17 +80,14 @@ const Navbar = () => {
                                                 <div className="pt-4 border-t border-border/50">
                                                     <div className="flex items-center gap-4 mb-6 px-3">
                                                         <Avatar className="h-10 w-10 rounded-full border border-border">
-                                                            <AvatarImage src={user?.imageUrl || undefined} alt={user?.name || "User"} />
-                                                            <AvatarFallback className="bg-muted text-foreground text-xs rounded-full">
-                                                                {user?.name?.charAt(0).toUpperCase() || "U"}
-                                                            </AvatarFallback>
+                                                            <AvatarImage src={user?.picture} />
                                                         </Avatar>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="text-sm font-semibold truncate">{user?.name}</div>
                                                             <div className="text-xs text-muted-foreground truncate">{user?.email}</div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center justify-between p-4 mb-4 mx-1 rounded-2xl bg-muted/30 border border-border/50">
                                                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Credits</span>
                                                         <span className="text-sm font-semibold">{user?.credits ?? 0}</span>
@@ -126,10 +123,10 @@ const Navbar = () => {
                                         <PopoverTrigger asChild>
                                             <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all">
                                                 <Avatar className="h-8 w-8 border border-border rounded-full">
-                                                    <AvatarImage src={user.imageUrl || undefined} />
-                                                    <AvatarFallback className="bg-muted text-foreground text-xs font-medium border-0">
-                                                        {user.name?.charAt(0).toUpperCase() || "U"}
-                                                    </AvatarFallback>
+                                                        <AvatarImage src={user.picture || undefined} />
+                                                        <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                                                            {user.name?.charAt(0).toUpperCase() || "U"}
+                                                        </AvatarFallback>
                                                 </Avatar>
                                             </Button>
                                         </PopoverTrigger>
@@ -137,7 +134,7 @@ const Navbar = () => {
                                             <div className="px-2.5 py-3 border-b border-border/50 bg-muted/10">
                                                 <p className="text-sm font-semibold leading-none mb-1.5">{user.name}</p>
                                                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                                                
+
                                                 <div className="mt-5 flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 shadow-sm">
                                                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Credits</span>
                                                     <span className="text-sm font-semibold">{user.credits ?? 0}</span>
@@ -166,7 +163,7 @@ const Navbar = () => {
                                     </Popover>
                                 </div>
                             ) : (
-                                <Button variant="neo" className="h-10 px-6 rounded-full text-sm font-semibold transition-transform hover:scale-105 active:scale-95" onClick={() => signIn("google")}>
+                                <Button variant="neo" className="h-8 px-4 rounded-full text-sm font-semibold" onClick={() => signIn("google")}>
                                     Get Started
                                 </Button>
                             )}

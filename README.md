@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resumely 📝
 
-## Getting Started
+Resumely is an AI-powered resume builder and management platform designed to help users seamlessly tailor their resumes to specific job descriptions. It leverages AI to analyze job descriptions, manage master resumes, and generate targeted versions of your resume with a beautiful, interactive UI.
 
-First, run the development server:
+## Features ✨
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Master Resume Management:** Keep a comprehensive master resume and generate targeted versions.
+- **Job Description Matching:** Add job descriptions and use AI to tailor your resume specifically for the role.
+- **Interactive Editor & Live Preview:** Edit your resume inline (using dynamic datatables) and see live PDF-like previews.
+- **AI Chat Assistant:** Collaborate with an integrated AI assistant to refine descriptions, summaries, and bullet points.
+- **Version Tracking:** Keep track of different versions of your resumes tailored for various applications.
+- **Modern UI:** Beautiful animations and interfaces built with Tailwind, shadcn/ui, and Motion.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack 🛠️
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend:** [Next.js](https://nextjs.org/) (App Router), React, [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
+- **Backend & Database:** [Convex](https://convex.dev/) (Real-time backend, database, and functions)
+- **Animations:** [Motion](https://motion.dev/) (motion/react)
+- **Icons:** [Lucide React](https://lucide.dev/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Getting Started 🚀
 
-## Learn More
+### Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js (v18.17 or higher)
+- npm, pnpm, or bun
+- A Convex account
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd resumely
+   ```
 
-## Deploy on Vercel
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or yarn / pnpm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Set up Convex Backend:**
+   ```bash
+   npx convex dev
+   ```
+   *This will prompt you to log in to Convex and configure your project. It will automatically provision your backend and create a `.env.local` file with your deployment URLs.*
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Run the Next.js development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Project Structure 📁
+
+- `src/app/` - Next.js App Router pages (resume builder, training, auth).
+- `src/components/` - React components, including the Resume Editor, Chat panel, and core UI (`shadcn/ui`).
+- `convex/` - Backend schema, real-time queries, and serverless actions/mutations.
+- `src/lib/` - Utilities, AI prompts, and PDF configuration.

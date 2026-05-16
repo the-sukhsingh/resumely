@@ -18,8 +18,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     // Normalized screen uvs [0, 1]
     vec2 uv = fragCoord / iResolution.xy;
     
-    // 1. Create the Bar Columns, Give Even numbers
-    float numBars = 20.0; 
+    // 1. Create the Bar Columns (controlled from JS via )
+    float numBars = uNumBars; 
     // Multiply by bar count and floor to get a constant value for each bar width
     float barID = floor(uv.x * numBars) / numBars;
     
@@ -68,6 +68,7 @@ void main(){ gl_Position = vec4(position, 0.0, 1.0); }`
 function buildFragmentShader(source: string) {
     return `precision highp float;
 uniform vec2 iResolution;
+uniform float uNumBars;
 uniform float iTime;
 uniform vec4 iMouse;
 
@@ -82,13 +83,16 @@ void main() {
 
 export function BarsPreview() {
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
-
+    
+ 
+    
     React.useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
-
+        
         const gl = canvas.getContext("webgl")
         if (!gl) return
+        
 
         const fragmentShader = buildFragmentShader(FRAGMENT_SOURCE)
         const program = gl.createProgram()
@@ -116,6 +120,7 @@ export function BarsPreview() {
         const iResolution = gl.getUniformLocation(program, "iResolution")
         const iTime = gl.getUniformLocation(program, "iTime")
         const iMouse = gl.getUniformLocation(program, "iMouse")
+        const uNumBars = gl.getUniformLocation(program, "uNumBars")
 
         const mouse = { x: 0, y: 0, prevX: 0, prevY: 0, initialized: false }
 
@@ -149,6 +154,13 @@ export function BarsPreview() {
             canvas.width = Math.max(1, Math.floor(rect.width * ratio))
             canvas.height = Math.max(1, Math.floor(rect.height * ratio))
             gl.viewport(0, 0, canvas.width, canvas.height)
+            if (iResolution) {
+                gl.uniform2f(iResolution, canvas.width, canvas.height)
+            }
+            if (uNumBars) {
+                const bars = window.innerWidth < 768 ? 10.0 : 20.0
+                gl.uniform1f(uNumBars, bars)
+            }
         }
         resize()
 
