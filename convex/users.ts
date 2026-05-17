@@ -1,5 +1,17 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query, internalMutation, internalQuery } from "./_generated/server";
+
+export const getCreditBalance = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    return user.credits ?? 25;
+  },
+});
 
 export const deductCredits = internalMutation({
   args: {
@@ -10,13 +22,17 @@ export const deductCredits = internalMutation({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
     if (!user) throw new Error("User not found");
-    
+
     const currentCredits = user.credits ?? 25;
-    
+
+    if (currentCredits < args.amount) {
+      throw new Error("Insufficient credits");
+    }
+
     await ctx.db.patch(args.userId, {
       credits: currentCredits - args.amount,
     });
-    
+
     await ctx.db.insert("creditLogs", {
       userId: args.userId,
       amount: -args.amount,

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
@@ -102,6 +102,16 @@ export const createJDAndVersion = action({
     jdText: v.string(),
   },
   handler: async (ctx, args): Promise<{ jobDescriptionId: Id<"jobDescriptions">; versionId: Id<"resumeVersions"> }> => {
+
+
+    const requiredCredits = 10;
+    const currentCredits: number = await ctx.runQuery(internal.users.getCreditBalance, {
+      userId: args.userId,
+    });
+    if (currentCredits < requiredCredits) {
+      throw new Error("Insufficient credits");
+    }
+
     const res = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

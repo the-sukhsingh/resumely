@@ -6,6 +6,7 @@ import { Id } from '../../convex/_generated/dataModel';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
+import { cn } from '@/lib/utils';
 
 interface Props {
   userId: Id<'users'>;
@@ -47,22 +48,13 @@ export default function ResumeVersionList({ userId }: Props) {
                 {item.label}
               </span>
             </div>
-            {/* <Button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                alert('Enhancement feature coming soon!');
-              }}
-              variant="outline"
-              size="sm"
-              className="mt-2 cursor-pointer bg-transparent border-border/70 hover:bg-accent/60"
-            >
-              Enhance
-            </Button> */}
           </div>
 
           <div className="col-span-1 flex flex-col justify-between items-end shrink-0">
-            <div>
+            <div className={cn(
+              item.isMasterResume ? 'opacity-0 pointer-events-none' : 'opacity-100',
+
+            )}>
               <Button
                 onClick={(event) => {
                   event.preventDefault();

@@ -309,6 +309,7 @@ export const createResumeVersion = action({
     });
     if (!jobDescription) throw new Error("Job description not found");
 
+
     const jdText = `Title: ${jobDescription.description.slice(0, 200)}\nRequired Skills: ${jobDescription.extractedSkills.join(", ")}\nRequirements: ${jobDescription.requirements.join(" | ")}\nResponsibilities: ${jobDescription.responsibilities.join(" | ")}`;
     const jobKeywords = jobDescription.extractedKeywords.join(", ");
     const originalResume = JSON.stringify({ summary: masterResume.summary, experience: masterResume.experience, skills: masterResume.skills, projects: masterResume.projects }, null, 2);
@@ -775,6 +776,14 @@ export const chat = action({
     if (!versionWithDetails) throw new Error("Resume version not found");
 
     const { jobDescription, masterResume: _master, ...resume } = versionWithDetails;
+    const requiresCoverLetter = args.message.toLowerCase().includes("cover letter");
+    const requiredCredits = requiresCoverLetter ? 6 : 1;
+    const currentCredits: number = await ctx.runQuery(internal.users.getCreditBalance, {
+      userId: resume.userId,
+    });
+    if (currentCredits < requiredCredits) {
+      throw new Error("Insufficient credits");
+    }
 
     const history = await ctx.runQuery(api.chatHistory.getChatHistoryByVersion, {
       resumeVersionId: args.versionId,
