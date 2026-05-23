@@ -245,6 +245,38 @@ export const deleteResumeVersion = mutation({
   },
 });
 
+export const createNewResume = mutation({
+  args: {
+    userId: v.id("users"),
+    name: v.string(),
+    ...resumeContentSchema,
+    settings: v.optional(v.object(resumeSettingsSchema)),
+  },
+  handler: async (ctx, args) => {
+    const { userId, name, settings, ...content } = args;
+
+    // Check if the user already has a master resume
+    const existingMaster = await ctx.db
+      .query("resumeVersions")
+      .withIndex("by_user_master", (q) => q.eq("userId", userId).eq("isMasterResume", true))
+      .first();
+
+    const isMasterResume = !existingMaster;
+
+    const resumeId = await ctx.db.insert("resumeVersions", {
+      userId,
+      isMasterResume,
+      name,
+      ...content,
+      settings,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return resumeId;
+  },
+});
+
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
 export const getResumeVersionsByUser = query({

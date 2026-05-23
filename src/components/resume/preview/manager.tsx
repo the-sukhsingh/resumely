@@ -25,9 +25,24 @@ interface ManagerProps {
     activeView: 'resume' | 'cover-letter';
     setActiveView: (view: 'resume' | 'cover-letter') => void;
     handleCopyCoverLetter: () => void;
+    isCreateMode?: boolean;
+    onSave?: () => void;
+    isSaving?: boolean;
 }
 
-const Manager: React.FC<ManagerProps> = ({ resumeName, onDownloadImage, onDownloadPdf, isDownloading, handleViewPdf, activeView, setActiveView, handleCopyCoverLetter }) => {
+const Manager: React.FC<ManagerProps> = ({ 
+    resumeName, 
+    onDownloadImage, 
+    onDownloadPdf, 
+    isDownloading, 
+    handleViewPdf, 
+    activeView, 
+    setActiveView, 
+    handleCopyCoverLetter,
+    isCreateMode = false,
+    onSave,
+    isSaving = false,
+}) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -46,11 +61,13 @@ const Manager: React.FC<ManagerProps> = ({ resumeName, onDownloadImage, onDownlo
                                 Resume
                             </span>
                         </TabsTrigger>
-                        <TabsTrigger value="cover-letter">
-                            <span className="flex items-center gap-2">
-                                Cover Letter
-                            </span>
-                        </TabsTrigger>
+                        {!isCreateMode && (
+                            <TabsTrigger value="cover-letter">
+                                <span className="flex items-center gap-2">
+                                    Cover Letter
+                                </span>
+                            </TabsTrigger>
+                        )}
                     </TabsList>
 
                 </Tabs>
@@ -59,6 +76,28 @@ const Manager: React.FC<ManagerProps> = ({ resumeName, onDownloadImage, onDownlo
             {resumeName && <span className='text-sm flex justify-center items-center'>{resumeName}</span>}
 
             <div className='flex gap-4 items-center '>
+                {isCreateMode && onSave && (
+                    <Button
+                        onClick={onSave}
+                        disabled={isSaving}
+                        variant="default"
+                        className="bg-primary text-primary-foreground font-semibold shadow-md h-8 px-3 rounded-lg hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-1.5"
+                    >
+                        {isSaving ? (
+                            <>
+                                <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground"></span>
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                                Save Resume
+                            </>
+                        )}
+                    </Button>
+                )}
                 <ButtonGroup className='bg-linear-to-b border-0 from-[#ffffff] to-[#f3f3f3] dark:from-[#202020] dark:to-[#191919]  dark:shadow-[0_0.5px_0px_#ffffff1a_inset,0_1px_0.5px_#ffffff25_inset,0_10px_10px_-9px_#00000070,0_20px_20px_-14px_#00000060,0_0px_6px_0px_#00000060] focus-visible:ring-1 ring-[#f3f3f3] dark:ring-[#202020] shadow-[0_0.8px_0px_#0000001a_inset,0_1px_0.5px_#ffffff25_inset] rounded-md last:rounded-r-[10px]!'>
                     <Button variant="ghost" className='focus-visible:ring-1 rounded-l-md! rounded-r-none!' onClick={activeView === 'cover-letter' ? handleCopy : onDownloadPdf}> {activeView === 'resume' ? <Download /> : copied ? <CopyDone /> : <Copy />} {activeView === 'cover-letter' ? 'Copy' : 'Download'}</Button>
                     <DropdownMenu>

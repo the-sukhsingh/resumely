@@ -65,12 +65,13 @@ export default function SettingsPanel({
   const debouncedSave = useMemo(
     () =>
       debounce((next: ResumeSettings) => {
+        if (resumeId === 'create') return;
         void updateVersionSettings({
           versionId: resumeId as Id<'resumeVersions'>,
           settings: next,
         });
       }, 800),
-    [resumeId,  updateMasterSettings, updateVersionSettings]
+    [resumeId, updateVersionSettings]
   );
 
   const update = (partial: Partial<ResumeSettings>) => {

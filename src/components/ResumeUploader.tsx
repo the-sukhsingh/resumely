@@ -73,52 +73,45 @@ export default function ResumeUploader({ userId, onSuccess }: ResumeUploaderProp
   };
 
   return (
-      <div
-        className={`relative border-2 h-full border-dashed rounded-lg p-6 text-center transition-colors ${
-          dragActive ? "border-primary bg-primary/5" : "border-gray-300"
-        } ${loading ? "opacity-50 pointer-events-none" : ""}`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-      >
-        {loading ? (
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="size-6 animate-spin text-primary" />
-            <p className="text-lg font-medium">Parsing your resume...</p>
-            <p className="text-sm text-muted-foreground">This may take a moment</p>
-          </div>
-        ) : (
-          <>
-            <input
-              type="file"
-              id="resume-upload"
-              className="hidden"
-              accept=".pdf,application/pdf"
-              onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-            />
-            <label htmlFor="resume-upload" className="cursor-pointer">
-              <div className="flex flex-col items-center gap-4">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  {file ? (
-                    <FileText className="size-6 text-primary" />
-                  ) : (
-                    <Upload className="size-6 text-primary" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-lg font-medium">
-                    {file ? file.name : "Upload your resume"}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Drag and drop or click to browse
-                  </p>
-                </div>
+    <div
+      className={`group relative flex flex-col justify-center items-center px-4 py-4 h-full rounded-xl cursor-pointer bg-[#f0f0f0]/60 dark:bg-[#202020ce]/60 hover:bg-[#f7f7f7]/80 dark:hover:bg-[#202020]/80 border border-dashed border-border/80 dark:border-border/40 hover:border-primary/50 dark:hover:border-primary/40 transition-all shadow-sm ${
+        dragActive ? "border-primary/60 bg-primary/5" : ""
+      } ${loading ? "opacity-50 pointer-events-none" : ""}`}
+      onDragEnter={handleDrag}
+      onDragLeave={handleDrag}
+      onDragOver={handleDrag}
+      onDrop={handleDrop}
+    >
+      {loading ? (
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="size-6 animate-spin text-primary" />
+          <p className="text-base font-medium text-foreground/90">Parsing resume...</p>
+          <p className="text-xs text-muted-foreground mt-0.5">This may take a moment</p>
+        </div>
+      ) : (
+        <>
+          <input
+            type="file"
+            id="resume-upload"
+            className="hidden"
+            accept=".pdf,application/pdf"
+            onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+          />
+          <label htmlFor="resume-upload" className="cursor-pointer size-full flex flex-col justify-center items-center">
+            <div className="flex flex-col items-center gap-2">
+              <Upload className="size-6 text-muted-foreground group-hover:text-foreground transition-colors" />
+              <div>
+                <p className="text-base font-medium text-foreground/90 group-hover:text-foreground transition-colors">
+                  {file ? file.name : "Upload Resume"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 transition-colors">
+                  Drag & drop or click to browse
+                </p>
               </div>
-            </label>
-          </>
-        )}
-      </div>
-    
+            </div>
+          </label>
+        </>
+      )}
+    </div>
   );
 }

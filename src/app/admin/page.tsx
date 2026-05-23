@@ -104,7 +104,7 @@ export default function AdminPage() {
                                         <div className="text-zinc-400 dark:text-zinc-600">
                                             <MessageSquare className="size-5" />
                                         </div>
-                                        <p className="text-sm text-zinc-700 dark:text-zinc-200 leading-relaxed font-normal italic break-words">
+                                        <p className="text-sm text-zinc-700 dark:text-zinc-200 leading-relaxed font-normal italic wrap-break-word">
                                             "{item.feedback}"
                                         </p>
                                     </div>
