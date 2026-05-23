@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
 import { cn } from '@/lib/utils';
+import Feedback from './custom/feedback';
 
 interface Props {
   userId: Id<'users'>;
@@ -35,7 +36,8 @@ export default function ResumeVersionList({ userId }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-5xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-5xl mx-auto">
+      <Feedback />
       {items.map((item) => (
         <Link
           href={`/resume/${item.id}`}

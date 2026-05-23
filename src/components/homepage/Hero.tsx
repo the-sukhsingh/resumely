@@ -43,7 +43,7 @@ const HeroSection = () => {
                     </Link>
                 </Button> : <Button onClick={() => signIn("google")} variant="neo" size="lg" className="h-12 px-8 rounded-full text-sm font-semibold tracking-wide w-full sm:w-auto group">
                     Start building
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform ease-out duration-100" />
                 </Button>}
 
                 <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-full text-sm font-medium tracking-wide w-full sm:w-auto bg-transparent hover:bg-muted/10">

@@ -133,4 +133,10 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_version", ["resumeVersionId"]),
+
+  feedbacks: defineTable({
+    userId: v.id("users"),
+    feedback: v.string(),
+    time: v.number(),
+  }).index("by_user", ["userId"]),
 });

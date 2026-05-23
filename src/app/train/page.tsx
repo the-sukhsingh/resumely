@@ -3,8 +3,7 @@ import React from 'react'
 
 const Page = () => {
   return (
-    <div className='h-dvh w-full flex justify-center items-center'>
-        <Tabs />
+    <div className='h-dvh w-full flex justify-center items-center '>
     </div>
   )
 }

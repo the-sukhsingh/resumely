@@ -23,7 +23,7 @@ const features = [
 
 const FeatureSection = () => {
   return (
-      <section id="features" className="mx-auto px-6 py-24 md:py-32 relative z-10 bg-background">
+      <section id="features" className="mx-auto px-6 py-24 md:py-32 relative z-10">
           <div className="w-full max-w-5xl mx-auto mb-16 md:mb-24">
               <Heading as="h2">
                   Everything you need

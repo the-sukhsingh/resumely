@@ -1,16 +1,62 @@
-import React from 'react'
-import { Button } from '../ui/button'
-import Heading from './Heading'
+"use client";
+
+import React, { useState } from 'react';
+import { Button } from '../ui/button';
+import Heading from './Heading';
+import { useAuth } from '@/context/AuthContext';
+import { signIn } from 'next-auth/react';
+import { toast } from 'sonner';
+
 const PricingSection = () => {
+  const { isAuthenticated } = useAuth();
+  const [loadingPlan, setLoadingPlan] = useState<'starter' | 'active' | 'pro' | null>(null);
+
+  const handleCheckout = async (planType: 'starter' | 'active' | 'pro') => {
+    if (!isAuthenticated) {
+      toast.info("Please sign in to purchase credits.");
+      signIn("google");
+      return;
+    }
+
+    setLoadingPlan(planType);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ planType }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to initiate checkout session');
+      }
+
+      if (data.url) {
+        toast.success("Redirecting to secure checkout...");
+        window.location.href = data.url;
+      } else {
+        throw new Error("Checkout URL was not returned by server");
+      }
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast.error(error.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
   return (
-    <section id="pricing" className="px-6 py-14 relative z-10 bg-background rounded-b-2xl border-b border-border">
+    <section id="pricing" className="px-6 py-14 relative z-10">
 
       <div className="text-left mb-20 mx-auto max-w-5xl ">
         <Heading >Pragmatic Pricing</Heading>
         <p className="text-lg md:text-xl text-muted-foreground text-left">Pay per credit. No sticky subscriptions.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-4xl mx-auto ">
         {/* Starter Plan */}
         <div className="border border-border/50 bg-card/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-foreground/20 transition-colors">
           <div>
@@ -22,11 +68,18 @@ const PricingSection = () => {
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />Or 100 chat messages</li>
             </ul>
           </div>
-          <Button variant="outline" className="w-full rounded-full h-12">Select Starter</Button>
+          <Button 
+            variant="outline" 
+            className="w-full rounded-full h-12"
+            onClick={() => handleCheckout('starter')}
+            disabled={loadingPlan !== null}
+          >
+            {loadingPlan === 'starter' ? 'Connecting...' : 'Select Starter'}
+          </Button>
         </div>
 
         {/* Popular Plan */}
-        <div className="relative bg-foreground text-background rounded-3xl p-8 flex flex-col justify-between shadow-[0_0_40px_rgba(255,255,255,0.1)] scale-100 md:scale-105 z-10">
+        <div className="relative bg-foreground/90 dark:bg-foreground/70 text-background rounded-3xl p-8 flex flex-col justify-between shadow-[0_0_40px_rgba(255,255,255,0.1)] scale-100 md:scale-105 z-10 ">
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-background text-foreground text-xs font-bold px-3 py-1 rounded-full border border-border">MOST POPULAR</div>
           <div>
             <p className="text-sm font-medium text-background/60 mb-4 uppercase tracking-wider">ACTIVE</p>
@@ -37,7 +90,14 @@ const PricingSection = () => {
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-background" />₹0.75 per credit</li>
             </ul>
           </div>
-          <Button variant="neo" className="w-full rounded-full h-12 text-foreground font-semibold">Select Active</Button>
+          <Button 
+            variant="neo" 
+            className="w-full rounded-full h-12 text-foreground font-semibold"
+            onClick={() => handleCheckout('active')}
+            disabled={loadingPlan !== null}
+          >
+            {loadingPlan === 'active' ? 'Connecting...' : 'Select Active'}
+          </Button>
         </div>
 
         {/* Pro Plan */}
@@ -51,7 +111,14 @@ const PricingSection = () => {
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />Multiple role targeting</li>
             </ul>
           </div>
-          <Button variant="outline" className="w-full rounded-full h-12">Select Pro</Button>
+          <Button 
+            variant="outline" 
+            className="w-full rounded-full h-12"
+            onClick={() => handleCheckout('pro')}
+            disabled={loadingPlan !== null}
+          >
+            {loadingPlan === 'pro' ? 'Connecting...' : 'Select Pro'}
+          </Button>
         </div>
       </div>
 
@@ -75,7 +142,7 @@ const PricingSection = () => {
         </table>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default PricingSection
+export default PricingSection;

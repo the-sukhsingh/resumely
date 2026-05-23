@@ -4,7 +4,7 @@ import Heading from './Heading';
 
 const WorkflowSection = () => {
   return (
-    <section id="how-it-works" className="relative px-6 z-10 bg-background">
+    <section id="how-it-works" className="relative px-6 z-10">
       <div className="text-left mb-16 mx-auto max-w-5xl">
         <Heading as={'h2'}>
           The workflow
@@ -39,7 +39,7 @@ const WorkflowSection = () => {
 
 function Step({ number, title, description }: { number: string; title: string; description: string }) {
   return (
-    <div className="flex gap-3 text-center md:text-left items-center md:items-start p-6 rounded-3xl border border-transparent hover:border-border/50 hover:bg-card/20 transition-all duration-300">
+    <div className="flex gap-3 text-center md:text-left items-center md:items-start p-4">
       <div className="size-8 rounded-full border border-border bg-muted/30 flex items-center justify-center text-sm font-mono text-foreground tracking-wider mb-2">
         {number}
       </div>

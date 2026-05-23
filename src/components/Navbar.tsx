@@ -10,16 +10,18 @@ import { ModeToggle } from "./theme/ThemeToggle";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Menu, LogOut, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { usePathname } from "next/navigation";
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
-
+    const pathname = usePathname();
     const links = [
         { href: "/resume", label: "Resume" },
     ];
 
     return (
-        <nav className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-lg transition-all duration-300">
+        <nav className={cn("fixed top-0 z-100 w-full",
+            pathname.match(/^\/resume\/[^/]+$/) ? "bg-background" : "bg-transparent"
+        )}>
             <div className="max-w-5xl mx-auto px-6">
                 {/* Skip link for keyboard users */}
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 bg-background px-4 py-2 rounded-xl border border-border transition-all">Skip to content</a>

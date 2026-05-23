@@ -9,6 +9,7 @@
  */
 
 import type * as chatHistory from "../chatHistory.js";
+import type * as feedback from "../feedback.js";
 import type * as jobDescriptions from "../jobDescriptions.js";
 import type * as masterResumes from "../masterResumes.js";
 import type * as resumeVersions from "../resumeVersions.js";
@@ -22,6 +23,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   chatHistory: typeof chatHistory;
+  feedback: typeof feedback;
   jobDescriptions: typeof jobDescriptions;
   masterResumes: typeof masterResumes;
   resumeVersions: typeof resumeVersions;

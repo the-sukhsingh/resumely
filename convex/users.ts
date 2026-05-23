@@ -43,6 +43,39 @@ export const deductCredits = internalMutation({
   },
 });
 
+export const addCredits = mutation({
+  args: {
+    webhookSecret: v.string(),
+    userId: v.id("users"),
+    amount: v.number(),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Secure the mutation by verifying the shared secret token
+    const expectedSecret = process.env.DODO_PAYMENTS_WEBHOOK_SECRET || process.env.DODO_PAYMENTS_WEBHOOK_KEY;
+    if (!expectedSecret || args.webhookSecret !== expectedSecret) {
+      throw new Error("Unauthorized: Invalid webhook secret token");
+    }
+
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    const currentCredits = user.credits ?? 25;
+
+    await ctx.db.patch(args.userId, {
+      credits: currentCredits + args.amount,
+    });
+
+    await ctx.db.insert("creditLogs", {
+      userId: args.userId,
+      amount: args.amount,
+      reason: args.reason,
+      status: "success",
+      createdAt: Date.now(),
+    });
+  },
+});
+
 export const getUserByEmail = query({
   args: {
     email: v.string(),

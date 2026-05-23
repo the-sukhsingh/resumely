@@ -146,6 +146,7 @@ export function BarsPreview() {
         canvas.addEventListener("pointermove", onPointerMove)
 
         let frameId = 0
+        let resizeObserver: ResizeObserver | null = null
         const start = performance.now()
 
         const resize = () => {
@@ -164,6 +165,14 @@ export function BarsPreview() {
         }
         resize()
 
+        window.addEventListener("resize", resize)
+        if (typeof ResizeObserver !== "undefined") {
+            resizeObserver = new ResizeObserver(() => {
+                resize()
+            })
+            resizeObserver.observe(canvas)
+        }
+
         const render = (now: number) => {
             gl.uniform2f(iResolution, canvas.width, canvas.height)
             gl.uniform1f(iTime, (now - start) / 1000)
@@ -181,6 +190,10 @@ export function BarsPreview() {
         return () => {
             cancelAnimationFrame(frameId)
             canvas.removeEventListener("pointermove", onPointerMove)
+            window.removeEventListener("resize", resize)
+            if (resizeObserver) {
+                resizeObserver.disconnect()
+            }
             gl.deleteBuffer(buffer)
             gl.deleteProgram(program)
             gl.deleteShader(vs)

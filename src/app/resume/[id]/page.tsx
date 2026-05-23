@@ -177,6 +177,8 @@ function ResumeEditorContent({
   return (
     <>
       <div className="flex flex-col h-dvh p-2 pt-14 bg-muted/80">
+        <div className='absolute inset-0 noise dark:opacity-40'></div>
+
         <ResizablePanelGroup
           orientation="horizontal"
           className="w-full h-full gap-2"
