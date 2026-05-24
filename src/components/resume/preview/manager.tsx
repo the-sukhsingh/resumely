@@ -26,6 +26,7 @@ interface ManagerProps {
     setActiveView: (view: 'resume' | 'cover-letter') => void;
     handleCopyCoverLetter: () => void;
     isCreateMode?: boolean;
+    isMaster?: boolean;
     onSave?: () => void;
     isSaving?: boolean;
 }
@@ -40,6 +41,7 @@ const Manager: React.FC<ManagerProps> = ({
     setActiveView, 
     handleCopyCoverLetter,
     isCreateMode = false,
+    isMaster = false,
     onSave,
     isSaving = false,
 }) => {
@@ -50,18 +52,18 @@ const Manager: React.FC<ManagerProps> = ({
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }
-
+    console.log('Manager render', { resumeName, activeView, isMaster });
     return (
         < div className='w-full bg-background flex items-center justify-between py-2' >
             <div className='flex items-center'>
-                <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'resume' | 'cover-letter')} className="w-[200px]">
+                <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'resume' | 'cover-letter')} className="w-50">
                     <TabsList variant={"line"} className=''>
                         <TabsTrigger value="resume">
                             <span className="flex items-center gap-2">
                                 Resume
                             </span>
                         </TabsTrigger>
-                        {!isCreateMode && (
+                        {(!isCreateMode && !isMaster) && (
                             <TabsTrigger value="cover-letter">
                                 <span className="flex items-center gap-2">
                                     Cover Letter

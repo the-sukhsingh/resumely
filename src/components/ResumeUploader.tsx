@@ -38,7 +38,9 @@ export default function ResumeUploader({ userId, onSuccess }: ResumeUploaderProp
       });
 
       const { text } = await response.json();
-
+      if (!text) {
+        throw new Error("Failed to extract text from PDF");
+      }
       await parseResume({ text, userId });
       
       toast.success("Resume uploaded and parsed successfully!");

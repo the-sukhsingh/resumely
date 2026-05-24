@@ -9,9 +9,7 @@ interface CreatePdfBlobProps {
 }
 
 export const createPdfBlob = async ({ resumeData, type, theme }: CreatePdfBlobProps) => {
-  console.log("Creating PDF blob with theme:", theme);
   const Template = getPdfTemplate((theme ?? "classic") as "classic" | "twoColumn");
-  console.log("Using PDF template:", Template.name);
   const pdfDocument = <Template data={resumeData} />;
   const blob = await pdf(pdfDocument).toBlob();
 

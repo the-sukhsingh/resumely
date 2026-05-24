@@ -75,6 +75,7 @@ function ResumeEditorContent({
   resume: ResumeData & {
     _id: Id<'resumeVersions'>;
     masterResumeId?: Id<'resumeVersions'>;
+    isMasterResume: boolean;
   };
   resumeId: string;
 }) {
@@ -88,7 +89,6 @@ function ResumeEditorContent({
   const [settings, setSettings] = useState<ResumeSettings>(
     (resume as ResumeData & { settings?: ResumeSettings }).settings ?? DEFAULT_SETTINGS
   );
-
   const updateResumeVersion = useMutation(api.resumeVersions.updateResumeVersion);
 
   const debouncedPreviewUpdate = useMemo(
@@ -178,14 +178,13 @@ function ResumeEditorContent({
     <>
       <div className="flex flex-col h-dvh p-2 pt-14 bg-muted/80">
         <div className='absolute inset-0 noise dark:opacity-40'></div>
-
         <ResizablePanelGroup
           orientation="horizontal"
           className="w-full h-full gap-2"
         >
           <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
             <div className='h-10 bg-background flex justify-between px-1' >
-              <Manager resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter}  />
+              <Manager resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
             </div>
             {activeView === 'resume' ? (
               <ResumePreview resumeData={previewDraft} theme={resume.settings?.layout ?? "classic"} />
