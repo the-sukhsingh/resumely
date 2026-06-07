@@ -19,6 +19,11 @@ export default function ResumeVersionList({ userId }: Props) {
   const deleteVersion = useMutation(api.resumeVersions.deleteResumeVersion);
 
   const deleteResume = async (id: Id<'resumeVersions'>) => {
+
+    if (versions?.find((v) => v._id === id)?.isMasterResume) {
+      alert("You cannot delete the master resume.");
+      return;
+    }
     // Ask for confirmation before deleting
     if (!confirm('Are you sure you want to delete this resume? This action cannot be undone.')) {
       return;
@@ -39,7 +44,7 @@ export default function ResumeVersionList({ userId }: Props) {
   const emptySlotsCount = Math.max(0, 7 - totalRenders);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-5xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-5xl mx-auto ">
       <Feedback />
       {items.length === 0 ? (
         <>
@@ -70,7 +75,8 @@ export default function ResumeVersionList({ userId }: Props) {
           <Link
             href={`/resume/${item.id}`}
             key={item.id}
-            className="group relative grid grid-cols-5 px-4 py-4 h-44 rounded-xl cursor-pointer bg-[#f0f0f0] dark:bg-[#202020ce] backdrop-blur-sm transition-colors hover:bg-[#f7f7f7] dark:hover:bg-[#202020] shadow-[0_0_0_1px_rgba(0,0,0,0.1)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.1)] outline-[#f3f3f3] dark:outline-[#202020] ring-[#f3f3f3] dark:ring-[#202020] "
+            className={cn("group relative grid grid-cols-5 px-4 py-4 h-44 rounded-xl cursor-pointer bg-[#f0f0f0] dark:bg-[#202020ce] backdrop-blur-sm transition-colors hover:bg-[#f7f7f7] dark:hover:bg-[#202020] shadow-[0_0_0_1px_rgba(0,0,0,0.1)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.1)] outline-[#f3f3f3] dark:outline-[#202020] ring-[#f3f3f3] dark:ring-[#202020]"
+            )}
           >
             <div className="col-span-4 flex flex-col flex-1 justify-between items-start">
               <div className="flex flex-col ">

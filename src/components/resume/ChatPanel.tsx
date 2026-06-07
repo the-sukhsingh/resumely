@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useAction, useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { Bot, User, Loader2, Trash2, ArrowUp } from 'lucide-react';
+import { Bot, User, Loader2, Trash2, ArrowUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -20,6 +20,8 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
 
   const sendMessage = useAction(api.resumeVersions.chat);
   const clearHistory = useMutation(api.chatHistory.clearChatHistory);
+  const deleteMessage = useMutation(api.chatHistory.deleteChatMessage);
+  const undoEdits = useMutation(api.chatHistory.undoMessageEdits);
 
   const suggestions = [
     'Write cover letter for this resume.',
@@ -71,6 +73,24 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
   function handleSuggestion(text: string) {
     setInput(text);
     textareaRef.current?.focus();
+  }
+
+  async function handleDeleteMessage(messageId: Id<'chatHistory'>) {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+    try {
+      await deleteMessage({ messageId });
+    } catch (e) {
+      console.error('Failed to delete message:', e);
+    }
+  }
+
+  async function handleUndo(messageId: Id<'chatHistory'>) {
+    if (!confirm('Are you sure you want to undo the changes made by this message?')) return;
+    try {
+      await undoEdits({ messageId });
+    } catch (e) {
+      console.error('Failed to undo changes:', e);
+    }
   }
 
   return (
@@ -133,16 +153,41 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
           )}
 
           {messages.map((msg) => (
-            <div key={msg._id} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+            <div key={msg._id} className={`flex gap-2 group ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
               <div className={`shrink-0 h-6 w-6 rounded-full flex items-center justify-center ${msg.role === 'assistant' ? 'bg-primary/10' : 'bg-muted'}`}>
                 {msg.role === 'assistant'
                   ? <Bot className="h-3.5 w-3.5 text-primary" />
                   : <User className="h-3.5 w-3.5" />}
               </div>
-              <div className={`rounded-2xl px-3 py-2 text-sm max-w-[85%] ${msg.role === 'assistant' ? 'bg-muted rounded-tl-md' : 'bg-primary text-primary-foreground rounded-br-md'}`}>
-                <Markdown>{
-                  msg.role === 'assistant' ? msg.content : msg.content.slice(0, 300) + "..."
+              <div className={`flex items-center gap-2 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <div className={`rounded-2xl px-3 py-2 text-sm ${msg.role === 'assistant' ? 'bg-muted rounded-tl-md' : 'bg-primary text-primary-foreground rounded-br-md'}`}>
+                  <Markdown>{
+                    msg.role === 'assistant' ? msg.content : msg.content.slice(0, 300) + "..."
                   }</Markdown>
+                </div>
+                
+                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
+                  {msg.role === 'assistant' && msg.undoSnapshot && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted p-0"
+                      onClick={() => handleUndo(msg._id)}
+                      title="Undo edits made by this response"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 rounded-full text-muted-foreground hover:text-destructive hover:bg-muted p-0"
+                    onClick={() => handleDeleteMessage(msg._id)}
+                    title="Delete message"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}

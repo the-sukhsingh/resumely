@@ -808,6 +808,20 @@ export const chat = action({
     if (!versionWithDetails) throw new Error("Resume version not found");
 
     const { jobDescription, masterResume: _master, ...resume } = versionWithDetails;
+    const snapshot = {
+      name: resume.name,
+      personalInfo: resume.personalInfo,
+      summary: resume.summary,
+      experience: resume.experience,
+      education: resume.education,
+      skills: resume.skills,
+      projects: resume.projects,
+      certifications: resume.certifications,
+      achievements: resume.achievements,
+      settings: resume.settings,
+      coverLetter: resume.coverLetter,
+      matchScore: resume.matchScore,
+    };
     const requiresCoverLetter = args.message.toLowerCase().includes("cover letter");
     const requiredCredits = requiresCoverLetter ? 6 : 1;
     const currentCredits: number = await ctx.runQuery(internal.users.getCreditBalance, {
@@ -928,11 +942,30 @@ export const chat = action({
       replyText = textParts.map((p: any) => p.text).join("") || "I couldn't process that request.";
     }
 
+    const MODIFYING_TOOLS = [
+      "update_personal_info",
+      "update_summary",
+      "update_experience",
+      "update_education",
+      "update_skills",
+      "update_projects",
+      "update_certifications",
+      "update_achievements",
+      "update_resume_settings",
+      "update_resume_name",
+      "update_experience_bullets",
+      "update_project_bullets",
+      "inject_keywords",
+      "update_cover_letter",
+    ];
+    const didModify = toolsUsed.some((t) => MODIFYING_TOOLS.includes(t));
+
     await ctx.runMutation(api.chatHistory.createChatMessage, {
       userId: resume.userId,
       resumeVersionId: args.versionId,
       role: "assistant",
       content: replyText,
+      ...(didModify ? { undoSnapshot: snapshot } : {}),
     });
 
     if (toolsUsed.includes("update_cover_letter")) {
