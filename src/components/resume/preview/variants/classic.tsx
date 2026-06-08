@@ -37,11 +37,16 @@ const LinkR = ({ children, src, className }: { children: React.ReactNode; src: s
 );
 
 const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <TextR style={[tw(cn("text-lg font-bold", className)), { lineHeight: 1.2 }]}>{children}</TextR>
+    <TextR style={[tw(cn("text-lg font-bold", className)), {
+        lineHeight: 1.2,
+        fontFamily: "Times-Roman"
+    }]}>{children}</TextR>
 );
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-    <TextR style={tw("text-sm font-bold uppercase tracking-wide mb-1 text-neutral-900 border-b")}>
+    <TextR style={[tw("text-sm font-bold uppercase tracking-wide mb-1 text-neutral-900 border-b"), { fontFamily: "Times-Roman" }, {
+        lineHeight: 1.1
+    }]}>
         {children}
     </TextR>
 );
@@ -91,11 +96,11 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
             creator={p.name || "Unknown"}
             producer="Resumely"
         >
-            <Page size="A4" style={tw("font-default text-sm text-black bg-white px-8 py-6")}>
+            <Page size="A4" style={tw("font-default text-sm text-black bg-white px-8 py-4")}>
 
                 {/* Header */}
                 <View className="text-center mb-3">
-                    <Heading className="text-3xl font-semibold tracking-tight uppercase">{p.name || "Your Name"}</Heading>
+                    <Heading className="text-3xl font-semibold tracking-tight uppercase" >{p.name || "Your Name"}</Heading>
                     <View>
                         <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center")}>
                             {nonEmpty(p.phone) && <Text className="text-2xs">{p.phone}</Text>}
