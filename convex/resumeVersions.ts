@@ -3,8 +3,18 @@ import { mutation, query, action, internalMutation } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { getImproveResumePromptNudge } from "../src/lib/prompts";
+import { generateObject, generateText, tool, isStepCount } from "ai";
+import { defaultModel } from "./ai";
+import { z } from "zod";
 
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
+async function geminiJSON(prompt: string) {
+  const { text } = await generateText({
+    model: defaultModel,
+    prompt,
+  });
+  const jsonMatch = text.match(/\{[\s\S]*\}/) || text.match(/\[[\s\S]*\]/);
+  return JSON.parse(jsonMatch ? jsonMatch[0] : text);
+}
 
 // ─── Resume content schema (shared by mutations) ──────────────────────────────
 
@@ -436,333 +446,43 @@ export const syncFromMaster = action({
 
 // ─── Matching & ATS Actions ───────────────────────────────────────────────────
 
-async function geminiJSON(prompt: string) {
-  const res = await fetch(
-    `${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { response_mime_type: "application/json" },
-      }),
-    }
-  );
-  const data = await res.json();
-  return JSON.parse(data.candidates[0].content.parts[0].text);
-}
-
 export const calculateMatchScore = action({
   args: { resume: v.any(), jobDescription: v.any() },
   handler: async (ctx, args) => {
-    return await geminiJSON(
-      `Compare this resume with the job description and calculate:\n- overall score (0-100)\n- skillsMatch (0-100)\n- experienceMatch (0-100)\n- keywordMatch (0-100)\n- suggestions (array of strings)\n\nResume: ${JSON.stringify(args.resume)}\nJob Description: ${JSON.stringify(args.jobDescription)}\n\nReturn as JSON.`
-    );
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        overallScore: z.number().min(0).max(100),
+        skillsMatch: z.number().min(0).max(100),
+        experienceMatch: z.number().min(0).max(100),
+        keywordMatch: z.number().min(0).max(100),
+        suggestions: z.array(z.string()),
+      }),
+      prompt: `Compare this resume with the job description and calculate the match score, skills match, experience match, keyword match, and provide suggestions.\n\nResume: ${JSON.stringify(args.resume)}\nJob Description: ${JSON.stringify(args.jobDescription)}`,
+    });
+    return object;
   },
 });
-
 
 export const atsChecker = action({
   args: { resume: v.any() },
   handler: async (ctx, args) => {
-    return await geminiJSON(
-      `Check this resume for ATS compatibility:\n- score (0-100)\n- issues (array of strings)\n- recommendations (array of strings)\n\nResume: ${JSON.stringify(args.resume)}\n\nReturn as JSON.`
-    );
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        score: z.number().min(0).max(100),
+        issues: z.array(z.string()),
+        recommendations: z.array(z.string()),
+      }),
+      prompt: `Check this resume for ATS compatibility:\n\nResume: ${JSON.stringify(args.resume)}`,
+    });
+    return object;
   },
 });
 
-
 // ─── AI Chat Action ───────────────────────────────────────────────────────────
-const CHAT_TOOLS = [
-  {
-    name: "update_personal_info",
-    description: "Update the personal info section. Use this when the user provides contact details or links.",
-    parameters: {
-      type: "object", // Changed to lowercase
-      properties: {
-        personalInfo: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            email: { type: "string" },
-            phone: { type: "string" },
-            location: { type: "string" },
-            linkedin: { type: "string" },
-            github: { type: "string" },
-            website: { type: "string" },
-          },
-          required: ["name"],
-        },
-      },
-      required: ["personalInfo"],
-    },
-  },
-  {
-    name: "update_summary",
-    description: "Rewrite or update the resume summary/objective section",
-    parameters: {
-      type: "object",
-      properties: { summary: { type: "string", description: "The new summary text" } },
-      required: ["summary"],
-    },
-  },
-  {
-    name: "update_experience",
-    description: "Replace the full experience section. Ensure every entry has a unique id string.",
-    parameters: {
-      type: "object",
-      properties: {
-        experience: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string", description: "A unique identifier for this entry (e.g., 'exp1')" },
-              company: { type: "string" },
-              position: { type: "string" },
-              location: { type: "string" },
-              startDate: { type: "string" },
-              endDate: { type: "string" },
-              current: { type: "boolean" },
-              bullets: { type: "array", items: { type: "string" } },
-            },
-            required: ["id", "company", "position", "startDate", "current", "bullets"],
-          },
-        },
-      },
-      required: ["experience"],
-    },
-  },
-  {
-    name: "update_education",
-    description: "Replace the full education section",
-    parameters: {
-      type: "object",
-      properties: {
-        education: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              institution: { type: "string" },
-              degree: { type: "string" },
-              field: { type: "string" },
-              location: { type: "string" },
-              startDate: { type: "string" },
-              endDate: { type: "string" },
-              gpa: { type: "string" },
-            },
-            required: ["id", "institution", "degree"],
-          },
-        },
-      },
-      required: ["education"],
-    },
-  },
-  {
-    name: "update_skills",
-    description: "Update the skills section with categories and skill items",
-    parameters: {
-      type: "object",
-      properties: {
-        skills: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              category: { type: "string" },
-              items: { type: "array", items: { type: "string" } },
-            },
-            required: ["category", "items"],
-          },
-        },
-      },
-      required: ["skills"],
-    },
-  },
-  {
-    name: "update_projects",
-    description: "Replace the full projects section",
-    parameters: {
-      type: "object",
-      properties: {
-        projects: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" },
-              technologies: { type: "array", items: { type: "string" } },
-              link: { type: "string" },
-              bullets: { type: "array", items: { type: "string" } },
-            },
-            required: ["id", "name", "description", "technologies", "bullets"],
-          },
-        },
-      },
-      required: ["projects"],
-    },
-  },
-  {
-    name: "update_certifications",
-    description: "Replace the full certifications section",
-    parameters: {
-      type: "object",
-      properties: {
-        certifications: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              issuer: { type: "string" },
-              date: { type: "string" },
-              link: { type: "string" },
-            },
-            required: ["id", "name", "issuer"],
-          },
-        },
-      },
-      required: ["certifications"],
-    },
-  },
-  {
-    name: "update_achievements",
-    description: "Replace the full achievements section",
-    parameters: {
-      type: "object",
-      properties: {
-        achievements: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              title: { type: "string" },
-              description: { type: "string" },
-            },
-            required: ["id", "title", "description"],
-          },
-        },
-      },
-      required: ["achievements"],
-    },
-  },
-  {
-    name: "update_resume_settings",
-    description: "Update fonts, colors, and the visibility/order of sections",
-    parameters: {
-      type: "object",
-      properties: {
-        settings: {
-          type: "object",
-          properties: {
-            font: { type: "string" },
-            color: { type: "string" },
-            sections: {
-              type: "object",
-              properties: {
-                personalInfo: { type: "boolean" },
-                summary: { type: "boolean" },
-                experience: { type: "boolean" },
-                education: { type: "boolean" },
-                skills: { type: "boolean" },
-                projects: { type: "boolean" },
-                achievements: { type: "boolean" },
-                certifications: { type: "boolean" },
-              },
-              required: ["personalInfo", "summary", "experience", "education", "skills", "projects", "achievements", "certifications"],
-            },
-            order: { type: "array", items: { type: "string" } },
-            layout: { type: "string" },
-          },
-          required: ["font", "color", "sections", "order", "layout"],
-        },
-      },
-      required: ["settings"],
-    },
-  },
-  {
-    name: "update_experience_bullets",
-    description: "Update the bullet points for a specific experience entry by its ID",
-    parameters: {
-      type: "object",
-      properties: {
-        experienceId: { type: "string" },
-        bullets: { type: "array", items: { type: "string" } },
-      },
-      required: ["experienceId", "bullets"],
-    },
-  },
-  {
-    name: "update_project_bullets",
-    description: "Update bullet points for a specific project by its ID",
-    parameters: {
-      type: "object",
-      properties: {
-        projectId: { type: "string" },
-        bullets: { type: "array", items: { type: "string" } },
-        description: { type: "string" },
-      },
-      required: ["projectId", "bullets"],
-    },
-  },
-  {
-    name: "ats_check",
-    description: "Check for ATS compatibility",
-    parameters: { type: "object", properties: {} }
-  },
-  {
-    name: "get_website_content",
-    description: "Fetch and summarize content from a URL. Use this when the user provides a link to pull info from.",
-    parameters: {
-      type: "object",
-      properties: {
-        url: { type: "string", description: "The URL to fetch content from" },
-      },
-      required: ["url"],
-    },
-  },
-  {
-    name: "get_job_description_content",
-    description: "Retrieve the full job description content",
-    parameters: { type: "object", properties: {} }
-  },
-  {
-    name: "update_cover_letter",
-    description: "Write, update, or clear the cover letter for this resume",
-    parameters: {
-      type: "object",
-      properties: { coverLetter: { type: "string", description: "The new cover letter text" } },
-      required: ["coverLetter"],
-    },
-  }
-];
 
-async function callGeminiChat(systemPrompt: string, messages: { role: string; parts: { text: string }[] }[]) {
-  const body: any = {
-    system_instruction: { parts: [{ text: systemPrompt }] },
-    contents: messages,
-    tools: [{ function_declarations: CHAT_TOOLS }],
-    tool_config: { function_calling_config: { mode: "AUTO" } },
-    generationConfig: { temperature: 0.7 },
-  };
-
-  const res = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) throw new Error(`Gemini API error: ${res.status}`);
-  return res.json();
-}
-
-function buildSystemPrompt(resume: Doc<"resumeVersions">, jd: Doc<"jobDescriptions"> | null) {
+function buildSystemPrompt(resume: Doc<"resumeVersions">, jd: Doc<"jobDescriptions"> | null, focusSection?: string) {
   const jdSection = jd
     ? `JOB DESCRIPTION:
 Required Skills: ${jd.extractedSkills.join(", ")}
@@ -771,13 +491,44 @@ Requirements: ${jd.requirements.join(" | ")}
 Responsibilities: ${jd.responsibilities.join(" | ")}`
     : "JOB DESCRIPTION: Not provided";
 
-  return `You are an expert resume coach and editor. You help users optimize their resume for a specific job.
+  // Prune resume data to only the focused section if specified
+  let resumeData = {
+    name: resume.name,
+    personalInfo: resume.personalInfo,
+    summary: resume.summary,
+    experience: resume.experience,
+    education: resume.education,
+    skills: resume.skills,
+    projects: resume.projects,
+    certifications: resume.certifications,
+    achievements: resume.achievements,
+    settings: resume.settings,
+    matchScore: resume.matchScore,
+    coverLetter: resume.coverLetter,
+  };
+
+  if (focusSection && focusSection !== "all") {
+    const key = focusSection as keyof typeof resumeData;
+    if (resumeData[key] !== undefined) {
+      resumeData = {
+        name: resume.name,
+        personalInfo: resume.personalInfo,
+        [focusSection]: resumeData[key],
+      } as any;
+    }
+  }
+
+  const focusInstruction = focusSection && focusSection !== "all"
+    ? `\nFOCUS DIRECTION: The user is specifically focusing on the "${focusSection}" section. You must focus your suggestions, updates, and edits ONLY on this section. Do not modify or reference other sections unless absolutely necessary or explicitly asked by the user.`
+    : "";
+
+  return `You are an expert resume coach and editor. You help users optimize their resume for a specific job.${focusInstruction}
 
 CURRENT RESUME VERSION: "${resume.name}"
 CANDIDATE: ${resume.personalInfo.name}
 
 RESUME DATA:
-${JSON.stringify({ name: resume.name, personalInfo: resume.personalInfo, summary: resume.summary, experience: resume.experience, education: resume.education, skills: resume.skills, projects: resume.projects, certifications: resume.certifications, achievements: resume.achievements, settings: resume.settings, matchScore: resume.matchScore, coverLetter: resume.coverLetter }, null, 2)}
+${JSON.stringify(resumeData, null, 2)}
 
 ${jdSection}
 
@@ -796,12 +547,13 @@ DO NOT use namespaces like 'default_api' or 'UpdateSkillsSkills'.
 DO NOT format the call as Python code. 
 Example of a GOOD call: {"skills": [{"category": "Frontend", "items": ["React"]}]}
 Example of a BAD call: default_api.update_skills(skills=[default_api.UpdateSkillsSkills(...)])`;
-};
+}
 
 export const chat = action({
   args: {
     versionId: v.id("resumeVersions"),
     message: v.string(),
+    focusSection: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ reply: string; toolsUsed: string[] }> => {
     const versionWithDetails = await ctx.runQuery(api.resumeVersions.getResumeVersionWithDetails, { versionId: args.versionId });
@@ -836,8 +588,8 @@ export const chat = action({
       limit: 10,
     });
     const pastMessages = [...history].reverse().map((m) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
+      role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+      content: m.content,
     }));
 
     await ctx.runMutation(api.chatHistory.createChatMessage, {
@@ -845,102 +597,364 @@ export const chat = action({
       resumeVersionId: args.versionId,
       role: "user",
       content: args.message,
+      focusSection: args.focusSection,
     });
 
-    const systemPrompt = buildSystemPrompt(resume as Doc<"resumeVersions">, jobDescription);
-    const messages = [...pastMessages, { role: "user", parts: [{ text: args.message }] }];
+    const systemPrompt = buildSystemPrompt(resume as Doc<"resumeVersions">, jobDescription, args.focusSection);
+    const messages = [...pastMessages, { role: "user" as const, content: args.message }];
 
-    const geminiResponse = await callGeminiChat(systemPrompt, messages);
-    const candidate = geminiResponse.candidates?.[0];
-    if (!candidate) throw new Error("No response from AI");
+    const tools: any = {
+      update_personal_info: tool({
+        description: "Update the personal info section. Use this when the user provides contact details or links.",
+        parameters: z.object({
+          personalInfo: z.object({
+            name: z.string(),
+            email: z.string().optional().nullable(),
+            phone: z.string().optional().nullable(),
+            location: z.string().optional().nullable(),
+            linkedin: z.string().optional().nullable(),
+            github: z.string().optional().nullable(),
+            website: z.string().optional().nullable(),
+          }),
+        }),
+        execute: async ({ personalInfo }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "personalInfo",
+            data: personalInfo,
+          });
+          return { success: true };
+        },
+      } as any),
 
-    const toolsUsed: string[] = [];
-    let replyText = "";
+      update_summary: tool({
+        description: "Rewrite or update the resume summary/objective section",
+        parameters: z.object({
+          summary: z.string().describe("The new summary text"),
+        }),
+        execute: async ({ summary }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "summary",
+            data: summary,
+          });
+          return { success: true };
+        },
+      } as any),
 
-    const parts = candidate.content?.parts ?? [];
-    const toolCallParts = parts.filter((p: any) => p.functionCall);
-    const textParts = parts.filter((p: any) => p.text);
+      update_experience: tool({
+        description: "Replace the full experience section. Ensure every entry has a unique id string.",
+        parameters: z.object({
+          experience: z.array(
+            z.object({
+              id: z.string().describe("A unique identifier for this entry (e.g., 'exp1')"),
+              company: z.string(),
+              position: z.string(),
+              location: z.string(),
+              startDate: z.string(),
+              endDate: z.string(),
+              current: z.boolean(),
+              bullets: z.array(z.string()),
+            })
+          ),
+        }),
+        execute: async ({ experience }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "experience",
+            data: experience,
+          });
+          return { success: true };
+        },
+      } as any),
 
-    if (toolCallParts.length > 0) {
-      const toolResults: any[] = [];
+      update_education: tool({
+        description: "Replace the full education section",
+        parameters: z.object({
+          education: z.array(
+            z.object({
+              id: z.string(),
+              institution: z.string(),
+              degree: z.string(),
+              field: z.string(),
+              location: z.string(),
+              startDate: z.string(),
+              endDate: z.string(),
+              gpa: z.string(),
+            })
+          ),
+        }),
+        execute: async ({ education }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "education",
+            data: education,
+          });
+          return { success: true };
+        },
+      } as any),
 
-      for (const part of toolCallParts) {
-        const { name, args: toolArgs } = part.functionCall;
-        toolsUsed.push(name);
-        let result: any = { success: true };
+      update_skills: tool({
+        description: "Update the skills section with categories and skill items",
+        parameters: z.object({
+          skills: z.array(
+            z.object({
+              category: z.string(),
+              items: z.array(z.string()),
+            })
+          ),
+        }),
+        execute: async ({ skills }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "skills",
+            data: skills,
+          });
+          return { success: true };
+        },
+      } as any),
 
-        try {
-          if (name === "update_personal_info") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "personalInfo", data: toolArgs.personalInfo });
-          } else if (name === "update_summary") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "summary", data: toolArgs.summary });
-          } else if (name === "update_experience") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "experience", data: toolArgs.experience });
-          } else if (name === "update_education") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "education", data: toolArgs.education });
-          } else if (name === "update_skills") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "skills", data: toolArgs.skills });
-          } else if (name === "update_projects") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "projects", data: toolArgs.projects });
-          } else if (name === "update_certifications") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "certifications", data: toolArgs.certifications });
-          } else if (name === "update_achievements") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "achievements", data: toolArgs.achievements });
-          } else if (name === "update_cover_letter") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "coverLetter", data: toolArgs.coverLetter });
-          } else if (name === "update_resume_settings") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSettings, { versionId: args.versionId, settings: toolArgs.settings });
-          } else if (name === "update_resume_name") {
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "name", data: toolArgs.name });
-          } else if (name === "update_experience_bullets") {
-            const current = resume.experience.map((exp: any) =>
-              exp.id === toolArgs.experienceId ? { ...exp, bullets: toolArgs.bullets } : exp
-            );
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "experience", data: current });
-          } else if (name === "update_project_bullets") {
-            const current = resume.projects.map((proj: any) =>
-              proj.id === toolArgs.projectId
-                ? { ...proj, bullets: toolArgs.bullets, ...(toolArgs.description ? { description: toolArgs.description } : {}) }
-                : proj
-            );
-            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "projects", data: current });
-          } else if (name === "inject_keywords") {
-            if (toolArgs.summary) await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "summary", data: toolArgs.summary });
-            if (toolArgs.skills) await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, { versionId: args.versionId, section: "skills", data: toolArgs.skills });
-          }  else if (name === "ats_check") {
-            result = await ctx.runAction(api.resumeVersions.atsChecker, { resume });
-          } else if (name === "get_website_content") {
-            // For security, we should validate/sanitize the URL before fetching, but for this example we'll assume it's safe
-            const response = await fetch(toolArgs.url);
-            const text = await response.text();
-            // Summarize the content to extract key info (this is a placeholder, ideally we'd use an AI model for summarization)
-            result = { summary: text };
-          } else if (name === "get_job_description_content") {
-            if (!resume.jobDescriptionId) throw new Error("No linked job description");
-            result = await ctx.runQuery(api.jobDescriptions.getJobDescriptionById, { jobDescriptionId: resume.jobDescriptionId });
+      update_projects: tool({
+        description: "Replace the full projects section",
+        parameters: z.object({
+          projects: z.array(
+            z.object({
+              id: z.string(),
+              name: z.string(),
+              description: z.string(),
+              technologies: z.array(z.string()),
+              link: z.string(),
+              bullets: z.array(z.string()),
+            })
+          ),
+        }),
+        execute: async ({ projects }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "projects",
+            data: projects,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      update_certifications: tool({
+        description: "Replace the full certifications section",
+        parameters: z.object({
+          certifications: z.array(
+            z.object({
+              id: z.string(),
+              name: z.string(),
+              issuer: z.string(),
+              date: z.string(),
+              link: z.string(),
+            })
+          ),
+        }),
+        execute: async ({ certifications }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "certifications",
+            data: certifications,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      update_achievements: tool({
+        description: "Replace the full achievements section",
+        parameters: z.object({
+          achievements: z.array(
+            z.object({
+              id: z.string(),
+              title: z.string(),
+              description: z.string(),
+            })
+          ),
+        }),
+        execute: async ({ achievements }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "achievements",
+            data: achievements,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      update_resume_settings: tool({
+        description: "Update fonts, colors, and the visibility/order of sections",
+        parameters: z.object({
+          settings: z.object({
+            font: z.string(),
+            color: z.string(),
+            sections: z.object({
+              personalInfo: z.boolean(),
+              summary: z.boolean(),
+              experience: z.boolean(),
+              education: z.boolean(),
+              skills: z.boolean(),
+              projects: z.boolean(),
+              achievements: z.boolean(),
+              certifications: z.boolean(),
+            }),
+            order: z.array(z.string()),
+            layout: z.string(),
+          }),
+        }),
+        execute: async ({ settings }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSettings, {
+            versionId: args.versionId,
+            settings,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      update_experience_bullets: tool({
+        description: "Update the bullet points for a specific experience entry by its ID",
+        parameters: z.object({
+          experienceId: z.string(),
+          bullets: z.array(z.string()),
+        }),
+        execute: async ({ experienceId, bullets }: any) => {
+          const current = resume.experience.map((exp: any) =>
+            exp.id === experienceId ? { ...exp, bullets } : exp
+          );
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "experience",
+            data: current,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      update_project_bullets: tool({
+        description: "Update bullet points for a specific project by its ID",
+        parameters: z.object({
+          projectId: z.string(),
+          bullets: z.array(z.string()),
+          description: z.string().optional(),
+        }),
+        execute: async ({ projectId, bullets, description }: any) => {
+          const current = resume.projects.map((proj: any) =>
+            proj.id === projectId
+              ? { ...proj, bullets, ...(description ? { description } : {}) }
+              : proj
+          );
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "projects",
+            data: current,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      inject_keywords: tool({
+        description: "Inject keywords into the resume's summary or skills section",
+        parameters: z.object({
+          summary: z.string().optional(),
+          skills: z
+            .array(
+              z.object({
+                category: z.string(),
+                items: z.array(z.string()),
+              })
+            )
+            .optional(),
+        }),
+        execute: async ({ summary, skills }: any) => {
+          if (summary) {
+            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+              versionId: args.versionId,
+              section: "summary",
+              data: summary,
+            });
           }
-        } catch (e: any) {
-          result = { success: false, error: e.message };
-        }
+          if (skills) {
+            await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+              versionId: args.versionId,
+              section: "skills",
+              data: skills,
+            });
+          }
+          return { success: true };
+        },
+      } as any),
 
-        toolResults.push({ functionResponse: { name, response: result } });
-      }
+      ats_check: tool({
+        description: "Check for ATS compatibility",
+        parameters: z.object({}),
+        execute: async () => {
+          return await ctx.runAction(api.resumeVersions.atsChecker, { resume });
+        },
+      } as any),
 
-      const followUpMessages = [
-        ...messages,
-        { role: "model", parts: toolCallParts },
-        { role: "user", parts: toolResults },
-      ];
+      get_website_content: tool({
+        description: "Fetch and summarize content from a URL. Use this when the user provides a link to pull info from.",
+        parameters: z.object({
+          url: z.string().describe("The URL to fetch content from"),
+        }),
+        execute: async ({ url }: any) => {
+          const response = await fetch(url);
+          const text = await response.text();
+          return { summary: text };
+        },
+      } as any),
 
-      const followUp = await callGeminiChat(systemPrompt, followUpMessages);
-      replyText =
-        followUp.candidates?.[0]?.content?.parts
-          ?.filter((p: any) => p.text)
-          ?.map((p: any) => p.text)
-          ?.join("") ?? "Done! I've updated your resume.";
-    } else {
-      replyText = textParts.map((p: any) => p.text).join("") || "I couldn't process that request.";
-    }
+      get_job_description_content: tool({
+        description: "Retrieve the full job description content",
+        parameters: z.object({}),
+        execute: async () => {
+          if (!resume.jobDescriptionId) throw new Error("No linked job description");
+          return await ctx.runQuery(api.jobDescriptions.getJobDescriptionById, {
+            jobDescriptionId: resume.jobDescriptionId,
+          });
+        },
+      } as any),
+
+      update_cover_letter: tool({
+        description: "Write, update, or clear the cover letter for this resume",
+        parameters: z.object({
+          coverLetter: z.string().describe("The new cover letter text"),
+        }),
+        execute: async ({ coverLetter }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "coverLetter",
+            data: coverLetter,
+          });
+          return { success: true };
+        },
+      } as any),
+
+      update_resume_name: tool({
+        description: "Update the name/title of this resume version",
+        parameters: z.object({
+          name: z.string().describe("The new version name"),
+        }),
+        execute: async ({ name }: any) => {
+          await ctx.runMutation(api.resumeVersions.updateResumeVersionSection, {
+            versionId: args.versionId,
+            section: "name",
+            data: name,
+          });
+          return { success: true };
+        },
+      } as any),
+    };
+
+    const { text: replyText, toolCalls } = await generateText({
+      model: defaultModel,
+      system: systemPrompt,
+      messages,
+      tools,
+      stopWhen: isStepCount(5),
+    });
+
+    const toolsUsed = toolCalls.map((tc) => tc.toolName);
 
     const MODIFYING_TOOLS = [
       "update_personal_info",

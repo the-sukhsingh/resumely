@@ -130,6 +130,7 @@ export default defineSchema({
     role: v.union(v.literal("user"), v.literal("assistant")),
     content: v.string(),
     timestamp: v.number(),
+    focusSection: v.optional(v.string()),
     undoSnapshot: v.optional(v.any()),
   })
     .index("by_user", ["userId"])

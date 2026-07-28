@@ -2,25 +2,9 @@ import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
-
-async function callGemini(apiKey: string, prompt: string) {
-  const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { response_mime_type: "application/json" },
-    }),
-  });
-  const data = await response.json();
-  console.log("Gemini response:", data);
-  if (!data.candidates?.[0]) {
-    throw new Error(`Gemini error: ${JSON.stringify(data.error ?? data)}`);
-  }
-  return JSON.parse(data.candidates[0].content.parts[0].text);
-}
+import { generateObject } from "ai";
+import { defaultModel } from "./ai";
+import { z } from "zod";
 
 // ─── Mutations ────────────────────────────────────────────────────────────────
 
@@ -67,31 +51,49 @@ export const getJobDescriptionsByUser = query({
 export const parseJobDescription = action({
   args: { jdText: v.string() },
   handler: async (ctx, args) => {
-    return await callGemini(
-      process.env.GEMINI_API_KEY!,
-      `Parse this job description and extract title, company, skills (array), responsibilities (array), keywords (array). Return as JSON.\n\n${args.jdText}`
-    );
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        title: z.string(),
+        company: z.string(),
+        skills: z.array(z.string()),
+        responsibilities: z.array(z.string()),
+        keywords: z.array(z.string()),
+      }),
+      prompt: `Parse this job description and extract title, company, skills, responsibilities, keywords:\n\n${args.jdText}`,
+    });
+    return object;
   },
 });
 
 export const extractKeywords = action({
   args: { jdText: v.string() },
   handler: async (ctx, args) => {
-    const result = await callGemini(
-      process.env.GEMINI_API_KEY!,
-      `Extract the most important keywords and technical terms from this job description. Return as JSON with key "keywords" as an array.\n\n${args.jdText}`
-    );
-    return result.keywords || [];
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        keywords: z.array(z.string()),
+      }),
+      prompt: `Extract the most important keywords and technical terms from this job description:\n\n${args.jdText}`,
+    });
+    return object.keywords || [];
   },
 });
 
 export const analyzeJobRequirements = action({
   args: { jdText: v.string() },
   handler: async (ctx, args) => {
-    return await callGemini(
-      process.env.GEMINI_API_KEY!,
-      `Analyze this job description and categorize into requiredSkills (array), preferredSkills (array), responsibilities (array), qualifications (array). Return as JSON.\n\n${args.jdText}`
-    );
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        requiredSkills: z.array(z.string()),
+        preferredSkills: z.array(z.string()),
+        responsibilities: z.array(z.string()),
+        qualifications: z.array(z.string()),
+      }),
+      prompt: `Analyze this job description and categorize into requiredSkills, preferredSkills, responsibilities, qualifications:\n\n${args.jdText}`,
+    });
+    return object;
   },
 });
 
@@ -102,8 +104,6 @@ export const createJDAndVersion = action({
     jdText: v.string(),
   },
   handler: async (ctx, args): Promise<{ jobDescriptionId: Id<"jobDescriptions">; versionId: Id<"resumeVersions"> }> => {
-
-
     const requiredCredits = 10;
     const currentCredits: number = await ctx.runQuery(internal.users.getCreditBalance, {
       userId: args.userId,
@@ -112,38 +112,19 @@ export const createJDAndVersion = action({
       throw new Error("Insufficient credits");
     }
 
-    const res = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: "You are a job description parser. Analyze the job description and call the create_job_description tool with the extracted data." }] },
-        contents: [{ role: "user", parts: [{ text: args.jdText }] }],
-        tools: [{
-          function_declarations: [{
-            name: "create_job_description",
-            description: "Store the parsed job description in the database",
-            parameters: {
-              type: "object",
-              properties: {
-                title: { type: "string", description: "Job title" },
-                requirements: { type: "array", items: { type: "string" }, description: "List of job requirements" },
-                responsibilities: { type: "array", items: { type: "string" }, description: "List of job responsibilities" },
-                extractedSkills: { type: "array", items: { type: "string" }, description: "Technical skills required" },
-                extractedKeywords: { type: "array", items: { type: "string" }, description: "Important keywords from the JD" },
-              },
-              required: ["title", "requirements", "responsibilities", "extractedSkills", "extractedKeywords"],
-            },
-          }],
-        }],
-        tool_config: { function_calling_config: { mode: "ANY", allowed_function_names: ["create_job_description"] } },
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        title: z.string().describe("Job title"),
+        requirements: z.array(z.string()).describe("List of job requirements"),
+        responsibilities: z.array(z.string()).describe("List of job responsibilities"),
+        extractedSkills: z.array(z.string()).describe("Technical skills required"),
+        extractedKeywords: z.array(z.string()).describe("Important keywords from the JD"),
       }),
+      prompt: `You are a job description parser. Analyze the job description and extract the required fields:\n\n${args.jdText}`,
     });
 
-    const data = await res.json();
-    const toolCall = data.candidates?.[0]?.content?.parts?.find((p: any) => p.functionCall)?.functionCall;
-    if (!toolCall) throw new Error("Gemini did not call create_job_description");
-
-    const { title, ...jdFields } = toolCall.args;
+    const { title, ...jdFields } = object;
 
     const jobDescriptionId: Id<"jobDescriptions"> = await ctx.runMutation(api.jobDescriptions.createJobDescription, {
       userId: args.userId,
@@ -160,3 +141,4 @@ export const createJDAndVersion = action({
     return { jobDescriptionId, versionId };
   },
 });
+

@@ -2,6 +2,9 @@ import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
 import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
+import { generateObject } from "ai";
+import { defaultModel } from "./ai";
+import { z } from "zod";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -242,26 +245,15 @@ export const rewriteBullets = action({
     jobContext: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ improvedBullets: string[] }> => {
-    const prompt = `Rewrite the following bullet points to be more impactful, quantifiable, and ATS-friendly. Use strong action verbs and highlight achievements.\n\n${args.jobContext ? `Job Context: ${args.jobContext}\n\n` : ""}Original Bullets:\n${args.bullets.map((b, i) => `${i + 1}. ${b}`).join("\n")}\n\nReturn ONLY a JSON array of improved bullets (no markdown, no explanation):\n["bullet 1", "bullet 2", ...]`;
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 2048,
-        messages: [{ role: "user", content: prompt }],
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        improvedBullets: z.array(z.string()),
       }),
+      prompt: `Rewrite the following bullet points to be more impactful, quantifiable, and ATS-friendly. Use strong action verbs and highlight achievements.\n\n${args.jobContext ? `Job Context: ${args.jobContext}\n\n` : ""}Original Bullets:\n${args.bullets.map((b, i) => `${i + 1}. ${b}`).join("\n")}`,
     });
 
-    const data = await response.json();
-    const content = data.content[0].text;
-    const jsonMatch = content.match(/\[[\s\S]*\]/);
-    const improvedBullets = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+    const improvedBullets = object.improvedBullets;
 
     const resume = await ctx.runQuery(api.masterResumes.getMasterResumeById, { resumeId: args.resumeId });
     if (!resume) throw new Error("Resume not found");
@@ -282,116 +274,73 @@ export const rewriteBullets = action({
   },
 });
 
-const CREATE_RESUME_TOOL = {
-  name: "create_resume",
-  description: "Create a new resume with the given personal information and return the resume ID",
-  parameters: {
-    type: "object", // Changed to lowercase
-    properties: {
-      personalInfo: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          email: { type: "string" },
-          phone: { type: "string" },
-          location: { type: "string" },
-          linkedin: { type: "string" },
-          github: { type: "string" },
-          website: { type: "string" },
-        },
-        required: ["name"],
-      },
-      summary: { type: "string" },
-      experience: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            company: { type: "string" },
-            position: { type: "string" },
-            location: { type: "string" },
-            startDate: { type: "string" },
-            endDate: { type: "string" },
-            description: { type: "string" },
-            bullets: { type: "array", items: { type: "string" } },
-          },
-          required: ["id", "company", "position", "startDate", "bullets"],
-        },
-      },
-      education: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            institution: { type: "string" },
-            degree: { type: "string" },
-            field: { type: "string" },
-            location: { type: "string" },
-            startDate: { type: "string" },
-            endDate: { type: "string" },
-            gpa: { type: "string" },
-          },
-          required: ["id", "institution", "degree", "startDate"],
-        },
-      },
-      skills: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            category: { type: "string" },
-            items: { type: "array", items: { type: "string" } },
-          },
-          required: ["category", "items"],
-        },
-      },
-      projects: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            name: { type: "string" },
-            description: { type: "string" },
-            technologies: { type: "array", items: { type: "string" } },
-            link: { type: "string" },
-            bullets: { type: "array", items: { type: "string" } },
-          },
-          required: ["id", "name", "description", "technologies", "bullets"],
-        },
-      },
-      certifications: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            name: { type: "string" },
-            issuer: { type: "string" },
-            date: { type: "string" },
-            link: { type: "string" },
-          },
-          required: ["id", "name", "issuer"],
-        },
-      },
-      achievements: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            title: { type: "string" },
-            description: { type: "string" },
-          },
-          required: ["id", "title", "description"],
-        },
-      },
-    },
-    required: ["personalInfo", "experience", "education", "skills", "projects", "certifications", "achievements"],
-  },
-}
+const resumeParserSchema = z.object({
+  personalInfo: z.object({
+    name: z.string(),
+    email: z.string().optional().nullable(),
+    phone: z.string().optional().nullable(),
+    location: z.string().optional().nullable(),
+    linkedin: z.string().optional().nullable(),
+    github: z.string().optional().nullable(),
+    website: z.string().optional().nullable(),
+  }),
+  summary: z.string().optional().nullable(),
+  experience: z.array(
+    z.object({
+      id: z.string(),
+      company: z.string(),
+      position: z.string(),
+      location: z.string().optional().nullable(),
+      startDate: z.string(),
+      endDate: z.string().optional().nullable(),
+      bullets: z.array(z.string()),
+    })
+  ),
+  education: z.array(
+    z.object({
+      id: z.string(),
+      institution: z.string(),
+      degree: z.string(),
+      field: z.string().optional().nullable(),
+      location: z.string().optional().nullable(),
+      startDate: z.string().optional().nullable(),
+      endDate: z.string().optional().nullable(),
+      gpa: z.string().optional().nullable(),
+    })
+  ),
+  skills: z.array(
+    z.object({
+      category: z.string(),
+      items: z.array(z.string()),
+    })
+  ),
+  projects: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      technologies: z.array(z.string()),
+      link: z.string().optional().nullable(),
+      bullets: z.array(z.string()),
+    })
+  ),
+  certifications: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      issuer: z.string(),
+      date: z.string().optional().nullable(),
+      link: z.string().optional().nullable(),
+    })
+  ).optional().default([]),
+  achievements: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      description: z.string(),
+    })
+  ).optional().default([]),
+});
 
 export const parseResumeText = action({
   args: {
@@ -399,53 +348,25 @@ export const parseResumeText = action({
     userId: v.id("users"),
   },
   handler: async (ctx, args): Promise<unknown> => {
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
-    const prompt = `You are an expert resume parser. Extract the structured information from the following resume text and call the create_resume tool with the extracted data.
-
-    Resume Text:
-    ${args.text}`;
-
-    const response = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        tools: [{ functionDeclarations: [CREATE_RESUME_TOOL] }],
-        toolConfig: {
-          functionCallingConfig: {
-            mode: "ANY",
-            allowedFunctionNames: ["create_resume"]
-          }
-        }
-      }),
+    const { object: parsedResume } = await generateObject({
+      model: defaultModel,
+      schema: resumeParserSchema,
+      prompt: `You are an expert resume parser. Extract the structured information from the following resume text:\n\n${args.text}`,
     });
-    
-    const data = await response.json();
-    if (!data.candidates?.[0]) {
-      throw new Error(`Gemini error: ${JSON.stringify(data.error ?? data)}`);
-    }
-    
-    const functionCall = data.candidates[0].content.parts.find((p: any) => p.functionCall)?.functionCall;
-    if (!functionCall || functionCall.name !== "create_resume") {
-      throw new Error("Gemini did not return a valid tool call for create_resume");
-    }
 
-    let parsedResume = functionCall.args;
     if (!parsedResume.certifications) parsedResume.certifications = [];
     if (!parsedResume.achievements) parsedResume.achievements = [];
-    if (!parsedResume.coverLetter) parsedResume.coverLetter = null;
-
+    
     // ensure boolean for 'current' since schema expects it but tool might miss it
-    if (parsedResume.experience) {
-      parsedResume.experience = parsedResume.experience.map((exp: any) => ({
-        ...exp,
-        current: exp.endDate === null || String(exp.endDate).toLowerCase().includes("present")
-      }));
-    }
+    const experienceWithCurrent = parsedResume.experience ? parsedResume.experience.map((exp: any) => ({
+      ...exp,
+      current: exp.endDate === null || String(exp.endDate).toLowerCase().includes("present")
+    })) : [];
 
     await ctx.runMutation(api.masterResumes.createMasterResume, {
       userId: args.userId,
       ...parsedResume,
+      experience: experienceWithCurrent,
     });
 
     return parsedResume;

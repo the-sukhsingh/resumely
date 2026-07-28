@@ -9,6 +9,7 @@ export const createChatMessage = mutation({
     resumeVersionId: v.optional(v.id("resumeVersions")),
     role: v.union(v.literal("user"), v.literal("assistant")),
     content: v.string(),
+    focusSection: v.optional(v.string()),
     undoSnapshot: v.optional(v.any()),
   },
   handler: async (ctx, args) => {

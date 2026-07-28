@@ -22,7 +22,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen text-foreground font-sans no-scrollbar relative">
       {/* Hero Section */}
-      <div className='relative z-50 bg-background rounded-b-2xl border-b border-border overflow-hidden'>
+      <div className='relative z-40 bg-background rounded-b-2xl border-b border-border overflow-hidden'>
         <div className='absolute inset-0 noise dark:opacity-40'></div>
         <motion.div 
           ref={heroRef}
