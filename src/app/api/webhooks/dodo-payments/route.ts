@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       }
 
       const userId = metadata.userId as Id<"users">;
-      const creditAmount = parseInt(metadata.creditAmount, 10);
+      const creditAmount = parseInt(String(metadata.creditAmount), 10);
       const planType = metadata.planType || 'unknown';
 
       if (isNaN(creditAmount)) {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
         webhookSecret: webhookSecret,
         userId: userId,
         amount: creditAmount,
-        reason: `Purchased ${planType.toUpperCase()} package (${creditAmount} credits)`,
+        reason: `Purchased ${String(planType).toUpperCase()} package (${creditAmount} credits)`,
       });
 
       console.log(`Successfully credited ${creditAmount} credits to user ${userId} for ${planType} package.`);
