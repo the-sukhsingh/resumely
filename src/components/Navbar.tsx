@@ -19,7 +19,7 @@ const Navbar = () => {
     ];
 
     return (
-        <nav className={cn("fixed top-0 z-50 w-full",
+        <nav className={cn("fixed top-0 z-100 w-full",
             pathname.match(/^\/resume\/[^/]+$/) ? "bg-background" : "bg-transparent"
         )}>
             <div className="max-w-5xl mx-auto px-6">
