@@ -14,6 +14,68 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     trustHost: true,
+    cookies: {
+        sessionToken: {
+            name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                domain: process.env.NODE_ENV === "production" ? ".resumely.tech" : undefined,
+            },
+        },
+        callbackUrl: {
+            name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.callback-url`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                domain: process.env.NODE_ENV === "production" ? ".resumely.tech" : undefined,
+            },
+        },
+        csrfToken: {
+            name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.csrf-token`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                domain: process.env.NODE_ENV === "production" ? ".resumely.tech" : undefined,
+            },
+        },
+        pkceCodeVerifier: {
+            name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.pkce.code_verifier`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                domain: process.env.NODE_ENV === "production" ? ".resumely.tech" : undefined,
+            },
+        },
+        state: {
+            name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.state`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                domain: process.env.NODE_ENV === "production" ? ".resumely.tech" : undefined,
+            },
+        },
+        nonce: {
+            name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.nonce`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+                domain: process.env.NODE_ENV === "production" ? ".resumely.tech" : undefined,
+            },
+        },
+    },
     callbacks: {
         async signIn({ user, account, profile }) {
             if (!user.email) return false;
