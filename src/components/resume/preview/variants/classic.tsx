@@ -203,56 +203,52 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                 )}
 
                 {/* Bottom grid: Education · Certifications · Achievements */}
-                <ViewR style={tw("flex-row flex-wrap gap-x-4")}>
+                <ViewR style={tw("flex-row gap-6")}>
                     {education.length > 0 && (
-                        <ViewR style={tw("w-[31.5%]")}>
+                        <ViewR style={tw("flex-1")}>
                             <SectionHeading>Education</SectionHeading>
                             {education.map((edu) => (
-                                <ViewR key={edu.id} style={tw("mb-3 flex-row justify-between items-start")}>
-                                    <View>
-                                        <Text className="text-sm font-bold">{edu.institution}</Text>
-                                        <Text className="text-xs">{edu.degree}{nonEmpty(edu.field) ? ` · ${edu.field}` : ''}</Text>
-                                        {nonEmpty(edu.location) && <Text className="text-2xs text-neutral-600">{edu.location}</Text>}
-                                    </View>
-                                    <View>
-                                        {(nonEmpty(edu.startDate) || nonEmpty(edu.endDate)) && (
-                                            <Text className="text-2xs text-neutral-700">
-                                                {edu.startDate ?? ''}{edu.startDate && edu.endDate ? ' – ' : ''}{edu.endDate ?? ''}
-                                            </Text>
-                                        )}
-                                        {nonEmpty(edu.gpa) && <Text className="text-2xs text-neutral-700">GPA: {edu.gpa}</Text>}
-                                    </View>
+                                <ViewR key={edu.id} style={tw("mb-2.5")}>
+                                    <Text className="text-xs font-bold text-neutral-900 leading-tight">{edu.institution}</Text>
+                                    <Text className="text-2xs text-neutral-800 mt-0.5">
+                                        {edu.degree}{nonEmpty(edu.field) ? ` · ${edu.field}` : ''}
+                                        {nonEmpty(edu.gpa) ? ` (GPA: ${edu.gpa})` : ''}
+                                    </Text>
+                                    <Text className="text-3xs text-neutral-500 mt-0.5">
+                                        {edu.startDate ?? ''}{edu.startDate && edu.endDate ? ' – ' : ''}{edu.endDate ?? ''}
+                                        {nonEmpty(edu.location) ? ` · ${edu.location}` : ''}
+                                    </Text>
                                 </ViewR>
                             ))}
                         </ViewR>
                     )}
 
                     {certifications && certifications.length > 0 && (
-                        <ViewR style={tw("w-[31.5%]")}>
+                        <ViewR style={tw("flex-1")}>
                             <SectionHeading>Certifications</SectionHeading>
                             {certifications.map((cert) => (
-                                <ViewR key={cert.id} style={tw("mb-3 flex-row justify-between items-start")}>
-                                    <View className="gap-0.5">
-                                        {nonEmpty(cert.link) ? (
-                                            <LinkR src={cert.link!} className="text-sm font-bold">{cert.name}</LinkR>
-                                        ) : (
-                                            <Text className="text-sm font-bold">{cert.name}</Text>
-                                        )}
-                                        <Text className="text-xs text-neutral-700">{cert.issuer}</Text>
-                                    </View>
-                                    {nonEmpty(cert.date) && <Text className="text-2xs text-neutral-500">{cert.date}</Text>}
+                                <ViewR key={cert.id} style={tw("mb-2.5")}>
+                                    {nonEmpty(cert.link) ? (
+                                        <LinkR src={cert.link!} className="text-xs font-bold text-neutral-900 leading-tight">{cert.name}</LinkR>
+                                    ) : (
+                                        <Text className="text-xs font-bold text-neutral-900 leading-tight">{cert.name}</Text>
+                                    )}
+                                    <Text className="text-2xs text-neutral-800 mt-0.5">
+                                        {cert.issuer}
+                                        {nonEmpty(cert.date) ? ` · ${cert.date}` : ''}
+                                    </Text>
                                 </ViewR>
                             ))}
                         </ViewR>
                     )}
 
                     {achievements && achievements.length > 0 && (
-                        <ViewR style={tw("w-[31.5%]")}>
+                        <ViewR style={tw("flex-1")}>
                             <SectionHeading>Achievements</SectionHeading>
                             {achievements.map((ach) => (
-                                <ViewR key={ach.id} style={tw("mb-3")}>
-                                    <Text className="text-xs font-bold mb-0.5">{ach.title}</Text>
-                                    <Text className="text-2xs text-neutral-700">{ach.description}</Text>
+                                <ViewR key={ach.id} style={tw("mb-2.5")}>
+                                    <Text className="text-xs font-bold text-neutral-900 leading-tight">{ach.title}</Text>
+                                    <Text className="text-2xs text-neutral-700 mt-0.5">{ach.description}</Text>
                                 </ViewR>
                             ))}
                         </ViewR>

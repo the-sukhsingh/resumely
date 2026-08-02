@@ -124,6 +124,14 @@ function ResumeEditorContent({
     if (isEditingRef.current) return;
     setDraft(resume);
     setPreviewDraft(resume);
+    if (resume.settings) {
+      setSettings(resume.settings);
+    }
+    // Store in local storage for easy access on pages like /train
+    localStorage.setItem('resumely_create_resume_draft', JSON.stringify({
+      ...resume,
+      settings: resume.settings ?? settings
+    }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resume]);
 
@@ -135,6 +143,17 @@ function ResumeEditorContent({
     setDraft(nextDraft);
     debouncedPreviewUpdate(nextDraft);
     debouncedSave(nextDraft);
+    
+    // Store in local storage
+    const nextDraftWithSettings = { ...nextDraft, settings };
+    localStorage.setItem('resumely_create_resume_draft', JSON.stringify(nextDraftWithSettings));
+  };
+
+  const handleSettingsChange = (nextSettings: ResumeSettings) => {
+    setSettings(nextSettings);
+    // Store in local storage
+    const nextDraft = { ...draft, settings: nextSettings };
+    localStorage.setItem('resumely_create_resume_draft', JSON.stringify(nextDraft));
   };
 
 
@@ -230,7 +249,7 @@ function ResumeEditorContent({
               <SettingsPanel
                 resumeId={resumeId}
                 settings={settings}
-                onChange={setSettings}
+                onChange={handleSettingsChange}
               />
             </div>
           </ResizablePanel>
