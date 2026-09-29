@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { TagInput } from './TagInput';
+import { BulletsInput } from './BulletsInput';
 
 interface ProjectModalProps {
   project: Project;
@@ -17,17 +18,17 @@ interface ProjectModalProps {
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onSave, onClose }) => {
   const [formData, setFormData] = useState<Project>(project);
-  const [bulletsText, setBulletsText] = useState(
-    (project.bullets || []).filter(Boolean).join('\n')
-  );
+  const [bullets, setBullets] = useState<string[]>(() => {
+    const raw = (project.bullets || []).filter(Boolean) as string[];
+    return raw.length > 0 ? raw : [''];
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const bullets = bulletsText
-      .split('\n')
+    const cleanedBullets = bullets
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
-    onSave({ ...formData, bullets });
+    onSave({ ...formData, bullets: cleanedBullets });
   };
 
   const updateField = (field: keyof Project, value: any) => {
@@ -36,23 +37,35 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onSave, onC
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] min-w-xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] min-w-xl overflow-y-auto ">
+        <DialogHeader >
           <DialogTitle className="font-sans text-xl">
             {project.name ? 'Edit Project' : 'Add Project'}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div>
-            <Label className="text-xs text-primary/90 mb-1">Project Name</Label>
-            <Input
-              value={formData.name}
-              onChange={(e) => updateField('name', e.target.value)}
-              placeholder="My Awesome Project"
-              className="h-9"
-              required
-            />
+          <div className='flex gap-3 *:w-1/2'>
+            <div>
+              <Label className="text-xs text-primary/90 mb-1">Project Name</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => updateField('name', e.target.value)}
+                placeholder="My Awesome Project"
+                className="h-9"
+                required
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-primary/90 mb-1">Link (optional)</Label>
+              <Input
+                value={formData.link ?? ''}
+                onChange={(e) => updateField('link', e.target.value)}
+                placeholder="https://github.com/..."
+                className="h-9"
+              />
+            </div>
           </div>
+
           <div>
             <Label className="text-xs text-primary/90 mb-1">Description</Label>
             <Textarea
@@ -71,27 +84,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onSave, onC
               placeholder="Type a technology and press Enter..."
             />
           </div>
-          <div>
-            <Label className="text-xs text-primary/90 mb-1">Link (optional)</Label>
-            <Input
-              value={formData.link ?? ''}
-              onChange={(e) => updateField('link', e.target.value)}
-              placeholder="https://github.com/..."
-              className="h-9"
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-primary/90 mb-1">Bullets</Label>
-            <Textarea
-              value={bulletsText}
-              onChange={(e) => setBulletsText(e.target.value)}
-              placeholder="One bullet per line..."
-              rows={5}
-              className="resize-none"
-            />
-          </div>
+
+          <BulletsInput
+            bullets={bullets}
+            onChange={setBullets}
+            label="Bullets"
+            placeholder="Describe an accomplishment or responsibility..."
+          />
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="h-9">
+            <Button type="button" variant="outline" size={"sm"} onClick={onClose} className="h-9">
               Cancel
             </Button>
             <Button type="submit" className="h-9">
