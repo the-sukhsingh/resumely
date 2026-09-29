@@ -202,37 +202,35 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                     </View>
                 )}
 
-                {/* Bottom grid: Education · Certifications · Achievements */}
+                {/* Education · Certifications · Achievements */}
                 {education.length > 0 && (
-                    <ViewR style={tw("flex-1")}>
+                    <View className="mb-3">
                         <SectionHeading>Education</SectionHeading>
                         {education.map((edu) => (
-                            <ViewR key={edu.id} style={tw("mb-2.5")}>
-                                <View className='flex-row justify-between'>
-
-                                    <Text className="font-bold text-neutral-900 leading-tight">{edu.institution}
+                            <ViewR key={edu.id} wrap={false} style={tw("mb-2.5")}>
+                                <ViewR style={tw("flex-row justify-between")}>
+                                    <Text className="font-bold text-neutral-900 leading-tight">
+                                        {edu.institution}
                                         {nonEmpty(edu.location) ? ` · ${edu.location}` : ''}
                                     </Text>
                                     <Text className="text-2xs text-neutral-800 mt-0.5">
                                         {edu.startDate ?? ''}{edu.startDate && edu.endDate ? ' – ' : ''}{edu.endDate ?? ''}
-
                                     </Text>
-                                </View>
+                                </ViewR>
                                 <Text className="text-sm text-neutral-800 mt-0.5">
-                                    {edu.degree}{nonEmpty(edu.field) ? ` · ${edu.field}` : ''} |
-                                    {nonEmpty(edu.gpa) ? ` GPA: ${edu.gpa}` : ''}
+                                    {edu.degree}{nonEmpty(edu.field) ? ` · ${edu.field}` : ''}{nonEmpty(edu.gpa) ? ` | GPA: ${edu.gpa}` : ''}
                                 </Text>
                             </ViewR>
                         ))}
-                    </ViewR>
+                    </View>
                 )}
 
                 {certifications && certifications.length > 0 && (
-                    <ViewR style={tw("flex-1")}>
+                    <View className="mb-3">
                         <SectionHeading>Certifications</SectionHeading>
                         {certifications.map((cert) => (
-                            <ViewR key={cert.id} style={tw("mb-2.5")}>
-                                <View className='flex-row justify-between'>
+                            <ViewR key={cert.id} wrap={false} style={tw("mb-2.5")}>
+                                <ViewR style={tw("flex-row justify-between")}>
                                     {nonEmpty(cert.link) ? (
                                         <LinkR src={cert.link!} className="text-sm font-bold text-neutral-900 leading-tight">{cert.name}</LinkR>
                                     ) : (
@@ -241,7 +239,7 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                                     <Text className="text-2xs text-neutral-800 mt-0.5">
                                         {cert.date ?? ''}
                                     </Text>
-                                </View>
+                                </ViewR>
                                 {nonEmpty(cert.issuer) && (
                                     <Text className="text-sm text-neutral-800 mt-0.5">
                                         {cert.issuer}
@@ -249,23 +247,23 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                                 )}
                             </ViewR>
                         ))}
-                    </ViewR>
+                    </View>
                 )}
 
                 {achievements && achievements.length > 0 && (
-                    <ViewR style={tw("flex-1")}>
+                    <View className="mb-3">
                         <SectionHeading>Achievements</SectionHeading>
                         {achievements.map((ach) => (
-                            <ViewR key={ach.id} style={tw("mb-2.5")}>
-                                <View className='flex-row justify-between'>
+                            <ViewR key={ach.id} wrap={false} style={tw("mb-2.5")}>
+                                <ViewR style={tw("flex-row justify-between")}>
                                     <Text className="font-bold text-neutral-900 leading-tight">{ach.title}</Text>
-                                </View>
+                                </ViewR>
                                 {nonEmpty(ach.description) && (
                                     <Text className="text-sm text-neutral-800 mt-0.5">{ach.description}</Text>
                                 )}
                             </ViewR>
                         ))}
-                    </ViewR>
+                    </View>
                 )}
 
             </Page>
