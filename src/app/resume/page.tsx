@@ -28,7 +28,7 @@ export default function ResumePage() {
     <div className="flex flex-col min-h-screen w-full mx-auto max-w-5xl border-x border-border/50">
       <PaymentStatusDialog />
       <div className='absolute inset-0 noise dark:opacity-40'></div>
-      <div className='bg-background relative z-50 h-full min-h-screen pt-14'>
+      <div className='relative z-50 h-full min-h-screen pt-14'>
 
         {/* Top bar */}
         <div className="w-full ">

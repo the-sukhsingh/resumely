@@ -219,7 +219,7 @@ function ResumeEditorContent({
               <TabsList variant={"line"} className=''>
                 <TabsTrigger value="editor">
                   <span className="flex items-center gap-2">
-                    <Clipboard size={18} />
+                    <Clipboard size={18}  />
                     Editor
                   </span>
                 </TabsTrigger>
