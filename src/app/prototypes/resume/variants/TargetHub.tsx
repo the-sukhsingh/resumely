@@ -224,18 +224,7 @@ export default function TargetHub({
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-1.5">
-                      {item.matchScore ? (
-                        <div className="inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          <span>{item.matchScore}%</span>
-                          <span className="font-sans font-normal text-[10px] text-muted-foreground">ATS match</span>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          Ready
-                        </span>
-                      )}
-                    </div>
+                    
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

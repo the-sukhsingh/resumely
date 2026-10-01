@@ -257,16 +257,7 @@ export default function ResumeVersionList({ userId }: Props) {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {item.matchScore ? (
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          {item.matchScore}% ATS
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
-                          Ready
-                        </span>
-                      )}
-
+                      
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
@@ -304,16 +295,6 @@ export default function ResumeVersionList({ userId }: Props) {
                     </div>
                   </div>
 
-                  <Link href={`/resume/${item._id}`} className="block">
-                    <h4 className="text-sm font-semibold tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                      {item.name || 'Untitled Version'}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {expCount > 0 || skillCount > 0
-                        ? `${expCount} roles · ${skillCount} skills`
-                        : 'Targeted application'}
-                    </p>
-                  </Link>
                 </div>
 
                 {/* Bottom Row: Timestamp + Open Link */}

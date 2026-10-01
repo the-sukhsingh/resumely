@@ -252,15 +252,7 @@ export default function QuietStudio({
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {item.matchScore ? (
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          {item.matchScore}% ATS
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
-                          Ready
-                        </span>
-                      )}
+                     
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
