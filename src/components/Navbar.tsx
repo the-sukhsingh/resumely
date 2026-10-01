@@ -11,6 +11,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Menu, LogOut, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import ColoredButton from "./custom/colored-button";
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
@@ -125,10 +126,10 @@ const Navbar = () => {
                                         <PopoverTrigger asChild>
                                             <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all">
                                                 <Avatar className="h-8 w-8 border border-border rounded-full">
-                                                        <AvatarImage src={user.picture || undefined} />
-                                                        <AvatarFallback className="bg-primary/5 text-primary font-bold">
-                                                            {user.name?.charAt(0).toUpperCase() || "U"}
-                                                        </AvatarFallback>
+                                                    <AvatarImage src={user.picture || undefined} />
+                                                    <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                                                        {user.name?.charAt(0).toUpperCase() || "U"}
+                                                    </AvatarFallback>
                                                 </Avatar>
                                             </Button>
                                         </PopoverTrigger>
@@ -165,9 +166,9 @@ const Navbar = () => {
                                     </Popover>
                                 </div>
                             ) : (
-                                <Button variant="neo" className="h-8 px-4 rounded-full text-sm font-semibold" onClick={() => signIn("google")}>
+                                <ColoredButton className='rounded-full h-8 px-4' color='blue' onClick={() => signIn("google")}>
                                     Get Started
-                                </Button>
+                                </ColoredButton>
                             )}
                             <div className="pl-2 border-l border-border/50 flex items-center h-6">
                                 <ModeToggle />

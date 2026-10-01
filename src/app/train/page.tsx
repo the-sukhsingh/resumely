@@ -10,13 +10,14 @@ import { createBlobUrl } from '@/lib/pdf/create-blob-url';
 import { createPdfToImage } from '@/lib/pdf/create-pdf-to-image';
 import { downloadFile } from '@/lib/pdf/download-file';
 import { Button } from '@/components/ui/button';
-import { 
-  FileDown, 
-  Image as ImageIcon, 
-  Eye, 
-  RefreshCw, 
+import {
+  FileDown,
+  Image as ImageIcon,
+  Eye,
+  RefreshCw,
   Edit
 } from 'lucide-react';
+import ColoredButton from '@/components/custom/colored-button';
 
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
 
@@ -163,9 +164,9 @@ const Page = () => {
     if (!resumeData) return;
     setIsDownloading(true);
     try {
-      const blob = await createPdfBlob({ 
-        resumeData, 
-        theme: selectedTemplate 
+      const blob = await createPdfBlob({
+        resumeData,
+        theme: selectedTemplate
       });
       const newUrl = createBlobUrl({ blob });
       const link = document.createElement('a');
@@ -187,9 +188,9 @@ const Page = () => {
     if (!resumeData) return;
     setIsDownloadingImage(true);
     try {
-      const pdfBlob = await createPdfBlob({ 
-        resumeData, 
-        theme: selectedTemplate 
+      const pdfBlob = await createPdfBlob({
+        resumeData,
+        theme: selectedTemplate
       });
       const blob = await createPdfToImage({ pdfBlob, scale: 3 });
       const url = createBlobUrl({ blob });
@@ -206,9 +207,9 @@ const Page = () => {
   const handleViewPdf = async () => {
     if (!resumeData) return;
     try {
-      const blob = await createPdfBlob({ 
-        resumeData, 
-        theme: selectedTemplate 
+      const blob = await createPdfBlob({
+        resumeData,
+        theme: selectedTemplate
       });
       const url = createBlobUrl({ blob });
       window.open(url, '_blank');
@@ -230,12 +231,28 @@ const Page = () => {
   return (
     <div className="min-h-screen pt-16 pb-6 px-4 md:px-8 bg-linear-to-b from-background to-muted/20 relative flex flex-col items-center">
       <title>Resume PDF Preview | Resumely</title>
-      <div className="absolute inset-0 noise opacity-20 pointer-events-none z-0"></div>
+      {/* <div className="absolute inset-0 noise opacity-20 pointer-events-none z-0"></div> */}
+      <div className='grid grid-cols-2 gap-4 items-center justify-center'>
 
-      <div className="relative z-10 w-full max-w-4xl flex flex-col gap-4 flex-1">
+        
+        <ColoredButton className='rounded-full h-8 px-4' color='amber'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='blue'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='cyan'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='emerald'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='indigo'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='neutral'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='orange'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='pink'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='purple'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='rose'>Get Started</ColoredButton>
+        <ColoredButton className='rounded-full h-8 px-4' color='teal'>Get Started</ColoredButton>
+      </div>
+
+
+      <div className="relative z-10 w-full max-w-4xl hidden flex-col gap-4 flex-1">
         {/* Unified Top Control Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card/60 backdrop-blur-md border border-border/80 p-3 rounded-xl shadow-xs">
-          
+
           {/* Left Actions & Status */}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
             <Button
@@ -274,21 +291,19 @@ const Page = () => {
           <div className="flex p-0.5 bg-muted/60 rounded-lg border border-border/20 shrink-0">
             <button
               onClick={() => setSelectedTemplate('classic')}
-              className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${
-                selectedTemplate === 'classic'
-                  ? 'bg-background text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'classic'
+                ? 'bg-background text-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
             >
               Classic
             </button>
             <button
               onClick={() => setSelectedTemplate('twoColumn')}
-              className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${
-                selectedTemplate === 'twoColumn'
-                  ? 'bg-background text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'twoColumn'
+                ? 'bg-background text-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
             >
               Two-Column
             </button>
@@ -305,7 +320,7 @@ const Page = () => {
             >
               <Eye className="w-4 h-4" />
             </Button>
-            
+
             <Button
               onClick={handleDownloadImage}
               disabled={isDownloadingImage}
@@ -342,9 +357,9 @@ const Page = () => {
         {/* Clean Center Document Viewer */}
         <div className="flex-1 min-h-[500px] w-full bg-card/20 border border-border/80 rounded-2xl overflow-hidden shadow-xs relative flex flex-col h-[calc(100vh-12rem)]">
           <div className="flex-1 overflow-hidden relative p-1 bg-neutral-900/5 dark:bg-neutral-950/15">
-            <ResumePreview 
-              resumeData={resumeData} 
-              theme={selectedTemplate} 
+            <ResumePreview
+              resumeData={resumeData}
+              theme={selectedTemplate}
             />
           </div>
         </div>

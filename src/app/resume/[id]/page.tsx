@@ -216,21 +216,21 @@ function ResumeEditorContent({
             <Tabs defaultValue={activeTab} onValueChange={(val) => {
               setActiveTab(val as 'editor' | 'agent' | 'setting');
             }} className='absolute top-0 inset-x-0 border-b z-10' >
-              <TabsList variant={"line"} className=''>
-                <TabsTrigger value="editor">
-                  <span className="flex items-center gap-2">
+              <TabsList variant={"line"}>
+                <TabsTrigger value="editor" >
+                  <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-teal-400">
                     <Clipboard size={18}  />
                     Editor
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="agent">
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-rose-400">
                     <Message2 size={18} />
                     Agent
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="setting">
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-purple-400">
                     <Settings size={18} />
                     Settings
                   </span>
