@@ -34,16 +34,11 @@ export const DEFAULT_SETTINGS: ResumeSettings = {
   layout: 'one-column',
 };
 
+import { SUPPORTED_RESUME_FONTS } from '@/constants/pdf-fonts';
+
 // ─── Option data ──────────────────────────────────────────────────────────────
 
-
-const FONTS = [
-  { value: 'Inter', label: 'Inter' },
-  { value: 'Roboto', label: 'Roboto' },
-  { value: 'Merriweather', label: 'Merriweather' },
-  { value: 'Lato', label: 'Lato' },
-  { value: 'Source Serif 4', label: 'Source Serif 4' },
-];
+const FONTS = SUPPORTED_RESUME_FONTS;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -58,7 +53,7 @@ export default function SettingsPanel({
   settings,
   onChange,
 }: SettingsPanelProps) {
-  const [openSection, setOpenSection] = useState<string | null>('template');
+  const [openSection, setOpenSection] = useState<string | null>('layout');
   const updateMasterSettings = useMutation(api.masterResumes.updateMasterResumeSettings);
   const updateVersionSettings = useMutation(api.resumeVersions.updateResumeVersionSettings);
 

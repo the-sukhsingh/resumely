@@ -4,13 +4,12 @@ import { ResumeData } from '@/types/resume';
 import { Document, Page, Text as TextR, View as ViewR, Font, Link } from "@react-pdf/renderer";
 import { createTw } from "react-pdf-tailwind";
 import { cn } from "@/lib/utils";
-import { INTER_FONT } from '@/constants/pdf-fonts';
+import { registerResumeFonts, normalizeFontFamily } from '@/constants/pdf-fonts';
 
-Font.register({ family: "Inter", fonts: INTER_FONT });
+registerResumeFonts(Font);
 
 const tw = createTw({
     theme: {
-        fontFamily: { default: ["Inter"], inter: ["Inter"] },
         extend: {
             fontSize: { "2xs": "0.625rem", "3xs": "0.5rem" },
         },
@@ -19,6 +18,18 @@ const tw = createTw({
 
 const nonEmpty = (v?: string | null): v is string => !!v && v.trim().length > 0;
 const filterStrings = (arr: (string | null)[]): string[] => arr.filter(nonEmpty);
+
+const formatUrl = (url?: string | null) => {
+    if (!url) return null;
+    const clean = url.trim();
+    if (!clean) return null;
+    return clean.startsWith('http://') || clean.startsWith('https://') ? clean : `https://${clean}`;
+};
+
+const getDisplayUrl = (url?: string | null) => {
+    if (!url) return null;
+    return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+};
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
@@ -36,16 +47,17 @@ const LinkR = ({ children, src, className }: { children: React.ReactNode; src: s
     </Link>
 );
 
-const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+const Heading = ({ children, className, font }: { children: React.ReactNode; className?: string; font: string }) => (
     <TextR style={[tw(cn("text-lg font-bold", className)), {
         lineHeight: 1.2,
-        fontFamily: "Times-Roman"
+        fontFamily: font
     }]}>{children}</TextR>
 );
 
-const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-    <TextR style={[tw("text-sm font-bold uppercase tracking-wide mb-1 text-neutral-900 border-b"), { fontFamily: "Times-Roman" }, {
-        lineHeight: 1.1
+const SectionHeading = ({ children, font }: { children: React.ReactNode; font: string }) => (
+    <TextR style={[tw("text-sm font-bold uppercase tracking-wide mb-1 text-neutral-900 border-b"), {
+        lineHeight: 1.1,
+        fontFamily: font
     }]}>
         {children}
     </TextR>
@@ -61,10 +73,12 @@ const Bullet = ({ text }: { text: string }) => (
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
+    const activeFont = normalizeFontFamily(data?.settings?.font);
+
     if (!data) {
         return (
             <Document>
-                <Page size="A4" style={tw("font-default text-sm bg-white")}>
+                <Page size="A4" style={[tw("text-sm bg-white"), { fontFamily: activeFont }]}>
                     <ViewR style={tw("flex-1 justify-center items-center")}>
                         <TextR>Loading...</TextR>
                     </ViewR>
@@ -75,49 +89,54 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
 
     const { personalInfo: p, summary, experience, education, skills, projects, certifications, achievements } = data;
 
-    const getPathname = (url?: string | null) => {
-        if (!url) return null;
-        try { return new URL(url).pathname; } catch { return null; }
-    };
-
-    const getHostname = (url?: string | null) => {
-        if (!url) return null;
-        try { return new URL(url).hostname; } catch { return null; }
-    };
-
-    const linkedinPath = getPathname(p.linkedin);
-    const githubPath = getPathname(p.github);
-    const websiteHost = getHostname(p.website);
+    const formattedWebsite = formatUrl(p.website);
+    const formattedLinkedin = formatUrl(p.linkedin);
+    const formattedGithub = formatUrl(p.github);
 
     return (
         <Document
-            title={`Resume-${p.name}`}
+            title={`Resume-${p.name || 'document'}`}
             author={p.name || "Unknown"}
             creator={p.name || "Unknown"}
             producer="Resumely"
         >
-            <Page size="A4" style={tw("font-default text-sm text-black bg-white px-8 py-4")}>
+            <Page size="A4" style={[tw("text-sm text-black bg-white px-8 py-5"), { fontFamily: activeFont }]}>
 
                 {/* Header */}
                 <View className="text-center mb-3">
-                    <Heading className="text-3xl font-semibold tracking-tight uppercase" >{p.name || "Your Name"}</Heading>
+                    <Heading font={activeFont} className="text-3xl font-bold tracking-tight uppercase">{p.name || "Your Name"}</Heading>
                     <View>
-                        <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center")}>
+                        <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center mt-1")}>
                             {nonEmpty(p.phone) && <Text className="text-2xs">{p.phone}</Text>}
-                            {nonEmpty(p.location) && <Text className="text-2xs">{p.location}</Text>}
+                            {nonEmpty(p.location) && (
+                                <>
+                                    {nonEmpty(p.phone) && <Text className="text-2xs text-neutral-400">·</Text>}
+                                    <Text className="text-2xs">{p.location}</Text>
+                                </>
+                            )}
                         </ViewR>
-                        <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center")}>
-                            {nonEmpty(p.website) && websiteHost && (
-                                <LinkR src={p.website!} className="text-2xs">{websiteHost}</LinkR>
+                        <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center mt-0.5")}>
+                            {formattedWebsite && (
+                                <LinkR src={formattedWebsite} className="text-2xs">{getDisplayUrl(p.website)}</LinkR>
                             )}
-                            {nonEmpty(p.email) && <LinkR src={`mailto:${p.email}`} className="text-2xs">{p.email}</LinkR>}
-                            {nonEmpty(p.linkedin) && linkedinPath && linkedinPath.length > 1 && (
-                                <LinkR src={p.linkedin!} className="text-2xs">linkedin.com{linkedinPath}</LinkR>
+                            {nonEmpty(p.email) && (
+                                <>
+                                    {formattedWebsite && <Text className="text-2xs text-neutral-400">·</Text>}
+                                    <LinkR src={`mailto:${p.email}`} className="text-2xs">{p.email}</LinkR>
+                                </>
                             )}
-                            {nonEmpty(p.github) && githubPath && githubPath.length > 1 && (
-                                <LinkR src={p.github!} className="text-2xs">github.com{githubPath}</LinkR>
+                            {formattedLinkedin && (
+                                <>
+                                    {(formattedWebsite || nonEmpty(p.email)) && <Text className="text-2xs text-neutral-400">·</Text>}
+                                    <LinkR src={formattedLinkedin} className="text-2xs">{getDisplayUrl(p.linkedin)}</LinkR>
+                                </>
                             )}
-
+                            {formattedGithub && (
+                                <>
+                                    {(formattedWebsite || nonEmpty(p.email) || formattedLinkedin) && <Text className="text-2xs text-neutral-400">·</Text>}
+                                    <LinkR src={formattedGithub} className="text-2xs">{getDisplayUrl(p.github)}</LinkR>
+                                </>
+                            )}
                         </ViewR>
                     </View>
                 </View>
@@ -125,7 +144,7 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                 {/* Summary */}
                 {nonEmpty(summary) && (
                     <View className="mb-3">
-                        <SectionHeading>Summary</SectionHeading>
+                        <SectionHeading font={activeFont}>Summary</SectionHeading>
                         <Text className="text-xs leading-relaxed text-neutral-800">{summary}</Text>
                     </View>
                 )}
@@ -133,7 +152,7 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                 {/* Experience */}
                 {experience.length > 0 && (
                     <View className="mb-4">
-                        <SectionHeading>Work Experience</SectionHeading>
+                        <SectionHeading font={activeFont}>Work Experience</SectionHeading>
                         {experience.map((exp) => (
                             <ViewR key={exp.id} style={tw("mb-3")}>
                                 <ViewR style={tw("flex-row justify-between items-start mb-0.5")}>
@@ -156,41 +175,44 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                 {/* Projects */}
                 {projects.length > 0 && (
                     <View className="mb-2">
-                        <SectionHeading>Projects</SectionHeading>
-                        {projects.map((proj) => (
-                            <ViewR key={proj.id} style={tw("mb-2")}>
-                                <ViewR style={tw("flex-row justify-between items-center mb-0.5")}>
-                                    <ViewR style={tw("flex-row items-start gap-2")}>
-                                        <Text className="text-sm font-bold">{proj.name}</Text>
-                                        {nonEmpty(proj.link) && (
-                                            <LinkR src={proj.link!} className="text-xs">
-                                                {getHostname(proj.link!) || proj.link}
-                                            </LinkR>
+                        <SectionHeading font={activeFont}>Projects</SectionHeading>
+                        {projects.map((proj) => {
+                            const formattedProjLink = formatUrl(proj.link);
+                            return (
+                                <ViewR key={proj.id} style={tw("mb-2")}>
+                                    <ViewR style={tw("flex-row justify-between items-center mb-0.5")}>
+                                        <ViewR style={tw("flex-row items-start gap-2")}>
+                                            <Text className="text-sm font-bold">{proj.name}</Text>
+                                            {formattedProjLink && (
+                                                <LinkR src={formattedProjLink} className="text-xs text-neutral-600">
+                                                    {getDisplayUrl(proj.link)}
+                                                </LinkR>
+                                            )}
+                                        </ViewR>
+                                        {filterStrings(proj.technologies).length > 0 && (
+                                            <Text className="text-2xs text-neutral-600">
+                                                {filterStrings(proj.technologies).join(' • ')}
+                                            </Text>
                                         )}
                                     </ViewR>
-                                    {filterStrings(proj.technologies).length > 0 && (
-                                        <Text className="text-2xs text-neutral-600">
-                                            {filterStrings(proj.technologies).join(' • ')}
-                                        </Text>
+                                    {nonEmpty(proj.description) && (
+                                        <Text className="text-xs leading-relaxed text-neutral-800 mb-0.5">{proj.description}</Text>
+                                    )}
+                                    {filterStrings(proj.bullets).length > 0 && (
+                                        <ViewR style={tw("pl-3")}>
+                                            {filterStrings(proj.bullets).map((line, i) => <Bullet key={i} text={line} />)}
+                                        </ViewR>
                                     )}
                                 </ViewR>
-                                {nonEmpty(proj.description) && (
-                                    <Text className="text-xs leading-relaxed text-neutral-800 mb-0.5">{proj.description}</Text>
-                                )}
-                                {filterStrings(proj.bullets).length > 0 && (
-                                    <ViewR style={tw("pl-3")}>
-                                        {filterStrings(proj.bullets).map((line, i) => <Bullet key={i} text={line} />)}
-                                    </ViewR>
-                                )}
-                            </ViewR>
-                        ))}
+                            );
+                        })}
                     </View>
                 )}
 
                 {/* Skills */}
                 {skills.length > 0 && (
                     <View className="mb-3">
-                        <SectionHeading>Skills</SectionHeading>
+                        <SectionHeading font={activeFont}>Skills</SectionHeading>
                         {skills.map((group, i) => (
                             filterStrings(group.items).length > 0 && (
                                 <Text key={i} className="text-xs leading-relaxed text-neutral-800">
@@ -205,7 +227,7 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                 {/* Education · Certifications · Achievements */}
                 {education.length > 0 && (
                     <View className="mb-3">
-                        <SectionHeading>Education</SectionHeading>
+                        <SectionHeading font={activeFont}>Education</SectionHeading>
                         {education.map((edu) => (
                             <ViewR key={edu.id} wrap={false} style={tw("mb-2.5")}>
                                 <ViewR style={tw("flex-row justify-between")}>
@@ -227,32 +249,35 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
 
                 {certifications && certifications.length > 0 && (
                     <View className="mb-3">
-                        <SectionHeading>Certifications</SectionHeading>
-                        {certifications.map((cert) => (
-                            <ViewR key={cert.id} wrap={false} style={tw("mb-2.5")}>
-                                <ViewR style={tw("flex-row justify-between")}>
-                                    {nonEmpty(cert.link) ? (
-                                        <LinkR src={cert.link!} className="text-sm font-bold text-neutral-900 leading-tight">{cert.name}</LinkR>
-                                    ) : (
-                                        <Text className="font-bold text-neutral-900 leading-tight">{cert.name}</Text>
+                        <SectionHeading font={activeFont}>Certifications</SectionHeading>
+                        {certifications.map((cert) => {
+                            const formattedCertLink = formatUrl(cert.link);
+                            return (
+                                <ViewR key={cert.id} wrap={false} style={tw("mb-2.5")}>
+                                    <ViewR style={tw("flex-row justify-between")}>
+                                        {formattedCertLink ? (
+                                            <LinkR src={formattedCertLink} className="text-sm font-bold text-neutral-900 leading-tight">{cert.name}</LinkR>
+                                        ) : (
+                                            <Text className="font-bold text-neutral-900 leading-tight">{cert.name}</Text>
+                                        )}
+                                        <Text className="text-2xs text-neutral-800 mt-0.5">
+                                            {cert.date ?? ''}
+                                        </Text>
+                                    </ViewR>
+                                    {nonEmpty(cert.issuer) && (
+                                        <Text className="text-sm text-neutral-800 mt-0.5">
+                                            {cert.issuer}
+                                        </Text>
                                     )}
-                                    <Text className="text-2xs text-neutral-800 mt-0.5">
-                                        {cert.date ?? ''}
-                                    </Text>
                                 </ViewR>
-                                {nonEmpty(cert.issuer) && (
-                                    <Text className="text-sm text-neutral-800 mt-0.5">
-                                        {cert.issuer}
-                                    </Text>
-                                )}
-                            </ViewR>
-                        ))}
+                            );
+                        })}
                     </View>
                 )}
 
                 {achievements && achievements.length > 0 && (
                     <View className="mb-3">
-                        <SectionHeading>Achievements</SectionHeading>
+                        <SectionHeading font={activeFont}>Achievements</SectionHeading>
                         {achievements.map((ach) => (
                             <ViewR key={ach.id} wrap={false} style={tw("mb-2.5")}>
                                 <ViewR style={tw("flex-row justify-between")}>

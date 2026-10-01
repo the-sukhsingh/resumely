@@ -291,7 +291,7 @@ export default function ResumeCreatePage() {
               isSaving={isSaving}
             />
           </div>
-          <ResumePreview resumeData={previewDraft} theme={settings.layout ?? "classic"} />
+          <ResumePreview resumeData={previewDraft} theme={settings.layout === "two-column" ? "twoColumn" : "classic"} />
         </ResizablePanel>
 
         <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>

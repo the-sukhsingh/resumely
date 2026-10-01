@@ -151,14 +151,16 @@ function ResumeEditorContent({
 
   const handleSettingsChange = (nextSettings: ResumeSettings) => {
     setSettings(nextSettings);
-    // Store in local storage
     const nextDraft = { ...draft, settings: nextSettings };
+    setDraft(nextDraft);
+    setPreviewDraft(nextDraft);
+    // Store in local storage
     localStorage.setItem('resumely_create_resume_draft', JSON.stringify(nextDraft));
   };
 
 
   const handleDownloadPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: settings.layout === "two-column" ? "twoColumn" : "classic" });
     const newUrl = createBlobUrl({ blob });
     const link = document.createElement('a');
     link.href = newUrl;
@@ -170,7 +172,7 @@ function ResumeEditorContent({
   const handleDownloadImage = async () => {
     setIsDownloading(true);
     try {
-      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
+      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: settings.layout === "two-column" ? "twoColumn" : "classic" });
       const blob = await createPdfToImage({ pdfBlob, scale: 3 });
       const url = createBlobUrl({ blob });
       downloadFile({ url, fileName: `${previewDraft.personalInfo.name || 'resume'}.png` });
@@ -183,7 +185,7 @@ function ResumeEditorContent({
   };
 
   const handleViewPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft, theme: resume.settings?.layout && resume.settings.layout === "two-column" ? "twoColumn" : "classic" });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: settings.layout === "two-column" ? "twoColumn" : "classic" });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
   };
@@ -206,7 +208,7 @@ function ResumeEditorContent({
               <Manager resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
             </div>
             {activeView === 'resume' ? (
-              <ResumePreview resumeData={previewDraft} theme={resume.settings?.layout ?? "classic"} />
+              <ResumePreview resumeData={previewDraft} theme={settings.layout === "two-column" ? "twoColumn" : "classic"} />
             ) : (
               <CoverLetterPreview resumeData={previewDraft} />
             )}

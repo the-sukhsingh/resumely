@@ -15,9 +15,12 @@ import {
   Image as ImageIcon,
   Eye,
   RefreshCw,
-  Edit
+  Edit,
+  Type,
+  LayoutTemplate
 } from 'lucide-react';
 import ColoredButton from '@/components/custom/colored-button';
+import { SUPPORTED_RESUME_FONTS, normalizeFontFamily } from '@/constants/pdf-fonts';
 
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
 
@@ -155,6 +158,36 @@ const Page = () => {
     }
   };
 
+  const handleTemplateChange = (template: ResumeTemplate) => {
+    setSelectedTemplate(template);
+    if (resumeData) {
+      const updated: ResumeData = {
+        ...resumeData,
+        settings: {
+          font: resumeData.settings?.font || 'Inter',
+          layout: template === 'twoColumn' ? 'two-column' : 'one-column',
+        }
+      };
+      setResumeData(updated);
+      localStorage.setItem('resumely_create_resume_draft', JSON.stringify(updated));
+    }
+  };
+
+  const handleFontChange = (font: string) => {
+    if (resumeData) {
+      const updated: ResumeData = {
+        ...resumeData,
+        settings: {
+          layout: selectedTemplate === 'twoColumn' ? 'two-column' : 'one-column',
+          font,
+        }
+      };
+      setResumeData(updated);
+      localStorage.setItem('resumely_create_resume_draft', JSON.stringify(updated));
+      toast.success(`Font changed to ${font}`);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
     loadResumeData();
@@ -231,25 +264,9 @@ const Page = () => {
   return (
     <div className="min-h-screen pt-16 pb-6 px-4 md:px-8 bg-linear-to-b from-background to-muted/20 relative flex flex-col items-center">
       <title>Resume PDF Preview | Resumely</title>
-      {/* <div className="absolute inset-0 noise opacity-20 pointer-events-none z-0"></div> */}
-      <div className='grid grid-cols-2 gap-4 items-center justify-center'>
+      <div className="absolute inset-0 noise opacity-20 pointer-events-none z-0"></div>
 
-        
-        <ColoredButton className='rounded-full h-8 px-4' color='amber'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='blue'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='cyan'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='emerald'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='indigo'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='neutral'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='orange'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='pink'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='purple'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='rose'>Get Started</ColoredButton>
-        <ColoredButton className='rounded-full h-8 px-4' color='teal'>Get Started</ColoredButton>
-      </div>
-
-
-      <div className="relative z-10 w-full max-w-4xl hidden flex-col gap-4 flex-1">
+      <div className="relative z-10 w-full max-w-4xl flex flex-col gap-4 flex-1">
         {/* Unified Top Control Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card/60 backdrop-blur-md border border-border/80 p-3 rounded-xl shadow-xs">
 
@@ -287,26 +304,47 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Center: Template Selector */}
-          <div className="flex p-0.5 bg-muted/60 rounded-lg border border-border/20 shrink-0">
-            <button
-              onClick={() => setSelectedTemplate('classic')}
-              className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'classic'
-                ? 'bg-background text-foreground shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-                }`}
-            >
-              Classic
-            </button>
-            <button
-              onClick={() => setSelectedTemplate('twoColumn')}
-              className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'twoColumn'
-                ? 'bg-background text-foreground shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-                }`}
-            >
-              Two-Column
-            </button>
+          {/* Center: Template & Font Controls */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {/* Template Selector */}
+            <div className="flex p-0.5 bg-muted/60 rounded-lg border border-border/20 shrink-0">
+              <button
+                onClick={() => handleTemplateChange('classic')}
+                className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'classic'
+                  ? 'bg-background text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                Classic
+              </button>
+              <button
+                onClick={() => handleTemplateChange('twoColumn')}
+                className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'twoColumn'
+                  ? 'bg-background text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                Two-Column
+              </button>
+            </div>
+
+            {/* Font Selector */}
+            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted/60 rounded-lg border border-border/20 shrink-0">
+              <Type className="w-3 h-3 text-muted-foreground" />
+              <select
+                value={resumeData?.settings?.font || 'Inter'}
+                onChange={(e) => handleFontChange(e.target.value)}
+                className="bg-transparent text-foreground text-2xs font-semibold py-1 pr-1 border-0 focus:ring-0 outline-hidden cursor-pointer"
+                style={{ fontFamily: resumeData?.settings?.font || 'Inter' }}
+                aria-label="Select resume font"
+              >
+                {SUPPORTED_RESUME_FONTS.map((f) => (
+                  <option key={f.value} value={f.value} className="bg-popover text-popover-foreground" style={{ fontFamily: f.value }}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Right Actions: Downloads */}

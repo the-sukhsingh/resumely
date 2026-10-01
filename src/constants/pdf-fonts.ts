@@ -183,52 +183,12 @@ export const INTER_FONT: PdfFont[] = [
     fontWeight: "normal",
   },
   {
-    src: "/fonts/inter/Inter-ExtraLight.ttf",
-    fontWeight: "ultralight",
-  },
-  {
-    src: "/fonts/inter/Inter-Thin.ttf",
-    fontWeight: "thin",
-  },
-  {
-    src: "/fonts/inter/Inter-Light.ttf",
-    fontWeight: "light",
-  },
-  {
-    src: "/fonts/inter/Inter-Medium.ttf",
-    fontWeight: "medium",
-  },
-  {
-    src: "/fonts/inter/Inter-SemiBold.ttf",
-    fontWeight: "semibold",
-  },
-  {
     src: "/fonts/inter/Inter-Bold.ttf",
     fontWeight: "bold",
   },
   {
-    src: "/fonts/inter/Inter-ExtraBold.ttf",
-    fontWeight: "bold",
-  },
-  // Inter Italics
-  {
     src: "/fonts/inter/Inter-Italic.ttf",
     fontWeight: "normal",
-    fontStyle: "italic",
-  },
-  {
-    src: "/fonts/inter/Inter-LightItalic.ttf",
-    fontWeight: "light",
-    fontStyle: "italic",
-  },
-  {
-    src: "/fonts/inter/Inter-MediumItalic.ttf",
-    fontWeight: "medium",
-    fontStyle: "italic",
-  },
-  {
-    src: "/fonts/inter/Inter-SemiBoldItalic.ttf",
-    fontWeight: "semibold",
     fontStyle: "italic",
   },
   {
@@ -236,12 +196,130 @@ export const INTER_FONT: PdfFont[] = [
     fontWeight: "bold",
     fontStyle: "italic",
   },
+];
+
+// Roboto fonts
+export const ROBOTO_FONT: PdfFont[] = [
   {
-    src: "/fonts/inter/Inter-ExtraBoldItalic.ttf",
+    src: "/fonts/roboto/Roboto-Regular.ttf",
+    fontWeight: "normal",
+  },
+  {
+    src: "/fonts/roboto/Roboto-Bold.ttf",
+    fontWeight: "bold",
+  },
+  {
+    src: "/fonts/roboto/Roboto-Italic.ttf",
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  {
+    src: "/fonts/roboto/Roboto-BoldItalic.ttf",
     fontWeight: "bold",
     fontStyle: "italic",
   },
 ];
+
+// Merriweather fonts
+export const MERRIWEATHER_FONT: PdfFont[] = [
+  {
+    src: "/fonts/merriweather/Merriweather-Regular.ttf",
+    fontWeight: "normal",
+  },
+  {
+    src: "/fonts/merriweather/Merriweather-Bold.ttf",
+    fontWeight: "bold",
+  },
+  {
+    src: "/fonts/merriweather/Merriweather-Italic.ttf",
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  {
+    src: "/fonts/merriweather/Merriweather-BoldItalic.ttf",
+    fontWeight: "bold",
+    fontStyle: "italic",
+  },
+];
+
+// Lato fonts
+export const LATO_FONT: PdfFont[] = [
+  {
+    src: "/fonts/lato/Lato-Regular.ttf",
+    fontWeight: "normal",
+  },
+  {
+    src: "/fonts/lato/Lato-Bold.ttf",
+    fontWeight: "bold",
+  },
+  {
+    src: "/fonts/lato/Lato-Italic.ttf",
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  {
+    src: "/fonts/lato/Lato-BoldItalic.ttf",
+    fontWeight: "bold",
+    fontStyle: "italic",
+  },
+];
+
+// Source Serif 4 fonts
+export const SOURCE_SERIF_4_FONT: PdfFont[] = [
+  {
+    src: "/fonts/sourceserif4/SourceSerif4-Regular.ttf",
+    fontWeight: "normal",
+  },
+  {
+    src: "/fonts/sourceserif4/SourceSerif4-Bold.ttf",
+    fontWeight: "bold",
+  },
+  {
+    src: "/fonts/sourceserif4/SourceSerif4-Italic.ttf",
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  {
+    src: "/fonts/sourceserif4/SourceSerif4-BoldItalic.ttf",
+    fontWeight: "bold",
+    fontStyle: "italic",
+  },
+];
+
+export const SUPPORTED_RESUME_FONTS = [
+  { value: 'Inter', label: 'Inter' },
+  { value: 'Roboto', label: 'Roboto' },
+  { value: 'Merriweather', label: 'Merriweather' },
+  { value: 'Lato', label: 'Lato' },
+  { value: 'Source Serif 4', label: 'Source Serif 4' },
+] as const;
+
+export type SupportedResumeFont = typeof SUPPORTED_RESUME_FONTS[number]['value'];
+
+export const normalizeFontFamily = (font?: string | null): SupportedResumeFont => {
+  if (!font) return 'Inter';
+  const f = font.trim().toLowerCase();
+  if (f === 'roboto') return 'Roboto';
+  if (f === 'merriweather') return 'Merriweather';
+  if (f === 'lato') return 'Lato';
+  if (f === 'source serif 4' || f.includes('source serif') || f.includes('sourceserif')) return 'Source Serif 4';
+  return 'Inter';
+};
+
+let fontsRegistered = false;
+export const registerResumeFonts = (FontModule: { register: (config: { family: string; fonts: PdfFont[] }) => void }) => {
+  if (fontsRegistered) return;
+  try {
+    FontModule.register({ family: "Inter", fonts: INTER_FONT });
+    FontModule.register({ family: "Roboto", fonts: ROBOTO_FONT });
+    FontModule.register({ family: "Merriweather", fonts: MERRIWEATHER_FONT });
+    FontModule.register({ family: "Lato", fonts: LATO_FONT });
+    FontModule.register({ family: "Source Serif 4", fonts: SOURCE_SERIF_4_FONT });
+    fontsRegistered = true;
+  } catch (e) {
+    console.warn("Failed to register some resume fonts:", e);
+  }
+};
 
 // Geist Mono fonts
 export const GEIST_MONO_FONT: PdfFont[] = [
