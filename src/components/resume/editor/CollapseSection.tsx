@@ -6,19 +6,19 @@ import {  motion, AnimatePresence } from 'motion/react';
 
 export interface CollapsibleSectionProps {
   title: string;
+  badge?: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
   sectionKey?: string;
 }
 
-const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, isOpen, onToggle, children, sectionKey = 'default' }) => {
+const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, badge, isOpen, onToggle, children, sectionKey = 'default' }) => {
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     onToggle();
   };
-
 
   return (
     <div className="overflow-hidden">
@@ -28,17 +28,21 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, isOpen, 
             isOpen ? "bg-sidebar text-neutral-900 dark:text-neutral-50": "hover:bg-sidebar"
         )}
       >
-        <h2 className="font-sans font-medium text-sm select-none flex-1 pointer-events-none">{title}</h2>
+        <div className="flex items-center gap-2 flex-1 pointer-events-none min-w-0">
+          <h2 className="font-sans font-medium text-sm select-none">{title}</h2>
+          {badge}
+        </div>
         <button
           onClick={handleToggle}
           className="p-1 hover:bg-muted rounded transition-colors relative z-10 pointer-events-auto"
           type="button"
+          aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
         >
           <motion.div
-            animate={{ rotateX: isOpen ? 180 : 0 }}
+            animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >
-            <ChevronDown className="w-5 h-5 text-primary/90" />
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
           </motion.div>
         </button>
       </div>
