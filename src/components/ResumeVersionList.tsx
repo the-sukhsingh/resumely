@@ -11,27 +11,13 @@ import Feedback from './custom/feedback';
 import {
   Search,
   Plus,
-  MoreHorizontal,
-  Copy,
   Trash2,
-  Edit3,
   ArrowUpRight,
   FileText,
-  Sparkles,
   Briefcase,
-  Layers,
-  Clock,
-  CheckCircle2,
   X,
   Target,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,7 +45,6 @@ export default function ResumeVersionList({ userId }: Props) {
   const masterResume = useQuery(api.masterResumes.getMasterResumeByUser, { userId });
 
   const deleteVersion = useMutation(api.resumeVersions.deleteResumeVersion);
-  const duplicateVersionAction = useAction(api.resumeVersions.duplicateVersion);
 
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<{ id: Id<'resumeVersions'>; name: string } | null>(null);
@@ -96,19 +81,7 @@ export default function ResumeVersionList({ userId }: Props) {
     }
   };
 
-  const handleDuplicate = async (e: React.MouseEvent, versionId: Id<'resumeVersions'>, currentName: string) => {
-    e.stopPropagation();
-    try {
-      await duplicateVersionAction({
-        versionId,
-        newName: `${currentName} (Copy)`,
-      });
-      toast.success(`Duplicated "${currentName}"`);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to duplicate resume');
-    }
-  };
+
 
   // Loading skeleton
   if (versions === undefined) {
@@ -261,18 +234,11 @@ export default function ResumeVersionList({ userId }: Props) {
         {/* ─── Redesigned Table / Rows Container ─── */}
         <div className="rounded-2xl border border-border/70 bg-card/50 backdrop-blur-xs shadow-xs overflow-hidden">
           {/* Table Header (Desktop/Tablet) */}
-          <div className="hidden sm:grid sm:grid-cols-12 items-center gap-4 px-5 py-2.5 border-b border-border/60 bg-muted/20 text-[11px] font-medium text-muted-foreground">
-            <div className="col-span-6 md:col-span-5 flex items-center gap-1.5">
-              <span>Target Role / Version</span>
-            </div>
-            <div className="hidden md:flex md:col-span-2 items-center gap-1.5">
-              <span>Scope</span>
-            </div>
-            <div className="col-span-3 md:col-span-2 flex items-center gap-1.5">
-              <span>ATS Fit</span>
-            </div>
-            <div className="col-span-3 md:col-span-3 flex items-center justify-end text-right">
-              <span>Activity / Actions</span>
+          <div className="hidden sm:flex items-center justify-between px-5 py-2.5 border-b border-border/60 bg-muted/20 text-[11px] font-medium text-muted-foreground">
+            <span>Target Role / Version</span>
+            <div className="flex items-center gap-8 pr-1">
+              <span>Updated</span>
+              <span className="w-8 text-right"></span>
             </div>
           </div>
 
@@ -318,11 +284,6 @@ export default function ResumeVersionList({ userId }: Props) {
               </div>
             ) : (
               filteredTailored.map((item, index) => {
-                const positionsCount = item.experience?.length || 0;
-                const skillsCount =
-                  item.skills?.reduce((acc, cat) => acc + (cat.items?.length || 0), 0) || 0;
-                const score = item.matchScore;
-
                 return (
                   <div
                     key={item._id}
@@ -335,144 +296,50 @@ export default function ResumeVersionList({ userId }: Props) {
                     }}
                     role="button"
                     tabIndex={0}
-                    className="group relative flex flex-col sm:grid sm:grid-cols-12 sm:items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
+                    className="group relative flex items-center justify-between gap-4 px-4 sm:px-5 py-3 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
                   >
-                    {/* Col 1: Role Name & Dithered Sphere (col-span-6 / col-span-5) */}
-                    <div className="sm:col-span-6 md:col-span-5 flex items-center gap-3 min-w-0">
+                    {/* Role Name & Dithered Sphere */}
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <DitheredSphere index={index} seed={item._id} size={32} />
 
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm text-foreground truncate group-hover:text-foreground tracking-tight">
-                            {item.name || 'Untitled Version'}
-                          </span>
-                        </div>
+                        <span className="font-medium text-sm text-foreground truncate block group-hover:text-foreground tracking-tight">
+                          {item.name || 'Untitled Version'}
+                        </span>
 
                         {/* Mobile-only secondary info line */}
-                        <div className="flex items-center gap-2 mt-0.5 sm:hidden text-[11px] text-muted-foreground">
-                          <span>{positionsCount} roles</span>
-                          <span>·</span>
-                          <span>{skillsCount} skills</span>
-                          <span>·</span>
-                          <span className="font-mono text-[10px]">
-                            {formatDistanceToNow(new Date(item.updatedAt || item._creationTime), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Col 2: Content Scope (col-span-2, hidden on mobile) */}
-                    <div className="hidden md:flex md:col-span-2 items-center text-xs text-muted-foreground">
-                      <div className="inline-flex items-center gap-1.5 font-mono text-[11px] px-2 py-0.5 rounded-md bg-muted/40 border border-border/40">
-                        <span className="text-foreground/90 font-medium">{positionsCount}</span>
-                        <span className="text-muted-foreground/80">exp</span>
-                        <span className="text-muted-foreground/40">/</span>
-                        <span className="text-foreground/90 font-medium">{skillsCount}</span>
-                        <span className="text-muted-foreground/80">skills</span>
-                      </div>
-                    </div>
-
-                    {/* Col 3: ATS Match Score / Status (col-span-3 / col-span-2) */}
-                    <div className="sm:col-span-3 md:col-span-2 flex items-center">
-                      {score != null ? (
-                        <div
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                            score >= 85
-                              ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25'
-                              : score >= 70
-                              ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/25'
-                              : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/25'
-                          }`}
-                        >
-                          <span
-                            className={`size-1.5 rounded-full ${
-                              score >= 85
-                                ? 'bg-emerald-500 animate-pulse'
-                                : score >= 70
-                                ? 'bg-amber-500'
-                                : 'bg-rose-500'
-                            }`}
-                          />
-                          <span className="font-mono font-semibold">{score}%</span>
-                          <span className="text-[10px] opacity-80 uppercase tracking-wider font-sans">
-                            Match
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-muted/50 text-muted-foreground border border-border/50">
-                          <Sparkles className="size-3 text-muted-foreground/70" />
-                          <span>Tailored</span>
+                        <span className="sm:hidden font-mono text-[10px] text-muted-foreground block mt-0.5">
+                          {formatDistanceToNow(new Date(item.updatedAt || item._creationTime), {
+                            addSuffix: true,
+                          })}
                         </span>
-                      )}
+                      </div>
                     </div>
 
-                    {/* Col 4: Last Modified & Fast Actions (col-span-3) */}
-                    <div className="sm:col-span-3 md:col-span-3 flex items-center justify-between sm:justify-end gap-3 text-right">
+                    {/* Last Modified & Single Delete Action */}
+                    <div className="flex items-center gap-6 sm:gap-8 shrink-0">
                       <span className="hidden sm:inline-block font-mono text-[11px] text-muted-foreground whitespace-nowrap">
                         {formatDistanceToNow(new Date(item.updatedAt || item._creationTime), {
                           addSuffix: true,
                         })}
                       </span>
 
-                      {/* Interactive Button Group with Emil Kowalski Microinteractions */}
-                      <div
-                        className="flex items-center gap-1 ml-auto sm:ml-0"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* Open Button */}
-                        <Link
-                          href={`/resume/${item._id}`}
-                          className="group/btn inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium text-foreground bg-secondary/80 hover:bg-secondary border border-border/50 hover:border-border active:scale-[0.97] transition-all duration-150 cursor-pointer shadow-2xs"
+                      {/* Single Action Button: Delete */}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDeleteTarget({
+                              id: item._id,
+                              name: item.name || 'Untitled Version',
+                            })
+                          }
+                          title="Delete version"
+                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all duration-150 cursor-pointer"
                         >
-                          <span>Open</span>
-                          <ArrowUpRight className="size-3 text-muted-foreground group-hover/btn:text-foreground group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-150 ease-out" />
-                        </Link>
-
-                        {/* More Menu */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              type="button"
-                              className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted active:scale-[0.95] transition-all cursor-pointer"
-                            >
-                              <MoreHorizontal className="size-4" />
-                              <span className="sr-only">Actions</span>
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-44 text-xs">
-                            <DropdownMenuItem asChild>
-                              <Link
-                                href={`/resume/${item._id}`}
-                                className="flex items-center gap-2 cursor-pointer"
-                              >
-                                <Edit3 className="size-3.5 text-muted-foreground" />
-                                <span>Open Editor</span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={(e) => handleDuplicate(e, item._id, item.name || 'Resume')}
-                              className="flex items-center gap-2 cursor-pointer"
-                            >
-                              <Copy className="size-3.5 text-muted-foreground" />
-                              <span>Duplicate Version</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() =>
-                                setDeleteTarget({
-                                  id: item._id,
-                                  name: item.name || 'Untitled Version',
-                                })
-                              }
-                              className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
-                            >
-                              <Trash2 className="size-3.5" />
-                              <span>Delete Version</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                          <Trash2 className="size-4" />
+                          <span className="sr-only">Delete Version</span>
+                        </button>
                       </div>
                     </div>
                   </div>
