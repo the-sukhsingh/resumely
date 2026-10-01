@@ -325,7 +325,17 @@ export const getResumeVersionWithDetails = query({
     if (!version) return null;
 
     const jobDescription = version.jobDescriptionId ? await ctx.db.get(version.jobDescriptionId) : null;
-    const masterResume = version.masterResumeId ? await ctx.db.get(version.masterResumeId) : null;
+    let masterResume: Doc<"resumeVersions"> | null = null;
+    if (version.isMasterResume) {
+      masterResume = version;
+    } else if (version.masterResumeId) {
+      masterResume = await ctx.db.get(version.masterResumeId);
+    } else {
+      masterResume = await ctx.db
+        .query("resumeVersions")
+        .withIndex("by_user_master", (q) => q.eq("userId", version.userId).eq("isMasterResume", true))
+        .first();
+    }
 
     return { ...version, jobDescription, masterResume };
   },
@@ -482,6 +492,102 @@ export const atsChecker = action({
 
 // ─── AI Chat Action ───────────────────────────────────────────────────────────
 
+/**
+ * Strips HTML tags, styles, scripts, and noise to produce a clean, readable text representation of a web page.
+ */
+function cleanHtmlContent(html: string): { title?: string; description?: string; cleanText: string } {
+  // Extract title
+  const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title = titleMatch ? decodeHtmlEntities(titleMatch[1].trim()) : undefined;
+
+  // Extract meta description
+  const metaDescMatch =
+    html.match(/<meta[^>]+(?:name=["']description["']|property=["'](?:og:description|twitter:description)["'])[^>]+content=["']([^"']+)["']/i) ||
+    html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name=["']description["']|property=["'](?:og:description|twitter:description)["'])/i);
+  const description = metaDescMatch ? decodeHtmlEntities(metaDescMatch[1].trim()) : undefined;
+
+  // Remove elements that don't contain core content
+  let text = html
+    .replace(/<!DOCTYPE[^>]*>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "") // comments
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "") // scripts
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "") // styles
+    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "") // noscript
+    .replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi, "") // svgs
+    .replace(/<canvas\b[^>]*>[\s\S]*?<\/canvas>/gi, "") // canvas
+    .replace(/<iframe\b[^>]*>[\s\S]*?<\/iframe>/gi, "") // iframes
+    .replace(/<template\b[^>]*>[\s\S]*?<\/template>/gi, "") // templates
+    .replace(/<nav\b[^>]*>[\s\S]*?<\/nav>/gi, "") // navbars
+    .replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi, "") // footers
+    .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, ""); // head
+
+  // Convert semantic headings to markdown-like headings
+  text = text.replace(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi, "\n\n# $1\n\n");
+  text = text.replace(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi, "\n\n## $1\n\n");
+  text = text.replace(/<h3\b[^>]*>([\s\S]*?)<\/h3>/gi, "\n\n### $1\n\n");
+  text = text.replace(/<h[4-6]\b[^>]*>([\s\S]*?)<\/h[4-6]>/gi, "\n\n#### $1\n\n");
+
+  // Convert list items to markdown bullets
+  text = text.replace(/<li\b[^>]*>([\s\S]*?)<\/li>/gi, "\n• $1");
+
+  // Convert structural block boundaries to linebreaks
+  text = text.replace(/<br\s*\/?>/gi, "\n");
+  text = text.replace(/<\/(p|div|section|article|blockquote|tr|table|ul|ol)>/gi, "\n\n");
+  text = text.replace(/<\/(td|th)>/gi, " | ");
+
+  // Strip all remaining HTML tags
+  text = text.replace(/<[^>]+>/g, " ");
+
+  // Decode HTML entities
+  text = decodeHtmlEntities(text);
+
+  // Normalize whitespace:
+  text = text.replace(/[\u00A0\u200B\u200C\u200D\uFEFF]/g, " ");
+  const lines = text
+    .split("\n")
+    .map((l) => l.replace(/[ \t]+/g, " ").trim())
+    .filter((l) => l.length > 0);
+
+  let cleanText = lines.join("\n");
+  cleanText = cleanText.replace(/\n{3,}/g, "\n\n").trim();
+
+  // If text is excessively large, truncate to reasonable limit (~8000 chars)
+  const MAX_CHARS = 8000;
+  if (cleanText.length > MAX_CHARS) {
+    cleanText = cleanText.slice(0, MAX_CHARS) + "\n\n...[Content truncated for length]";
+  }
+
+  return { title, description, cleanText };
+}
+
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&mdash;/gi, "—")
+    .replace(/&ndash;/gi, "–")
+    .replace(/&bull;/gi, "•")
+    .replace(/&hellip;/gi, "…")
+    .replace(/&#(\d+);/g, (_, dec) => {
+      try {
+        return String.fromCharCode(parseInt(dec, 10));
+      } catch {
+        return "";
+      }
+    })
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+      try {
+        return String.fromCharCode(parseInt(hex, 16));
+      } catch {
+        return "";
+      }
+    });
+}
+
 function buildSystemPrompt(resume: Doc<"resumeVersions">, jd: Doc<"jobDescriptions"> | null, focusSection?: string) {
   const jdSection = jd
     ? `JOB DESCRIPTION:
@@ -535,6 +641,8 @@ ${jdSection}
 INSTRUCTIONS:
 - Use tools to make actual edits to the resume when the user asks for improvements
 - You can update any resume section, settings, or name using the available tools
+- To pull and extract clean content from links the user provides (e.g. portfolio, GitHub, LinkedIn, project links), use 'get_website_content'
+- To import, reference, or check any section from the user's master resume, use 'get_master_resume_section'
 - Always explain what changes you made and why
 - Focus on matching the JD requirements
 - Use strong action verbs and quantify impact where possible
@@ -559,7 +667,7 @@ export const chat = action({
     const versionWithDetails = await ctx.runQuery(api.resumeVersions.getResumeVersionWithDetails, { versionId: args.versionId });
     if (!versionWithDetails) throw new Error("Resume version not found");
 
-    const { jobDescription, masterResume: _master, ...resume } = versionWithDetails;
+    const { jobDescription, masterResume, ...resume } = versionWithDetails;
     const snapshot = {
       name: resume.name,
       personalInfo: resume.personalInfo,
@@ -893,14 +1001,153 @@ export const chat = action({
       } as any),
 
       get_website_content: tool({
-        description: "Fetch and summarize content from a URL. Use this when the user provides a link to pull info from.",
+        description:
+          "Fetch and extract clean, readable text from a webpage URL (e.g. portfolio, personal website, GitHub repo, LinkedIn profile, or project page). Statically strips HTML, scripts, and styling to provide clean content for resume tailoring.",
         parameters: z.object({
-          url: z.string().describe("The URL to fetch content from"),
+          url: z.string().describe("The HTTP or HTTPS URL to fetch content from"),
         }),
-        execute: async ({ url }: any) => {
-          const response = await fetch(url);
-          const text = await response.text();
-          return { summary: text };
+        execute: async ({ url }: { url: string }) => {
+          let normalizedUrl = url.trim();
+          if (!/^https?:\/\//i.test(normalizedUrl)) {
+            normalizedUrl = `https://${normalizedUrl}`;
+          }
+
+          try {
+            new URL(normalizedUrl);
+          } catch {
+            return {
+              error: `Invalid URL: "${url}". Please provide a valid web link.`,
+            };
+          }
+
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+            const response = await fetch(normalizedUrl, {
+              headers: {
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                Accept: "text/html,application/xhtml+xml,text/plain,*/*;q=0.8",
+              },
+              signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              return {
+                error: `Failed to fetch webpage (Status: ${response.status} ${response.statusText})`,
+                url: normalizedUrl,
+              };
+            }
+
+            const contentType = response.headers.get("content-type") || "";
+            const rawBody = await response.text();
+
+            if (contentType.includes("application/json")) {
+              return {
+                url: normalizedUrl,
+                contentType: "json",
+                content: rawBody.slice(0, 8000),
+              };
+            }
+
+            const { title, description, cleanText } = cleanHtmlContent(rawBody);
+
+            if (!cleanText || cleanText.length < 20) {
+              return {
+                url: normalizedUrl,
+                title,
+                description,
+                content: cleanText || "No readable text content found on this webpage.",
+                warning: "The page may require JavaScript rendering or authentication to view.",
+              };
+            }
+
+            return {
+              url: normalizedUrl,
+              title,
+              description,
+              content: cleanText,
+            };
+          } catch (err: any) {
+            const isTimeout = err?.name === "AbortError";
+            return {
+              error: isTimeout
+                ? "Request timed out while trying to reach the webpage."
+                : `Could not fetch website: ${err?.message || "Unknown error"}`,
+              url: normalizedUrl,
+            };
+          }
+        },
+      } as any),
+
+      get_master_resume_section: tool({
+        description:
+          "Retrieve any section or all data from the user's master resume. Use this when the user asks to import, restore, check, or pull details from their master resume (e.g., experiences, projects, skills, education, certifications, achievements, summary, or personal info).",
+        parameters: z.object({
+          section: z
+            .enum([
+              "all",
+              "personalInfo",
+              "summary",
+              "experience",
+              "education",
+              "skills",
+              "projects",
+              "certifications",
+              "achievements",
+              "coverLetter",
+              "settings",
+            ])
+            .describe(
+              "The specific section to fetch from the master resume, or 'all' to get the entire master resume."
+            ),
+        }),
+        execute: async ({ section }: { section: string }) => {
+          let master = masterResume;
+          if (!master) {
+            master = await ctx.runQuery(api.masterResumes.getMasterResumeByUser, {
+              userId: resume.userId,
+            });
+          }
+
+          if (!master) {
+            return {
+              error:
+                "No master resume found for this user. You can ask the user to provide their background details directly or set up a master resume.",
+            };
+          }
+
+          if (section === "all") {
+            return {
+              masterResumeId: master._id,
+              name: master.name,
+              personalInfo: master.personalInfo,
+              summary: master.summary,
+              experience: master.experience,
+              education: master.education,
+              skills: master.skills,
+              projects: master.projects,
+              certifications: master.certifications,
+              achievements: master.achievements,
+              coverLetter: master.coverLetter,
+              settings: master.settings,
+            };
+          }
+
+          const sectionData = (master as any)[section];
+          return {
+            section,
+            masterResumeId: master._id,
+            data: sectionData ?? null,
+            isEmpty:
+              sectionData === null ||
+              sectionData === undefined ||
+              (Array.isArray(sectionData) && sectionData.length === 0) ||
+              (typeof sectionData === "string" && sectionData.trim().length === 0),
+          };
         },
       } as any),
 
