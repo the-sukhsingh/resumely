@@ -64,7 +64,7 @@ const Feedback = () => {
     if (!user) return null;
 
     return (
-        <div className='fixed bottom-4 right-4 z-50' ref={containerRef}>
+        <div className='fixed bottom-0 right-4 z-50' ref={containerRef}>
             <button 
                 onClick={() => { setIsOpen(!isOpen) }} 
                 className='bg-black dark:bg-white text-white dark:text-black p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer border border-transparent dark:border-neutral-800'
