@@ -147,52 +147,67 @@ export default function QuietStudio({
           </div>
         </header>
 
-        {/* Master Resume Anchor Strip */}
+        {/* Master Resume Anchor Card (Emil Kowalski Craft Overhaul) */}
         {master && (
-          <section className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground px-0.5">
-              <span className="font-medium tracking-tight text-foreground flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-emerald-500" />
-                Primary Resume
-              </span>
-              <span className="text-[11px] text-muted-foreground font-mono">
-                Source of truth for all versions
-              </span>
+          <section className="group relative rounded-2xl border border-border/80 hover:border-foreground/25 bg-linear-to-b from-card/80 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 hover:shadow-md shadow-xs">
+            {/* Top Status & Sync Row inside the card */}
+            <div className="flex items-center justify-between gap-2 pb-3.5 mb-4 border-b border-border/40 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-semibold text-foreground tracking-tight">Master Profile</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-medium">
+                  Active Source
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-mono">
+                <span className="hidden sm:inline">Syncs to all versions ·</span>
+                <span>Updated {master.lastUpdated}</span>
+              </div>
             </div>
 
-            <div className="group relative rounded-2xl border border-border/70 hover:border-foreground/20 bg-card/40 hover:bg-card/70 p-5 transition-all duration-200 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3.5">
-                  <div className="size-10 rounded-xl bg-muted/60 text-foreground flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-                    <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
+            {/* Main Content & Stats Row */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div className="flex items-start gap-4">
+                <div className="size-11 rounded-xl bg-muted/60 dark:bg-muted/30 border border-border/50 text-foreground flex items-center justify-center shrink-0 shadow-xs">
+                  <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="space-y-2">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-base font-semibold tracking-tight text-foreground">
-                        {master.name}
-                      </h2>
-                      <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        Active Base
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Complete career history · {master.metrics.experiences} positions · {master.metrics.skills} skills · {master.metrics.projects} projects
+                    <h2 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
+                      {master.name}
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Your complete career record and baseline credentials
                     </p>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {master.lastUpdated}
-                  </span>
-                  <Link
-                    href={`/resume/${master.id}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border/80 bg-background hover:bg-muted/70 active:scale-[0.98] transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Edit Base</span>
-                    <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </Link>
+                  {/* Structured Stat Chips */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/30 border border-border/50 text-[11px] font-medium text-foreground/90">
+                      <strong className="text-foreground font-semibold">{master.metrics.experiences}</strong>
+                      <span className="text-muted-foreground">positions</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/30 border border-border/50 text-[11px] font-medium text-foreground/90">
+                      <strong className="text-foreground font-semibold">{master.metrics.skills}</strong>
+                      <span className="text-muted-foreground">skills</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/30 border border-border/50 text-[11px] font-medium text-foreground/90">
+                      <strong className="text-foreground font-semibold">{master.metrics.projects}</strong>
+                      <span className="text-muted-foreground">projects</span>
+                    </span>
+                  </div>
                 </div>
+              </div>
+
+              {/* Action CTA with Emil Kowalski Micro-interactions */}
+              <div className="flex items-center self-end sm:self-center shrink-0">
+                <Link
+                  href={`/resume/${master.id}`}
+                  className="group/btn inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-foreground text-background hover:bg-foreground/90 active:scale-[0.97] transition-all duration-150 cursor-pointer shadow-xs"
+                >
+                  <span>Edit Base Profile</span>
+                  <ArrowUpRight className="size-3.5 text-background/80 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-150" />
+                </Link>
               </div>
             </div>
           </section>
