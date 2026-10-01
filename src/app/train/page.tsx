@@ -16,11 +16,9 @@ import {
   Eye,
   RefreshCw,
   Edit,
-  Type,
-  LayoutTemplate
+  Type
 } from 'lucide-react';
-import ColoredButton from '@/components/custom/colored-button';
-import { SUPPORTED_RESUME_FONTS, normalizeFontFamily } from '@/constants/pdf-fonts';
+import { SUPPORTED_RESUME_FONTS } from '@/constants/pdf-fonts';
 
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
 
@@ -114,7 +112,7 @@ const MOCK_RESUME: ResumeData = {
   ],
   achievements: [],
   settings: {
-    font: "Inter",
+    font: "Times New Roman",
     layout: "one-column",
   }
 };
@@ -123,7 +121,7 @@ const Page = () => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<ResumeTemplate>('classic');
+  const [selectedTemplate] = useState<ResumeTemplate>('classic');
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
   const [isUsingMock, setIsUsingMock] = useState(false);
@@ -133,18 +131,20 @@ const Page = () => {
       const saved = localStorage.getItem('resumely_create_resume_draft');
       if (saved) {
         const parsed = JSON.parse(saved) as ResumeData;
-        setResumeData(parsed);
+        const font = parsed.settings?.font || 'Times New Roman';
+        const updated: ResumeData = {
+          ...parsed,
+          settings: {
+            font,
+            layout: 'one-column',
+          }
+        };
+        setResumeData(updated);
         setIsUsingMock(false);
-        if (parsed.settings?.layout === 'two-column') {
-          setSelectedTemplate('twoColumn');
-        } else {
-          setSelectedTemplate('classic');
-        }
         toast.success("Resume data successfully loaded from local storage!");
       } else {
         setResumeData(MOCK_RESUME);
         setIsUsingMock(true);
-        setSelectedTemplate('classic');
         toast.info("No saved draft found. Using a demo template.", {
           duration: 4000
         });
@@ -153,23 +153,7 @@ const Page = () => {
       console.error('Error loading resume draft:', e);
       setResumeData(MOCK_RESUME);
       setIsUsingMock(true);
-      setSelectedTemplate('classic');
       toast.error("Failed to load local storage draft. Loaded mock data.");
-    }
-  };
-
-  const handleTemplateChange = (template: ResumeTemplate) => {
-    setSelectedTemplate(template);
-    if (resumeData) {
-      const updated: ResumeData = {
-        ...resumeData,
-        settings: {
-          font: resumeData.settings?.font || 'Inter',
-          layout: template === 'twoColumn' ? 'two-column' : 'one-column',
-        }
-      };
-      setResumeData(updated);
-      localStorage.setItem('resumely_create_resume_draft', JSON.stringify(updated));
     }
   };
 
@@ -178,7 +162,7 @@ const Page = () => {
       const updated: ResumeData = {
         ...resumeData,
         settings: {
-          layout: selectedTemplate === 'twoColumn' ? 'two-column' : 'one-column',
+          layout: 'one-column',
           font,
         }
       };
@@ -304,47 +288,23 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Center: Template & Font Controls */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {/* Template Selector */}
-            <div className="flex p-0.5 bg-muted/60 rounded-lg border border-border/20 shrink-0">
-              <button
-                onClick={() => handleTemplateChange('classic')}
-                className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'classic'
-                  ? 'bg-background text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-                  }`}
-              >
-                Classic
-              </button>
-              <button
-                onClick={() => handleTemplateChange('twoColumn')}
-                className={`py-1 px-3 text-2xs font-semibold rounded-md transition-all ${selectedTemplate === 'twoColumn'
-                  ? 'bg-background text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-                  }`}
-              >
-                Two-Column
-              </button>
-            </div>
-
-            {/* Font Selector */}
-            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted/60 rounded-lg border border-border/20 shrink-0">
-              <Type className="w-3 h-3 text-muted-foreground" />
-              <select
-                value={resumeData?.settings?.font || 'Inter'}
-                onChange={(e) => handleFontChange(e.target.value)}
-                className="bg-transparent text-foreground text-2xs font-semibold py-1 pr-1 border-0 focus:ring-0 outline-hidden cursor-pointer"
-                style={{ fontFamily: resumeData?.settings?.font || 'Inter' }}
-                aria-label="Select resume font"
-              >
-                {SUPPORTED_RESUME_FONTS.map((f) => (
-                  <option key={f.value} value={f.value} className="bg-popover text-popover-foreground" style={{ fontFamily: f.value }}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Center: Font Selector */}
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/60 rounded-lg border border-border/20 shrink-0">
+            <Type className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-2xs font-semibold text-muted-foreground">Font:</span>
+            <select
+              value={resumeData?.settings?.font || 'Times New Roman'}
+              onChange={(e) => handleFontChange(e.target.value)}
+              className="bg-transparent text-foreground text-2xs font-semibold py-0.5 pr-1 border-0 focus:ring-0 outline-hidden cursor-pointer"
+              style={{ fontFamily: resumeData?.settings?.font || 'Times New Roman' }}
+              aria-label="Select resume font"
+            >
+              {SUPPORTED_RESUME_FONTS.map((f) => (
+                <option key={f.value} value={f.value} className="bg-popover text-popover-foreground" style={{ fontFamily: f.value }}>
+                  {f.label}{f.value === 'Times New Roman' ? ' (Default)' : ''}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Right Actions: Downloads */}

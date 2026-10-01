@@ -92,7 +92,7 @@ const INITIAL_RESUME: ResumeData = {
   certifications: [],
   achievements: [],
   settings: {
-    font: "Inter",
+    font: "Times New Roman",
     layout: "one-column",
   }
 };
@@ -204,7 +204,7 @@ export default function ResumeCreatePage() {
     if (!previewDraft) return;
     const blob = await createPdfBlob({ 
       resumeData: previewDraft, 
-      theme: settings.layout === "two-column" ? "twoColumn" : "classic" 
+      theme: "classic" 
     });
     const newUrl = createBlobUrl({ blob });
     const link = document.createElement('a');
@@ -221,7 +221,7 @@ export default function ResumeCreatePage() {
     try {
       const pdfBlob = await createPdfBlob({ 
         resumeData: previewDraft, 
-        theme: settings.layout === "two-column" ? "twoColumn" : "classic" 
+        theme: "classic" 
       });
       const blob = await createPdfToImage({ pdfBlob, scale: 3 });
       const url = createBlobUrl({ blob });
@@ -237,7 +237,7 @@ export default function ResumeCreatePage() {
     if (!previewDraft) return;
     const blob = await createPdfBlob({ 
       resumeData: previewDraft, 
-      theme: settings.layout === "two-column" ? "twoColumn" : "classic" 
+      theme: "classic" 
     });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
@@ -291,7 +291,7 @@ export default function ResumeCreatePage() {
               isSaving={isSaving}
             />
           </div>
-          <ResumePreview resumeData={previewDraft} theme={settings.layout === "two-column" ? "twoColumn" : "classic"} />
+          <ResumePreview resumeData={previewDraft} theme="classic" />
         </ResizablePanel>
 
         <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>

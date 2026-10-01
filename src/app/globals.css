@@ -168,6 +168,35 @@
 }
 
 @font-face {
+  font-family: 'Times New Roman';
+  src: url('/fonts/timesnewroman/TimesNewRoman-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Times New Roman';
+  src: url('/fonts/timesnewroman/TimesNewRoman-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Times New Roman';
+  src: url('/fonts/timesnewroman/TimesNewRoman-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Times New Roman';
+  src: url('/fonts/timesnewroman/TimesNewRoman-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Inter';
   src: url('/fonts/inter/Inter-Regular.ttf') format('truetype');
   font-weight: 400;
@@ -237,4 +266,5 @@
   font-style: normal;
   font-display: swap;
 }
+
 

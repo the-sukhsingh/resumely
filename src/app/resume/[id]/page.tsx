@@ -160,7 +160,7 @@ function ResumeEditorContent({
 
 
   const handleDownloadPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft, theme: settings.layout === "two-column" ? "twoColumn" : "classic" });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
     const newUrl = createBlobUrl({ blob });
     const link = document.createElement('a');
     link.href = newUrl;
@@ -172,7 +172,7 @@ function ResumeEditorContent({
   const handleDownloadImage = async () => {
     setIsDownloading(true);
     try {
-      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: settings.layout === "two-column" ? "twoColumn" : "classic" });
+      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
       const blob = await createPdfToImage({ pdfBlob, scale: 3 });
       const url = createBlobUrl({ blob });
       downloadFile({ url, fileName: `${previewDraft.personalInfo.name || 'resume'}.png` });
@@ -185,7 +185,7 @@ function ResumeEditorContent({
   };
 
   const handleViewPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft, theme: settings.layout === "two-column" ? "twoColumn" : "classic" });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
   };
@@ -208,7 +208,7 @@ function ResumeEditorContent({
               <Manager resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
             </div>
             {activeView === 'resume' ? (
-              <ResumePreview resumeData={previewDraft} theme={settings.layout === "two-column" ? "twoColumn" : "classic"} />
+              <ResumePreview resumeData={previewDraft} theme="classic" />
             ) : (
               <CoverLetterPreview resumeData={previewDraft} />
             )}

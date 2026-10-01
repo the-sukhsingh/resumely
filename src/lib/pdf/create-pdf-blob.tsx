@@ -17,25 +17,6 @@ export const createPdfBlob = async ({ resumeData, type, theme }: CreatePdfBlobPr
   return blob;
 };
 
-const getPdfTemplate = (template: ResumeTemplate | string) => {
-  const normalized = String(template)
-    .trim()
-    .replace(/[-_\s]+/g, "")
-    .toLowerCase();
-
-  if (normalized === "twocolumn" || normalized === "twocolumns") {
-    return variantRegistry.twoColumn.component;
-  }
-
-  if (normalized === "onecolumn" || normalized === "single" || normalized === "classic") {
-    return variantRegistry.classic.component;
-  }
-
-  const variantKey = Object.keys(variantRegistry).find(
-    (key) => key.replace(/[-_\s]+/g, "").toLowerCase() === normalized,
-  ) as keyof typeof variantRegistry | undefined;
-
-  const variant = variantKey ? variantRegistry[variantKey] : undefined;
-
-  return variant?.component ?? variantRegistry.classic.component;
+const getPdfTemplate = (_template?: ResumeTemplate | string) => {
+  return variantRegistry.classic.component;
 };

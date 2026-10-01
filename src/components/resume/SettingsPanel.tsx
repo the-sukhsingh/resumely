@@ -8,29 +8,8 @@ import { useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 import CollapsibleSection from './editor/CollapseSection';
 
-const SvgSingleColumn = () => (
-  <svg className='size-16' viewBox="0 0 24 24" fill="none">
-    <rect x="5" y="4" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/40"/>
-    <rect x="7" y="7" width="10" height="2" rx="1" fill="currentColor"/>
-    <rect x="7" y="11" width="10" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
-    <rect x="7" y="15" width="7" height="2" rx="1" className="text-muted-foreground/30" fill="currentColor"/>
-  </svg>
-);
-
-const SvgTwoColumns = () => (
-  <svg className='size-16' viewBox="0 0 24 24" fill="none">
-    <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground opacity-30"/>
-    <rect x="6" y="7" width="5" height="2" rx="1" fill="currentColor"/>
-    <rect x="13" y="7" width="5" height="2" rx="1"  fill="currentColor"/>
-    <rect x="6" y="11" width="5" height="2" rx="1"  fill="currentColor"/>
-    <rect x="13" y="11" width="5" height="2" rx="1"  fill="currentColor"/>
-    <rect x="6" y="15" width="5" height="2" rx="1"  fill="currentColor"/>
-    <rect x="13" y="15" width="5" height="2" rx="1"  fill="currentColor"/>
-  </svg>
-);
-
 export const DEFAULT_SETTINGS: ResumeSettings = {
-  font: 'Inter',
+  font: 'Times New Roman',
   layout: 'one-column',
 };
 
@@ -53,7 +32,7 @@ export default function SettingsPanel({
   settings,
   onChange,
 }: SettingsPanelProps) {
-  const [openSection, setOpenSection] = useState<string | null>('layout');
+  const [openSection, setOpenSection] = useState<string | null>('font');
   const updateMasterSettings = useMutation(api.masterResumes.updateMasterResumeSettings);
   const updateVersionSettings = useMutation(api.resumeVersions.updateResumeVersionSettings);
 
@@ -70,7 +49,7 @@ export default function SettingsPanel({
   );
 
   const update = (partial: Partial<ResumeSettings>) => {
-    const next = { ...settings, ...partial };
+    const next = { ...settings, ...partial, layout: 'one-column' as const };
     onChange(next);
     debouncedSave(next);
   };
@@ -84,32 +63,8 @@ export default function SettingsPanel({
       <div className="space-y-0 pb-16">
 
         <CollapsibleSection
-          title="Layout"
-          isOpen={openSection === 'layout'}
-          onToggle={() => toggleSection('layout')}
-          sectionKey="layout"
-        >
-          <div className="grid grid-cols-2 gap-2">
-            {(['one-column', 'two-column'] as const).map((l) => (
-              <button
-                key={l}
-                onClick={() => update({ layout: l })}
-                className={`flex flex-col items-center gap-3 rounded-lg border py-3 text-left text-xs font-medium transition-colors
-                  ${settings.layout === l
-                    ? 'border-primary/40 bg-primary/10 text-primary ring-1 ring-primary/20'
-                    : 'border-border bg-accent/40 text-muted-foreground hover:bg-accent hover:text-foreground'
-                  }`}
-              >
-                {l === 'one-column' ? <SvgSingleColumn  /> : <SvgTwoColumns />}
-                <span className='text-base'>{l === 'one-column' ? 'Single Column' : 'Two Columns'}</span>
-              </button>
-            ))}
-          </div>
-        </CollapsibleSection>
-
-        <CollapsibleSection
           title="Font"
-          isOpen={openSection === 'font'}
+          isOpen={openSection === 'font' || openSection === null}
           onToggle={() => toggleSection('font')}
           sectionKey="font"
         >
@@ -118,14 +73,19 @@ export default function SettingsPanel({
               <button
                 key={f.value}
                 onClick={() => update({ font: f.value })}
-                className={`h-9 rounded-md border px-3 text-left text-xs transition-colors
-                  ${settings.font === f.value
+                className={`h-9 rounded-md border px-3 text-left text-xs transition-colors flex items-center justify-between
+                  ${(settings.font || 'Times New Roman') === f.value
                     ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary/20 font-semibold'
                     : 'border-border bg-accent/40 text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`}
                 style={{ fontFamily: f.value }}
               >
-                {f.label}
+                <span>{f.label}</span>
+                {f.value === 'Times New Roman' && (
+                  <span className="text-[10px] uppercase font-normal px-1.5 py-0.5 rounded bg-primary/15 text-primary">
+                    Default
+                  </span>
+                )}
               </button>
             ))}
           </div>

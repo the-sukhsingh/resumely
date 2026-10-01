@@ -286,7 +286,30 @@ export const SOURCE_SERIF_4_FONT: PdfFont[] = [
   },
 ];
 
+// Times New Roman fonts
+export const TIMES_NEW_ROMAN_FONT: PdfFont[] = [
+  {
+    src: "/fonts/timesnewroman/TimesNewRoman-Regular.ttf",
+    fontWeight: "normal",
+  },
+  {
+    src: "/fonts/timesnewroman/TimesNewRoman-Bold.ttf",
+    fontWeight: "bold",
+  },
+  {
+    src: "/fonts/timesnewroman/TimesNewRoman-Italic.ttf",
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  {
+    src: "/fonts/timesnewroman/TimesNewRoman-BoldItalic.ttf",
+    fontWeight: "bold",
+    fontStyle: "italic",
+  },
+];
+
 export const SUPPORTED_RESUME_FONTS = [
+  { value: 'Times New Roman', label: 'Times New Roman' },
   { value: 'Inter', label: 'Inter' },
   { value: 'Roboto', label: 'Roboto' },
   { value: 'Merriweather', label: 'Merriweather' },
@@ -297,19 +320,22 @@ export const SUPPORTED_RESUME_FONTS = [
 export type SupportedResumeFont = typeof SUPPORTED_RESUME_FONTS[number]['value'];
 
 export const normalizeFontFamily = (font?: string | null): SupportedResumeFont => {
-  if (!font) return 'Inter';
+  if (!font) return 'Times New Roman';
   const f = font.trim().toLowerCase();
+  if (f === 'times new roman' || f === 'times-roman' || f.includes('times')) return 'Times New Roman';
+  if (f === 'inter') return 'Inter';
   if (f === 'roboto') return 'Roboto';
   if (f === 'merriweather') return 'Merriweather';
   if (f === 'lato') return 'Lato';
   if (f === 'source serif 4' || f.includes('source serif') || f.includes('sourceserif')) return 'Source Serif 4';
-  return 'Inter';
+  return 'Times New Roman';
 };
 
 let fontsRegistered = false;
 export const registerResumeFonts = (FontModule: { register: (config: { family: string; fonts: PdfFont[] }) => void }) => {
   if (fontsRegistered) return;
   try {
+    FontModule.register({ family: "Times New Roman", fonts: TIMES_NEW_ROMAN_FONT });
     FontModule.register({ family: "Inter", fonts: INTER_FONT });
     FontModule.register({ family: "Roboto", fonts: ROBOTO_FONT });
     FontModule.register({ family: "Merriweather", fonts: MERRIWEATHER_FONT });
