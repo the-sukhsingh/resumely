@@ -47,6 +47,8 @@ const coloredButtonVariants = cva(
           "text-pink-950 bg-linear-to-b from-pink-100/90 to-pink-300/90 hover:from-pink-200/70 hover:to-pink-300 shadow-[0_0_0_0.5px_oklch(0.90_0.12_350)] focus-visible:outline-pink-400 dark:from-pink-500/20 dark:to-pink-600/35 dark:hover:from-pink-500/30 dark:hover:to-pink-600/50 dark:text-pink-200 dark:shadow-[0_0_0_0.5px_oklch(0.65_0.18_350),inset_0_0_2px_0_rgba(255,255,255,0.1)] dark:focus-visible:outline-pink-400",
         neutral:
           "text-neutral-900 bg-linear-to-b from-neutral-100/90 to-neutral-300/90 hover:from-neutral-200/70 hover:to-neutral-300 shadow-[0_0_0_0.5px_oklch(0.85_0_0)] focus-visible:outline-neutral-400 dark:from-neutral-700/30 dark:to-neutral-800/40 dark:hover:from-neutral-700/40 dark:hover:to-neutral-800/50 dark:text-neutral-200 dark:shadow-[0_0_0_0.5px_oklch(0.45_0_0),inset_0_0_2px_0_rgba(255,255,255,0.1)] dark:focus-visible:outline-neutral-400",
+        dark:
+          "text-neutral-200 bg-linear-to-b from-neutral-500/60 to-neutral-900/80 hover:from-neutral-500/70 hover:to-neutral-900/90 shadow-[0_0_0_0.5px_oklch(0.45_0_0)] focus-visible:outline-neutral-400 dark:from-neutral-700/60 dark:to-neutral-800/80 dark:hover:from-neutral-700/40 dark:hover:to-neutral-800/50 dark:text-neutral-200 dark:shadow-[0_0_0_0.5px_oklch(0.45_0_0),inset_0_0_2px_0_rgba(255,255,255,0.1)] dark:focus-visible:outline-neutral-400"
       },
       size: {
         default:

@@ -100,14 +100,15 @@ export default function AddJobDescriptionDialog({
           <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">Tailor resume for a job posting</p>
         </button>
       ) : variant === 'minimal' ? (
-        <button
-          type="button"
+        <ColoredButton
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs md:text-sm font-medium rounded-lg bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+          color="orange"
+          type="button"
+          className='px-3 rounded-full'
         >
           <Plus className="size-3.5" />
           <span>{buttonLabel}</span>
-        </button>
+        </ColoredButton>
       ) : (
         <ColoredButton onClick={() => setOpen(true)} color="cyan">
           <Plus className="size-4 mr-1" />

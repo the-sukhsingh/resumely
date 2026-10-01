@@ -35,31 +35,6 @@ export default function ResumePage() {
       <div className="pointer-events-none fixed inset-0 noise opacity-20 dark:opacity-30" />
 
       <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24">
-        {/* Top Header */}
-        <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-8 border-b border-border/40">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-xs uppercase tracking-widest text-muted-foreground font-mono">Workspace</p>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
-              Hi, {user.name?.split(' ')[0] ?? 'there'}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1 max-w-md">
-              Maintain your master profile and generate tailored resumes for specific job descriptions.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            {resume && (
-              <AddJobDescriptionDialog
-                buttonLabel="Tailor for Job"
-                userId={user._id}
-                masterResumeId={resume._id}
-              />
-            )}
-          </div>
-        </header>
 
         {/* Resume Version List */}
         <ResumeVersionList userId={user._id} />
