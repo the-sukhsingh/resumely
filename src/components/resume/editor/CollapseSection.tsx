@@ -25,7 +25,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, badge, i
       <div
         onClick={handleToggle}
         className={cn(`w-full cursor-pointer flex items-center justify-between px-3 py-2 transition-colors border-b`,
-            isOpen ? "bg-sidebar text-neutral-900 dark:text-neutral-50": "hover:bg-sidebar"
+            isOpen ? "bg-accent text-neutral-900 dark:text-neutral-50": "hover:bg-sidebar"
         )}
       >
         <div className="flex items-center gap-2 flex-1 pointer-events-none min-w-0">

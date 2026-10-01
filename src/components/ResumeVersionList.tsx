@@ -1,13 +1,44 @@
 'use client';
 
-import { useMutation, useQuery } from 'convex/react';
+import React, { useState, useMemo } from 'react';
+import { useMutation, useQuery, useAction } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
-import { cn } from '@/lib/utils';
 import Feedback from './custom/feedback';
+import {
+  Search,
+  Plus,
+  MoreHorizontal,
+  Copy,
+  Trash2,
+  Edit3,
+  ArrowUpRight,
+  FileText,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import AddJobDescriptionDialog from './AddJobDescriptionDialog';
+import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 interface Props {
   userId: Id<'users'>;
@@ -15,115 +46,313 @@ interface Props {
 
 export default function ResumeVersionList({ userId }: Props) {
   const versions = useQuery(api.resumeVersions.getResumeVersionsByUser, { userId });
+  const masterResume = useQuery(api.masterResumes.getMasterResumeByUser, { userId });
 
   const deleteVersion = useMutation(api.resumeVersions.deleteResumeVersion);
+  const duplicateVersionAction = useAction(api.resumeVersions.duplicateVersion);
 
-  const deleteResume = async (id: Id<'resumeVersions'>) => {
+  const [search, setSearch] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: Id<'resumeVersions'>; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-    if (versions?.find((v) => v._id === id)?.isMasterResume) {
-      alert("You cannot delete the master resume.");
-      return;
+  const master = useMemo(() => {
+    return versions?.find((v) => v.isMasterResume) || masterResume;
+  }, [versions, masterResume]);
+
+  const tailoredVersions = useMemo(() => {
+    return (versions ?? [])
+      .filter((v) => !v.isMasterResume)
+      .sort((a, b) => (b.updatedAt || b._creationTime) - (a.updatedAt || a._creationTime));
+  }, [versions]);
+
+  const filteredTailored = useMemo(() => {
+    if (!search.trim()) return tailoredVersions;
+    const q = search.toLowerCase();
+    return tailoredVersions.filter((v) => (v.name ?? '').toLowerCase().includes(q));
+  }, [tailoredVersions, search]);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await deleteVersion({ versionId: deleteTarget.id });
+      toast.success(`"${deleteTarget.name}" deleted`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to delete resume');
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
-    // Ask for confirmation before deleting
-    if (!confirm('Are you sure you want to delete this resume? This action cannot be undone.')) {
-      return;
-    }
-
-    await deleteVersion({ versionId: id as Id<'resumeVersions'> });
   };
 
-  const masterResume = versions?.find((v) => v.isMasterResume);
-  const otherVersions = (versions ?? []).filter((v) => !v.isMasterResume).sort((a, b) => b._creationTime - a._creationTime);
+  const handleDuplicate = async (versionId: Id<'resumeVersions'>, currentName: string) => {
+    try {
+      await duplicateVersionAction({
+        versionId,
+        newName: `${currentName} (Copy)`,
+      });
+      toast.success(`Duplicated "${currentName}"`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to duplicate resume');
+    }
+  };
 
-  const items = [
-    ...(masterResume ? [{ id: masterResume._id, label: masterResume.name ?? 'Master Resume', ...masterResume }] : []),
-    ...otherVersions.map((v) => ({ id: v._id, label: v.name ?? 'Untitled Version', ...v })),
-  ];
+  // Loading skeleton
+  if (versions === undefined) {
+    return (
+      <div className="w-full space-y-8 animate-pulse">
+        <div className="h-24 rounded-2xl bg-muted/40 border border-border/50" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="h-44 rounded-2xl bg-muted/30 border border-border/40" />
+          <div className="h-44 rounded-2xl bg-muted/30 border border-border/40" />
+          <div className="h-44 rounded-2xl bg-muted/30 border border-border/40" />
+        </div>
+      </div>
+    );
+  }
 
-  const totalRenders = items.length === 0 ? 6 : items.length + 1;
-  const emptySlotsCount = Math.max(0, 7 - totalRenders);
+  // Zero resumes state
+  if (versions.length === 0) {
+    return (
+      <div className="w-full max-w-xl mx-auto my-12 text-center">
+        <Feedback />
+        <div className="p-8 md:p-10 rounded-2xl border border-dashed border-border/80 bg-card/40 backdrop-blur-xs">
+          <div className="size-12 rounded-full bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto mb-4">
+            <FileText className="size-6" />
+          </div>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            No Resumes Yet
+          </h2>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-sm mx-auto leading-relaxed">
+            Upload your existing resume to generate your Master Profile, or start clean from scratch.
+          </p>
+
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <ResumeUploader userId={userId} />
+            <Link
+              href="/resume/create"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border/80 bg-background hover:bg-muted/60 text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+            >
+              <Plus className="size-3.5" />
+              <span>Create from Scratch</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-5xl mx-auto ">
+    <div className="w-full space-y-8">
       <Feedback />
-      {items.length === 0 ? (
-        <>
-        <div className="h-44 text-sm text-muted-foreground text-center">
-          <ResumeUploader userId={userId} />
-        </div>
-          <Link
-            href="/resume/create"
-            className="group relative flex flex-col justify-center items-center px-4 py-4 h-44 rounded-xl cursor-pointer bg-[#f0f0f0]/60 dark:bg-[#202020ce]/60 hover:bg-[#f7f7f7]/80 dark:hover:bg-[#202020]/80 border border-dashed border-border/80 dark:border-border/40 hover:border-primary/50 dark:hover:border-primary/40 transition-colors shadow-sm"
-          >
-            <div className="flex flex-col items-center gap-2">
-              <svg className="size-6 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              <div>
-                <p className="text-base font-medium text-foreground/90 group-hover:text-foreground transition-colors">
-                  Create from Scratch
-                </p>
-                <p className="text-xs text-muted-foreground mt-1 transition-colors">
-                  Start building a new resume
-                </p>
+
+      {/* ─── Master Resume Anchor Card ─── */}
+      {master && (
+        <section className="space-y-2">
+          <div className="flex items-center justify-between text-xs text-muted-foreground px-0.5">
+            <span className="font-medium tracking-tight text-foreground flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-emerald-500" />
+              Primary Resume
+            </span>
+            <span className="text-[11px] text-muted-foreground font-mono">
+              Source of truth for all versions
+            </span>
+          </div>
+
+          <div className="group relative rounded-2xl border border-border/70 hover:border-foreground/20 bg-card/40 hover:bg-card/70 p-5 transition-all duration-200 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="size-10 rounded-xl bg-muted/60 text-foreground flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                  <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-semibold tracking-tight text-foreground">
+                      {master.name || 'Master Resume'}
+                    </h2>
+                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      Active Base
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Complete career history · {master.experience?.length || 0} positions · {master.skills?.reduce((a, s) => a + (s.items?.length || 0), 0) || 0} skills · {master.projects?.length || 0} projects
+                  </p>
+                </div>
               </div>
-            </div>
-          </Link>
-        </>
-      ) : (
-        items.map((item) => (
-          <Link
-            href={`/resume/${item.id}`}
-            key={item.id}
-            className={cn("group relative grid grid-cols-5 px-4 py-4 h-44 rounded-xl cursor-pointer bg-[#f0f0f0] dark:bg-[#202020ce] backdrop-blur-sm transition-colors hover:bg-[#f7f7f7] dark:hover:bg-[#202020] shadow-[0_0_0_1px_rgba(0,0,0,0.1)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.1)] outline-[#f3f3f3] dark:outline-[#202020] ring-[#f3f3f3] dark:ring-[#202020]"
-            )}
-          >
-            <div className="col-span-4 flex flex-col flex-1 justify-between items-start">
-              <div className="flex flex-col ">
-                <span className="text-lg font-medium text-foreground/90 group-hover:text-foreground">
-                  {item.label}
+
+              <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                <span className="text-xs font-mono text-muted-foreground">
+                  {formatDistanceToNow(new Date(master.updatedAt || master._creationTime), { addSuffix: true })}
                 </span>
-              </div>
-            </div>
-
-            <div className="col-span-1 flex flex-col justify-between items-end shrink-0">
-              <div className={cn(
-                item.isMasterResume ? 'opacity-0 pointer-events-none' : 'opacity-100',
-              )}>
-                <Button
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    deleteResume(item.id);
-                  }}
-                  variant="ghost"
-                  size="icon"
-                  className="size-5 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-transparent dark:hover:bg-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-100 ease-out delay-100 group-focus-visible:opcity-100 group-focus:opacity-100 group-focus-within:opacity-100 focus-visible:ring-0"
+                <Link
+                  href={`/resume/${master._id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border/80 bg-background hover:bg-muted/70 active:scale-[0.98] transition-all cursor-pointer shadow-xs"
                 >
-                  <svg viewBox="0 0 24 24" className='size-full' fill="none"><g id="SVGRepo_bgCarrier" strokeWidth="0" /><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" /><g id="SVGRepo_iconCarrier"> <path d="M3 6.38597C3 5.90152 3.34538 5.50879 3.77143 5.50879L6.43567 5.50832C6.96502 5.49306 7.43202 5.11033 7.61214 4.54412C7.61688 4.52923 7.62232 4.51087 7.64185 4.44424L7.75665 4.05256C7.8269 3.81241 7.8881 3.60318 7.97375 3.41617C8.31209 2.67736 8.93808 2.16432 9.66147 2.03297C9.84457 1.99972 10.0385 1.99986 10.2611 2.00002H13.7391C13.9617 1.99986 14.1556 1.99972 14.3387 2.03297C15.0621 2.16432 15.6881 2.67736 16.0264 3.41617C16.1121 3.60318 16.1733 3.81241 16.2435 4.05256L16.3583 4.44424C16.3778 4.51087 16.3833 4.52923 16.388 4.54412C16.5682 5.11033 17.1278 5.49353 17.6571 5.50879H20.2286C20.6546 5.50879 21 5.90152 21 6.38597C21 6.87043 20.6546 7.26316 20.2286 7.26316H3.77143C3.34538 7.26316 3 6.87043 3 6.38597Z" className="fill-[#000000] dark:fill-[#ffffff]" /> <path d="M9.42543 11.4815C9.83759 11.4381 10.2051 11.7547 10.2463 12.1885L10.7463 17.4517C10.7875 17.8855 10.4868 18.2724 10.0747 18.3158C9.66253 18.3592 9.29499 18.0426 9.25378 17.6088L8.75378 12.3456C8.71256 11.9118 9.01327 11.5249 9.42543 11.4815Z" className="fill-[#000000] dark:fill-[#ffffff]" fillRule="evenodd" clipRule="evenodd" /> <path d="M14.5747 11.4815C14.9868 11.5249 15.2875 11.9118 15.2463 12.3456L14.7463 17.6088C14.7051 18.0426 14.3376 18.3592 13.9254 18.3158C13.5133 18.2724 13.2126 17.8855 13.2538 17.4517L13.7538 12.1885C13.795 11.7547 14.1625 11.4381 14.5747 11.4815Z" className="fill-[#000000] dark:fill-[#ffffff]" fillRule="evenodd" clipRule="evenodd" /> <path opacity="0.3" d="M11.5956 22.0001H12.4044C15.1871 22.0001 16.5785 22.0001 17.4831 21.1142C18.3878 20.2283 18.4803 18.7751 18.6654 15.8686L18.9321 11.6807C19.0326 10.1037 19.0828 9.31524 18.6289 8.81558C18.1751 8.31592 17.4087 8.31592 15.876 8.31592H8.12405C6.59127 8.31592 5.82488 8.31592 5.37105 8.81558C4.91722 9.31524 4.96744 10.1037 5.06788 11.6807L5.33459 15.8686C5.5197 18.7751 5.61225 20.2283 6.51689 21.1142C7.42153 22.0001 8.81289 22.0001 11.5956 22.0001Z" className="fill-[#000000] dark:fill-[#ffffff]" /> </g></svg>
-                </Button>
-              </div>
-              <div className="size-5">
-                <svg viewBox="0 0 24 24" fill="none"><g id="SVGRepo_bgCarrier" strokeWidth="0" /><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" /><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z" className='fill-[#323232] dark:fill-[#b8b8b8]' /> <path d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z" className='stroke-[#323232] dark:stroke-[#b8b8b8]' strokeWidth="2" /> <path d="M16 12L8 12" className='stroke-[#323232] dark:stroke-[#b8b8b8]' strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <path d="M13 15L15.913 12.087V12.087C15.961 12.039 15.961 11.961 15.913 11.913V11.913L13 9" className='stroke-[#323232] dark:stroke-[#b8b8b8]' strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> </g></svg>
+                  <span>Edit Base</span>
+                  <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </Link>
               </div>
             </div>
-          </Link>
-        ))
+          </div>
+        </section>
       )}
 
-     
+      {/* ─── Search and Section Header ─── */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-0.5">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">
+              Tailored Resumes
+            </h3>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+              {tailoredVersions.length}
+            </span>
+          </div>
 
-      {emptySlotsCount > 0 && (
-        <>
-          {Array.from({ length: emptySlotsCount }, (_, i) => (
-            <div
-              key={i}
-              className="h-44 rounded-xl bg-muted/20 dark:bg-muted/10 border border-dashed border-border"
+          <div className="relative w-full sm:w-64">
+            <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search versions..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg bg-card border border-border/70 focus:outline-none focus:ring-1 focus:ring-foreground/20 text-foreground placeholder:text-muted-foreground/60 transition-colors shadow-xs"
+            />
+          </div>
+        </div>
+
+        {/* ─── Cards Grid ─── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredTailored.map((item) => {
+            const skillCount = item.skills?.reduce((a, s) => a + (s.items?.length || 0), 0) || 0;
+            const expCount = item.experience?.length || 0;
+
+            return (
+              <div
+                key={item._id}
+                className="group relative flex flex-col justify-between min-h-[155px] rounded-2xl border border-border/60 hover:border-foreground/20 bg-card/40 hover:bg-card/80 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xs"
+              >
+                {/* Top Row: Icon + Badge + Menu */}
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="size-8 rounded-lg bg-muted/50 text-muted-foreground group-hover:text-foreground flex items-center justify-center transition-colors">
+                      <FileText className="size-4" />
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {item.matchScore ? (
+                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          {item.matchScore}% ATS
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
+                          Ready
+                        </span>
+                      )}
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
+                          >
+                            <MoreHorizontal className="size-4" />
+                            <span className="sr-only">Actions</span>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40 text-xs">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/resume/${item._id}`} className="flex items-center gap-2 cursor-pointer">
+                              <Edit3 className="size-3.5" />
+                              <span>Open Editor</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDuplicate(item._id, item.name || 'Resume')}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            <Copy className="size-3.5" />
+                            <span>Duplicate</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => setDeleteTarget({ id: item._id, name: item.name || 'Untitled Version' })}
+                            className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
+                          >
+                            <Trash2 className="size-3.5" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+
+                  <Link href={`/resume/${item._id}`} className="block">
+                    <h4 className="text-sm font-semibold tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                      {item.name || 'Untitled Version'}
+                    </h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {expCount > 0 || skillCount > 0
+                        ? `${expCount} roles · ${skillCount} skills`
+                        : 'Targeted application'}
+                    </p>
+                  </Link>
+                </div>
+
+                {/* Bottom Row: Timestamp + Open Link */}
+                <div className="pt-3.5 mt-3.5 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="font-mono text-[11px]">
+                    {formatDistanceToNow(new Date(item.updatedAt || item._creationTime), { addSuffix: true })}
+                  </span>
+                  <Link
+                    href={`/resume/${item._id}`}
+                    className="inline-flex items-center gap-1 font-medium text-foreground hover:opacity-80 transition-opacity"
+                  >
+                    <span>Open</span>
+                    <ArrowUpRight className="size-3 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* ─── Matching Card Slot: Target New Job ─── */}
+          {master && (
+            <div className="min-h-[155px] h-full">
+              <AddJobDescriptionDialog
+                buttonLabel="Target New Job"
+                userId={userId}
+                masterResumeId={master._id}
+                variant="card"
+              />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Accessible Custom Delete Confirmation Alert */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this resume version?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong className="text-foreground">{deleteTarget?.name}</strong>? This action cannot be undone. Your Master Resume remains untouched.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-            </div>
-          ))}
-        </>
-      )}
+              {isDeleting ? 'Deleting...' : 'Delete Version'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

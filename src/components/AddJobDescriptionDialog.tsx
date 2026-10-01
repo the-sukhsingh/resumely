@@ -11,13 +11,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
-import { X } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 
 interface Props {
   buttonLabel?: string;
   userId: Id<'users'>;
   masterResumeId: Id<'resumeVersions'>;
   onCreated?: (versionId: Id<'resumeVersions'>) => void;
+  trigger?: React.ReactNode;
+  variant?: 'button' | 'card' | 'minimal';
 }
 
 export default function AddJobDescriptionDialog({
@@ -25,6 +27,8 @@ export default function AddJobDescriptionDialog({
   userId,
   masterResumeId,
   onCreated,
+  trigger,
+  variant = 'minimal',
 }: Props) {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState('');
@@ -79,34 +83,37 @@ export default function AddJobDescriptionDialog({
 
   return (
     <>
-      <ColoredButton onClick={() => setOpen(true)} color='cyan' >
-        <svg viewBox="0 0 24 24" fill="none" className="size-5">
-          <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-          <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
-          <g id="SVGRepo_iconCarrier">
-            <path
-              d="M9 12H15"
-              className="stroke-[#323232] dark:stroke-[#b8b8b8]"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M12 9L12 15"
-              className="stroke-[#323232] dark:stroke-[#b8b8b8]"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z"
-              className="stroke-[#323232] dark:stroke-[#b8b8b8]"
-              strokeWidth="2"
-            />
-          </g>
-        </svg>
-        {buttonLabel}
-      </ColoredButton>
+      {trigger ? (
+        <div onClick={() => setOpen(true)} className="cursor-pointer h-full w-full">
+          {trigger}
+        </div>
+      ) : variant === 'card' ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="group flex flex-col items-center justify-center min-h-[150px] h-full w-full rounded-xl border border-dashed border-border/80 hover:border-foreground/30 bg-muted/10 hover:bg-muted/25 p-5 text-center transition-all duration-200 cursor-pointer active:scale-[0.98]"
+        >
+          <div className="size-9 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors mb-2.5">
+            <Plus className="size-4" />
+          </div>
+          <p className="text-xs font-semibold text-foreground tracking-tight">Target New Job</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">Tailor resume for a job posting</p>
+        </button>
+      ) : variant === 'minimal' ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs md:text-sm font-medium rounded-lg bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+        >
+          <Plus className="size-3.5" />
+          <span>{buttonLabel}</span>
+        </button>
+      ) : (
+        <ColoredButton onClick={() => setOpen(true)} color="cyan">
+          <Plus className="size-4 mr-1" />
+          {buttonLabel}
+        </ColoredButton>
+      )}
 
       {typeof document !== 'undefined' &&
         createPortal(

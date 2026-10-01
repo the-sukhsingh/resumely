@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
@@ -16,45 +18,52 @@ export default function ResumePage() {
 
   if (!user) {
     return (
-      <>
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)] text-muted-foreground">
-          Please log in to view your resumes.
-        </div>
-      </>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] text-muted-foreground text-sm gap-2">
+        <p>Please log in to view and manage your resumes.</p>
+        <Link href="/" className="text-xs text-foreground underline underline-offset-4 hover:opacity-80">
+          Return to home
+        </Link>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full mx-auto max-w-5xl border-x border-border/50">
+    <div className="min-h-screen w-full bg-background text-foreground antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800">
       <PaymentStatusDialog />
-      <div className='absolute inset-0 noise dark:opacity-40'></div>
-      <div className='relative z-50 h-full min-h-screen pt-14'>
+      
+      {/* Subtle, soft ambient background */}
+      <div className="pointer-events-none fixed inset-0 noise opacity-20 dark:opacity-30" />
 
-        {/* Top bar */}
-        <div className="w-full ">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-3">
-            <div className="text-xl font-medium text-muted-foreground">
-              Hi, <span className="text-foreground font-semibold ">{user.name?.split(' ')[0] ?? 'there'}</span>
+      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24">
+        {/* Top Header */}
+        <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-8 border-b border-border/40">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-mono">Workspace</p>
             </div>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+              Hi, {user.name?.split(' ')[0] ?? 'there'}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md">
+              Maintain your master profile and generate tailored resumes for specific job descriptions.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
             {resume && (
               <AddJobDescriptionDialog
+                buttonLabel="Tailor for Job"
                 userId={user._id}
                 masterResumeId={resume._id}
               />
             )}
           </div>
-        </div>
+        </header>
 
-        {/* Main layout */}
-        {/* Left: version list */}
-        <div className="flex flex-1 gap-4 p-4 min-h-0 h-full">
-          <div className="flex-1 shrink-0 flex flex-col gap-3">
-            <ResumeVersionList
-              userId={user._id}
-            />
-          </div>
-        </div>
-      </div>
+        {/* Resume Version List */}
+        <ResumeVersionList userId={user._id} />
+      </main>
     </div>
   );
 }
