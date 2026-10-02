@@ -156,8 +156,8 @@ export default function ResumeVersionList({ userId }: Props) {
         <section className="group relative rounded-[30px] bg-linear-to-b from-card/90 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 shadow-xs overflow-hidden outline-2 outline-white dark:outline-black">
           {/* <VelocityStreakPreview className="absolute inset-0 opacity-45 pointer-events-none" /> */}
           <div className={cn("absolute inset-0 blur-2xl")}>
-          <span className='size-80 rounded-full bg-violet-100 dark:bg-violet-400/20 inline-flex absolute left-1/5 -translate-x-1/2 -translate-y-1/2'></span>
-          <span className='size-80 rounded-full bg-emerald-100 dark:bg-emerald-400/20 inline-flex absolute right-5 -translate-y-1/8'></span>
+          <span className='size-100 rounded-full bg-violet-200/50 dark:bg-violet-400/20 inline-flex absolute -left-5 -translate-y-1/2'></span>
+          <span className='size-100 rounded-full bg-emerald-200/50 dark:bg-emerald-400/10 inline-flex absolute -right-5 -translate-y-1/3'></span>
           </div>
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
