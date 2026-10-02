@@ -27,7 +27,7 @@ import {
 import { toast } from 'sonner';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';
 import { createBlobUrl, revokeBlobUrl } from '@/lib/pdf/create-blob-url';
-import { createPdfToImage } from '@/lib/pdf/create-pdf-to-image';
+import { createPdfToImages } from '@/lib/pdf/create-pdf-to-image';
 import { downloadFile } from '@/lib/pdf/download-file';
 
 // Fallback logic preview if browser PDF element cannot be loaded
@@ -141,10 +141,30 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
     setIsDownloadingImage(true);
     try {
       const pdfBlob = await createPdfBlob({ resumeData: typedResume, theme: 'classic' });
-      const imgBlob = await createPdfToImage({ pdfBlob, scale: 3 });
-      const url = createBlobUrl({ blob: imgBlob });
-      downloadFile({ url, fileName: `${candidateName.replace(/\s+/g, '_')}_Resume.png` });
-      toast.success('Resume image downloaded!');
+      // Create one image per page of pdf 
+      const imageBlobs = await createPdfToImages({ pdfBlob, scale: 3 });
+      const safeName = candidateName.replace(/\s+/g, '_');
+
+      for (let i = 0; i < imageBlobs.length; i++) {
+        const blob = imageBlobs[i];
+        const url = createBlobUrl({ blob });
+        const fileName =
+          imageBlobs.length === 1
+            ? `${safeName}_Resume.png`
+            : `${safeName}_Resume_Page_${i + 1}.png`;
+
+        downloadFile({ url, fileName });
+        setTimeout(() => revokeBlobUrl({ url }), 2000);
+        if (i < imageBlobs.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
+
+      toast.success(
+        imageBlobs.length > 1
+          ? `Downloaded ${imageBlobs.length} pages as images!`
+          : 'Resume image downloaded!'
+      );
     } catch (error) {
       console.error('Error downloading image:', error);
       toast.error('Failed to download image');
@@ -277,17 +297,13 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 text-xs">
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={handleViewPdf} className="cursor-pointer gap-2">
-                    <ExternalLink className="size-3.5 text-muted-foreground" />
-                    <span>View PDF in New Tab</span>
-                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleDownloadImage}
                     disabled={isDownloadingImage}
                     className="cursor-pointer gap-2"
                   >
                     <Download className="size-3.5 text-muted-foreground" />
-                    <span>{isDownloadingImage ? 'Generating Image...' : 'Download as PNG Image'}</span>
+                    <span>{isDownloadingImage ? 'Generating Image...' : 'Download as Image'}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handlePrint} className="cursor-pointer gap-2">
                     <Printer className="size-3.5 text-muted-foreground" />
@@ -313,9 +329,10 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
           /* Browser Native PDF Element */
           <iframe
             src={`${pdfUrl}#toolbar=1&navpanes=0`}
-            className="w-full h-full border-0"
+            className="w-full h-full max-w-4xl mx-auto border-0"
             title={`${candidateName} Resume`}
             onError={() => setPdfError(true)}
+            
           />
         ) : (
           /* Fallback using custom preview logic */

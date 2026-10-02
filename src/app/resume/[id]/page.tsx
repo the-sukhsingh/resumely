@@ -24,10 +24,10 @@ const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-p
 import CoverLetterPreview from '@/components/resume/preview/CoverLetterPreview';
 import { Clipboard, Message2, Settings } from '@duo-icons/react';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';
-import { createBlobUrl } from '@/lib/pdf/create-blob-url';
+import { createBlobUrl, revokeBlobUrl } from '@/lib/pdf/create-blob-url';
 import Manager from '@/components/resume/preview/manager';
 import { downloadFile } from '@/lib/pdf/download-file';
-import { createPdfToImage } from '@/lib/pdf/create-pdf-to-image';
+import { createPdfToImages } from '@/lib/pdf/create-pdf-to-image';
 
 export default function ResumeVersionPage() {
   const { id } = useParams<{ id: string }>();
@@ -184,9 +184,22 @@ function ResumeEditorContent({
     setIsDownloading(true);
     try {
       const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
-      const blob = await createPdfToImage({ pdfBlob, scale: 3 });
-      const url = createBlobUrl({ blob });
-      downloadFile({ url, fileName: `${previewDraft.personalInfo.name || 'resume'}.png` });
+      const imageBlobs = await createPdfToImages({ pdfBlob, scale: 3 });
+      const safeName = (previewDraft.personalInfo.name || 'resume').replace(/\s+/g, '_');
+
+      for (let i = 0; i < imageBlobs.length; i++) {
+        const blob = imageBlobs[i];
+        const url = createBlobUrl({ blob });
+        const fileName =
+          imageBlobs.length === 1
+            ? `${safeName}.png`
+            : `${safeName}_Page_${i + 1}.png`;
+        downloadFile({ url, fileName });
+        setTimeout(() => revokeBlobUrl({ url }), 2000);
+        if (i < imageBlobs.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
       setIsDownloading(false);
     } catch (error) {
       console.error('Error downloading image:', error);
