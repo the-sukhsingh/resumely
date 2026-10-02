@@ -458,6 +458,116 @@ export const extractJobFromUrl = action({
   },
 });
 
+export const extractJobFromText = action({
+  args: {
+    userId: v.id("users"),
+    text: v.string(),
+    stage: stageValidator,
+    jobUrl: v.optional(v.string()),
+    autoTailor: v.optional(v.boolean()),
+    masterResumeId: v.optional(v.id("resumeVersions")),
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    jobApplicationId: Id<"jobApplications">;
+    jobDescriptionId: Id<"jobDescriptions">;
+    resumeVersionId?: Id<"resumeVersions">;
+    company: string;
+    title: string;
+    location?: string;
+    salary?: string;
+  }> => {
+    const rawText = args.text.trim();
+    if (rawText.length < 20) {
+      throw new Error("Job description is too short. Please paste the full job description.");
+    }
+
+    // Parse the pasted content using Gemini AI
+    const { object } = await generateObject({
+      model: defaultModel,
+      schema: z.object({
+        company: z.string().describe("Company name hiring for this role, or Company if not mentioned"),
+        title: z.string().describe("Exact or clean job title (e.g. Senior Frontend Engineer)"),
+        location: z.string().describe("Job location, e.g. San Francisco, CA (Remote) or Hybrid"),
+        salary: z.string().describe("Salary or compensation range if mentioned, otherwise empty string"),
+        description: z.string().describe("Cleaned, formatted job description in Markdown"),
+        requirements: z.array(z.string()).describe("List of requirements/qualifications"),
+        responsibilities: z.array(z.string()).describe("List of core responsibilities"),
+        extractedSkills: z.array(z.string()).describe("Technical & functional skills required"),
+        extractedKeywords: z.array(z.string()).describe("Important ATS keywords"),
+      }),
+      prompt: `Extract structured job application details from this raw job description text. Be accurate, concise, and clean.\n\nRaw Job Description:\n${rawText.slice(0, 16000)}`,
+    });
+
+    const company = object.company?.trim() || "Company";
+    const title = object.title?.trim() || "Role";
+
+    // 1. Create job description row
+    const jobDescriptionId: Id<"jobDescriptions"> = await ctx.runMutation(
+      api.jobDescriptions.createJobDescription,
+      {
+        userId: args.userId,
+        description: object.description || rawText,
+        requirements: object.requirements ?? [],
+        responsibilities: object.responsibilities ?? [],
+        extractedSkills: object.extractedSkills ?? [],
+        extractedKeywords: object.extractedKeywords ?? [],
+      }
+    );
+
+    // 2. Create job application row
+    const jobApplicationId: Id<"jobApplications"> = await ctx.runMutation(
+      api.jobTracker.createJobApplication,
+      {
+        userId: args.userId,
+        company,
+        title,
+        stage: args.stage,
+        jobUrl: args.jobUrl?.trim() || undefined,
+        location: object.location?.trim() || undefined,
+        salary: object.salary?.trim() || undefined,
+        jobDescriptionId,
+        tags: object.extractedSkills.slice(0, 5),
+      }
+    );
+
+    // 3. If autoTailor requested and master resume is available, tailor immediately!
+    let resumeVersionId: Id<"resumeVersions"> | undefined = undefined;
+    if (args.autoTailor && args.masterResumeId) {
+      try {
+        const tailored: { versionId: Id<"resumeVersions">; resume: Doc<"resumeVersions"> | null } = await ctx.runAction(
+          api.resumeVersions.createResumeVersion,
+          {
+            masterResumeId: args.masterResumeId,
+            jobDescriptionId,
+            versionName: `${company} - ${title}`,
+          }
+        );
+        resumeVersionId = tailored.versionId;
+        await ctx.runMutation(api.jobTracker.linkResumeToJob, {
+          applicationId: jobApplicationId,
+          resumeVersionId,
+          jobDescriptionId,
+        });
+      } catch (tailorErr) {
+        console.error("Auto-tailoring during paste creation failed:", tailorErr);
+      }
+    }
+
+    return {
+      jobApplicationId,
+      jobDescriptionId,
+      resumeVersionId,
+      company,
+      title,
+      location: object.location,
+      salary: object.salary,
+    };
+  },
+});
+
 export const tailorResumeForJob = action({
   args: {
     applicationId: v.id("jobApplications"),

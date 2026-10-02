@@ -116,10 +116,6 @@ export default function JobTrackerPage() {
             {/* Onboarding Workbench Card */}
             <div className="relative rounded-3xl border border-border/70 bg-card/40 dark:bg-card/20 backdrop-blur-md overflow-hidden p-8 sm:p-12 text-center shadow-xs">
               <div className="max-w-md mx-auto space-y-4">
-                <div className="size-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
-                  <Briefcase className="size-6" />
-                </div>
-
                 <div>
                   <h3 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">
                     Start Tracking Your Job Applications
@@ -144,15 +140,6 @@ export default function JobTrackerPage() {
                       </ColoredButton>
                     }
                   />
-
-                  <Link href="/resume">
-                    <button
-                      type="button"
-                      className="text-xs text-muted-foreground hover:text-foreground font-medium underline underline-offset-4 cursor-pointer"
-                    >
-                      View Master Resume
-                    </button>
-                  </Link>
                 </div>
               </div>
             </div>

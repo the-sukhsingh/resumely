@@ -8,16 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "./theme/ThemeToggle";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Menu, LogOut, CreditCard } from "lucide-react";
+import { Menu, LogOut, CreditCard, FileText, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
 import ColoredButton from "./custom/colored-button";
+
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
     const links = [
-        { href: "/resume", label: "Resumes" },
-        { href: "/tracker", label: "Job Tracker" },
+        { href: "/resume", label: "Resumes", icon: FileText },
+        { href: "/tracker", label: "Job Tracker", icon: Briefcase },
     ];
 
     if (pathname.startsWith("/r/") || pathname.startsWith("/resume/view/")) {
@@ -38,26 +40,47 @@ const Navbar = () => {
                         re.
                     </Link>
 
-                    {/* Desktop Links */}
+                    {/* Desktop Links Switcher */}
                     {isAuthenticated && (
-                        <div className="hidden md:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2 p-0.5 rounded-full border border-border/50 bg-background/60 backdrop-blur-md">
-                            {links.map((link) => {
-                                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-                                return (
-                                    <Link
-                                        key={link.href}
-                                        href={link.href}
-                                        className={cn(
-                                            "flex items-center gap-2 px-3.5 py-1 rounded-full text-xs transition-colors",
-                                            isActive
-                                                ? "text-foreground bg-muted/80 shadow-2xs font-semibold"
-                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/40 font-medium"
-                                        )}
-                                    >
-                                        {link.label}
-                                    </Link>
-                                );
-                            })}
+                        <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
+                            <motion.div className="flex p-0.5 bg-muted/40 rounded-full border border-border/50 backdrop-blur-md">
+                                {links.map((link) => {
+                                    const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                                    const Icon = link.icon;
+                                    return (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className={cn(
+                                                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all relative cursor-pointer select-none",
+                                                isActive
+                                                    ? "text-foreground font-semibold"
+                                                    : "text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            <AnimatePresence mode="wait">
+                                                {isActive && (
+                                                    <motion.span
+                                                        layoutId="navbar-active-pill"
+                                                        transition={{
+                                                            layout: {
+                                                                type: "spring",
+                                                                stiffness: 300,
+                                                                damping: 30,
+                                                            },
+                                                        }}
+                                                        className="absolute inset-0 bg-background rounded-full shadow-2xs"
+                                                    />
+                                                )}
+                                            </AnimatePresence>
+                                            <span className="flex items-center gap-1.5 relative z-10">
+                                                <Icon size={14} className="shrink-0" />
+                                                <span>{link.label}</span>
+                                            </span>
+                                        </Link>
+                                    );
+                                })}
+                            </motion.div>
                         </div>
                     )}
 
@@ -78,6 +101,7 @@ const Navbar = () => {
                                                 <div className="grid grid-cols-1 gap-1">
                                                     {links.map((link) => {
                                                         const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                                                        const Icon = link.icon;
                                                         return (
                                                             <Link
                                                                 key={link.href}
@@ -89,7 +113,8 @@ const Navbar = () => {
                                                                         : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                                                 )}
                                                             >
-                                                                {link.label}
+                                                                <Icon className="size-4 shrink-0" />
+                                                                <span>{link.label}</span>
                                                             </Link>
                                                         );
                                                     })}
