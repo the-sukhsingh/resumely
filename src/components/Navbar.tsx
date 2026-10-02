@@ -16,7 +16,8 @@ const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
     const links = [
-        { href: "/resume", label: "Resume" },
+        { href: "/resume", label: "Resumes" },
+        { href: "/tracker", label: "Job Tracker" },
     ];
 
     if (pathname.startsWith("/r/") || pathname.startsWith("/resume/view/")) {
@@ -39,19 +40,24 @@ const Navbar = () => {
 
                     {/* Desktop Links */}
                     {isAuthenticated && (
-                        <div className="hidden md:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2">
-                            {links.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={cn(
-                                        "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors",
-                                        "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                    )}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
+                        <div className="hidden md:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2 p-0.5 rounded-full border border-border/50 bg-background/60 backdrop-blur-md">
+                            {links.map((link) => {
+                                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={cn(
+                                            "flex items-center gap-2 px-3.5 py-1 rounded-full text-xs transition-colors",
+                                            isActive
+                                                ? "text-foreground bg-muted/80 shadow-2xs font-semibold"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/40 font-medium"
+                                        )}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     )}
 
@@ -70,18 +76,23 @@ const Navbar = () => {
                                         {isAuthenticated && user ? (
                                             <>
                                                 <div className="grid grid-cols-1 gap-1">
-                                                    {links.map((link) => (
-                                                        <Link
-                                                            key={link.href}
-                                                            href={link.href}
-                                                            className={cn(
-                                                                "flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors font-medium text-sm",
-                                                                "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                                            )}
-                                                        >
-                                                            {link.label}
-                                                        </Link>
-                                                    ))}
+                                                    {links.map((link) => {
+                                                        const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                                                        return (
+                                                            <Link
+                                                                key={link.href}
+                                                                href={link.href}
+                                                                className={cn(
+                                                                    "flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors font-medium text-sm",
+                                                                    isActive
+                                                                        ? "text-foreground bg-muted/60 font-semibold"
+                                                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                                                )}
+                                                            >
+                                                                {link.label}
+                                                            </Link>
+                                                        );
+                                                    })}
                                                 </div>
 
                                                 <div className="pt-4 border-t border-border/50">
