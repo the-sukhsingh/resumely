@@ -12,6 +12,7 @@ import type * as ai from "../ai.js";
 import type * as chatHistory from "../chatHistory.js";
 import type * as feedback from "../feedback.js";
 import type * as jobDescriptions from "../jobDescriptions.js";
+import type * as jobTracker from "../jobTracker.js";
 import type * as masterResumes from "../masterResumes.js";
 import type * as resumeVersions from "../resumeVersions.js";
 import type * as users from "../users.js";
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   chatHistory: typeof chatHistory;
   feedback: typeof feedback;
   jobDescriptions: typeof jobDescriptions;
+  jobTracker: typeof jobTracker;
   masterResumes: typeof masterResumes;
   resumeVersions: typeof resumeVersions;
   users: typeof users;
