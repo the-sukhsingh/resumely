@@ -1,9 +1,10 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
+import { useAuth } from '@/context/AuthContext';
 import ChatPanel from '@/components/resume/ChatPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -30,9 +31,19 @@ import { createPdfToImage } from '@/lib/pdf/create-pdf-to-image';
 
 export default function ResumeVersionPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
   const resume = useQuery(api.resumeVersions.getResumeVersionById, {
     versionId: id as Id<'resumeVersions'>,
   });
+
+  useEffect(() => {
+    if (!isLoading && resume) {
+      if (!user || user._id !== resume.userId) {
+        router.replace(`/r/${id}`);
+      }
+    }
+  }, [isLoading, user, resume, id, router]);
 
 
   if (resume === undefined) {
@@ -205,7 +216,7 @@ function ResumeEditorContent({
         >
           <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
             <div className='h-10 bg-background flex justify-between px-1' >
-              <Manager resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
+              <Manager resumeId={resumeId} resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
             </div>
             {activeView === 'resume' ? (
               <ResumePreview resumeData={previewDraft} theme="classic" />

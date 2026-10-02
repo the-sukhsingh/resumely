@@ -307,6 +307,15 @@ export const getResumeVersionById = query({
   },
 });
 
+export const getPublicResumeVersion = query({
+  args: { resumeId: v.string() },
+  handler: async (ctx, args) => {
+    const normalizedId = ctx.db.normalizeId("resumeVersions", args.resumeId);
+    if (!normalizedId) return null;
+    return await ctx.db.get(normalizedId);
+  },
+});
+
 export const getResumeVersionsByMasterResume = query({
   args: { masterResumeId: v.id("resumeVersions") },
   handler: async (ctx, args) => {

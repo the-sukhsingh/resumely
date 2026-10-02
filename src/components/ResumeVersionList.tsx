@@ -17,6 +17,8 @@ import {
   Briefcase,
   X,
   Target,
+  Link2,
+  Check,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -48,6 +50,23 @@ export default function ResumeVersionList({ userId }: Props) {
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<{ id: Id<'resumeVersions'>; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopyLink = async (versionId: string, versionName?: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const url = `${origin}/r/${versionId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedId(versionId);
+      toast.success(versionName ? `Copied link for "${versionName}"` : 'Resume link copied to clipboard!');
+      setTimeout(() => {
+        setCopiedId((current) => (current === versionId ? null : current));
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      toast.error('Failed to copy resume link');
+    }
+  };
 
   const master = useMemo(() => {
     return versions?.find((v) => v.isMasterResume) || masterResume;
@@ -176,7 +195,21 @@ export default function ResumeVersionList({ userId }: Props) {
             </div>
 
             {/* Action CTA with Emil Kowalski Micro-interactions */}
-            <div className="flex items-center self-end sm:self-center shrink-0">
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button
+                type="button"
+                onClick={() => handleCopyLink(master._id, master.name || 'Master Resume')}
+                title="Copy master resume link"
+                className="size-9 rounded-full flex items-center justify-center border border-border/80 bg-background/80 hover:bg-muted/70 text-muted-foreground hover:text-foreground active:scale-[0.93] transition-all duration-150 cursor-pointer shadow-2xs"
+              >
+                {copiedId === master._id ? (
+                  <Check className="size-4 text-emerald-500 animate-in fade-in" />
+                ) : (
+                  <Link2 className="size-4" />
+                )}
+                <span className="sr-only">Copy master resume link</span>
+              </button>
+
               <Link href={`/resume/${master._id}`}>
                 <ColoredButton color="amber" className="px-5 rounded-full active:scale-[0.97]" size="lg">
                   <span>Edit Base Profile</span>
@@ -240,7 +273,7 @@ export default function ResumeVersionList({ userId }: Props) {
             <span>Target Role / Version</span>
             <div className="flex items-center gap-8 pr-1">
               <span>Updated</span>
-              <span className="w-8 text-right"></span>
+              <span className="w-18 text-right"></span>
             </div>
           </div>
 
@@ -326,8 +359,22 @@ export default function ResumeVersionList({ userId }: Props) {
                         })}
                       </span>
 
-                      {/* Single Action Button: Delete */}
-                      <div onClick={(e) => e.stopPropagation()}>
+                      {/* Action Buttons: Copy Link (Left of Delete) & Delete */}
+                      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(item._id, item.name)}
+                          title="Copy public resume link"
+                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 active:scale-[0.93] transition-all duration-150 cursor-pointer"
+                        >
+                          {copiedId === item._id ? (
+                            <Check className="size-4 text-emerald-500 animate-in fade-in duration-200" />
+                          ) : (
+                            <Link2 className="size-4" />
+                          )}
+                          <span className="sr-only">Copy resume link</span>
+                        </button>
+
                         <button
                           type="button"
                           onClick={() =>
