@@ -137,7 +137,7 @@ export default function JobTrackerPage() {
                       <ColoredButton
                         color="amber"
                         size="default"
-                        className="rounded-full px-5 text-xs font-medium cursor-pointer shadow-xs active:scale-[0.97]"
+                        className="rounded-full px-5 text-xs font-medium"
                       >
                         <Plus className="size-3.5 mr-1" />
                         <span>Track From Job Link</span>

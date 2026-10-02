@@ -296,8 +296,7 @@ export default function JobDetailsDrawer({
                       </>
                     ) : (
                       <>
-                        <Sparkles className="size-3.5 text-amber-300" />
-                        <span>Tailor Master Resume for this Job</span>
+                        Tailor Master Resume for this Job
                       </>
                     )}
                   </Button>

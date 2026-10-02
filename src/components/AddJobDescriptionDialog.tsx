@@ -363,17 +363,18 @@ export default function AddJobDescriptionDialog({
                           variant="ghost"
                           onClick={handleClose}
                           disabled={loading}
-                          className="text-xs"
+                          className="text-xs text-muted-foreground"
                         >
                           Cancel
                         </Button>
-                        <Button
+                        <ColoredButton
                           type="submit"
                           disabled={
                             loading ||
                             (mode === 'link' ? !linkUrl.trim() : !description.trim())
                           }
-                          className="text-xs font-medium"
+                          className="text-xs font-medium px-4"
+                          color='emerald'
                         >
                           {loading ? (
                             <>
@@ -382,11 +383,10 @@ export default function AddJobDescriptionDialog({
                             </>
                           ) : (
                             <>
-                              <Sparkles className="size-3.5 mr-1.5 text-amber-300" />
                               Tailor & Track
                             </>
                           )}
-                        </Button>
+                        </ColoredButton>
                       </div>
                     </div>
                   </form>

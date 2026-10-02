@@ -163,7 +163,6 @@ export default function JobListView({
               >
                 {/* 1. Role & Company */}
                 <div className="col-span-4 flex items-center gap-3 min-w-0">
-                  <DitheredSphere index={index} seed={app._id} size={32} className="shrink-0" />
                   <div className="min-w-0 flex-1">
                     <span className="font-medium text-sm text-foreground truncate block tracking-tight group-hover:text-foreground">
                       {app.title}
@@ -242,8 +241,7 @@ export default function JobListView({
                         </>
                       ) : (
                         <>
-                          <Sparkles className="size-3 text-amber-500" />
-                          <span>Tailor Resume</span>
+                          Tailor Resume
                         </>
                       )}
                     </button>

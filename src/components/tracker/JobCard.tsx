@@ -243,8 +243,7 @@ export default function JobCard({
               </>
             ) : (
               <>
-                <Sparkles className="size-3" />
-                <span>Tailor Resume</span>
+                Tailor Resume
               </>
             )}
           </button>

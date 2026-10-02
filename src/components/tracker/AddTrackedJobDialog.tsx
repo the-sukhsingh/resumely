@@ -410,7 +410,6 @@ export default function AddTrackedJobDialog({
                             />
                             <label htmlFor="auto-tailor-check" className="text-xs leading-relaxed cursor-pointer select-none">
                               <span className="font-semibold text-foreground flex items-center gap-1.5">
-                                <Sparkles className="size-3 text-amber-500" />
                                 Automatically tailor Master Resume for this job
                               </span>
                               <span className="text-[11px] text-muted-foreground block mt-0.5">
@@ -450,20 +449,21 @@ export default function AddTrackedJobDialog({
                       </div>
 
                       {/* Footer */}
-                      <div className="flex justify-between items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                         <Button
                           type="button"
                           variant="ghost"
                           onClick={handleClose}
                           disabled={extracting}
-                          className="text-xs"
+                          className="text-xs text-muted-foreground"
                         >
                           Cancel
                         </Button>
-                        <Button
+                        <ColoredButton
                           type="submit"
                           disabled={!url.trim() || extracting}
-                          className="text-xs font-medium"
+                          className="text-xs font-medium px-4"
+                          color='emerald'
                         >
                           {extracting ? (
                             <>
@@ -472,11 +472,10 @@ export default function AddTrackedJobDialog({
                             </>
                           ) : (
                             <>
-                              <Sparkles className="size-3.5 mr-1.5 text-amber-400" />
                               Extract & Track
                             </>
                           )}
-                        </Button>
+                        </ColoredButton>
                       </div>
                     </form>
                   ) : (

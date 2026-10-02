@@ -7,7 +7,9 @@ import { Id } from '../../../convex/_generated/dataModel';
 import { Search, X, LayoutGrid, List, Plus } from 'lucide-react';
 import ColoredButton from '@/components/custom/colored-button';
 import { cn } from '@/lib/utils';
-
+import { Menu } from '@duo-icons/react';
+import { Dashboard } from '@duo-icons/react';
+import { motion, AnimatePresence } from 'motion/react';
 interface Props {
   applications: TrackedJobApplication[];
   search: string;
@@ -51,8 +53,7 @@ export default function JobTrackerHeader({
       {/* Page Title & Primary Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-            <span className="text-blue-500 inline-block size-1.5 rounded-full" />
+          <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-muted-foreground indent-0.5">
             <span>Application Pipeline</span>
             <span className="text-border">/</span>
             <span>Live Sync</span>
@@ -73,7 +74,7 @@ export default function JobTrackerHeader({
               <ColoredButton
                 color="amber"
                 size="default"
-                className="rounded-full px-4 text-xs font-medium shadow-xs active:scale-[0.97] cursor-pointer"
+                className="rounded-full px-4 text-xs font-medium"
               >
                 <Plus className="size-3.5 mr-1" />
                 <span>Track New Job</span>
@@ -139,38 +140,63 @@ export default function JobTrackerHeader({
 
         {/* View Mode Switcher (Board vs List) */}
         <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-          <div className="flex p-0.5 bg-muted/40 rounded-full border border-border/50">
+          <motion.div className="flex p-0.5 bg-muted/40 rounded-full border border-border/50 ">
+
             <button
               type="button"
               onClick={() => onViewModeChange('board')}
               title="Kanban Board view"
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer',
-                viewMode === 'board'
-                  ? 'bg-background text-foreground shadow-2xs'
-                  : 'text-muted-foreground hover:text-foreground'
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer relative',
               )}
             >
-              <LayoutGrid className="size-3.5" />
-              <span>Board</span>
+              <AnimatePresence mode='wait'>
+                {viewMode === 'board' && <motion.span
+                  transition={{
+                    layout: {
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 30
+                    }
+                  }}
+                  layoutId='tabbg' className='absolute inset-0 bg-background rounded-full shadow-2xs'></motion.span>}
+              </AnimatePresence>
+              <span className='flex items-center gap-1.5 relative'>
+
+                <Dashboard size={16} />
+                <span>Board</span>
+              </span>
             </button>
             <button
               type="button"
               onClick={() => onViewModeChange('list')}
               title="List Table view"
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer',
-                viewMode === 'list'
-                  ? 'bg-background text-foreground shadow-2xs'
-                  : 'text-muted-foreground hover:text-foreground'
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer relative',
+
               )}
             >
-              <List className="size-3.5" />
-              <span>List</span>
+              <AnimatePresence mode='wait'>
+                {viewMode === 'list' && <motion.span
+                  transition={{
+                    layout: {
+                      // Spring Effect
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 30,
+                    }
+                  }}
+                  layoutId='tabbg' className='absolute inset-0 bg-background rounded-full shadow-2xs'></motion.span>}
+              </AnimatePresence>
+              <span className='flex items-center gap-1.5 relative'>
+                <Menu size={16} />
+                <span>List</span>
+              </span>
             </button>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
   );
+
 }
