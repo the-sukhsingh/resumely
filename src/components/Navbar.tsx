@@ -11,8 +11,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Menu, LogOut, CreditCard, FileText, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "motion/react";
 import ColoredButton from "./custom/colored-button";
+import AnimatedSwitcher from "./custom/animated-switcher";
 
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -43,44 +43,15 @@ const Navbar = () => {
                     {/* Desktop Links Switcher */}
                     {isAuthenticated && (
                         <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
-                            <motion.div className="flex p-0.5 bg-muted/40 rounded-full border border-border/50 backdrop-blur-md">
-                                {links.map((link) => {
-                                    const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-                                    const Icon = link.icon;
-                                    return (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            className={cn(
-                                                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all relative cursor-pointer select-none",
-                                                isActive
-                                                    ? "text-foreground font-semibold"
-                                                    : "text-muted-foreground hover:text-foreground"
-                                            )}
-                                        >
-                                            <AnimatePresence mode="wait">
-                                                {isActive && (
-                                                    <motion.span
-                                                        layoutId="navbar-active-pill"
-                                                        transition={{
-                                                            layout: {
-                                                                type: "spring",
-                                                                stiffness: 300,
-                                                                damping: 30,
-                                                            },
-                                                        }}
-                                                        className="absolute inset-0 bg-background rounded-full shadow-2xs"
-                                                    />
-                                                )}
-                                            </AnimatePresence>
-                                            <span className="flex items-center gap-1.5 relative z-10">
-                                                <Icon size={14} className="shrink-0" />
-                                                <span>{link.label}</span>
-                                            </span>
-                                        </Link>
-                                    );
-                                })}
-                            </motion.div>
+                            <AnimatedSwitcher
+                                value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
+                                items={links.map((link) => ({
+                                    value: link.href,
+                                    label: link.label,
+                                    icon: link.icon,
+                                    href: link.href,
+                                }))}
+                            />
                         </div>
                     )}
 

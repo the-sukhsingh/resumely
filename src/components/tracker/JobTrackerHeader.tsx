@@ -9,7 +9,7 @@ import ColoredButton from '@/components/custom/colored-button';
 import { cn } from '@/lib/utils';
 import { Menu } from '@duo-icons/react';
 import { Dashboard } from '@duo-icons/react';
-import { motion, AnimatePresence } from 'motion/react';
+import AnimatedSwitcher from '@/components/custom/animated-switcher';
 
 interface Props {
   applications: TrackedJobApplication[];
@@ -88,65 +88,14 @@ export default function JobTrackerHeader({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         {/* View Mode Switcher (List vs Board) */}
         <div className="flex items-center gap-2 shrink-0">
-          <motion.div className="flex p-0.5 bg-muted/40 rounded-full border border-border/50">
-            <button
-              type="button"
-              onClick={() => onViewModeChange('list')}
-              title="List Table view"
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer relative'
-              )}
-            >
-              <AnimatePresence mode="wait">
-                {viewMode === 'list' && (
-                  <motion.span
-                    transition={{
-                      layout: {
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 30,
-                      },
-                    }}
-                    layoutId="tabbg"
-                    className="absolute inset-0 bg-background rounded-full shadow-2xs"
-                  />
-                )}
-              </AnimatePresence>
-              <span className="flex items-center gap-1.5 relative">
-                <Menu size={16} />
-                <span>List</span>
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onViewModeChange('board')}
-              title="Kanban Board view"
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer relative'
-              )}
-            >
-              <AnimatePresence mode="wait">
-                {viewMode === 'board' && (
-                  <motion.span
-                    transition={{
-                      layout: {
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 30,
-                      },
-                    }}
-                    layoutId="tabbg"
-                    className="absolute inset-0 bg-background rounded-full shadow-2xs"
-                  />
-                )}
-              </AnimatePresence>
-              <span className="flex items-center gap-1.5 relative">
-                <Dashboard size={16} />
-                <span>Board</span>
-              </span>
-            </button>
-          </motion.div>
+          <AnimatedSwitcher
+            value={viewMode}
+            onChange={onViewModeChange}
+            items={[
+              { value: 'list', label: 'List', icon: Menu, title: 'List Table view' },
+              { value: 'board', label: 'Board', icon: Dashboard, title: 'Kanban Board view' },
+            ]}
+          />
         </div>
 
         {/* Search Input & Action Button Grouped together */}

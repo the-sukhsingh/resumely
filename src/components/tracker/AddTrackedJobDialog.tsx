@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
+import AnimatedSwitcher from '@/components/custom/animated-switcher';
 import {
   X,
   Plus,
@@ -393,44 +394,17 @@ export default function AddTrackedJobDialog({
 
                   {/* Tabs: Paste JD vs Link vs Manual */}
                   <div className="px-6 pt-3 pb-1 shrink-0">
-                    <div className="flex p-1 bg-muted/40 rounded-xl border border-border/50 max-w-sm">
-                      <button
-                        type="button"
-                        onClick={() => setTab('paste')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                          tab === 'paste'
-                            ? 'bg-background text-foreground shadow-xs'
-                            : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        <Sparkles className="size-3.5 text-amber-500" />
-                        <span>Paste JD</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setTab('link')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                          tab === 'link'
-                            ? 'bg-background text-foreground shadow-xs'
-                            : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        <Link2 className="size-3.5" />
-                        <span>From Link</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setTab('manual')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                          tab === 'manual'
-                            ? 'bg-background text-foreground shadow-xs'
-                            : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        <FileText className="size-3.5" />
-                        <span>Manual</span>
-                      </button>
-                    </div>
+                    <AnimatedSwitcher
+                      value={tab}
+                      onChange={setTab}
+                      fullWidth
+                      className="max-w-sm"
+                      items={[
+                        { value: 'paste', label: 'Paste JD' },
+                        { value: 'link', label: 'From Link', icon: Link2 },
+                        { value: 'manual', label: 'Manual', icon: FileText },
+                      ]}
+                    />
                   </div>
 
                   {/* Tab 1: Paste Job Description */}

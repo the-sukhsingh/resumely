@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
+import AnimatedSwitcher from '@/components/custom/animated-switcher';
 import { X, Plus, Link2, FileText, Sparkles, Loader2, Clock, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -243,32 +244,16 @@ export default function AddJobDescriptionDialog({
 
                   {/* Mode Selector: Link vs Raw Text */}
                   <div className="px-6 pt-3 shrink-0">
-                    <div className="flex p-1 bg-muted/40 rounded-xl border border-border/50 max-w-xs">
-                      <button
-                        type="button"
-                        onClick={() => setMode('link')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-medium transition-all ${
-                          mode === 'link'
-                            ? 'bg-background text-foreground shadow-xs'
-                            : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        <Link2 className="size-3.5" />
-                        <span>From Job Link</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMode('text')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-medium transition-all ${
-                          mode === 'text'
-                            ? 'bg-background text-foreground shadow-xs'
-                            : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        <FileText className="size-3.5" />
-                        <span>Paste JD Text</span>
-                      </button>
-                    </div>
+                    <AnimatedSwitcher
+                      value={mode}
+                      onChange={setMode}
+                      fullWidth
+                      className="max-w-xs"
+                      items={[
+                        { value: 'link', label: 'From Job Link', icon: Link2 },
+                        { value: 'text', label: 'Paste JD Text', icon: FileText },
+                      ]}
+                    />
                   </div>
 
                   {/* Form */}
