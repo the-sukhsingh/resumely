@@ -19,9 +19,6 @@ import {
   Target,
   Link2,
   Check,
-  Sparkles,
-  ShieldCheck,
-  FileCheck,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -122,93 +119,41 @@ export default function ResumeVersionList({ userId }: Props) {
   // Zero resumes state
   if (versions.length != 0) {
     return (
-      <div className="w-full max-w-2xl sm:max-w-3xl mx-auto my-6 sm:my-10 text-center">
+      <div className="w-full max-w-md mx-auto my-12 text-center">
         <Feedback />
-        <section className="relative rounded-[32px] sm:rounded-[36px] bg-linear-to-b from-card/95 via-card/80 to-card/40 dark:from-card/40 dark:via-card/25 dark:to-card/10 p-6 sm:p-10 border border-border/70 dark:border-border/40 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden outline-2 outline-white dark:outline-black">
-          {/* Ambient luminous glow orbs */}
-          <div className="absolute inset-0 blur-3xl pointer-events-none select-none overflow-hidden -z-0">
-            <span className="size-80 rounded-full bg-violet-400/20 dark:bg-violet-400/10 inline-flex absolute -top-12 -left-12" />
-            <span className="size-80 rounded-full bg-amber-400/20 dark:bg-amber-400/10 inline-flex absolute -bottom-12 -right-12" />
+        <div className="p-6 sm:p-8 rounded-2xl border border-border/60 bg-card/40 backdrop-blur-xs">
+          <div className="size-9 rounded-lg border border-border/70 bg-muted/40 text-muted-foreground flex items-center justify-center mx-auto mb-3">
+            <FileText className="size-4" strokeWidth={1.75} />
           </div>
+          <h2 className="text-sm font-semibold tracking-tight text-foreground">
+            No Resumes Yet
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto leading-relaxed">
+            Upload your existing resume to generate your Master Profile, or start clean from scratch.
+          </p>
 
-          <div className="relative z-10">
-            {/* Header Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground/5 dark:bg-foreground/10 border border-border/80 text-[11px] font-medium text-foreground/80 mb-3.5 shadow-2xs backdrop-blur-xs">
-              <Sparkles className="size-3 text-amber-500" />
-              <span>Step 1: Your Master Profile</span>
-            </div>
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+            <ResumeUploader userId={userId} />
 
-            {/* Title & Description */}
-            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-              Create Your Master Resume
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-2 max-w-md mx-auto leading-relaxed text-balance">
-              Resumely uses your Master Resume as the foundation to instantly generate tailored, ATS-ready resumes for any job application.
-            </p>
-
-            {/* The Two Balanced Action Cards */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 text-left items-stretch">
-              {/* Option A: Upload Existing Resume */}
-              <ResumeUploader userId={userId} className="h-full" />
-
-              {/* Option B: Create from Scratch */}
-              <div className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-card/70 dark:bg-neutral-900/50 hover:bg-card/95 dark:hover:bg-neutral-900/80 border border-border/80 dark:border-border/50 hover:border-violet-500/50 dark:hover:border-violet-500/40 transition-all duration-200 shadow-2xs hover:shadow-md text-left select-none">
-                {/* Top: Icon + Badge */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="size-10 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:scale-105 transition-transform duration-200">
-                      <Sparkles className="size-5" />
-                    </div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">
-                      Clean Slate
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-semibold tracking-tight text-foreground group-hover:text-foreground">
-                    Build from Scratch
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                    Build a clean baseline profile step-by-step with structured fields, ATS formatting rules, and live preview.
-                  </p>
-                </div>
-
-                {/* Bottom: Action CTA */}
-                <div className="mt-6 pt-2">
-                  <Link href="/resume/create" className="w-full block">
-                    <ColoredButton
-                      type="button"
-                      color="neutral"
-                      size="default"
-                      className="w-full rounded-xl font-medium active:scale-[0.98] shadow-xs justify-center border border-border/80 hover:bg-muted/70"
-                    >
-                      <Plus className="size-3.5 mr-1.5" />
-                      <span>Create Blank Resume</span>
-                    </ColoredButton>
-                  </Link>
-                  <p className="text-[10px] text-muted-foreground text-center mt-2">
-                    Guided editor · Takes ~3–5 minutes
-                  </p>
-                </div>
+            <Link
+              href="/resume/create"
+              className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/40 hover:border-foreground/20 transition-[border-color,background-color,transform] duration-150 ease-out cursor-pointer outline-none text-left select-none active:scale-[0.98]"
+            >
+              <div className="size-8 rounded-lg border border-border/70 bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors duration-150">
+                <Plus className="size-4" strokeWidth={1.75} />
               </div>
-            </div>
 
-            {/* Bottom Trust Indicators */}
-            <div className="mt-8 pt-5 border-t border-border/50 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck className="size-3.5 text-emerald-500" />
-                <span>100% Private & Secure</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-amber-500" />
-                <span>AI Experience Extraction</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <FileCheck className="size-3.5 text-violet-500" />
-                <span>ATS Parsing Ready</span>
-              </span>
-            </div>
+              <div className="mt-4">
+                <p className="text-xs font-medium text-foreground group-hover:text-foreground tracking-tight">
+                  Create from Scratch
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">
+                  Start fresh with a blank draft
+                </p>
+              </div>
+            </Link>
           </div>
-        </section>
+        </div>
       </div>
     );
   }
