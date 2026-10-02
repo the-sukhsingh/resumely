@@ -118,7 +118,7 @@ export default function ResumeVersionList({ userId }: Props) {
   }
 
   // Zero resumes state
-  if (versions.length != 0) {
+  if (versions.length === 0) {
     return (
       <div className="w-full space-y-6">
         <Feedback />
