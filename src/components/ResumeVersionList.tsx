@@ -19,6 +19,9 @@ import {
   Target,
   Link2,
   Check,
+  Sparkles,
+  ShieldCheck,
+  FileCheck,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -117,32 +120,95 @@ export default function ResumeVersionList({ userId }: Props) {
   }
 
   // Zero resumes state
-  if (versions.length === 0) {
+  if (versions.length != 0) {
     return (
-      <div className="w-full max-w-xl mx-auto my-12 text-center">
+      <div className="w-full max-w-2xl sm:max-w-3xl mx-auto my-6 sm:my-10 text-center">
         <Feedback />
-        <div className="p-8 md:p-10 rounded-2xl border border-dashed border-border/80 bg-card/40 backdrop-blur-xs">
-          <div className="size-12 rounded-full bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto mb-4">
-            <FileText className="size-6" />
+        <section className="relative rounded-[32px] sm:rounded-[36px] bg-linear-to-b from-card/95 via-card/80 to-card/40 dark:from-card/40 dark:via-card/25 dark:to-card/10 p-6 sm:p-10 border border-border/70 dark:border-border/40 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden outline-2 outline-white dark:outline-black">
+          {/* Ambient luminous glow orbs */}
+          <div className="absolute inset-0 blur-3xl pointer-events-none select-none overflow-hidden -z-0">
+            <span className="size-80 rounded-full bg-violet-400/20 dark:bg-violet-400/10 inline-flex absolute -top-12 -left-12" />
+            <span className="size-80 rounded-full bg-amber-400/20 dark:bg-amber-400/10 inline-flex absolute -bottom-12 -right-12" />
           </div>
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
-            No Resumes Yet
-          </h2>
-          <p className="text-xs md:text-sm text-muted-foreground mt-1.5 max-w-sm mx-auto leading-relaxed">
-            Upload your existing resume to generate your Master Profile, or start clean from scratch.
-          </p>
 
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <ResumeUploader userId={userId} />
-            <Link
-              href="/resume/create"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border/80 bg-background hover:bg-muted/60 text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer shadow-xs"
-            >
-              <Plus className="size-3.5" />
-              <span>Create from Scratch</span>
-            </Link>
+          <div className="relative z-10">
+            {/* Header Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground/5 dark:bg-foreground/10 border border-border/80 text-[11px] font-medium text-foreground/80 mb-3.5 shadow-2xs backdrop-blur-xs">
+              <Sparkles className="size-3 text-amber-500" />
+              <span>Step 1: Your Master Profile</span>
+            </div>
+
+            {/* Title & Description */}
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              Create Your Master Resume
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-2 max-w-md mx-auto leading-relaxed text-balance">
+              Resumely uses your Master Resume as the foundation to instantly generate tailored, ATS-ready resumes for any job application.
+            </p>
+
+            {/* The Two Balanced Action Cards */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 text-left items-stretch">
+              {/* Option A: Upload Existing Resume */}
+              <ResumeUploader userId={userId} className="h-full" />
+
+              {/* Option B: Create from Scratch */}
+              <div className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-card/70 dark:bg-neutral-900/50 hover:bg-card/95 dark:hover:bg-neutral-900/80 border border-border/80 dark:border-border/50 hover:border-violet-500/50 dark:hover:border-violet-500/40 transition-all duration-200 shadow-2xs hover:shadow-md text-left select-none">
+                {/* Top: Icon + Badge */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="size-10 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:scale-105 transition-transform duration-200">
+                      <Sparkles className="size-5" />
+                    </div>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">
+                      Clean Slate
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-semibold tracking-tight text-foreground group-hover:text-foreground">
+                    Build from Scratch
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                    Build a clean baseline profile step-by-step with structured fields, ATS formatting rules, and live preview.
+                  </p>
+                </div>
+
+                {/* Bottom: Action CTA */}
+                <div className="mt-6 pt-2">
+                  <Link href="/resume/create" className="w-full block">
+                    <ColoredButton
+                      type="button"
+                      color="neutral"
+                      size="default"
+                      className="w-full rounded-xl font-medium active:scale-[0.98] shadow-xs justify-center border border-border/80 hover:bg-muted/70"
+                    >
+                      <Plus className="size-3.5 mr-1.5" />
+                      <span>Create Blank Resume</span>
+                    </ColoredButton>
+                  </Link>
+                  <p className="text-[10px] text-muted-foreground text-center mt-2">
+                    Guided editor · Takes ~3–5 minutes
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Trust Indicators */}
+            <div className="mt-8 pt-5 border-t border-border/50 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-[11px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="size-3.5 text-emerald-500" />
+                <span>100% Private & Secure</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-amber-500" />
+                <span>AI Experience Extraction</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <FileCheck className="size-3.5 text-violet-500" />
+                <span>ATS Parsing Ready</span>
+              </span>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     );
   }
@@ -282,12 +348,9 @@ export default function ResumeVersionList({ userId }: Props) {
                   </div>
                 ) : (
                   <div className="max-w-md mx-auto space-y-3">
-                    <div className="size-10 rounded-full bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto">
-                      <Target className="size-5" />
-                    </div>
                     <div>
                       <h4 className="text-sm font-medium text-foreground">No Tailored Resumes Yet</h4>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed text-balance">
                         Create job-targeted versions to adapt your bullets, highlight key skills, and boost your ATS match score.
                       </p>
                     </div>
@@ -317,7 +380,7 @@ export default function ResumeVersionList({ userId }: Props) {
                     }}
                     role="button"
                     tabIndex={0}
-                    className="group relative flex items-center justify-between gap-4 px-4 sm:px-5 py-3 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
+                    className="group relative flex items-center justify-between gap-4 px-4 sm:px-5 py-2.5 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
                   >
                     {/* Role Name & Dithered Sphere */}
                     <div className="flex items-center gap-3 min-w-0 flex-1">
