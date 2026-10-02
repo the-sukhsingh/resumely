@@ -196,20 +196,6 @@ export default function ResumeVersionList({ userId }: Props) {
 
             {/* Action CTA with Emil Kowalski Micro-interactions */}
             <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-              <button
-                type="button"
-                onClick={() => handleCopyLink(master._id, master.name || 'Master Resume')}
-                title="Copy master resume link"
-                className="size-9 rounded-full flex items-center justify-center border border-border/80 bg-background/80 hover:bg-muted/70 text-muted-foreground hover:text-foreground active:scale-[0.93] transition-all duration-150 cursor-pointer shadow-2xs"
-              >
-                {copiedId === master._id ? (
-                  <Check className="size-4 text-emerald-500 animate-in fade-in" />
-                ) : (
-                  <Link2 className="size-4" />
-                )}
-                <span className="sr-only">Copy master resume link</span>
-              </button>
-
               <Link href={`/resume/${master._id}`}>
                 <ColoredButton color="amber" className="px-5 rounded-full active:scale-[0.97]" size="lg">
                   <span>Edit Base Profile</span>

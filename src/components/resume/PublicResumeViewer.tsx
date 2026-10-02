@@ -313,11 +313,12 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
         {/* Action Buttons: Copy Link & Download (No Edit Resume button) */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Copy Link Button */}
-          <button
+          <ColoredButton
             type="button"
             onClick={handleCopyLink}
             title="Copy shareable link"
-            className="h-8 px-2.5 rounded-lg border border-border/70 bg-card hover:bg-muted/70 active:scale-[0.97] transition-all text-xs font-medium text-foreground flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            className="h-8 px-2.5 rounded-lg "
+            color="neutral"
           >
             {copied ? (
               <>
@@ -330,7 +331,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
                 <span className="hidden sm:inline">Copy Link</span>
               </>
             )}
-          </button>
+          </ColoredButton>
 
           {/* Primary Download Button & Dropdown Group */}
           <div className="flex items-center rounded-lg shadow-xs overflow-hidden border border-border/60">
