@@ -19,6 +19,10 @@ const Navbar = () => {
         { href: "/resume", label: "Resume" },
     ];
 
+    if (pathname.startsWith("/r/") || pathname.startsWith("/resume/view/")) {
+        return null;
+    }
+
     return (
         <nav className={cn("fixed top-0 z-50 w-full",
             pathname.match(/^\/resume\/[^/]+$/) ? "bg-background" : "bg-transparent"
