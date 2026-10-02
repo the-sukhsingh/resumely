@@ -8,10 +8,12 @@ import { Id } from '../../convex/_generated/dataModel';
 import { Button } from '@/components/ui/button';
 import ColoredButton from '@/components/custom/colored-button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Link2, FileText, Sparkles, Loader2, Clock, Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Props {
   buttonLabel?: string;
@@ -31,14 +33,21 @@ export default function AddJobDescriptionDialog({
   variant = 'minimal',
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<'text' | 'link'>('link');
+  const [linkUrl, setLinkUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [stage, setStage] = useState<'applied' | 'saved'>('applied');
   const [loading, setLoading] = useState(false);
   const isBackdropClickRef = useRef(false);
+
   const createJDAndVersion = useAction(api.jobDescriptions.createJDAndVersion);
+  const extractJobFromUrl = useAction(api.jobTracker.extractJobFromUrl);
 
   const handleClose = () => {
+    if (loading) return;
     setOpen(false);
     setDescription('');
+    setLinkUrl('');
   };
 
   useEffect(() => {
@@ -50,7 +59,7 @@ export default function AddJobDescriptionDialog({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open]);
+  }, [open, loading]);
 
   useEffect(() => {
     if (!open) return;
@@ -63,21 +72,62 @@ export default function AddJobDescriptionDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = description.trim();
-    if (!trimmed || loading) return;
+    if (loading) return;
 
-    setLoading(true);
-    try {
-      const { versionId } = await createJDAndVersion({
-        userId,
-        masterResumeId,
-        jdText: trimmed,
-      });
-      onCreated?.(versionId);
-      setDescription('');
-      setOpen(false);
-    } finally {
-      setLoading(false);
+    if (mode === 'link') {
+      const trimmedUrl = linkUrl.trim();
+      if (!trimmedUrl) return;
+
+      if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
+        toast.error('Please enter a valid URL starting with https://');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await extractJobFromUrl({
+          userId,
+          url: trimmedUrl,
+          stage,
+          autoTailor: true,
+          masterResumeId,
+        });
+
+        if (result.resumeVersionId) {
+          toast.success(`Tailored resume created for ${result.company}!`);
+          onCreated?.(result.resumeVersionId);
+        } else {
+          toast.success(`Tracked ${result.company} job`);
+        }
+        handleClose();
+      } catch (err: unknown) {
+        console.error(err);
+        const msg = err instanceof Error ? err.message : 'Failed to extract job from URL';
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      const trimmed = description.trim();
+      if (!trimmed) return;
+
+      setLoading(true);
+      try {
+        const { versionId } = await createJDAndVersion({
+          userId,
+          masterResumeId,
+          jdText: trimmed,
+        });
+        toast.success('Tailored resume created!');
+        onCreated?.(versionId);
+        handleClose();
+      } catch (err: unknown) {
+        console.error(err);
+        const msg = err instanceof Error ? err.message : 'Failed to tailor resume';
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -104,7 +154,7 @@ export default function AddJobDescriptionDialog({
           onClick={() => setOpen(true)}
           color="amber"
           type="button"
-          className='px-3 rounded-full'
+          className="px-3 rounded-full"
         >
           <Plus className="size-3.5" />
           <span>{buttonLabel}</span>
@@ -136,7 +186,7 @@ export default function AddJobDescriptionDialog({
                 }}
                 className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none backdrop-blur-xs"
               >
-                {/* Wave Shader Backdrop with synchronized exit */}
+                {/* Wave Background Preview */}
                 <motion.div
                   key="jd-shader-backdrop"
                   initial={{ opacity: 0 }}
@@ -151,7 +201,7 @@ export default function AddJobDescriptionDialog({
                   <WaveBackgroundPreview className="w-full h-full mask-t-from-80%" />
                 </motion.div>
 
-                {/* Minimalist, Sleek Modal Window matching ProjectModal */}
+                {/* Modal Window */}
                 <motion.div
                   key="jd-modal-window"
                   initial={{ opacity: 0, scale: 0.95, y: 12 }}
@@ -164,23 +214,26 @@ export default function AddJobDescriptionDialog({
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-2xl h-[86dvh] max-h-[700px] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl max-h-[86dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
                     <div>
-                      <h2 className="font-sans text-xl font-semibold">
-                        Add Job Description
+                      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                        <span>Resume</span>
+                        <span className="text-border">/</span>
+                        <span>Tailor for Job</span>
+                      </div>
+                      <h2 className="font-sans text-xl font-semibold tracking-tight mt-0.5">
+                        Tailor Resume for a Job
                       </h2>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Paste the target job description to create a tailored resume version.
-                      </p>
                     </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon-sm"
                       onClick={handleClose}
+                      disabled={loading}
                       className="h-8 w-8 rounded-full p-0 text-muted-foreground hover:text-foreground"
                     >
                       <X className="w-4 h-4" />
@@ -188,42 +241,120 @@ export default function AddJobDescriptionDialog({
                     </Button>
                   </div>
 
+                  {/* Mode Selector: Link vs Raw Text */}
+                  <div className="px-6 pt-3 shrink-0">
+                    <div className="flex p-1 bg-muted/40 rounded-xl border border-border/50 max-w-xs">
+                      <button
+                        type="button"
+                        onClick={() => setMode('link')}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-medium transition-all ${
+                          mode === 'link'
+                            ? 'bg-background text-foreground shadow-xs'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        <Link2 className="size-3.5" />
+                        <span>From Job Link</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMode('text')}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-medium transition-all ${
+                          mode === 'text'
+                            ? 'bg-background text-foreground shadow-xs'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        <FileText className="size-3.5" />
+                        <span>Paste JD Text</span>
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Form */}
-                  <form
-                    onSubmit={handleSubmit}
-                    className="flex flex-col flex-1 overflow-hidden"
-                  >
-                    <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-3">
-                      <div className="flex flex-col flex-1 gap-1.5 min-h-0">
-                        <Label className="text-xs text-primary/90 font-medium">
-                          Job Description
-                        </Label>
-                        <Textarea
-                          placeholder="Paste the job description text here..."
-                          value={description}
-                          onChange={(event) => setDescription(event.target.value)}
-                          className="flex-1 min-h-[240px] resize-none leading-relaxed font-sans text-sm border-border/60 p-3.5 focus-visible:ring-1"
-                          autoFocus
-                        />
-                      </div>
+                  <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                    <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
+                      {mode === 'link' ? (
+                        <div className="space-y-4">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium text-foreground">
+                              Job Link URL
+                            </Label>
+                            <div className="relative">
+                              <Link2 className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                              <Input
+                                type="url"
+                                placeholder="https://jobs.lever.co/... or greenhouse, ashby, linkedin..."
+                                value={linkUrl}
+                                onChange={(e) => setLinkUrl(e.target.value)}
+                                disabled={loading}
+                                required
+                                autoFocus
+                                className="pl-9 text-xs h-10 rounded-xl"
+                              />
+                            </div>
+                            <p className="text-[11px] text-muted-foreground">
+                              Resumely will read the posting, extract requirements, generate a tailored resume version, and track the role in your pipeline.
+                            </p>
+                          </div>
+
+                          {/* Initial Tracker Stage Selector */}
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium text-foreground">
+                              Application Stage
+                            </Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setStage('applied')}
+                                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs text-left transition-all ${
+                                  stage === 'applied'
+                                    ? 'border-blue-500/40 bg-blue-500/10 font-medium'
+                                    : 'border-border/60 bg-card/40 text-muted-foreground'
+                                }`}
+                              >
+                                <Send className="size-3.5 text-blue-500" />
+                                <span>Mark Applied</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setStage('saved')}
+                                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs text-left transition-all ${
+                                  stage === 'saved'
+                                    ? 'border-foreground/30 bg-muted/60 font-medium'
+                                    : 'border-border/60 bg-card/40 text-muted-foreground'
+                                }`}
+                              >
+                                <Clock className="size-3.5 text-slate-500" />
+                                <span>Add for later (Saved)</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col flex-1 gap-1.5 min-h-0">
+                          <Label className="text-xs text-foreground font-medium">
+                            Job Description Text
+                          </Label>
+                          <Textarea
+                            placeholder="Paste the job description text, requirements, and responsibilities here..."
+                            value={description}
+                            onChange={(event) => setDescription(event.target.value)}
+                            className="flex-1 min-h-[200px] resize-none leading-relaxed font-sans text-xs border-border/60 p-3.5 rounded-xl focus-visible:ring-1"
+                            autoFocus
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Footer */}
                     <div className="flex justify-between items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                       <div className="text-xs text-muted-foreground">
-                        {description.trim() ? (
-                          <span>
-                            <strong className="text-foreground font-medium">
-                              {description.length}
-                            </strong>{' '}
-                            characters ·{' '}
-                            <strong className="text-foreground font-medium">
-                              {description.trim().split(/\s+/).length}
-                            </strong>{' '}
-                            words
+                        {loading && (
+                          <span className="inline-flex items-center gap-1.5 text-primary">
+                            <Loader2 className="size-3.5 animate-spin" />
+                            <span>AI Tailoring in progress...</span>
                           </span>
-                        ) : (
-                          <span>Ready to paste</span>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
@@ -232,14 +363,29 @@ export default function AddJobDescriptionDialog({
                           variant="ghost"
                           onClick={handleClose}
                           disabled={loading}
+                          className="text-xs"
                         >
                           Cancel
                         </Button>
                         <Button
                           type="submit"
-                          disabled={!description.trim() || loading}
+                          disabled={
+                            loading ||
+                            (mode === 'link' ? !linkUrl.trim() : !description.trim())
+                          }
+                          className="text-xs font-medium"
                         >
-                          {loading ? 'Creating...' : 'Save'}
+                          {loading ? (
+                            <>
+                              <Loader2 className="size-3.5 animate-spin mr-1.5" />
+                              Tailoring...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="size-3.5 mr-1.5 text-amber-300" />
+                              Tailor & Track
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
