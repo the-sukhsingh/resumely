@@ -9,6 +9,7 @@ import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
 import Feedback from './custom/feedback';
 import { TrashDuo } from '@/components/icons';
+import { AddCircle, File as DuoFile, CheckCircle as DuoCheckCircle } from '@duo-icons/react';
 import {
   Search,
   Plus,
@@ -128,7 +129,9 @@ export default function ResumeVersionList({ userId }: Props) {
           <div className="p-6 sm:p-8 border-b border-border/50 flex flex-col sm:flex-row sm:items-start justify-between gap-6">
             <div className="max-w-xl space-y-1.5 text-left">
               <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                <span className="size-2 rounded-full bg-amber-500/80 animate-pulse" />
+                <span className="text-amber-500 inline-flex items-center">
+                  <DuoFile size={14} />
+                </span>
                 <span>Base Profile</span>
                 <span className="text-border">/</span>
                 <span>Uninitialized</span>
@@ -141,16 +144,20 @@ export default function ResumeVersionList({ userId }: Props) {
               </p>
             </div>
 
-            {/* Alternative Pathway: Clean Editorial Button */}
+            {/* Alternative Pathway: ColoredButton with AddCircle */}
             <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
               <Link href="/resume/create">
-                <button
+                <ColoredButton
                   type="button"
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-border/80 bg-background hover:bg-muted/60 text-xs font-medium text-foreground transition-all duration-150 active:scale-[0.98] cursor-pointer shadow-2xs"
+                  color="neutral"
+                  size="default"
+                  className="rounded-xl px-4 text-xs font-medium active:scale-[0.97] shadow-xs cursor-pointer"
                 >
-                  <Plus className="size-3.5" />
+                  <span className="inline-flex items-center mr-1.5">
+                    <AddCircle size={16} />
+                  </span>
                   <span>Start Blank Draft</span>
-                </button>
+                </ColoredButton>
               </Link>
             </div>
           </div>
@@ -163,10 +170,12 @@ export default function ResumeVersionList({ userId }: Props) {
               <span>Importing a PDF is the fastest way to populate your work history and credentials.</span>
               <Link
                 href="/resume/create"
-                className="text-foreground underline underline-offset-4 hover:opacity-80 font-medium inline-flex items-center gap-1 self-start sm:self-auto"
+                className="text-foreground underline underline-offset-4 hover:opacity-80 font-medium inline-flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
               >
                 <span>Or build step-by-step from scratch</span>
-                <ArrowUpRight className="size-3" />
+                <span className="inline-flex items-center">
+                  <AddCircle size={14} />
+                </span>
               </Link>
             </div>
           </div>
@@ -179,7 +188,9 @@ export default function ResumeVersionList({ userId }: Props) {
               <span>LIMIT: 10MB</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/80">
-              <span className="size-1.5 rounded-full bg-emerald-500" />
+              <span className="text-emerald-500 inline-flex items-center">
+                <DuoCheckCircle size={14} />
+              </span>
               <span>AI EXTRACTION ENGINE READY</span>
             </div>
           </div>

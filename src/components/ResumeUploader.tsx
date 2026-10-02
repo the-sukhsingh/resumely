@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Loader2, FileUp } from "lucide-react";
+import { UploadFile, FolderUpload } from "@duo-icons/react";
+import { Loader2 } from "lucide-react";
 import { useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
@@ -132,8 +133,8 @@ export default function ResumeUploader({ userId, onSuccess, className }: ResumeU
         </div>
       ) : (
         <>
-          <div className="size-12 rounded-2xl border border-border/80 bg-background flex items-center justify-center text-foreground/80 group-hover:text-foreground group-hover:border-foreground/30 group-hover:scale-105 transition-all duration-150 shadow-xs mb-3.5">
-            <FileUp className="size-5 stroke-[1.75]" />
+          <div className="size-14 rounded-2xl border border-border/80 bg-background/90 flex items-center justify-center text-foreground group-hover:scale-105 group-hover:border-foreground/30 transition-all duration-150 shadow-xs mb-4">
+            <UploadFile size={32} />
           </div>
 
           <div className="space-y-1">
@@ -149,15 +150,17 @@ export default function ResumeUploader({ userId, onSuccess, className }: ResumeU
             <ColoredButton
               type="button"
               color="neutral"
-              size="sm"
-              className="rounded-xl px-4 text-xs font-medium justify-center active:scale-[0.97] shadow-xs"
+              size="default"
+              className="rounded-xl px-5 text-xs font-medium justify-center active:scale-[0.97] shadow-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 inputRef.current?.click();
               }}
             >
-              <Upload className="size-3.5 mr-1.5" />
-              <span>Select PDF</span>
+              <span className="inline-flex items-center mr-2">
+                <FolderUpload size={16} />
+              </span>
+              <span>Select PDF File</span>
             </ColoredButton>
           </div>
         </>
