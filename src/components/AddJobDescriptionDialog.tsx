@@ -102,7 +102,7 @@ export default function AddJobDescriptionDialog({
       ) : variant === 'minimal' ? (
         <ColoredButton
           onClick={() => setOpen(true)}
-          color="orange"
+          color="amber"
           type="button"
           className='px-3 rounded-full'
         >

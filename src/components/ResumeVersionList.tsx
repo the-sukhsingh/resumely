@@ -34,6 +34,7 @@ import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
 import { VelocityStreakPreview } from './custom/vel-streak';
 import DitheredSphere from './custom/dithered-sphere';
+import { cn } from 'cn';
 
 interface Props {
   userId: Id<'users'>;
@@ -135,8 +136,12 @@ export default function ResumeVersionList({ userId }: Props) {
 
       {/* ─── Master Resume Anchor Card ─── */}
       {master && (
-        <section className="group relative rounded-2xl bg-linear-to-b from-card/90 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 border border-border/60 shadow-xs overflow-hidden">
-          <VelocityStreakPreview className="absolute inset-0 opacity-45 pointer-events-none" />
+        <section className="group relative rounded-[30px] bg-linear-to-b from-card/90 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 shadow-xs overflow-hidden outline-2 outline-white">
+          {/* <VelocityStreakPreview className="absolute inset-0 opacity-45 pointer-events-none" /> */}
+          <div className={cn("absolute inset-0 blur-2xl")}>
+          <span className='size-80 rounded-full bg-violet-100 inline-flex absolute left-1/5 -translate-x-1/2 -translate-y-1/2'></span>
+          <span className='size-80 rounded-full bg-emerald-100 inline-flex absolute right-5 -translate-y-1/8'></span>
+          </div>
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
             <div className="flex items-start gap-4">
@@ -154,17 +159,17 @@ export default function ResumeVersionList({ userId }: Props) {
 
                 {/* Structured Stat Chips */}
                 <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/30 border border-border/50 text-[11px] font-medium text-foreground/90">
+                  <span className="inline-flex items-center gap-1  rounded-md  text-[11px] font-medium text-foreground/90">
                     <strong className="text-foreground font-semibold">{master.experience?.length || 0}</strong>
                     <span className="text-muted-foreground">positions</span>
                   </span>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/30 border border-border/50 text-[11px] font-medium text-foreground/90">
+                  <span className="inline-flex items-center gap-1  rounded-md  text-[11px] font-medium text-foreground/90">
                     <strong className="text-foreground font-semibold">
                       {master.skills?.reduce((a, s) => a + (s.items?.length || 0), 0) || 0}
                     </strong>
                     <span className="text-muted-foreground">skills</span>
                   </span>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-muted/60 dark:bg-muted/30 border border-border/50 text-[11px] font-medium text-foreground/90">
+                  <span className="inline-flex items-center gap-1 rounded-md  text-[11px] font-medium text-foreground/90">
                     <strong className="text-foreground font-semibold">{master.projects?.length || 0}</strong>
                     <span className="text-muted-foreground">projects</span>
                   </span>
@@ -175,9 +180,8 @@ export default function ResumeVersionList({ userId }: Props) {
             {/* Action CTA with Emil Kowalski Micro-interactions */}
             <div className="flex items-center self-end sm:self-center shrink-0">
               <Link href={`/resume/${master._id}`}>
-                <ColoredButton color="dark" className="px-5 rounded-full active:scale-[0.97]" size="lg">
+                <ColoredButton color="amber" className="px-5 rounded-full active:scale-[0.97]" size="lg">
                   <span>Edit Base Profile</span>
-                  <ArrowUpRight className="size-3.5 group-hover/colored-button:translate-x-0.5 group-hover/colored-button:-translate-y-0.5 transition-transform duration-150 ease-out" />
                 </ColoredButton>
               </Link>
             </div>
@@ -356,8 +360,8 @@ export default function ResumeVersionList({ userId }: Props) {
               trigger={
                 <div className="w-full flex items-center justify-between px-5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 border-t border-border/40 transition-colors cursor-pointer group">
                   <div className="flex items-center gap-2">
-                    <div className="size-5 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                      <Plus className="size-3" />
+                    <div className="size-7.5 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                      <Plus className="size-4" />
                     </div>
                     <span className="font-medium">Tailor for another job description...</span>
                   </div>

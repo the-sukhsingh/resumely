@@ -30,9 +30,11 @@ export default function ResumePage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800">
       <PaymentStatusDialog />
-      
+
       {/* Subtle, soft ambient background */}
-      <div className="pointer-events-none fixed inset-0 noise opacity-20 dark:opacity-30" />
+      <div className="pointer-events-none fixed inset-0 noise opacity-50 bg-primary/5 dark:opacity-30"
+      >
+      </div>
 
       <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24">
 
