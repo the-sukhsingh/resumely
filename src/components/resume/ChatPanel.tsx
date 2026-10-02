@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useAction, useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { Loader2, Trash2, ArrowUp, RotateCcw, X } from 'lucide-react';
+import { Loader2, ArrowUp, RotateCcw, X } from 'lucide-react';
+import { TrashDuo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Id } from '../../../convex/_generated/dataModel';
 import Markdown from 'react-markdown';
@@ -614,7 +615,7 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
                             className="h-6 w-6 text-muted-foreground hover:text-foreground"
                             onClick={() => deleteMessage({ messageId: msg._id })}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <TrashDuo className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>

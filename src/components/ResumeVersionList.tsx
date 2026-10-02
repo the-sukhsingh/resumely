@@ -8,10 +8,10 @@ import { Id } from '../../convex/_generated/dataModel';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
 import Feedback from './custom/feedback';
+import { TrashDuo } from '@/components/icons';
 import {
   Search,
   Plus,
-  Trash2,
   ArrowUpRight,
   FileText,
   Briefcase,
@@ -32,10 +32,8 @@ import AddJobDescriptionDialog from './AddJobDescriptionDialog';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
-import { VelocityStreakPreview } from './custom/vel-streak';
 import DitheredSphere from './custom/dithered-sphere';
 import { cn } from 'cn';
-
 interface Props {
   userId: Id<'users'>;
 }
@@ -341,7 +339,7 @@ export default function ResumeVersionList({ userId }: Props) {
                           title="Delete version"
                           className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all duration-150 cursor-pointer"
                         >
-                          <Trash2 className="size-4" />
+                          <TrashDuo className="size-4" />
                           <span className="sr-only">Delete Version</span>
                         </button>
                       </div>

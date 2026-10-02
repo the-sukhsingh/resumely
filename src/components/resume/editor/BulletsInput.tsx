@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, ChevronUp, ChevronDown } from 'lucide-react';
+import { TrashDuo } from '@/components/icons';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
@@ -266,7 +267,7 @@ export const BulletsInput: React.FC<BulletsInputProps> = ({
                 className="p-1 hover:bg-destructive/10 rounded text-muted-foreground hover:text-destructive transition-colors"
                 title="Delete bullet"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <TrashDuo className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>

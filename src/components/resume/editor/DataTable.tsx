@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Edit2, Trash2, GripVertical } from 'lucide-react';
+import { Edit2, GripVertical } from 'lucide-react';
+import { TrashDuo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Reorder } from 'motion/react';
 
@@ -78,7 +79,7 @@ export function DataTable<T extends { id: string }>({
                     size="icon-sm"
                     className="h-7 w-7 p-0 hover:bg-red-50 hover:text-red-700"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <TrashDuo className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </td>
