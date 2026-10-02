@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useQuery } from 'convex/react';
@@ -52,6 +52,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
     resumeId,
   });
 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(true);
@@ -190,9 +191,77 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
     })();
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    // 1. Try to invoke native PDF print directly on the existing iframe
+    const iframe = iframeRef.current;
+    if (iframe) {
+      try {
+        iframe.focus();
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+          return;
+        }
+      } catch (err) {
+        console.warn('Direct iframe print was blocked, attempting hidden print iframe:', err);
+      }
+    }
+
+    // 2. Fallback: Create a dedicated hidden print iframe specifically for the PDF
+    try {
+      const activePdfUrl =
+        pdfUrl ||
+        createBlobUrl({
+          blob: await createPdfBlob({ resumeData: typedResume, theme: 'classic' }),
+        });
+
+      const printIframe = document.createElement('iframe');
+      printIframe.style.position = 'fixed';
+      printIframe.style.right = '0';
+      printIframe.style.bottom = '0';
+      printIframe.style.width = '0';
+      printIframe.style.height = '0';
+      printIframe.style.border = '0';
+      printIframe.src = activePdfUrl;
+
+      document.body.appendChild(printIframe);
+
+      printIframe.onload = () => {
+        setTimeout(() => {
+          try {
+            printIframe.focus();
+            printIframe.contentWindow?.focus();
+            printIframe.contentWindow?.print();
+          } catch (e) {
+            console.error('Error invoking print on hidden frame:', e);
+            window.open(activePdfUrl, '_blank');
+          } finally {
+            setTimeout(() => {
+              try {
+                document.body.removeChild(printIframe);
+                if (!pdfUrl) revokeBlobUrl({ url: activePdfUrl });
+              } catch (_) {}
+            }, 60000);
+          }
+        }, 300);
+      };
+    } catch (error) {
+      console.error('Failed to initiate PDF print:', error);
+      toast.error('Failed to print resume');
+    }
   };
+
+  // Intercept Ctrl+P / Cmd+P to invoke resume-only print
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        void handlePrint();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pdfUrl, typedResume]);
 
   // Loading skeleton
   if (resume === undefined) {
@@ -328,11 +397,11 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
         ) : pdfUrl && !pdfError ? (
           /* Browser Native PDF Element */
           <iframe
+            ref={iframeRef}
             src={`${pdfUrl}#toolbar=1&navpanes=0`}
             className="w-full h-full max-w-4xl mx-auto border-0"
             title={`${candidateName} Resume`}
             onError={() => setPdfError(true)}
-            
           />
         ) : (
           /* Fallback using custom preview logic */
@@ -341,6 +410,28 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
           </div>
         )}
       </main>
+
+      {/* Hide header and non-resume chrome during print */}
+      <style jsx global>{`
+        @media print {
+          header, nav, button, footer {
+            display: none !important;
+          }
+          body, html, main {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            overflow: visible !important;
+          }
+          iframe {
+            max-width: 100% !important;
+            width: 100% !important;
+            height: 100vh !important;
+            border: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
