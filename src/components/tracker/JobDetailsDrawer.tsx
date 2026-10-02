@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useMutation, useAction, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
@@ -66,6 +67,11 @@ export default function JobDetailsDrawer({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (application) {
@@ -73,7 +79,19 @@ export default function JobDetailsDrawer({
     }
   }, [application]);
 
-  if (!open || !application) return null;
+  // Close on Escape key press
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  if (!mounted || !open || !application) return null;
 
   const handleStageChange = async (newStage: JobStage) => {
     try {
@@ -157,15 +175,19 @@ export default function JobDetailsDrawer({
     }
   };
 
-  return (
+
+  return createPortal(
     <>
-      <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs select-auto animate-in fade-in duration-200">
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-xs select-auto animate-in fade-in duration-200 cursor-pointer"
+      >
         <div
-          className="relative w-full max-w-lg h-full bg-background border-l border-border/70 shadow-2xl flex flex-col overflow-hidden text-foreground animate-in slide-in-from-right duration-250"
+          className="relative w-full max-w-lg h-full bg-background border-l border-border/70 shadow-2xl flex flex-col overflow-hidden text-foreground animate-in slide-in-from-right duration-250 cursor-default"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-start justify-between p-6 border-b border-border/60 shrink-0">
+          <div className="flex items-start justify-between p-4 border-b border-border/60 shrink-0">
             <div className="flex items-start gap-3 min-w-0 flex-1">
               <DitheredSphere index={0} seed={application._id} size={40} className="shrink-0 mt-0.5" />
               <div className="min-w-0 flex-1">
@@ -204,7 +226,7 @@ export default function JobDetailsDrawer({
           </div>
 
           {/* Body Content */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
             {/* Stage Selector Row */}
             <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-card/40">
               <div className="space-y-0.5">
@@ -283,10 +305,11 @@ export default function JobDetailsDrawer({
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     No tailored resume linked yet. Use your Master Resume to generate bullets and match keywords specifically for {application.company}.
                   </p>
-                  <Button
+                  <ColoredButton
                     size="sm"
                     onClick={handleTailorResume}
                     disabled={isTailoring}
+                    color='cyan'
                     className="w-full h-8 text-xs font-medium gap-1.5 rounded-xl shadow-xs"
                   >
                     {isTailoring ? (
@@ -299,7 +322,7 @@ export default function JobDetailsDrawer({
                         Tailor Master Resume for this Job
                       </>
                     )}
-                  </Button>
+                  </ColoredButton>
                 </div>
               )}
             </div>
@@ -444,6 +467,7 @@ export default function JobDetailsDrawer({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </>,
+    document.body
   );
 }

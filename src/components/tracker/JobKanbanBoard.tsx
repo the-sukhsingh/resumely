@@ -1,12 +1,16 @@
 'use client';
 
-import React from 'react';
-import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
+import React, { useState } from 'react';
+import { TrackedJobApplication, JobStage } from './types';
 import JobCard from './JobCard';
 import { Id } from '../../../convex/_generated/dataModel';
 import AddTrackedJobDialog from './AddTrackedJobDialog';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useMutation } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
+import { toast } from 'sonner';
+import { AnimatePresence } from 'motion/react';
 
 interface Props {
   applications: TrackedJobApplication[];
@@ -20,7 +24,6 @@ interface ColumnDef {
   label: string;
   stages: JobStage[];
   colorDot: string;
-  headerBorder: string;
   defaultStage: JobStage;
 }
 
@@ -30,7 +33,6 @@ const KANBAN_COLUMNS: ColumnDef[] = [
     label: 'Saved for later',
     stages: ['saved'],
     colorDot: 'bg-slate-400',
-    headerBorder: 'border-slate-500/30',
     defaultStage: 'saved',
   },
   {
@@ -38,7 +40,6 @@ const KANBAN_COLUMNS: ColumnDef[] = [
     label: 'Applied',
     stages: ['applied'],
     colorDot: 'bg-blue-500',
-    headerBorder: 'border-blue-500/30',
     defaultStage: 'applied',
   },
   {
@@ -46,7 +47,6 @@ const KANBAN_COLUMNS: ColumnDef[] = [
     label: 'Interviewing',
     stages: ['interviewing'],
     colorDot: 'bg-amber-500',
-    headerBorder: 'border-amber-500/30',
     defaultStage: 'interviewing',
   },
   {
@@ -54,7 +54,6 @@ const KANBAN_COLUMNS: ColumnDef[] = [
     label: 'Offer',
     stages: ['offered'],
     colorDot: 'bg-emerald-500',
-    headerBorder: 'border-emerald-500/30',
     defaultStage: 'offered',
   },
   {
@@ -62,7 +61,6 @@ const KANBAN_COLUMNS: ColumnDef[] = [
     label: 'Rejected / Archived',
     stages: ['rejected', 'archived'],
     colorDot: 'bg-neutral-400',
-    headerBorder: 'border-neutral-500/30',
     defaultStage: 'rejected',
   },
 ];
@@ -73,29 +71,87 @@ export default function JobKanbanBoard({
   userId,
   masterResumeId,
 }: Props) {
+  const updateStage = useMutation(api.jobTracker.updateJobApplicationStage);
+
+  const [draggedAppId, setDraggedAppId] = useState<string | null>(null);
+  const [dragOverColId, setDragOverColId] = useState<string | null>(null);
+
+  const handleDragOver = (e: React.DragEvent, colId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverColId !== colId) {
+      setDragOverColId(colId);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent, colId: string) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      if (dragOverColId === colId) {
+        setDragOverColId(null);
+      }
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, col: ColumnDef) => {
+    e.preventDefault();
+    setDragOverColId(null);
+    setDraggedAppId(null);
+
+    const appId = e.dataTransfer.getData('text/plain') as Id<'jobApplications'>;
+    if (!appId) return;
+
+    const app = applications.find((a) => a._id === appId);
+    if (!app) return;
+
+    if (col.stages.includes(app.stage)) return;
+
+    try {
+      await updateStage({
+        applicationId: appId,
+        stage: col.defaultStage,
+      });
+      toast.success(`Moved to "${col.label}"`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to move job');
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-start">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 items-start w-full">
       {KANBAN_COLUMNS.map((col) => {
         const colApps = applications.filter((app) => col.stages.includes(app.stage));
+        const isOver = dragOverColId === col.id;
+        const isDraggedHere =
+          draggedAppId &&
+          !col.stages.includes(
+            applications.find((a) => a._id === draggedAppId)?.stage || 'saved'
+          );
 
         return (
           <div
             key={col.id}
-            className="flex flex-col rounded-2xl bg-card/40 border border-border/60 overflow-hidden shadow-2xs"
+            onDragOver={(e) => handleDragOver(e, col.id)}
+            onDragLeave={(e) => handleDragLeave(e, col.id)}
+            onDrop={(e) => handleDrop(e, col)}
+            className={cn(
+              'min-w-0 flex flex-col rounded-2xl bg-card/40 dark:bg-neutral-900/40 border border-border/50 overflow-hidden shadow-2xs transition-colors duration-150 ',
+              isOver && 'border-primary/40 bg-accent/8 ring-1 ring-primary/30'
+            )}
           >
-            {/* Column Header */}
-            <div className="flex items-center justify-between px-3.5 py-3 border-b border-border/50 bg-muted/20">
-              <div className="flex items-center gap-2 min-w-0">
+            {/* Clean Column Header */}
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border/40 bg-muted/20">
+              <div className="flex items-center gap-1.5 min-w-0">
                 <span className={cn('size-2 rounded-full shrink-0', col.colorDot)} />
                 <h3 className="font-semibold text-xs text-foreground tracking-tight truncate">
                   {col.label}
                 </h3>
-                <span className="font-mono text-[10px] text-muted-foreground px-1.5 py-0.2 rounded-full bg-muted/70 border border-border/40">
+                <span className="font-mono text-[10px] text-muted-foreground px-1.5 py-0.2 rounded-full bg-muted/70 border border-border/40 shrink-0">
                   {colApps.length}
                 </span>
               </div>
 
-              {/* Quick Add Button to this specific column stage */}
+              {/* Quick Add Button */}
               <AddTrackedJobDialog
                 userId={userId}
                 masterResumeId={masterResumeId}
@@ -104,7 +160,7 @@ export default function JobKanbanBoard({
                   <button
                     type="button"
                     title={`Add job to ${col.label}`}
-                    className="size-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+                    className="size-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
                   >
                     <Plus className="size-3.5" />
                   </button>
@@ -113,34 +169,66 @@ export default function JobKanbanBoard({
             </div>
 
             {/* Column Cards Container */}
-            <div className="p-2.5 space-y-2.5 min-h-[160px] max-h-[calc(100vh-280px)] overflow-y-auto">
+            <div className="p-2 space-y-2.5 min-h-[140px] max-h-[calc(100vh-270px)] overflow-y-auto scrollbar-thin">
               {colApps.length === 0 ? (
-                <div className="h-28 rounded-xl border border-dashed border-border/60 flex flex-col items-center justify-center p-3 text-center">
-                  <p className="text-[11px] text-muted-foreground font-medium">No roles</p>
-                  <AddTrackedJobDialog
-                    userId={userId}
-                    masterResumeId={masterResumeId}
-                    initialStage={col.defaultStage}
-                    trigger={
-                      <button
-                        type="button"
-                        className="text-[10px] text-primary hover:underline mt-1 font-medium cursor-pointer"
-                      >
-                        + Add for {col.label.toLowerCase()}
-                      </button>
-                    }
-                  />
+                /* Quiet, clean empty state */
+                <div
+                  className={cn(
+                    'h-24 rounded-xl border border-dashed flex flex-col items-center justify-center p-2.5 text-center transition-colors',
+                    isOver
+                      ? 'border-primary/50 bg-primary/[0.04] text-primary'
+                      : 'border-border/40 hover:border-border/70 bg-muted/[0.03]'
+                  )}
+                >
+                  {isOver ? (
+                    <span className="text-xs font-medium text-primary">Drop here</span>
+                  ) : (
+                    <>
+                      <p className="text-[11px] text-muted-foreground/70 font-medium">No roles</p>
+                      <AddTrackedJobDialog
+                        userId={userId}
+                        masterResumeId={masterResumeId}
+                        initialStage={col.defaultStage}
+                        trigger={
+                          <button
+                            type="button"
+                            className="text-[10px] text-primary/80 hover:text-primary hover:underline mt-1 font-medium cursor-pointer inline-flex items-center gap-1"
+                          >
+                            <Plus className="size-3" />
+                            <span>Add job</span>
+                          </button>
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               ) : (
-                colApps.map((app, idx) => (
-                  <JobCard
-                    key={app._id}
-                    application={app}
-                    index={idx}
-                    onSelect={onSelectApplication}
-                    masterResumeId={masterResumeId}
-                  />
-                ))
+                <>
+                  <AnimatePresence initial={false}>
+                    {colApps.map((app, idx) => (
+                      <JobCard
+                        key={app._id}
+                        application={app}
+                        index={idx}
+                        onSelect={onSelectApplication}
+                        masterResumeId={masterResumeId}
+                        onDragStart={(id) => setDraggedAppId(id)}
+                        onDragEnd={() => {
+                          setDraggedAppId(null);
+                          setDragOverColId(null);
+                        }}
+                        isDragging={draggedAppId === app._id}
+                      />
+                    ))}
+                  </AnimatePresence>
+
+                  {/* Drop zone indicator when dragging over an active column */}
+                  {isOver && isDraggedHere && (
+                    <div className="h-10 rounded-xl border border-dashed border-primary/50 bg-primary/[0.04] flex items-center justify-center text-xs text-primary font-medium animate-pulse">
+                      Drop here
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

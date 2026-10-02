@@ -6,39 +6,36 @@ import { useMutation, useAction } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
-import StageBadge from './StageBadge';
-import DitheredSphere from '@/components/custom/dithered-sphere';
-import { Button } from '@/components/ui/button';
 import {
   ExternalLink,
   Sparkles,
   ArrowRight,
-  MapPin,
-  DollarSign,
   FileText,
-  Clock,
-  Send,
   Loader2,
-  CheckCircle2,
-  ShieldCheck,
   Check,
   Link2,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   application: TrackedJobApplication;
   index: number;
   onSelect: (application: TrackedJobApplication) => void;
   masterResumeId?: Id<'resumeVersions'>;
+  onDragStart?: (applicationId: string) => void;
+  onDragEnd?: () => void;
+  isDragging?: boolean;
 }
 
 export default function JobCard({
   application,
-  index,
   onSelect,
   masterResumeId,
+  onDragStart,
+  onDragEnd,
+  isDragging = false,
 }: Props) {
   const router = useRouter();
   const updateStage = useMutation(api.jobTracker.updateJobApplicationStage);
@@ -60,15 +57,36 @@ export default function JobCard({
     }
   };
 
+  // Determine the next logical pipeline stage
+  const nextStageAction = (() => {
+    if (application.stage === 'saved') {
+      return {
+        stage: 'applied' as JobStage,
+        label: 'Applied',
+        colorClass: 'text-blue-500 hover:text-blue-400',
+      };
+    }
+    if (application.stage === 'applied') {
+      return {
+        stage: 'interviewing' as JobStage,
+        label: 'Interviewing',
+        colorClass: 'text-amber-500 hover:text-amber-400',
+      };
+    }
+    if (application.stage === 'interviewing') {
+      return {
+        stage: 'offered' as JobStage,
+        label: 'Offer',
+        colorClass: 'text-emerald-500 hover:text-emerald-400',
+      };
+    }
+    return null;
+  })();
+
   const handleQuickAdvance = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    let nextStage: JobStage | null = null;
-    if (application.stage === 'saved') nextStage = 'applied';
-    else if (application.stage === 'applied') nextStage = 'interviewing';
-    else if (application.stage === 'interviewing') nextStage = 'offered';
-
-    if (!nextStage) return;
-    await handleStageChange(nextStage);
+    if (!nextStageAction) return;
+    await handleStageChange(nextStageAction.stage);
   };
 
   const handleTailorClick = async (e: React.MouseEvent) => {
@@ -84,7 +102,7 @@ export default function JobCard({
         applicationId: application._id,
         masterResumeId,
       });
-      toast.success(`Tailored resume generated for ${application.company}!`);
+      toast.success(`Tailored resume generated for ${application.company || 'job'}!`);
       router.push(`/resume/${versionId}`);
     } catch (err: unknown) {
       console.error(err);
@@ -111,8 +129,29 @@ export default function JobCard({
     }
   };
 
+  const companyName = application.company?.trim() || 'Direct Role';
+
   return (
-    <div
+    <motion.div
+      layout="position"
+      layoutId={application._id}
+      transition={{
+        type: 'spring',
+        stiffness: 380,
+        damping: 30,
+      }}
+      draggable
+      onDragStart={(e) => {
+        const dataTransfer = (e as unknown as React.DragEvent).dataTransfer;
+        if (dataTransfer) {
+          dataTransfer.setData('text/plain', application._id);
+          dataTransfer.effectAllowed = 'move';
+        }
+        onDragStart?.(application._id);
+      }}
+      onDragEnd={() => {
+        onDragEnd?.();
+      }}
       onClick={() => onSelect(application)}
       role="button"
       tabIndex={0}
@@ -122,75 +161,50 @@ export default function JobCard({
           onSelect(application);
         }
       }}
-      className="group relative rounded-2xl border border-border/70 bg-card/60 hover:bg-card hover:border-foreground/25 p-4 transition-all duration-150 cursor-pointer shadow-2xs space-y-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30 select-none active:scale-[0.99]"
+      className={cn(
+        'group relative rounded-xl border border-border/70 dark:border-white/8 bg-card/85 dark:bg-neutral-900/60 hover:bg-card dark:hover:bg-neutral-900/90 hover:border-foreground/25 hover:shadow-xs p-3.5 space-y-2.5 transition-all duration-150 cursor-pointer active:cursor-grabbing select-none active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/20',
+        isDragging && 'opacity-35 scale-[0.98] ring-1 ring-primary/40'
+      )}
     >
-      {/* Top Header: Sphere + Company + External Link + Stage Pill */}
-      <div className="flex items-start justify-between gap-2.5">
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <DitheredSphere index={index} seed={application._id} size={28} className="shrink-0" />
-          <div className="min-w-0 flex-1">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground truncate block">
-              {application.company}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {application.jobUrl && (
-            <a
-              href={application.jobUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open job posting"
-              className="size-6 rounded-md flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors"
-            >
-              <ExternalLink className="size-3" />
-            </a>
-          )}
-          <StageBadge
-            stage={application.stage}
-            size="sm"
-            interactive
-            onStageChange={handleStageChange}
-          />
-        </div>
-      </div>
-
-      {/* Role Title */}
-      <div>
-        <h4 className="font-medium text-sm text-foreground tracking-tight leading-snug line-clamp-2 group-hover:text-foreground">
-          {application.title}
-        </h4>
-
-        {/* Location & Salary pills */}
-        {(application.location || application.salary) && (
-          <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            {application.location && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono text-muted-foreground bg-muted/40 border border-border/40">
-                <MapPin className="size-2.5 shrink-0" />
-                <span className="truncate max-w-[120px]">{application.location}</span>
-              </span>
-            )}
-            {application.salary && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono text-muted-foreground bg-muted/40 border border-border/40">
-                <DollarSign className="size-2.5 shrink-0" />
-                <span className="truncate max-w-[100px]">{application.salary}</span>
-              </span>
-            )}
-          </div>
+      {/* Top Header: Company + External Link */}
+      <div className="flex items-center justify-between gap-1.5 min-w-0">
+        <span
+          className="font-medium text-xs text-muted-foreground truncate"
+          title={companyName}
+        >
+          {companyName}
+        </span>
+        {application.jobUrl && (
+          <a
+            href={application.jobUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open job posting"
+            onClick={(e) => e.stopPropagation()}
+            className="text-muted-foreground/50 hover:text-foreground transition-colors shrink-0 p-0.5"
+          >
+            <ExternalLink className="size-3" />
+          </a>
         )}
       </div>
 
-      {/* Resumely Superpower: Tailored Resume Block */}
+      {/* Role / Position Title */}
+      <h4 className="font-semibold text-sm text-foreground tracking-tight leading-snug line-clamp-2">
+        {application.title}
+      </h4>
+
+      {/* Bottom Section: Tailor Resume & Move to Next Stage */}
       <div
-        className="pt-1.5 border-t border-border/40"
+        className="pt-2 border-t border-border/40 space-y-2"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Tailor Resume Action */}
         {application.resumeVersionId && application.resumeVersion ? (
-          <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-muted/20 border border-border/40">
+          <div className="flex items-center justify-between gap-1.5 p-1.5 px-2 rounded-lg bg-muted/25 hover:bg-muted/40 border border-border/40 transition-colors">
             <div
               onClick={() => router.push(`/resume/${application.resumeVersionId}`)}
-              className="flex items-center gap-1.5 min-w-0 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+              className="flex items-center gap-1.5 min-w-0 flex-1 cursor-pointer"
+              title="Open tailored resume"
             >
               <FileText className="size-3.5 text-primary shrink-0" />
               <span className="text-[11px] font-medium text-foreground truncate">
@@ -199,18 +213,16 @@ export default function JobCard({
             </div>
 
             <div className="flex items-center gap-1 shrink-0">
-              {application.resumeVersion.matchScore && (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                  <ShieldCheck className="size-2.5" />
+              {application.resumeVersion.matchScore != null && (
+                <span className="text-[10px] font-mono font-medium text-emerald-500">
                   {application.resumeVersion.matchScore}%
                 </span>
               )}
-
               <button
                 type="button"
                 onClick={handleCopyLink}
                 title="Copy public resume link"
-                className="size-6 rounded-md flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors"
+                className="size-5 rounded flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
               >
                 {copiedLink ? (
                   <Check className="size-3 text-emerald-500" />
@@ -218,12 +230,11 @@ export default function JobCard({
                   <Link2 className="size-3" />
                 )}
               </button>
-
               <button
                 type="button"
                 onClick={() => router.push(`/resume/${application.resumeVersionId}`)}
                 title="Edit tailored resume"
-                className="size-6 rounded-md flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors"
+                className="size-5 rounded flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
               >
                 <ArrowRight className="size-3" />
               </button>
@@ -234,53 +245,38 @@ export default function JobCard({
             type="button"
             onClick={handleTailorClick}
             disabled={isTailoring}
-            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-medium transition-all active:scale-[0.98] cursor-pointer"
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border border-amber-500/25 bg-amber-500/[0.06] hover:bg-amber-500/[0.12] hover:border-amber-500/40 text-amber-600 dark:text-amber-400 text-xs font-medium transition-all active:scale-[0.98] cursor-pointer group/tailor"
           >
             {isTailoring ? (
               <>
-                <Loader2 className="size-3 animate-spin" />
+                <Loader2 className="size-3 animate-spin text-amber-500" />
                 <span>Tailoring with AI...</span>
               </>
             ) : (
               <>
-                Tailor Resume
+                <span>Tailor Resume</span>
               </>
             )}
           </button>
         )}
-      </div>
 
-      {/* Card Footer: Timestamp & Quick Action */}
-      <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground/80 pt-0.5">
-        <span className="truncate">
-          {application.stage === 'applied' && application.appliedAt
-            ? `Applied ${formatDistanceToNow(new Date(application.appliedAt), { addSuffix: true })}`
-            : `Updated ${formatDistanceToNow(new Date(application.updatedAt), { addSuffix: true })}`}
-        </span>
-
-        {/* Quick Advance Button */}
-        {application.stage === 'saved' && (
-          <button
-            type="button"
-            onClick={handleQuickAdvance}
-            className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-          >
-            <span>Mark Applied</span>
-            <Send className="size-2.5" />
-          </button>
-        )}
-
-        {application.stage === 'applied' && (
-          <button
-            type="button"
-            onClick={handleQuickAdvance}
-            className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
-          >
-            <span>Interviewing</span>
-            <ArrowRight className="size-2.5" />
-          </button>
+        {/* Move to Next Stage Action */}
+        {nextStageAction && (
+          <div className="flex items-center justify-end pt-0.5">
+            <button
+              type="button"
+              onClick={handleQuickAdvance}
+              className={cn(
+                'inline-flex items-center gap-1 text-[11px] font-medium transition-colors cursor-pointer group/adv',
+                nextStageAction.colorClass
+              )}
+            >
+              <span>{nextStageAction.label}</span>
+              <ArrowRight className="size-3 transition-transform group-hover/adv:translate-x-0.5" />
+            </button>
+          </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -76,13 +76,13 @@ export default function JobTrackerPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800">
+    <div className="min-h-screen w-full max-w-6xl mx-auto bg-background text-foreground antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800">
       <PaymentStatusDialog />
 
       {/* Ambient background */}
       <div className="pointer-events-none fixed inset-0 noise opacity-50 bg-primary/5 dark:opacity-30" />
 
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-24 space-y-7">
+      <main className="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 space-y-7">
         <Feedback />
 
         {/* Loading skeleton */}
