@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useId, useMemo } from 'react';
+import { useId, useMemo } from 'react';
 
 export const DITHER_PALETTES = {
   lime: {

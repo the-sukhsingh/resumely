@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { api } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { generateObject } from "ai";
 import { defaultModel } from "./ai";

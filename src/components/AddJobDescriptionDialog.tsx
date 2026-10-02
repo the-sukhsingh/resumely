@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
-import { X, Plus, Link2, FileText, Sparkles, Loader2, Clock, Send } from 'lucide-react';
+import { X, Plus, Link2, FileText, Loader2, Clock, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Props {

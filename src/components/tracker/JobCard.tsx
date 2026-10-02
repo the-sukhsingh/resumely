@@ -8,7 +8,6 @@ import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import {
   ExternalLink,
-  Sparkles,
   ArrowRight,
   FileText,
   Loader2,

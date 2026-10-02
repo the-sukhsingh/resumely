@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { JobStage, STAGE_CONFIGS } from './types';
 import { cn } from '@/lib/utils';
 import {

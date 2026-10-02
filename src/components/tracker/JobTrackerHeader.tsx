@@ -1,12 +1,10 @@
 'use client';
 
-import React from 'react';
-import { JobStage, STAGE_CONFIGS, TrackedJobApplication } from './types';
+import { TrackedJobApplication } from './types';
 import AddTrackedJobDialog from './AddTrackedJobDialog';
 import { Id } from '../../../convex/_generated/dataModel';
 import { Search, X, Plus } from 'lucide-react';
 import ColoredButton from '@/components/custom/colored-button';
-import { cn } from '@/lib/utils';
 import { Menu } from '@duo-icons/react';
 import { Dashboard } from '@duo-icons/react';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';

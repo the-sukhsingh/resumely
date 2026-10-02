@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { TrackedJobApplication, JobStage } from '@/components/tracker/types';
+import { TrackedJobApplication } from '@/components/tracker/types';
 import JobTrackerHeader from '@/components/tracker/JobTrackerHeader';
 import JobKanbanBoard from '@/components/tracker/JobKanbanBoard';
 import JobListView from '@/components/tracker/JobListView';
@@ -14,7 +14,7 @@ import AddTrackedJobDialog from '@/components/tracker/AddTrackedJobDialog';
 import { PaymentStatusDialog } from '@/components/resume/PaymentStatusDialog';
 import Feedback from '@/components/custom/feedback';
 import ColoredButton from '@/components/custom/colored-button';
-import { Briefcase, Plus, Link2, Sparkles } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function JobTrackerPage() {
   const { user } = useAuth();

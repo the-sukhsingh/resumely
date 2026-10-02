@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ResumeData, Experience, Project, Certificate, Education, SkillCategory, Achievement } from '@/types/resume';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 import { TagInput } from './TagInput';
@@ -16,7 +16,6 @@ import { EducationModal } from './EducationModal';
 import { AchievementModal } from './AchievementModal';
 import CollapsibleSection from './CollapseSection';
 import { cn } from 'cn';
-import { coloredButtonVariants } from '@/components/custom/colored-button';
 
 interface EditorFormProps {
   data: ResumeData;

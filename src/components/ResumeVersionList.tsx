@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQuery, useAction } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id, Doc } from '../../convex/_generated/dataModel';
 import Link from 'next/link';
@@ -14,10 +14,7 @@ import {
   Search,
   Plus,
   ArrowUpRight,
-  FileText,
-  Briefcase,
   X,
-  Target,
   Link2,
   Check,
 } from 'lucide-react';

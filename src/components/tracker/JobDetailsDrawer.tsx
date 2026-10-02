@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { useMutation, useAction, useQuery } from 'convex/react';
+import { useMutation, useAction } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
@@ -15,14 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   X,
   ExternalLink,
-  Sparkles,
   FileText,
   Clock,
   MapPin,
   DollarSign,
   Calendar,
   Trash2,
-  Share2,
   Check,
   Link2,
   Loader2,

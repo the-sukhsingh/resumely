@@ -7,19 +7,11 @@ import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import StageBadge from './StageBadge';
-import DitheredSphere from '@/components/custom/dithered-sphere';
 import { TrashDuo } from '@/components/icons';
 import {
   ExternalLink,
-  Sparkles,
-  ArrowRight,
-  MapPin,
-  DollarSign,
   FileText,
-  Clock,
-  Send,
   Loader2,
-  ShieldCheck,
   Check,
   Link2,
 } from 'lucide-react';

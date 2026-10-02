@@ -1,7 +1,7 @@
 "use client"
 import { createBlobUrl, revokeBlobUrl } from "@/lib/pdf/create-blob-url";
 import { createPdfBlob } from "@/lib/pdf/create-pdf-blob";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PDFError from "./helper/pdf-error";
 import PDFLoading from "./helper/pdf-loading";
 import { Document, Page, pdfjs } from "react-pdf";

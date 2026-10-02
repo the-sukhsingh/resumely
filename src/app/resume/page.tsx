@@ -1,20 +1,12 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { useQuery } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
 import ResumeVersionList from '@/components/ResumeVersionList';
-import AddJobDescriptionDialog from '@/components/AddJobDescriptionDialog';
 import { PaymentStatusDialog } from '@/components/resume/PaymentStatusDialog';
 
 export default function ResumePage() {
   const { user } = useAuth();
-  const resume = useQuery(
-    api.masterResumes.getMasterResumeByUser,
-    user ? { userId: user._id } : 'skip'
-  );
 
   if (!user) {
     return (

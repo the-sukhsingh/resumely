@@ -33,7 +33,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { KEY_ENTER_COMMAND, KEY_BACKSPACE_COMMAND, COMMAND_PRIORITY_HIGH, CLEAR_EDITOR_COMMAND, $getRoot, $createParagraphNode, $createTextNode, LexicalEditor, DecoratorNode, NodeKey, SerializedLexicalNode, EditorConfig, LexicalNode, $isElementNode, $getSelection, $isRangeSelection } from 'lexical';
+import { KEY_ENTER_COMMAND, KEY_BACKSPACE_COMMAND, COMMAND_PRIORITY_HIGH, $getRoot, $createParagraphNode, $createTextNode, LexicalEditor, DecoratorNode, NodeKey, SerializedLexicalNode, EditorConfig, $isElementNode, $getSelection, $isRangeSelection } from 'lexical';
 
 export type SerializedSectionBadgeNode = SerializedLexicalNode & {
   sectionId: string;
