@@ -119,41 +119,71 @@ export default function ResumeVersionList({ userId }: Props) {
   // Zero resumes state
   if (versions.length != 0) {
     return (
-      <div className="w-full max-w-md mx-auto my-12 text-center">
+      <div className="w-full space-y-6">
         <Feedback />
-        <div className="p-6 sm:p-8 rounded-2xl border border-border/60 bg-card/40 backdrop-blur-xs">
-          <div className="size-9 rounded-lg border border-border/70 bg-muted/40 text-muted-foreground flex items-center justify-center mx-auto mb-3">
-            <FileText className="size-4" strokeWidth={1.75} />
-          </div>
-          <h2 className="text-sm font-semibold tracking-tight text-foreground">
-            No Resumes Yet
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto leading-relaxed">
-            Upload your existing resume to generate your Master Profile, or start clean from scratch.
-          </p>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+        {/* ─── Master Profile Onboarding Workspace (Hallmark Workbench) ─── */}
+        <section className="relative rounded-3xl border border-border/70 bg-card/40 dark:bg-card/20 backdrop-blur-md overflow-hidden shadow-xs">
+          {/* Top Header: Asymmetric Left-Biased Anchor */}
+          <div className="p-6 sm:p-8 border-b border-border/50 flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+            <div className="max-w-xl space-y-1.5 text-left">
+              <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
+                <span className="size-2 rounded-full bg-amber-500/80 animate-pulse" />
+                <span>Base Profile</span>
+                <span className="text-border">/</span>
+                <span>Uninitialized</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
+                Create your Master Resume
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Resumely uses your Master Resume as the single source of truth to generate tailored versions, adapt bullet points, and match job descriptions.
+              </p>
+            </div>
+
+            {/* Alternative Pathway: Clean Editorial Button */}
+            <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+              <Link href="/resume/create">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-border/80 bg-background hover:bg-muted/60 text-xs font-medium text-foreground transition-all duration-150 active:scale-[0.98] cursor-pointer shadow-2xs"
+                >
+                  <Plus className="size-3.5" />
+                  <span>Start Blank Draft</span>
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Centerpiece: The Large-Scale Interactive Drop Canvas */}
+          <div className="p-6 sm:p-10 bg-linear-to-b from-transparent to-muted/5">
             <ResumeUploader userId={userId} />
 
-            <Link
-              href="/resume/create"
-              className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/40 hover:border-foreground/20 transition-[border-color,background-color,transform] duration-150 ease-out cursor-pointer outline-none text-left select-none active:scale-[0.98]"
-            >
-              <div className="size-8 rounded-lg border border-border/70 bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors duration-150">
-                <Plus className="size-4" strokeWidth={1.75} />
-              </div>
-
-              <div className="mt-4">
-                <p className="text-xs font-medium text-foreground group-hover:text-foreground tracking-tight">
-                  Create from Scratch
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">
-                  Start fresh with a blank draft
-                </p>
-              </div>
-            </Link>
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-muted-foreground px-1">
+              <span>Importing a PDF is the fastest way to populate your work history and credentials.</span>
+              <Link
+                href="/resume/create"
+                className="text-foreground underline underline-offset-4 hover:opacity-80 font-medium inline-flex items-center gap-1 self-start sm:self-auto"
+              >
+                <span>Or build step-by-step from scratch</span>
+                <ArrowUpRight className="size-3" />
+              </Link>
+            </div>
           </div>
-        </div>
+
+          {/* Bottom Tabular Spec Strip (Hallmark F3 Archetype) */}
+          <div className="px-6 sm:px-8 py-3 bg-muted/20 border-t border-border/50 flex flex-wrap items-center justify-between gap-y-2 gap-x-6 text-[11px] text-muted-foreground font-mono">
+            <div className="flex items-center gap-4">
+              <span>FORMAT: PDF (.pdf)</span>
+              <span className="hidden sm:inline text-border">·</span>
+              <span>LIMIT: 10MB</span>
+            </div>
+            <div className="flex items-center gap-2 text-foreground/80">
+              <span className="size-1.5 rounded-full bg-emerald-500" />
+              <span>AI EXTRACTION ENGINE READY</span>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }

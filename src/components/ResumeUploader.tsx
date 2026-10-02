@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2, FileUp } from "lucide-react";
 import { useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
 import { Id } from "../../convex/_generated/dataModel";
+import ColoredButton from "./custom/colored-button";
 import { cn } from "@/lib/utils";
 
 interface ResumeUploaderProps {
@@ -93,12 +94,10 @@ export default function ResumeUploader({ userId, onSuccess, className }: ResumeU
       onDragOver={handleDrag}
       onDrop={handleDrop}
       className={cn(
-        "group relative flex flex-col justify-between p-4 sm:p-5 rounded-xl border cursor-pointer outline-none text-left select-none transition-[border-color,background-color,transform] duration-150 ease-out",
-        "bg-muted/20 hover:bg-muted/40",
-        dragActive
-          ? "border-foreground/40 bg-muted/50 ring-1 ring-foreground/20 scale-[0.99]"
-          : "border-border/60 hover:border-foreground/20 active:scale-[0.98]",
-        loading && "pointer-events-none opacity-80",
+        "group relative flex flex-col items-center justify-center py-10 sm:py-14 px-6 sm:px-12 rounded-2xl border-2 border-dashed transition-all duration-150 cursor-pointer outline-none text-center select-none",
+        "bg-background/40 hover:bg-muted/20 border-border/80 hover:border-foreground/30",
+        dragActive && "border-foreground/60 bg-muted/40 ring-4 ring-foreground/5 scale-[1.005]",
+        loading && "pointer-events-none opacity-85",
         className
       )}
     >
@@ -117,24 +116,49 @@ export default function ResumeUploader({ userId, onSuccess, className }: ResumeU
       />
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center text-center py-5">
-          <Loader2 className="size-5 animate-spin text-muted-foreground mb-2" />
-          <p className="text-xs font-medium text-foreground">Parsing resume...</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">Extracting your background</p>
+        <div className="flex flex-col items-center justify-center py-4">
+          <div className="size-12 rounded-full border border-border/80 bg-background flex items-center justify-center mb-3 shadow-xs">
+            <Loader2 className="size-5 animate-spin text-foreground" />
+          </div>
+          <p className="text-sm font-semibold tracking-tight text-foreground">
+            Parsing Resume Document...
+          </p>
+          <p className="text-xs text-muted-foreground mt-1 max-w-xs leading-relaxed">
+            Extracting experience, credentials, and achievements into your master profile.
+          </p>
+          <div className="w-36 h-1 rounded-full bg-muted overflow-hidden mt-4">
+            <div className="h-full bg-foreground/60 rounded-full animate-pulse" />
+          </div>
         </div>
       ) : (
         <>
-          <div className="size-8 rounded-lg border border-border/70 bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors duration-150">
-            <Upload className="size-4" strokeWidth={1.75} />
+          <div className="size-12 rounded-2xl border border-border/80 bg-background flex items-center justify-center text-foreground/80 group-hover:text-foreground group-hover:border-foreground/30 group-hover:scale-105 transition-all duration-150 shadow-xs mb-3.5">
+            <FileUp className="size-5 stroke-[1.75]" />
           </div>
 
-          <div className="mt-4">
-            <p className="text-xs font-medium text-foreground group-hover:text-foreground tracking-tight">
-              {file ? file.name : "Upload Resume"}
+          <div className="space-y-1">
+            <p className="text-sm sm:text-base font-medium text-foreground tracking-tight">
+              {file ? file.name : "Drop your PDF resume here, or browse"}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">
-              Drag & drop or browse PDF
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+              We&apos;ll automatically parse your work history, skills, and projects into an editable Master Profile.
             </p>
+          </div>
+
+          <div className="mt-5 flex items-center gap-3">
+            <ColoredButton
+              type="button"
+              color="neutral"
+              size="sm"
+              className="rounded-xl px-4 text-xs font-medium justify-center active:scale-[0.97] shadow-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                inputRef.current?.click();
+              }}
+            >
+              <Upload className="size-3.5 mr-1.5" />
+              <span>Select PDF</span>
+            </ColoredButton>
           </div>
         </>
       )}
