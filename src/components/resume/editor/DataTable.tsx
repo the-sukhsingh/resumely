@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Edit2, GripVertical } from 'lucide-react';
 import { TrashDuo } from '@/components/icons';
 import { Button } from '@/components/ui/button';

@@ -141,4 +141,43 @@ export default defineSchema({
     feedback: v.string(),
     time: v.number(),
   }).index("by_user", ["userId"]),
+
+  jobApplications: defineTable({
+    userId: v.id("users"),
+    company: v.string(),
+    title: v.string(),
+    stage: v.union(
+      v.literal("saved"),        // "Add for later" / Wishlist
+      v.literal("applied"),      // Applied
+      v.literal("interviewing"), // In interview rounds
+      v.literal("offered"),      // Offer received
+      v.literal("rejected"),     // Rejected
+      v.literal("archived")      // Archived / Withdrawn
+    ),
+    jobUrl: v.optional(v.union(v.string(), v.null())),
+    location: v.optional(v.union(v.string(), v.null())),
+    salary: v.optional(v.union(v.string(), v.null())),
+    appliedAt: v.optional(v.union(v.number(), v.null())),
+    deadline: v.optional(v.union(v.number(), v.null())),
+    notes: v.optional(v.union(v.string(), v.null())),
+    jobDescriptionId: v.optional(v.union(v.id("jobDescriptions"), v.null())),
+    resumeVersionId: v.optional(v.union(v.id("resumeVersions"), v.null())),
+    tags: v.optional(v.array(v.string())),
+    contacts: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          role: v.optional(v.union(v.string(), v.null())),
+          email: v.optional(v.union(v.string(), v.null())),
+          phone: v.optional(v.union(v.string(), v.null())),
+        })
+      )
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_stage", ["userId", "stage"])
+    .index("by_resume_version", ["resumeVersionId"])
+    .index("by_job_description", ["jobDescriptionId"]),
 });

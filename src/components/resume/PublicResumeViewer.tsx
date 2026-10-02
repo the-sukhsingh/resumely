@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useQuery } from 'convex/react';
@@ -22,7 +22,6 @@ import {
   Printer,
   ChevronDown,
   FileText,
-  ExternalLink,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';

@@ -250,6 +250,15 @@ export const deleteResumeVersion = mutation({
       await ctx.db.delete(chat._id);
     }
 
+    const linkedApps = await ctx.db
+      .query("jobApplications")
+      .withIndex("by_resume_version", (q) => q.eq("resumeVersionId", args.versionId))
+      .collect();
+
+    for (const app of linkedApps) {
+      await ctx.db.patch(app._id, { resumeVersionId: undefined, updatedAt: Date.now() });
+    }
+
     await ctx.db.delete(args.versionId);
     return { success: true };
   },

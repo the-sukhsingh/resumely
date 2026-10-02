@@ -1,5 +1,3 @@
-import { Play } from 'lucide-react'
-import React from 'react'
 import Heading from './Heading';
 
 const WorkflowSection = () => {

@@ -115,6 +115,7 @@ export const createJDAndVersion = action({
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
+        company: z.string().describe("Company name hiring for this role, or Company if not found"),
         title: z.string().describe("Job title"),
         requirements: z.array(z.string()).describe("List of job requirements"),
         responsibilities: z.array(z.string()).describe("List of job responsibilities"),
@@ -124,7 +125,7 @@ export const createJDAndVersion = action({
       prompt: `You are a job description parser. Analyze the job description and extract the required fields:\n\n${args.jdText}`,
     });
 
-    const { title, ...jdFields } = object;
+    const { title, company, ...jdFields } = object;
 
     const jobDescriptionId: Id<"jobDescriptions"> = await ctx.runMutation(api.jobDescriptions.createJobDescription, {
       userId: args.userId,
@@ -132,11 +133,27 @@ export const createJDAndVersion = action({
       ...jdFields,
     });
 
+    const versionName = company && company !== "Company" ? `${company} - ${title ?? "New Version"}` : (title ?? "New Version");
+
     const { versionId } = await ctx.runAction(api.resumeVersions.createResumeVersion, {
       masterResumeId: args.masterResumeId,
       jobDescriptionId,
-      versionName: title ?? "New Version",
+      versionName,
     });
+
+    // Auto-create entry in Job Tracker
+    try {
+      await ctx.runMutation(api.jobTracker.createJobApplication, {
+        userId: args.userId,
+        company: company || "Company",
+        title: title || "Target Role",
+        stage: "applied",
+        jobDescriptionId,
+        resumeVersionId: versionId,
+      });
+    } catch (trackErr) {
+      console.error("Auto-tracking job application failed:", trackErr);
+    }
 
     return { jobDescriptionId, versionId };
   },

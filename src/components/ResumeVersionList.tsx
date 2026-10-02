@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQuery, useAction } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { Id } from '../../convex/_generated/dataModel';
+import { Id, Doc } from '../../convex/_generated/dataModel';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
 import Feedback from './custom/feedback';
@@ -14,10 +14,7 @@ import {
   Search,
   Plus,
   ArrowUpRight,
-  FileText,
-  Briefcase,
   X,
-  Target,
   Link2,
   Check,
 } from 'lucide-react';
@@ -32,6 +29,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import AddJobDescriptionDialog from './AddJobDescriptionDialog';
+import StageBadge from './tracker/StageBadge';
+import { TrackedJobApplication } from './tracker/types';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
@@ -45,13 +44,48 @@ export default function ResumeVersionList({ userId }: Props) {
   const router = useRouter();
   const versions = useQuery(api.resumeVersions.getResumeVersionsByUser, { userId });
   const masterResume = useQuery(api.masterResumes.getMasterResumeByUser, { userId });
+  const applications = useQuery(api.jobTracker.getJobApplications, { userId });
 
   const deleteVersion = useMutation(api.resumeVersions.deleteResumeVersion);
+  const updateJobStage = useMutation(api.jobTracker.updateJobApplicationStage);
+  const createJobApplication = useMutation(api.jobTracker.createJobApplication);
 
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<{ id: Id<'resumeVersions'>; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [trackingId, setTrackingId] = useState<string | null>(null);
+
+  const jobsByResumeId = useMemo(() => {
+    const map = new Map<string, TrackedJobApplication>();
+    applications?.forEach((app) => {
+      if (app.resumeVersionId) {
+        map.set(app.resumeVersionId, app as unknown as TrackedJobApplication);
+      }
+    });
+    return map;
+  }, [applications]);
+
+  const handleTrackResume = async (e: React.MouseEvent, version: Doc<'resumeVersions'>) => {
+    e.stopPropagation();
+    setTrackingId(version._id);
+    try {
+      await createJobApplication({
+        userId,
+        company: version.name.includes('-') ? version.name.split('-')[0].trim() : 'Company',
+        title: version.name.includes('-') ? version.name.split('-').slice(1).join('-').trim() : version.name,
+        stage: 'applied',
+        jobDescriptionId: version.jobDescriptionId ?? undefined,
+        resumeVersionId: version._id,
+      });
+      toast.success(`Tracked "${version.name}" in Job Tracker!`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to track application');
+    } finally {
+      setTrackingId(null);
+    }
+  };
 
   const handleCopyLink = async (versionId: string, versionName?: string) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -266,6 +300,13 @@ export default function ResumeVersionList({ userId }: Props) {
             <h3 className="text-sm font-semibold tracking-tight text-foreground">
               Tailored Resumes
             </h3>
+            <Link
+              href="/tracker"
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 transition-colors border border-border/40"
+            >
+              <span>Track in Pipeline</span>
+              <ArrowUpRight className="size-3" />
+            </Link>
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
@@ -354,6 +395,8 @@ export default function ResumeVersionList({ userId }: Props) {
               </div>
             ) : (
               filteredTailored.map((item, index) => {
+                const linkedJob = jobsByResumeId.get(item._id);
+
                 return (
                   <div
                     key={item._id}
@@ -368,14 +411,39 @@ export default function ResumeVersionList({ userId }: Props) {
                     tabIndex={0}
                     className="group relative flex items-center justify-between gap-4 px-4 sm:px-5 py-2.5 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
                   >
-                    {/* Role Name & Dithered Sphere */}
+                    {/* Role Name & Dithered Sphere & Tracking Status */}
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <DitheredSphere index={index} seed={item._id} size={32} />
 
                       <div className="min-w-0 flex-1">
-                        <span className="font-medium text-sm text-foreground truncate block group-hover:text-foreground tracking-tight">
-                          {item.name || 'Untitled Version'}
-                        </span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium text-sm text-foreground truncate block group-hover:text-foreground tracking-tight">
+                            {item.name || 'Untitled Version'}
+                          </span>
+
+                          {linkedJob ? (
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <StageBadge
+                                stage={linkedJob.stage}
+                                size="sm"
+                                interactive
+                                onStageChange={async (newStage) => {
+                                  await updateJobStage({ applicationId: linkedJob._id, stage: newStage });
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={(e) => handleTrackResume(e, item)}
+                              disabled={trackingId === item._id}
+                              title="Add this tailored version to Job Tracker"
+                              className="text-[10px] font-mono text-muted-foreground/70 hover:text-foreground bg-muted/30 hover:bg-muted/70 px-2 py-0.5 rounded-full border border-border/40 transition-colors"
+                            >
+                              {trackingId === item._id ? 'Tracking...' : '+ Track Job'}
+                            </button>
+                          )}
+                        </div>
 
                         {/* Mobile-only secondary info line */}
                         <span className="sm:hidden font-mono text-[10px] text-muted-foreground block mt-0.5">
