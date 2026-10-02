@@ -11,6 +11,8 @@ import ColoredButton from '@/components/custom/colored-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
@@ -19,7 +21,6 @@ import {
   Plus,
   Link2,
   FileText,
-  Sparkles,
   Loader2,
   Clock,
   Send,
@@ -401,8 +402,8 @@ export default function AddTrackedJobDialog({
                       className="max-w-sm"
                       items={[
                         { value: 'paste', label: 'Paste JD' },
-                        { value: 'link', label: 'From Link', icon: Link2 },
-                        { value: 'manual', label: 'Manual', icon: FileText },
+                        { value: 'link', label: 'From Link'},
+                        { value: 'manual', label: 'Manual' },
                       ]}
                     />
                   </div>
@@ -466,108 +467,65 @@ export default function AddTrackedJobDialog({
                           </div>
                         </div>
 
-                        {/* Stage Selector */}
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium text-foreground">Initial Stage</Label>
-                          <div className="grid grid-cols-2 gap-2.5">
-                            <button
-                              type="button"
-                              onClick={() => setPasteStage('saved')}
-                              disabled={pasteExtracting}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                pasteStage === 'saved'
-                                  ? 'border-foreground/40 bg-muted/50 ring-1 ring-foreground/20'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              }`}
-                            >
-                              <div className="p-1 rounded-md bg-slate-500/10 text-slate-500 mt-0.5">
-                                <Clock className="size-3.5" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-foreground">Add for later</p>
-                                <p className="text-[11px] text-muted-foreground">Save role to apply later</p>
-                              </div>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => setPasteStage('applied')}
-                              disabled={pasteExtracting}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                pasteStage === 'applied'
-                                  ? 'border-blue-500/50 bg-blue-500/10 ring-1 ring-blue-500/30'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              }`}
-                            >
-                              <div className="p-1 rounded-md bg-blue-500/10 text-blue-500 mt-0.5">
-                                <Send className="size-3.5" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-foreground">Applied</p>
-                                <p className="text-[11px] text-muted-foreground">Already submitted</p>
-                              </div>
-                            </button>
+                        {/* Initial Stage */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs font-medium text-foreground">Initial Stage</Label>
+                            <span className="text-[11px] text-muted-foreground">
+                              {pasteStage === 'saved' ? 'Save to apply later' : 'Already applied'}
+                            </span>
                           </div>
+                          <AnimatedSwitcher
+                            value={pasteStage}
+                            onChange={(v) => setPasteStage(v as 'saved' | 'applied')}
+                            fullWidth
+                            size="default"
+                            layoutId="paste-stage-switcher"
+                            items={[
+                              { value: 'saved', label: 'Save for later', icon: Clock },
+                              { value: 'applied', label: 'Applied', icon: Send },
+                            ]}
+                          />
                         </div>
 
-                        {/* Ask if user wants to tailor a resume */}
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium text-foreground">
-                            Do you want to tailor a resume for this job?
-                          </Label>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <button
-                              type="button"
-                              onClick={() => setPasteAutoTailor(true)}
-                              disabled={pasteExtracting || !masterResumeId}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
-                                pasteAutoTailor && masterResumeId
-                                  ? 'border-amber-500/50 bg-amber-500/10 ring-1 ring-amber-500/30'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              } ${!masterResumeId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                            >
-                              <div className="p-1 rounded-md bg-amber-500/15 text-amber-500 mt-0.5">
-                                <Sparkles className="size-3.5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                  <p className="text-xs font-medium text-foreground">Yes, tailor resume</p>
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-medium">
-                                    AI
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                                  Adapts bullets & ATS skills to match this JD
-                                </p>
-                              </div>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => setPasteAutoTailor(false)}
-                              disabled={pasteExtracting}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                !pasteAutoTailor || !masterResumeId
-                                  ? 'border-foreground/30 bg-muted/50 ring-1 ring-foreground/20'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              }`}
-                            >
-                              <div className="p-1 rounded-md bg-slate-500/10 text-slate-500 mt-0.5">
-                                <Clock className="size-3.5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium text-foreground">No, just track job</p>
-                                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                                  Save role; tailor anytime later in 1 click
-                                </p>
-                              </div>
-                            </button>
-                          </div>
-                          {!masterResumeId && (
-                            <p className="text-[11px] text-muted-foreground/80 italic">
-                              Note: Tailoring requires a master resume. You can track this job now and tailor it anytime once you create one.
-                            </p>
+                        {/* Tailor Resume Option */}
+                        <div
+                          onClick={() => {
+                            if (masterResumeId && !pasteExtracting) {
+                              setPasteAutoTailor(!pasteAutoTailor);
+                            }
+                          }}
+                          className={cn(
+                            'flex items-center justify-between p-3 rounded-xl border transition-all select-none',
+                            !masterResumeId
+                              ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
+                              : pasteAutoTailor
+                                ? 'border-primary/40 bg-primary/5 hover:border-primary/50 cursor-pointer'
+                                : 'border-border/60 bg-card/40 hover:bg-muted/30 cursor-pointer'
                           )}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 pr-3">
+                           
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-medium text-foreground">Tailor resume with AI</span>
+                              </div>
+                              <p className="text-[11px] text-muted-foreground leading-snug">
+                                Automatically adapts bullet points & ATS keywords for this role
+                              </p>
+                              {!masterResumeId && (
+                                <p className="text-[10px] text-amber-500/90 mt-0.5 font-medium">
+                                  Requires a master resume. You can track now and tailor later.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <Switch
+                            checked={pasteAutoTailor && !!masterResumeId}
+                            onCheckedChange={(checked) => masterResumeId && setPasteAutoTailor(checked)}
+                            disabled={pasteExtracting || !masterResumeId}
+                            className="shrink-0"
+                          />
                         </div>
 
                         {/* Progress animation */}
@@ -617,7 +575,6 @@ export default function AddTrackedJobDialog({
                             </>
                           ) : pasteAutoTailor && masterResumeId ? (
                             <>
-                              <Sparkles className="size-3.5 mr-1.5" />
                               Create & Tailor
                             </>
                           ) : (
@@ -654,108 +611,64 @@ export default function AddTrackedJobDialog({
                           </p>
                         </div>
 
-                        {/* Stage Selector */}
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium text-foreground">Initial Stage</Label>
-                          <div className="grid grid-cols-2 gap-2.5">
-                            <button
-                              type="button"
-                              onClick={() => setLinkStage('saved')}
-                              disabled={extracting}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                linkStage === 'saved'
-                                  ? 'border-foreground/40 bg-muted/50 ring-1 ring-foreground/20'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              }`}
-                            >
-                              <div className="p-1 rounded-md bg-slate-500/10 text-slate-500 mt-0.5">
-                                <Clock className="size-3.5" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-foreground">Add for later</p>
-                                <p className="text-[11px] text-muted-foreground">Save role to apply later</p>
-                              </div>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => setLinkStage('applied')}
-                              disabled={extracting}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                linkStage === 'applied'
-                                  ? 'border-blue-500/50 bg-blue-500/10 ring-1 ring-blue-500/30'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              }`}
-                            >
-                              <div className="p-1 rounded-md bg-blue-500/10 text-blue-500 mt-0.5">
-                                <Send className="size-3.5" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium text-foreground">Applied</p>
-                                <p className="text-[11px] text-muted-foreground">Already submitted</p>
-                              </div>
-                            </button>
+                        {/* Initial Stage */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs font-medium text-foreground">Initial Stage</Label>
+                            <span className="text-[11px] text-muted-foreground">
+                              {linkStage === 'saved' ? 'Save to apply later' : 'Already applied'}
+                            </span>
                           </div>
+                          <AnimatedSwitcher
+                            value={linkStage}
+                            onChange={(v) => setLinkStage(v as 'saved' | 'applied')}
+                            fullWidth
+                            size="default"
+                            layoutId="link-stage-switcher"
+                            items={[
+                              { value: 'saved', label: 'Save for later', icon: Clock },
+                              { value: 'applied', label: 'Applied', icon: Send },
+                            ]}
+                          />
                         </div>
 
-                        {/* Ask if user wants to tailor a resume */}
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium text-foreground">
-                            Do you want to tailor a resume for this job?
-                          </Label>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <button
-                              type="button"
-                              onClick={() => setAutoTailor(true)}
-                              disabled={extracting || !masterResumeId}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
-                                autoTailor && masterResumeId
-                                  ? 'border-amber-500/50 bg-amber-500/10 ring-1 ring-amber-500/30'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              } ${!masterResumeId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                            >
-                              <div className="p-1 rounded-md bg-amber-500/15 text-amber-500 mt-0.5">
-                                <Sparkles className="size-3.5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                  <p className="text-xs font-medium text-foreground">Yes, tailor resume</p>
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-medium">
-                                    AI
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                                  Adapts bullets & ATS skills to match this JD
-                                </p>
-                              </div>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => setAutoTailor(false)}
-                              disabled={extracting}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                                !autoTailor || !masterResumeId
-                                  ? 'border-foreground/30 bg-muted/50 ring-1 ring-foreground/20'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/30 text-muted-foreground'
-                              }`}
-                            >
-                              <div className="p-1 rounded-md bg-slate-500/10 text-slate-500 mt-0.5">
-                                <Clock className="size-3.5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium text-foreground">No, just track job</p>
-                                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                                  Save role; tailor anytime later in 1 click
-                                </p>
-                              </div>
-                            </button>
-                          </div>
-                          {!masterResumeId && (
-                            <p className="text-[11px] text-muted-foreground/80 italic">
-                              Note: Tailoring requires a master resume. You can track this job now and tailor it anytime once you create one.
-                            </p>
+                        {/* Tailor Resume Option */}
+                        <div
+                          onClick={() => {
+                            if (masterResumeId && !extracting) {
+                              setAutoTailor(!autoTailor);
+                            }
+                          }}
+                          className={cn(
+                            'flex items-center justify-between p-3 rounded-xl border transition-all select-none',
+                            !masterResumeId
+                              ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
+                              : autoTailor
+                                ? 'border-primary/40 bg-primary/5 hover:border-primary/50 cursor-pointer'
+                                : 'border-border/60 bg-card/40 hover:bg-muted/30 cursor-pointer'
                           )}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 pr-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-medium text-foreground">Tailor resume with AI</span>
+                              </div>
+                              <p className="text-[11px] text-muted-foreground leading-snug">
+                                Automatically adapts bullet points & ATS keywords for this role
+                              </p>
+                              {!masterResumeId && (
+                                <p className="text-[10px] text-amber-500/90 mt-0.5 font-medium">
+                                  Requires a master resume. You can track now and tailor later.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <Switch
+                            checked={autoTailor && !!masterResumeId}
+                            onCheckedChange={(checked) => masterResumeId && setAutoTailor(checked)}
+                            disabled={extracting || !masterResumeId}
+                            className="shrink-0"
+                          />
                         </div>
 
                         {/* Extracting Progress Animation */}
@@ -811,7 +724,6 @@ export default function AddTrackedJobDialog({
                             </>
                           ) : autoTailor && masterResumeId ? (
                             <>
-                              <Sparkles className="size-3.5 mr-1.5" />
                               Extract & Tailor
                             </>
                           ) : (
