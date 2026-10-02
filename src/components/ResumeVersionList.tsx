@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import AddJobDescriptionDialog from './AddJobDescriptionDialog';
 import StageBadge from './tracker/StageBadge';
+import { TrackedJobApplication } from './tracker/types';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
@@ -59,10 +60,10 @@ export default function ResumeVersionList({ userId }: Props) {
   const [trackingId, setTrackingId] = useState<string | null>(null);
 
   const jobsByResumeId = useMemo(() => {
-    const map = new Map<string, typeof applications extends (infer T)[] ? T : never>();
+    const map = new Map<string, TrackedJobApplication>();
     applications?.forEach((app) => {
       if (app.resumeVersionId) {
-        map.set(app.resumeVersionId, app);
+        map.set(app.resumeVersionId, app as unknown as TrackedJobApplication);
       }
     });
     return map;
