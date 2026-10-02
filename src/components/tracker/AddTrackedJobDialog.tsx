@@ -339,7 +339,7 @@ export default function AddTrackedJobDialog({
                     handleClose();
                   }
                 }}
-                className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none backdrop-blur-xs"
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 select-none backdrop-blur-xs"
               >
                 {/* Wave Backdrop */}
                 <motion.div
