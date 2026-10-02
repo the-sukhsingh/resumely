@@ -1,0 +1,318 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMutation, useAction } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
+import { Id } from '../../../convex/_generated/dataModel';
+import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
+import StageBadge from './StageBadge';
+import DitheredSphere from '@/components/custom/dithered-sphere';
+import { TrashDuo } from '@/components/icons';
+import {
+  ExternalLink,
+  Sparkles,
+  ArrowRight,
+  MapPin,
+  DollarSign,
+  FileText,
+  Clock,
+  Send,
+  Loader2,
+  ShieldCheck,
+  Check,
+  Link2,
+} from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { formatDistanceToNow, format } from 'date-fns';
+import { toast } from 'sonner';
+
+interface Props {
+  applications: TrackedJobApplication[];
+  onSelectApplication: (application: TrackedJobApplication) => void;
+  masterResumeId?: Id<'resumeVersions'>;
+}
+
+export default function JobListView({
+  applications,
+  onSelectApplication,
+  masterResumeId,
+}: Props) {
+  const router = useRouter();
+  const updateStage = useMutation(api.jobTracker.updateJobApplicationStage);
+  const deleteJob = useMutation(api.jobTracker.deleteJobApplication);
+  const tailorForJob = useAction(api.jobTracker.tailorResumeForJob);
+
+  const [deleteTarget, setDeleteTarget] = useState<TrackedJobApplication | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [tailoringId, setTailoringId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleStageChange = async (appId: Id<'jobApplications'>, newStage: JobStage) => {
+    try {
+      await updateStage({ applicationId: appId, stage: newStage });
+      toast.success(`Stage moved to "${STAGE_CONFIGS[newStage].label}"`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to change stage');
+    }
+  };
+
+  const handleTailor = async (e: React.MouseEvent, app: TrackedJobApplication) => {
+    e.stopPropagation();
+    if (!masterResumeId) {
+      toast.error('Please create a Master Resume first before tailoring');
+      return;
+    }
+
+    setTailoringId(app._id);
+    try {
+      const { versionId } = await tailorForJob({
+        applicationId: app._id,
+        masterResumeId,
+      });
+      toast.success(`Tailored resume generated for ${app.company}!`);
+      router.push(`/resume/${versionId}`);
+    } catch (err: unknown) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : 'Tailoring failed';
+      toast.error(msg);
+    } finally {
+      setTailoringId(null);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await deleteJob({ applicationId: deleteTarget._id });
+      toast.success(`Deleted application for ${deleteTarget.company}`);
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to delete job application');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCopyLink = async (e: React.MouseEvent, resumeId: string) => {
+    e.stopPropagation();
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const url = `${origin}/r/${resumeId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedId(resumeId);
+      toast.success('Public resume link copied!');
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to copy link');
+    }
+  };
+
+  if (applications.length === 0) {
+    return (
+      <div className="py-16 text-center rounded-2xl border border-border/70 bg-card/40">
+        <p className="text-sm font-medium text-foreground">No applications found</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Add a job from a URL or manual entry to begin tracking.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="rounded-2xl border border-border/70 bg-card/50 backdrop-blur-xs shadow-xs overflow-hidden">
+        {/* Desktop Table Header */}
+        <div className="hidden md:grid grid-cols-12 gap-4 px-5 py-2.5 border-b border-border/60 bg-muted/20 text-[11px] font-medium text-muted-foreground">
+          <div className="col-span-4">Role & Company</div>
+          <div className="col-span-2">Stage</div>
+          <div className="col-span-3">Tailored Resume</div>
+          <div className="col-span-2">Applied / Saved</div>
+          <div className="col-span-1 text-right">Actions</div>
+        </div>
+
+        {/* Table Rows Body */}
+        <div className="divide-y divide-border/40">
+          {applications.map((app, index) => {
+            return (
+              <div
+                key={app._id}
+                onClick={() => onSelectApplication(app)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectApplication(app);
+                  }
+                }}
+                className="group relative md:grid md:grid-cols-12 gap-4 items-center px-4 sm:px-5 py-3 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
+              >
+                {/* 1. Role & Company */}
+                <div className="col-span-4 flex items-center gap-3 min-w-0">
+                  <DitheredSphere index={index} seed={app._id} size={32} className="shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-sm text-foreground truncate block tracking-tight group-hover:text-foreground">
+                      {app.title}
+                    </span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider truncate">
+                        {app.company}
+                      </span>
+                      {app.location && (
+                        <span className="hidden sm:inline-block font-mono text-[10px] text-muted-foreground/70 truncate">
+                          · {app.location}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Stage (Interactive) */}
+                <div className="col-span-2 mt-2 md:mt-0 flex items-center">
+                  <StageBadge
+                    stage={app.stage}
+                    size="sm"
+                    interactive
+                    onStageChange={(newStage) => handleStageChange(app._id, newStage)}
+                  />
+                </div>
+
+                {/* 3. Tailored Resume connection */}
+                <div
+                  className="col-span-3 mt-2 md:mt-0 flex items-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {app.resumeVersionId && app.resumeVersion ? (
+                    <div className="flex items-center gap-2 min-w-0 max-w-full">
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/resume/${app.resumeVersionId}`)}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/40 hover:bg-muted/70 text-foreground transition-colors min-w-0 max-w-[180px] cursor-pointer"
+                      >
+                        <FileText className="size-3 text-primary shrink-0" />
+                        <span className="text-[11px] font-medium truncate">
+                          {app.resumeVersion.name}
+                        </span>
+                      </button>
+
+                      {app.resumeVersion.matchScore && (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+                          {app.resumeVersion.matchScore}%
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={(e) => handleCopyLink(e, app.resumeVersionId!)}
+                        title="Copy public resume link"
+                        className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
+                      >
+                        {copiedId === app.resumeVersionId ? (
+                          <Check className="size-3.5 text-emerald-500" />
+                        ) : (
+                          <Link2 className="size-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => handleTailor(e, app)}
+                      disabled={tailoringId === app._id}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium transition-all active:scale-[0.98] cursor-pointer"
+                    >
+                      {tailoringId === app._id ? (
+                        <>
+                          <Loader2 className="size-3 animate-spin" />
+                          <span>Tailoring...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="size-3 text-amber-500" />
+                          <span>Tailor Resume</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* 4. Applied / Saved Date */}
+                <div className="col-span-2 mt-2 md:mt-0">
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    {app.stage === 'applied' && app.appliedAt
+                      ? format(new Date(app.appliedAt), 'MMM d, yyyy')
+                      : formatDistanceToNow(new Date(app.updatedAt), { addSuffix: true })}
+                  </span>
+                </div>
+
+                {/* 5. Row Actions */}
+                <div
+                  className="col-span-1 mt-2 md:mt-0 flex items-center justify-end gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {app.jobUrl && (
+                    <a
+                      href={app.jobUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Open job posting"
+                      className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                    >
+                      <ExternalLink className="size-3.5" />
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTarget(app)}
+                    title="Delete application"
+                    className="size-7 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all cursor-pointer"
+                  >
+                    <TrashDuo className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Delete Confirmation Alert */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this tracked job?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong className="text-foreground">{deleteTarget?.title}</strong> at{' '}
+              <strong className="text-foreground">{deleteTarget?.company}</strong>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Job'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
