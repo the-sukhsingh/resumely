@@ -7,7 +7,6 @@ import { api } from '../../convex/_generated/api';
 import { Id, Doc } from '../../convex/_generated/dataModel';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
-import Feedback from './custom/feedback';
 import { TrashDuo } from '@/components/icons';
 import { AddCircle, File as DuoFile, CheckCircle as DuoCheckCircle } from '@duo-icons/react';
 import {
@@ -155,8 +154,6 @@ export default function ResumeVersionList({ userId }: Props) {
   if (versions.length === 0) {
     return (
       <div className="w-full space-y-6">
-        <Feedback />
-
         {/* ─── Master Profile Onboarding Workspace (Hallmark Workbench) ─── */}
         <section className="relative rounded-3xl border border-border/70 bg-card/40 dark:bg-card/20 backdrop-blur-md overflow-hidden shadow-xs">
           {/* Top Header: Asymmetric Left-Biased Anchor */}
@@ -235,8 +232,6 @@ export default function ResumeVersionList({ userId }: Props) {
 
   return (
     <div className="w-full space-y-8">
-      <Feedback />
-
       {/* ─── Master Resume Anchor Card ─── */}
       {master && (
         <section className="group relative rounded-[30px] bg-linear-to-b from-card/90 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 shadow-xs overflow-hidden outline-2 outline-white dark:outline-black">
@@ -302,6 +297,7 @@ export default function ResumeVersionList({ userId }: Props) {
             </h3>
             <Link
               href="/tracker"
+              prefetch={true}
               className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 transition-colors border border-border/40"
             >
               <span>Track in Pipeline</span>

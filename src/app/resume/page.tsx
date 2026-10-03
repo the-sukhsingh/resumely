@@ -5,6 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import ResumeVersionList from '@/components/ResumeVersionList';
 import { PaymentStatusDialog } from '@/components/resume/PaymentStatusDialog';
 
+import Feedback from '@/components/custom/feedback';
+
 export default function ResumePage() {
   const { user } = useAuth();
 
@@ -24,11 +26,10 @@ export default function ResumePage() {
       <PaymentStatusDialog />
 
       {/* Subtle, soft ambient background */}
-      <div className="pointer-events-none fixed inset-0 noise opacity-50 bg-primary/5 dark:opacity-30"
-      >
-      </div>
+      <div className="pointer-events-none fixed inset-0 noise opacity-50 bg-primary/5 dark:opacity-30" />
 
-      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24">
+      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24 space-y-7">
+        <Feedback />
 
         {/* Resume Version List */}
         <ResumeVersionList userId={user._id} />

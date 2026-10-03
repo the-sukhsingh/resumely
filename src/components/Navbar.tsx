@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import ColoredButton from "./custom/colored-button";
 import AnimatedSwitcher from "./custom/animated-switcher";
+import WorkspaceWarmer from "./workspace/WorkspaceWarmer";
 
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -58,17 +59,21 @@ const Navbar = () => {
 
                     {/* Desktop Links Switcher */}
                     {isAuthenticated && (
-                        <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
-                            <AnimatedSwitcher
-                                value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
-                                items={links.map((link) => ({
-                                    value: link.href,
-                                    label: link.label,
-                                    icon: link.icon,
-                                    href: link.href,
-                                }))}
-                            />
-                        </div>
+                        <>
+                            {user && <WorkspaceWarmer userId={user._id} />}
+                            <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
+                                <AnimatedSwitcher
+                                    value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
+                                    layoutId="navbar-tab-indicator"
+                                    items={links.map((link) => ({
+                                        value: link.href,
+                                        label: link.label,
+                                        icon: link.icon,
+                                        href: link.href,
+                                    }))}
+                                />
+                            </div>
+                        </>
                     )}
 
                     {/* Right side: auth / mobile menu */}
@@ -93,6 +98,7 @@ const Navbar = () => {
                                                             <Link
                                                                 key={link.href}
                                                                 href={link.href}
+                                                                prefetch={true}
                                                                 className={cn(
                                                                     "flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors font-medium text-sm",
                                                                     isActive
