@@ -1,9 +1,71 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Heading from "./Heading";
 
+interface BranchData {
+  id: string;
+  y: number;
+  curve: string;
+  role: string;
+  tech: string;
+  roleWidth: number;
+  techWidth: number;
+}
+
+const BRANCHES: BranchData[] = [
+  {
+    id: "staff",
+    y: 36,
+    curve: "M 160 110 C 215 110, 240 36, 295 36",
+    role: "Staff Systems",
+    tech: "eBPF",
+    roleWidth: 86,
+    techWidth: 46,
+  },
+  {
+    id: "platform",
+    y: 73,
+    curve: "M 160 110 C 215 110, 245 73, 295 73",
+    role: "Platform Lead",
+    tech: "Kubernetes",
+    roleWidth: 88,
+    techWidth: 76,
+  },
+  {
+    id: "backend",
+    y: 110,
+    curve: "M 160 110 L 295 110",
+    role: "Senior Backend",
+    tech: "Distributed Go",
+    roleWidth: 96,
+    techWidth: 84,
+  },
+  {
+    id: "infra",
+    y: 147,
+    curve: "M 160 110 C 215 110, 245 147, 295 147",
+    role: "Infrastructure",
+    tech: "Terraform",
+    roleWidth: 90,
+    techWidth: 68,
+  },
+  {
+    id: "cloud",
+    y: 184,
+    curve: "M 160 110 C 215 110, 240 184, 295 184",
+    role: "Cloud Core",
+    tech: "Zero-Downtime",
+    roleWidth: 76,
+    techWidth: 96,
+  },
+];
+
 export default function FeatureSection() {
+  const [activeBranch, setActiveBranch] = useState<number>(2);
+  const [hoveredBranch, setHoveredBranch] = useState<number | null>(null);
+  const selectedBranch = hoveredBranch !== null ? hoveredBranch : activeBranch;
+
   return (
     <section id="features" className="mx-auto px-6 py-24 md:py-32 relative z-10 max-w-6xl">
       {/* Section Header */}
@@ -22,7 +84,7 @@ export default function FeatureSection() {
       <div className="space-y-20 md:space-y-28">
         {/* =========================================================================
             FEATURE 01: Centralized Ledger
-            Illustration: The Convergence Horizon (Indigo Duo-Shade, Borderless)
+            Illustration: Animated Dynamic Master Ledger & Branching Targets
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
@@ -81,6 +143,15 @@ export default function FeatureSection() {
                 strokeLinecap="round"
               />
 
+              {/* Ambient Traveling Pulse along Master Trunk (Off-main-thread SVG Animation) */}
+              <circle r="2.5" className="fill-indigo-500/80">
+                <animateMotion
+                  path="M 40 110 L 160 110"
+                  dur="2.4s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+
               {/* Precision Measurement Ticks along Master Trunk */}
               <line x1="60" y1="104" x2="60" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
               <line x1="85" y1="102" x2="85" y2="118" className="stroke-indigo-500/70" strokeWidth="1.5" />
@@ -95,99 +166,140 @@ export default function FeatureSection() {
                 SINGLE SOURCE
               </text>
 
-              {/* Branching Hub Core */}
-              <circle cx="160" cy="110" r="14" className="fill-indigo-500/10 dark:fill-indigo-500/20" />
+              {/* Branching Hub Core with Ambient Breathing Pulse */}
+              <circle cx="160" cy="110" r="14" className="fill-indigo-500/10 dark:fill-indigo-500/20">
+                <animate attributeName="r" values="12;16;12" dur="3.2s" repeatCount="indefinite" />
+              </circle>
               <circle cx="160" cy="110" r="7" className="fill-indigo-500/30" />
               <circle cx="160" cy="110" r="3" className="fill-indigo-600 dark:fill-indigo-400" />
-
-              {/* 5 Fanning Out Tailored Branch Streams */}
-              {/* Branch 1: Staff Systems */}
-              <path
-                d="M 160 110 C 215 110, 240 36, 295 36"
-                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Branch 2: Platform Lead */}
-              <path
-                d="M 160 110 C 215 110, 245 73, 295 73"
-                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Branch 3: Senior Backend (Active Core Axis) */}
-              <line
-                x1="160"
-                y1="110"
-                x2="295"
-                y2="110"
-                className="stroke-indigo-600 dark:stroke-indigo-400"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              {/* Branch 4: Infrastructure */}
-              <path
-                d="M 160 110 C 215 110, 245 147, 295 147"
-                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Branch 5: Cloud Core */}
-              <path
-                d="M 160 110 C 215 110, 240 184, 295 184"
-                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-
-              {/* Branch Endpoint Nodes */}
-              <circle cx="295" cy="36" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-              <circle cx="295" cy="73" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-              <circle cx="295" cy="110" r="3.5" className="fill-indigo-600 dark:fill-indigo-400" />
-              <circle cx="295" cy="147" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-              <circle cx="295" cy="184" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-
-              {/* Connecting Dashed Guides to Tags */}
-              <line x1="298" y1="36" x2="312" y2="36" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
-              <line x1="298" y1="73" x2="312" y2="73" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
-              <line x1="298" y1="110" x2="312" y2="110" className="stroke-indigo-600 dark:stroke-indigo-400" strokeWidth="1.5" />
-              <line x1="298" y1="147" x2="312" y2="147" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
-              <line x1="298" y1="184" x2="312" y2="184" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
 
               {/* Right Side: Tailored Output Tags Header */}
               <text x="312" y="16" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
                 TAILORED TARGETS [5]
               </text>
 
-              {/* Tag Row 1 */}
-              <rect x="312" y="25" width="86" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
-              <text x="320" y="40" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Staff Systems</text>
-              <rect x="404" y="25" width="46" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
-              <text x="412" y="40" className="fill-muted-foreground text-[9px] font-mono">eBPF</text>
+              {/* 5 Fanning Out Tailored Branch Streams */}
+              {BRANCHES.map((b, i) => {
+                const isActive = selectedBranch === i;
+                const isHovered = hoveredBranch === i;
 
-              {/* Tag Row 2 */}
-              <rect x="312" y="62" width="88" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
-              <text x="320" y="77" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Platform Lead</text>
-              <rect x="406" y="62" width="76" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
-              <text x="414" y="77" className="fill-muted-foreground text-[9px] font-mono">Kubernetes</text>
+                return (
+                  <g key={b.id}>
+                    {/* Branch Curve */}
+                    <path
+                      d={b.curve}
+                      className={`transition-all duration-200 ${
+                        isActive
+                          ? "stroke-indigo-600 dark:stroke-indigo-400 stroke-[2.5px] opacity-100"
+                          : hoveredBranch !== null
+                          ? "stroke-indigo-400/25 stroke-[1.5px] opacity-40"
+                          : "stroke-indigo-400/40 dark:stroke-indigo-400/30 stroke-[1.5px] opacity-75"
+                      }`}
+                      strokeLinecap="round"
+                    />
 
-              {/* Tag Row 3 (Active Highlight) */}
-              <rect x="312" y="99" width="96" height="22" rx="4" className="fill-indigo-600 dark:fill-indigo-500" />
-              <text x="320" y="114" className="fill-white text-[10px] font-mono font-semibold">Senior Backend</text>
-              <rect x="414" y="99" width="84" height="22" rx="4" className="fill-indigo-500/15 dark:fill-indigo-500/25" />
-              <text x="422" y="114" className="fill-indigo-700 dark:fill-indigo-300 text-[9px] font-mono font-semibold">Distributed Go</text>
+                    {/* Ambient Data Packet Traveling Along Branch */}
+                    <circle r="2" className={`fill-indigo-400 dark:fill-indigo-300 transition-opacity duration-200 ${isActive ? "opacity-90" : "opacity-40"}`}>
+                      <animateMotion
+                        path={b.curve}
+                        dur="2.8s"
+                        repeatCount="indefinite"
+                        begin={`${i * 0.45}s`}
+                      />
+                    </circle>
 
-              {/* Tag Row 4 */}
-              <rect x="312" y="136" width="90" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
-              <text x="320" y="151" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Infrastructure</text>
-              <rect x="408" y="136" width="68" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
-              <text x="416" y="151" className="fill-muted-foreground text-[9px] font-mono">Terraform</text>
+                    {/* Endpoint Node */}
+                    <circle
+                      cx="295"
+                      cy={b.y}
+                      r={isActive ? 4 : 3}
+                      className={`transition-all duration-200 ${
+                        isActive
+                          ? "fill-indigo-600 dark:fill-indigo-400"
+                          : "fill-background stroke-indigo-400 stroke-[1.5px]"
+                      }`}
+                    />
 
-              {/* Tag Row 5 */}
-              <rect x="312" y="173" width="76" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
-              <text x="320" y="188" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Cloud Core</text>
-              <rect x="394" y="173" width="96" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
-              <text x="402" y="188" className="fill-muted-foreground text-[9px] font-mono">Zero-Downtime</text>
+                    {/* Connecting Dashed Guide to Tags */}
+                    <line
+                      x1="298"
+                      y1={b.y}
+                      x2="312"
+                      y2={b.y}
+                      className={`transition-all duration-200 ${
+                        isActive
+                          ? "stroke-indigo-600 dark:stroke-indigo-400 stroke-[1.5px]"
+                          : "stroke-indigo-400/40 stroke-[1px] [stroke-dasharray:2_2]"
+                      }`}
+                    />
+
+                    {/* Interactive Clickable/Hoverable Tag Group */}
+                    <g
+                      className="cursor-pointer"
+                      onMouseEnter={() => setHoveredBranch(i)}
+                      onMouseLeave={() => setHoveredBranch(null)}
+                      onClick={() => setActiveBranch(i)}
+                      transform={isActive ? "translate(4, 0)" : "translate(0, 0)"}
+                      style={{ transition: "transform 200ms cubic-bezier(0.23, 1, 0.32, 1)" }}
+                    >
+                      {/* Transparent Hover Hit Target */}
+                      <rect x="306" y={b.y - 14} width="190" height="28" fill="transparent" />
+
+                      {/* Primary Role Tag Pill */}
+                      <rect
+                        x="312"
+                        y={b.y - 11}
+                        width={b.roleWidth}
+                        height="22"
+                        rx="4"
+                        className={`transition-colors duration-200 ${
+                          isActive
+                            ? "fill-indigo-600 dark:fill-indigo-500"
+                            : isHovered
+                            ? "fill-indigo-500/20 dark:fill-indigo-500/25"
+                            : "fill-indigo-500/10 dark:fill-indigo-500/15"
+                        }`}
+                      />
+                      <text
+                        x="320"
+                        y={b.y + 4}
+                        className={`text-[10px] font-mono transition-colors duration-200 ${
+                          isActive
+                            ? "fill-white font-semibold"
+                            : "fill-indigo-700 dark:fill-indigo-300 font-medium"
+                        }`}
+                      >
+                        {b.role}
+                      </text>
+
+                      {/* Secondary Tech Tag Pill */}
+                      <rect
+                        x={312 + b.roleWidth + 8}
+                        y={b.y - 11}
+                        width={b.techWidth}
+                        height="22"
+                        rx="4"
+                        className={`transition-colors duration-200 ${
+                          isActive
+                            ? "fill-indigo-500/15 dark:fill-indigo-500/25"
+                            : "fill-muted/60 dark:fill-muted/20"
+                        }`}
+                      />
+                      <text
+                        x={312 + b.roleWidth + 16}
+                        y={b.y + 4}
+                        className={`text-[9px] font-mono transition-colors duration-200 ${
+                          isActive
+                            ? "fill-indigo-700 dark:fill-indigo-300 font-semibold"
+                            : "fill-muted-foreground"
+                        }`}
+                      >
+                        {b.tech}
+                      </text>
+                    </g>
+                  </g>
+                );
+              })}
             </svg>
           </div>
         </div>
@@ -284,7 +396,10 @@ export default function FeatureSection() {
                 className="stroke-emerald-600 dark:stroke-emerald-400"
                 strokeWidth="2"
               />
-              <circle cx="242" cy="110" r="18" className="fill-emerald-500/10 stroke-emerald-500/20" strokeWidth="1" />
+              <circle cx="242" cy="110" r="18" className="fill-emerald-500/10 stroke-emerald-500/20" strokeWidth="1">
+                <animate attributeName="r" values="16;20;16" dur="3s" repeatCount="indefinite" />
+                <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite" />
+              </circle>
               <circle cx="242" cy="110" r="4" className="fill-emerald-600 dark:fill-emerald-400" />
 
               {/* Minimal Clean Labels */}
@@ -391,7 +506,9 @@ export default function FeatureSection() {
 
               {/* Focus Lens Aperture Threshold (Pure geometry, Zero Border Box) */}
               <line x1="230" y1="50" x2="230" y2="170" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="3 3" />
-              <circle cx="230" cy="110" r="10" className="fill-amber-500/10" />
+              <circle cx="230" cy="110" r="10" className="fill-amber-500/10">
+                <animate attributeName="r" values="8;12;8" dur="2.8s" repeatCount="indefinite" />
+              </circle>
               <circle cx="230" cy="110" r="3" className="fill-amber-600 dark:fill-amber-400" />
 
               {/* Right Side: Sculpted, High-Contrast Precision Vector Impulse */}
@@ -402,9 +519,20 @@ export default function FeatureSection() {
                 strokeLinecap="round"
               />
 
-              {/* Dimension guide for the peak */}
+              {/* Traveling Signal Pulse along the Sculpted Peak */}
+              <circle r="2.5" className="fill-amber-500">
+                <animateMotion
+                  path="M 230 110 L 270 110 Q 300 20 330 110 T 390 110 L 440 110"
+                  dur="2.5s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+
+              {/* Dimension guide for the peak with breathing indicator */}
               <line x1="330" y1="20" x2="330" y2="110" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="2 2" />
-              <circle cx="330" cy="20" r="4" className="fill-background stroke-amber-600 dark:stroke-amber-400" strokeWidth="2" />
+              <circle cx="330" cy="20" r="4" className="fill-background stroke-amber-600 dark:stroke-amber-400" strokeWidth="2">
+                <animate attributeName="r" values="3.5;5;3.5" dur="2.5s" repeatCount="indefinite" />
+              </circle>
 
               {/* Clean Monospace Annotations */}
               <text x="50" y="55" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
@@ -467,14 +595,20 @@ export default function FeatureSection() {
                 <line x1="16" y1="132" x2="110" y2="132" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
               </g>
 
-              {/* Connecting Typographic Alignment Guides Between the Documents */}
-              <line x1="205" y1="47" x2="275" y2="47" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="2 3" />
+              {/* Connecting Typographic Alignment Guides Between the Documents (Flowing Dash Marquee) */}
+              <line x1="205" y1="47" x2="275" y2="47" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="3 3">
+                <animate attributeName="stroke-dashoffset" values="0;-12" dur="2.4s" repeatCount="indefinite" />
+              </line>
               <circle cx="240" cy="47" r="2.5" className="fill-sky-500" />
 
-              <line x1="205" y1="99" x2="275" y2="99" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeDasharray="3 3" />
+              <line x1="205" y1="99" x2="275" y2="99" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeDasharray="4 4">
+                <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
+              </line>
               <circle cx="240" cy="99" r="3" className="fill-sky-600 dark:fill-sky-400" />
 
-              <line x1="205" y1="147" x2="275" y2="147" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="2 3" />
+              <line x1="205" y1="147" x2="275" y2="147" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="3 3">
+                <animate attributeName="stroke-dashoffset" values="0;-12" dur="2.4s" repeatCount="indefinite" />
+              </line>
               <circle cx="240" cy="147" r="2.5" className="fill-sky-500" />
 
               {/* Sheet 02: Matching Cover Letter Silhouette (Soft Flat Tone, Zero Border Stroke) */}

@@ -25,7 +25,7 @@ export default function HomePage() {
         <div className="absolute inset-0 h-[680px] sm:h-[750px] md:h-[820px] overflow-hidden pointer-events-none">
           <BarsPreview decreaseFromLeft={decreaseFromLeft} />
           {/* Subtle gradient to softly blend shader into the content background below */}
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-background pointer-events-none" />
         </div>
 
         {/* Hero Section */}
