@@ -11,7 +11,7 @@ const Footer = () => {
   const { user } = useAuth();
 
   return (
-    <footer className="w-full bg-background border-t border-border/60 relative z-10 pt-20 pb-16 px-6">
+    <footer className="w-full h-dvh bg-background border-t border-border/60 relative z-10 pt-10 px-6 flex flex-col justify-center items-center">
       {/* Final Action Strip */}
       <div className="max-w-4xl mx-auto text-center mb-20">
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-5 leading-tight">
