@@ -68,7 +68,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     verticalGrad = clamp(verticalGrad + grain * grainWeight, 0.0, 1.0);
     
     // Combine mask with gradient and a base brightness
-    vec3 color = vec3(verticalGrad * 0.6) * mask;
+    vec3 color = vec3(verticalGrad * 0.72) * mask;
 
     // Output
     fragColor = vec4(color, 1.0);
@@ -96,8 +96,8 @@ void main() {
 
 export interface BarsPreviewProps {
     /**
-     * When true (default), bar heights decrease from left to right.
-     * When false, bar heights decrease from right to left.
+     * When true, bar heights decrease from left to right.
+     * When false (default), bar heights increase from left to right.
      */
     decreaseFromLeft?: boolean;
     className?: string;
@@ -105,16 +105,18 @@ export interface BarsPreviewProps {
 }
 
 export function BarsPreview({
-    decreaseFromLeft = true,
+    decreaseFromLeft = false,
     className = "",
     numBars,
 }: BarsPreviewProps = {}) {
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
     const decreaseFromLeftRef = React.useRef(decreaseFromLeft)
-    decreaseFromLeftRef.current = decreaseFromLeft
-    
     const numBarsRef = React.useRef(numBars)
-    numBarsRef.current = numBars
+
+    React.useEffect(() => {
+        decreaseFromLeftRef.current = decreaseFromLeft
+        numBarsRef.current = numBars
+    }, [decreaseFromLeft, numBars])
     
     React.useEffect(() => {
         const canvas = canvasRef.current

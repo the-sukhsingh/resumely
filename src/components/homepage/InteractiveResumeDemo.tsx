@@ -8,7 +8,7 @@ export default function InteractiveResumeDemo() {
   const [isTailored, setIsTailored] = useState(true);
 
   return (
-    <div className="w-full max-w-2xl mx-auto pt-6 text-left">
+    <div className="w-full max-w-2xl ml-auto pt-6 text-left">
       {/* Top Segmented Controls: Clean, borderless tactile switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-border/40">
         <div className="flex items-center gap-2">

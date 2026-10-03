@@ -12,35 +12,35 @@ export default function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <section className="mx-auto max-w-5xl px-6 pt-36 sm:pt-44 md:pt-48 pb-20 flex flex-col items-center justify-center text-center relative z-10">
-      {/* Upright Roman Headline (No italic per Hallmark) */}
+    <section className="mx-auto max-w-6xl px-6 pt-36 sm:pt-44 md:pt-48 pb-20 flex flex-col items-start text-left relative z-10">
+      {/* Upright Roman Headline (Left-aligned) */}
       <motion.h1
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-        className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.08] max-w-3xl"
+        className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.08] max-w-3xl text-left"
       >
         Optimize once.
         <br />
         <span className="text-muted-foreground font-normal">Apply everywhere.</span>
       </motion.h1>
 
-      {/* Outcome-led Subhead */}
+      {/* Outcome-led Subhead (Left-aligned) */}
       <motion.p
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
-        className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed mt-5"
+        className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed mt-5 text-left"
       >
         Keep one master record of your experience. Resumely automatically aligns your achievements to any job description and exports an ATS-compliant PDF in seconds.
       </motion.p>
 
-      {/* Primary & Secondary Action CTAs (Clean, No dev buttons) */}
+      {/* Primary & Secondary Action CTAs (Left-aligned) */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: 0.15, ease: [0.23, 1, 0.32, 1] }}
-        className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mt-8 w-full sm:w-auto"
+        className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3.5 mt-8 w-full sm:w-auto"
       >
         {user ? (
           <Button
@@ -78,14 +78,16 @@ export default function HeroSection() {
         </Button>
       </motion.div>
 
-      {/* Clean & Minimal Editorial Alignment Specimen (Zero Cards, Zero Box Borders) */}
+      {/* Clean & Minimal Editorial Alignment Specimen (Shifted a bit to the right) */}
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.22, ease: [0.23, 1, 0.32, 1] }}
-        className="w-full mt-14 sm:mt-16"
+        className="w-full mt-14 sm:mt-16 flex justify-end"
       >
-        <InteractiveResumeDemo />
+        <div className="w-full max-w-2xl lg:max-w-3xl ml-auto sm:translate-x-2 md:translate-x-6 lg:translate-x-10">
+          <InteractiveResumeDemo />
+        </div>
       </motion.div>
     </section>
   );
