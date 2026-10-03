@@ -105,70 +105,65 @@ const RUBRIC_CRITERIA: RubricCriterion[] = [
   },
 ];
 
-interface SculptorPreset {
+interface TrackedJob {
   id: string;
-  tabLabel: string;
-  tabWidth: number;
-  rawVerb: string;
-  rawMetric: string;
-  sculptedVerb: string;
-  sculptedScope: string;
-  sculptedMetric: string;
-  peakLabel: string;
-  amplitudeGain: string;
-  sculptedCurve: string;
-  peakX: number;
-  peakY: number;
+  company: string;
+  role: string;
+  version: string;
+  stageIndex: number; // 0 to 4
+  stageLabel: string;
+  sla: string;
+  badgeWidth: number;
 }
 
-const SCULPTOR_PRESETS: SculptorPreset[] = [
+const PIPELINE_STAGES = [
+  { label: "APPLIED", x: 190 },
+  { label: "SCREEN", x: 242 },
+  { label: "TECH", x: 295 },
+  { label: "ONSITE", x: 348 },
+  { label: "OFFER", x: 400 },
+];
+
+const TRACKED_JOBS: TrackedJob[] = [
   {
-    id: "latency",
-    tabLabel: "P99 SLA",
-    tabWidth: 78,
-    rawVerb: "HELPED WITH",
-    rawMetric: "MISSING",
-    sculptedVerb: "ARCHITECTED",
-    sculptedScope: "100M+ QPS",
-    sculptedMetric: "+42% SLA",
-    peakLabel: "PEAK: +42% SLA",
-    amplitudeGain: "+3.8X IMPACT",
-    sculptedCurve:
-      "M 235 115 L 275 115 C 295 115, 305 48, 335 48 C 365 48, 385 162, 415 162 C 435 162, 445 115, 475 115 L 532 115",
-    peakX: 335,
-    peakY: 48,
+    id: "stripe",
+    company: "STRIPE",
+    role: "Staff Systems",
+    version: "v4.2-tailored",
+    stageIndex: 2,
+    stageLabel: "03 / TECHNICAL",
+    sla: "Loop in 2d",
+    badgeWidth: 104,
   },
   {
-    id: "scale",
-    tabLabel: "FLEET SCALE",
-    tabWidth: 74,
-    rawVerb: "MAINTAINED",
-    rawMetric: "ROUTINE",
-    sculptedVerb: "ORCHESTRATED",
-    sculptedScope: "14 REGIONS",
-    sculptedMetric: "99.99% UP",
-    peakLabel: "PEAK: 99.99% UP",
-    amplitudeGain: "+4.4X IMPACT",
-    sculptedCurve:
-      "M 235 115 L 270 115 C 290 115, 300 44, 335 44 C 370 44, 390 166, 420 166 C 440 166, 450 115, 480 115 L 532 115",
-    peakX: 335,
-    peakY: 44,
+    id: "linear",
+    company: "LINEAR",
+    role: "Platform Lead",
+    version: "v2.1-tailored",
+    stageIndex: 4,
+    stageLabel: "05 / OFFER",
+    sla: "Reviewing terms",
+    badgeWidth: 98,
   },
   {
-    id: "cost",
-    tabLabel: "CLOUD OPEX",
-    tabWidth: 70,
-    rawVerb: "REDUCED BILL",
-    rawMetric: "ESTIMATED",
-    sculptedVerb: "ELIMINATED",
-    sculptedScope: "eBPF ENGINE",
-    sculptedMetric: "-$180K/YR",
-    peakLabel: "PEAK: -$180K/YR",
-    amplitudeGain: "+3.2X IMPACT",
-    sculptedCurve:
-      "M 235 115 L 280 115 C 300 115, 310 52, 335 52 C 365 52, 385 158, 415 158 C 435 158, 445 115, 475 115 L 532 115",
-    peakX: 335,
-    peakY: 52,
+    id: "vercel",
+    company: "VERCEL",
+    role: "Core Infra",
+    version: "v3.0-tailored",
+    stageIndex: 1,
+    stageLabel: "02 / SCREEN",
+    sla: "Call scheduled",
+    badgeWidth: 100,
+  },
+  {
+    id: "anthropic",
+    company: "ANTHROPIC",
+    role: "Distributed AI",
+    version: "v5.1-tailored",
+    stageIndex: 3,
+    stageLabel: "04 / ONSITE",
+    sla: "Debrief pending",
+    badgeWidth: 102,
   },
 ];
 
@@ -181,10 +176,9 @@ export default function FeatureSection() {
   const [hoveredRubric, setHoveredRubric] = useState<number | null>(null);
   const selectedRubric = hoveredRubric !== null ? hoveredRubric : activeRubric;
 
-  const [activePreset, setActivePreset] = useState<number>(0);
-  const [hoveredPreset, setHoveredPreset] = useState<number | null>(null);
-  const selectedPresetIndex = hoveredPreset !== null ? hoveredPreset : activePreset;
-  const currentPreset = SCULPTOR_PRESETS[selectedPresetIndex];
+  const [activeJob, setActiveJob] = useState<number>(0);
+  const [hoveredJob, setHoveredJob] = useState<number | null>(null);
+  const selectedJob = hoveredJob !== null ? hoveredJob : activeJob;
 
   return (
     <section id="features" className="mx-auto px-6 py-24 md:py-32 relative z-10 max-w-6xl">
@@ -636,40 +630,40 @@ export default function FeatureSection() {
         </div>
 
         {/* =========================================================================
-            FEATURE 03: Conversational Copilot
-            Illustration: The Signal Sculptor (Amber Duo-Shade, Borderless)
+            FEATURE 03: Job Application Pipeline Tracking
+            Illustration: Real-time Application State Machine & Lifecycle Telemetry
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
           <div className="lg:col-span-5 text-left">
             <div className="font-mono text-xs font-semibold tracking-wider text-amber-600 dark:text-amber-400 uppercase mb-3">
-              03 / Editorial AI Copilot
+              03 / Application Lifecycle Tracker
             </div>
             <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-4 leading-tight">
-              Tighten passive drafts into executive directives
+              Track every application from submission to signed offer
             </h3>
             <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
-              Transform fuzzy duty descriptions into sharp, quantified impact bullets. Chat directly with your draft to elevate verb strength, specify architecture scale, and calibrate seniority from IC to leadership.
+              Never wonder which resume variant you sent or when to follow up. Resumely tracks your entire pipeline with linked tailored versions, real-time interview stage progression, and proactive response timelines.
             </p>
 
             {/* Micro-Specifications */}
             <div className="space-y-3 pt-4 border-t border-border/40 font-mono text-xs">
               <div className="flex items-center justify-between text-muted-foreground">
-                <span className="text-foreground font-medium">Quantified Impact Scoring</span>
-                <span>Surfaces missing metrics automatically</span>
+                <span className="text-foreground font-medium">Version-Linked Records</span>
+                <span>Exact tailored PDF preserved per application</span>
               </div>
               <div className="flex items-center justify-between text-muted-foreground">
-                <span className="text-foreground font-medium">Active Verb Calibration</span>
-                <span>Replaces passive phrasing with action</span>
+                <span className="text-foreground font-medium">5-Stage Pipeline Tracking</span>
+                <span>Applied · Screen · Technical · Onsite · Offer</span>
               </div>
               <div className="flex items-center justify-between text-muted-foreground">
-                <span className="text-foreground font-medium">Seniority Calibration</span>
-                <span>Re-levels bullets for staff+ roles</span>
+                <span className="text-foreground font-medium">Proactive Follow-up SLAs</span>
+                <span>Automated prompts before recruiter ghosting</span>
               </div>
             </div>
           </div>
 
-          {/* Borderless Geometric Illustration: The Redesigned Signal Sculptor */}
+          {/* Borderless Geometric Illustration: The Application Lifecycle Matrix */}
           <div className="lg:col-span-7 flex items-center justify-center py-4">
             <svg
               viewBox="0 0 560 220"
@@ -677,311 +671,226 @@ export default function FeatureSection() {
               xmlns="http://www.w3.org/2000/svg"
               className="w-full h-auto max-w-lg select-none"
             >
-              {/* Header Row: Engine Label + Preset Tabs + Live Gain Telemetry */}
+              {/* Header Row: Title + Telemetry Beacon */}
               <text x="28" y="21" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-semibold tracking-wider">
-                SIGNAL SCULPTOR
+                JOB PIPELINE TRACKER
+              </text>
+              <text x="180" y="21" className="fill-muted-foreground/50 text-[9px] font-mono">
+                LIFECYCLE TELEMETRY
               </text>
 
-              {/* Mode Selector Tabs inside SVG */}
-              {SCULPTOR_PRESETS.map((p, idx) => {
-                const isActive = selectedPresetIndex === idx;
-                const isHovered = hoveredPreset === idx;
-                // Compute X offset for tabs: Tab 0 at 214, Tab 1 at 296, Tab 2 at 374
-                const tabX = idx === 0 ? 214 : idx === 1 ? 296 : 374;
+              {/* Active Pipeline Status Beacon */}
+              <circle cx="462" cy="18" r="3" className="fill-amber-500">
+                <animate attributeName="r" values="2.5;4;2.5" dur="2s" repeatCount="indefinite" />
+              </circle>
+              <text x="472" y="21" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-bold tracking-tight">
+                4 ACTIVE
+              </text>
+
+              {/* Header Hairline Divider */}
+              <line x1="28" y1="32" x2="532" y2="32" stroke="currentColor" strokeOpacity="0.06" strokeWidth="1" />
+
+              {/* Stage Column Guide Labels at Top */}
+              {PIPELINE_STAGES.map((st) => (
+                <text
+                  key={st.label}
+                  x={st.x}
+                  y="45"
+                  textAnchor="middle"
+                  className="text-[8px] font-mono fill-muted-foreground/50 tracking-wider"
+                >
+                  {st.label}
+                </text>
+              ))}
+
+              {/* Vertical Subtle Stage Grid Lines */}
+              {PIPELINE_STAGES.map((st) => (
+                <line
+                  key={`grid-${st.label}`}
+                  x1={st.x}
+                  y1="50"
+                  x2={st.x}
+                  y2="202"
+                  stroke="currentColor"
+                  strokeOpacity="0.03"
+                  strokeWidth="1"
+                  strokeDasharray="2 3"
+                />
+              ))}
+
+              {/* 4 Interactive Tracked Application Rows */}
+              {TRACKED_JOBS.map((job, idx) => {
+                const y = 68 + idx * 38;
+                const isActive = selectedJob === idx;
+                const isHovered = hoveredJob === idx;
+                const filledX = PIPELINE_STAGES[job.stageIndex].x;
+                const badgeX = 422;
 
                 return (
                   <g
-                    key={p.id}
+                    key={job.id}
                     className="cursor-pointer"
-                    onMouseEnter={() => setHoveredPreset(idx)}
-                    onMouseLeave={() => setHoveredPreset(null)}
-                    onClick={() => setActivePreset(idx)}
+                    onMouseEnter={() => setHoveredJob(idx)}
+                    onMouseLeave={() => setHoveredJob(null)}
+                    onClick={() => setActiveJob(idx)}
                   >
-                    <rect
-                      x={tabX}
-                      y="8"
-                      width={p.tabWidth}
-                      height="20"
-                      rx="4"
-                      className={`transition-colors duration-200 ${
-                        isActive
-                          ? "fill-amber-600 dark:fill-amber-500"
-                          : isHovered
-                          ? "fill-amber-500/20 dark:fill-amber-500/25"
-                          : "fill-amber-500/10 dark:fill-amber-500/15"
-                      }`}
-                    />
+                    {/* Transparent Clickable Row Hit Target */}
+                    <rect x="20" y={y - 14} width="520" height="34" fill="transparent" />
+
+                    {/* Company & Role Column on Left */}
                     <text
-                      x={tabX + p.tabWidth / 2}
-                      y="18"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className={`text-[9px] font-mono select-none transition-colors duration-200 ${
+                      x="28"
+                      y={y - 1}
+                      className={`text-[11px] font-mono transition-colors duration-200 ${
                         isActive
-                          ? "fill-white font-bold"
-                          : "fill-amber-700 dark:fill-amber-300 font-medium"
+                          ? "fill-foreground font-bold"
+                          : isHovered
+                          ? "fill-foreground/90 font-medium"
+                          : "fill-foreground/75 font-normal"
                       }`}
                     >
-                      {p.tabLabel}
+                      {job.company}
                     </text>
+                    <text x="28" y={y + 13} className="text-[9px] font-mono fill-muted-foreground/60">
+                      {job.role} · {job.version}
+                    </text>
+
+                    {/* Background Progress Rail */}
+                    <line
+                      x1="190"
+                      y1={y + 4}
+                      x2="400"
+                      y2={y + 4}
+                      stroke="currentColor"
+                      strokeOpacity="0.08"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    />
+
+                    {/* Filled Stage Progression Bar */}
+                    <line
+                      x1="190"
+                      y1={y + 4}
+                      x2={filledX}
+                      y2={y + 4}
+                      className={`transition-all duration-200 ${
+                        isActive
+                          ? "stroke-amber-600 dark:stroke-amber-400 stroke-[3px]"
+                          : isHovered
+                          ? "stroke-amber-500/80 stroke-[2.5px]"
+                          : "stroke-amber-500/50 stroke-[2px]"
+                      }`}
+                      strokeLinecap="round"
+                    />
+
+                    {/* Ambient Stage Traveling Pulse */}
+                    <circle r="2" className="fill-amber-400">
+                      <animateMotion
+                        path={`M 190 ${y + 4} L ${filledX} ${y + 4}`}
+                        dur="2.4s"
+                        repeatCount="indefinite"
+                        begin={`${idx * 0.4}s`}
+                      />
+                    </circle>
+
+                    {/* 5 Stage Checkpoint Nodes */}
+                    {PIPELINE_STAGES.map((st, sIdx) => {
+                      const isCompleted = sIdx < job.stageIndex;
+                      const isCurrent = sIdx === job.stageIndex;
+
+                      if (isCurrent) {
+                        return (
+                          <g key={st.label}>
+                            <circle cx={st.x} cy={y + 4} r="5" className="fill-amber-500/20">
+                              <animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" />
+                            </circle>
+                            <circle
+                              cx={st.x}
+                              cy={y + 4}
+                              r={isActive ? 3.5 : 3}
+                              className="fill-amber-600 dark:fill-amber-400"
+                            />
+                          </g>
+                        );
+                      }
+
+                      if (isCompleted) {
+                        return (
+                          <circle
+                            key={st.label}
+                            cx={st.x}
+                            cy={y + 4}
+                            r="2.5"
+                            className="fill-amber-500/70"
+                          />
+                        );
+                      }
+
+                      return (
+                        <circle
+                          key={st.label}
+                          cx={st.x}
+                          cy={y + 4}
+                          r="2"
+                          stroke="currentColor"
+                          strokeOpacity="0.2"
+                          fill="none"
+                        />
+                      );
+                    })}
+
+                    {/* Status Badge Pill with Generous Symmetrical Padding */}
+                    <g
+                      transform={isActive ? "translate(3, 0)" : "translate(0, 0)"}
+                      style={{ transition: "transform 200ms cubic-bezier(0.23, 1, 0.32, 1)" }}
+                    >
+                      <rect
+                        x={badgeX}
+                        y={y - 8}
+                        width={job.badgeWidth}
+                        height="24"
+                        rx="5"
+                        className={`transition-colors duration-200 ${
+                          isActive
+                            ? "fill-amber-600 dark:fill-amber-500"
+                            : isHovered
+                            ? "fill-amber-500/20 dark:fill-amber-500/25"
+                            : "fill-amber-500/10 dark:fill-amber-500/15"
+                        }`}
+                      />
+                      <text
+                        x={badgeX + job.badgeWidth / 2}
+                        y={y + 4}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        className={`text-[9.5px] font-mono select-none transition-colors duration-200 ${
+                          isActive
+                            ? "fill-white font-bold"
+                            : "fill-amber-700 dark:fill-amber-300 font-semibold"
+                        }`}
+                      >
+                        {job.stageLabel}
+                      </text>
+                    </g>
                   </g>
                 );
               })}
 
-              {/* Live Telemetry Gain Indicator on Right */}
-              <circle cx="470" cy="18" r="3" className="fill-amber-500">
-                <animate attributeName="r" values="2.5;4;2.5" dur="2s" repeatCount="indefinite" />
-              </circle>
-              <text x="480" y="21" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-bold tracking-tight">
-                {currentPreset.amplitudeGain}
-              </text>
-
-              {/* Header Hairline Divider */}
-              <line x1="28" y1="33" x2="532" y2="33" stroke="currentColor" strokeOpacity="0.06" strokeWidth="1" />
-
-              {/* Continuous Baseline Reference Axis */}
-              <line x1="28" y1="115" x2="532" y2="115" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
-
-              {/* -------------------------------------------------------------
-                  LEFT CHAMBER: Raw Input (Diffuse & Passive)
-                 ------------------------------------------------------------- */}
-              <text x="28" y="49" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
-                INPUT: DIFFUSE &amp; PASSIVE
-              </text>
-              <text x="28" y="61" className="fill-muted-foreground/40 text-[8px] font-mono">
-                SIGNAL: UNCALIBRATED (18%)
-              </text>
-
-              {/* Multi-harmonic diffuse interference waves */}
-              <path
-                d="M 28 115 Q 80 85 130 115 T 235 115"
-                className="stroke-amber-400/40 dark:stroke-amber-400/30"
+              {/* Sweeping Timeline Scanner Beam (Continuous Ambient Motion) */}
+              <line
+                y1="36"
+                y2="202"
+                className="stroke-amber-500/25 dark:stroke-amber-400/25"
                 strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 28 115 Q 80 145 130 115 T 235 115"
-                className="stroke-amber-400/25"
-                strokeWidth="1"
                 strokeDasharray="3 3"
-              />
-              <path
-                d="M 28 115 Q 65 100 100 115 T 170 115 T 235 115"
-                className="stroke-amber-400/15"
-                strokeWidth="1"
-              />
-
-              {/* Traveling Diffuse Waveform Particles */}
-              <circle r="2" className="fill-amber-400/70">
-                <animateMotion
-                  path="M 28 115 Q 80 85 130 115 T 235 115"
-                  dur="3.4s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle r="1.5" className="fill-amber-400/50">
-                <animateMotion
-                  path="M 28 115 Q 80 145 130 115 T 235 115"
-                  dur="4.2s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-
-              {/* Left Chamber Label & Input Pills */}
-              <text x="28" y="156" className="fill-muted-foreground/50 text-[8.5px] font-mono tracking-wider">
-                UNSTRUCTURED DRAFT
-              </text>
-
-              {/* Raw Verb Pill */}
-              <rect x="28" y="166" width="94" height="24" rx="5" className="fill-muted/50 dark:fill-muted/20" />
-              <text
-                x={28 + 47}
-                y={178}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="text-[9px] font-mono select-none fill-muted-foreground font-medium"
               >
-                &ldquo;{currentPreset.rawVerb}&rdquo;
-              </text>
-
-              {/* Raw Metric Pill */}
-              <rect x="128" y="166" width="92" height="24" rx="5" className="fill-muted/40 dark:fill-muted/15" />
-              <text
-                x={128 + 46}
-                y={178}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="text-[9px] font-mono select-none fill-muted-foreground/80 font-medium"
-              >
-                METRIC: 0.0%
-              </text>
-
-              {/* -------------------------------------------------------------
-                  CENTER APERTURE: Editorial Semantic Filter Axis
-                 ------------------------------------------------------------- */}
-              <line
-                x1="235"
-                y1="38"
-                x2="235"
-                y2="200"
-                className="stroke-amber-500/30"
-                strokeWidth="1"
-                strokeDasharray="2 3"
-              />
-
-              {/* Precision Calibration Ticks on Center Axis */}
-              <line x1="231" y1="78" x2="239" y2="78" className="stroke-amber-500/40" strokeWidth="1" />
-              <line x1="231" y1="152" x2="239" y2="152" className="stroke-amber-500/40" strokeWidth="1" />
-
-              {/* Focal Lens Aperture Rings */}
-              <circle cx="235" cy="115" r="14" className="fill-amber-500/10 dark:fill-amber-500/20">
-                <animate attributeName="r" values="11;15;11" dur="2.8s" repeatCount="indefinite" />
+                <animate attributeName="x1" values="190;400;190" dur="4.6s" repeatCount="indefinite" />
+                <animate attributeName="x2" values="190;400;190" dur="4.6s" repeatCount="indefinite" />
+              </line>
+              <circle r="3" className="fill-amber-500/80">
+                <animate attributeName="cx" values="190;400;190" dur="4.6s" repeatCount="indefinite" />
+                <animate attributeName="cy" values="36;202;36" dur="4.6s" repeatCount="indefinite" />
               </circle>
-              <circle cx="235" cy="115" r="6" className="fill-amber-500/25" />
-              <circle cx="235" cy="115" r="2.5" className="fill-amber-600 dark:fill-amber-400" />
-              <text x="235" y="212" textAnchor="middle" className="text-[8px] font-mono fill-muted-foreground/40 tracking-widest">
-                APERTURE
-              </text>
-
-              {/* -------------------------------------------------------------
-                  RIGHT CHAMBER: Sculpted Executive Directive Impulse
-                 ------------------------------------------------------------- */}
-              {/* Second Harmonic Ghost Curve */}
-              <path
-                d={currentPreset.sculptedCurve}
-                className="stroke-amber-500/20 stroke-[1.5px] [stroke-dasharray:3_3]"
-                transform="translate(0, 3)"
-              />
-
-              {/* Primary Sculpted High-Amplitude Waveform */}
-              <path
-                d={currentPreset.sculptedCurve}
-                className="stroke-amber-600 dark:stroke-amber-400 stroke-[2.5px]"
-                strokeLinecap="round"
-              />
-
-              {/* High-Energy Traveling Signal Pulse */}
-              <circle r="3" className="fill-amber-500">
-                <animateMotion
-                  path={currentPreset.sculptedCurve}
-                  dur="2.6s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-
-              {/* Peak Measurement Indicator Guide & Beacon */}
-              <line
-                x1={currentPreset.peakX}
-                y1={currentPreset.peakY}
-                x2={currentPreset.peakX}
-                y2="115"
-                className="stroke-amber-500/35"
-                strokeWidth="1"
-                strokeDasharray="2 2"
-              />
-              <circle cx={currentPreset.peakX} cy={currentPreset.peakY} r="7" className="fill-amber-500/15">
-                <animate attributeName="r" values="5;9;5" dur="2.2s" repeatCount="indefinite" />
-              </circle>
-              <circle cx={currentPreset.peakX} cy={currentPreset.peakY} r="3" className="fill-amber-600 dark:fill-amber-400" />
-
-              {/* Peak Dimension Callout Bracket */}
-              <line
-                x1={currentPreset.peakX}
-                y1={currentPreset.peakY}
-                x2={currentPreset.peakX + 14}
-                y2="48"
-                className="stroke-amber-500/40"
-                strokeWidth="1"
-              />
-
-              {/* Peak Impact Badge Pill (Zero Overlap, Generous Padding) */}
-              <g
-                transform="translate(0, 0)"
-                style={{ transition: "transform 200ms cubic-bezier(0.23, 1, 0.32, 1)" }}
-              >
-                <rect
-                  x={currentPreset.peakX + 14}
-                  y="38"
-                  width="100"
-                  height="20"
-                  rx="4"
-                  className="fill-amber-500/10 dark:fill-amber-500/20"
-                />
-                <text
-                  x={currentPreset.peakX + 14 + 50}
-                  y="48"
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="text-[9px] font-mono select-none fill-amber-700 dark:fill-amber-300 font-bold tracking-tight"
-                >
-                  {currentPreset.peakLabel}
-                </text>
-              </g>
-
-              {/* Executive Directive Label */}
-              <text x="260" y="156" className="fill-amber-600 dark:fill-amber-400 text-[8.5px] font-mono font-medium tracking-wider">
-                QUANTIFIED DIRECTIVE
-              </text>
-
-              {/* Calibrated Executive Output Pills */}
-              <g>
-                {/* Active Executive Verb Pill */}
-                <rect
-                  x="260"
-                  y="166"
-                  width="98"
-                  height="24"
-                  rx="5"
-                  className="fill-amber-600 dark:fill-amber-500"
-                />
-                <text
-                  x={260 + 49}
-                  y={178}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="text-[9.5px] font-mono select-none fill-white font-bold"
-                >
-                  {currentPreset.sculptedVerb}
-                </text>
-
-                {/* Scope Pill */}
-                <rect
-                  x="364"
-                  y="166"
-                  width="86"
-                  height="24"
-                  rx="5"
-                  className="fill-amber-500/15 dark:fill-amber-500/25"
-                />
-                <text
-                  x={364 + 43}
-                  y={178}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="text-[9px] font-mono select-none fill-amber-700 dark:fill-amber-300 font-semibold"
-                >
-                  {currentPreset.sculptedScope}
-                </text>
-
-                {/* Quantified Metric Pill */}
-                <rect
-                  x="456"
-                  y="166"
-                  width="76"
-                  height="24"
-                  rx="5"
-                  className="fill-amber-500/10 dark:fill-amber-500/20"
-                />
-                <text
-                  x={456 + 38}
-                  y={178}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="text-[9px] font-mono select-none fill-amber-700 dark:fill-amber-300 font-bold"
-                >
-                  {currentPreset.sculptedMetric}
-                </text>
-              </g>
             </svg>
           </div>
         </div>
