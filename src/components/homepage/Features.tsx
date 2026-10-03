@@ -54,98 +54,140 @@ export default function FeatureSection() {
             </div>
           </div>
 
-          {/* Borderless Geometric Illustration: The Convergence Horizon (Zero Icons) */}
+          {/* Borderless Geometric Illustration: The Branched Master Ledger (Flipped, with Tags, Zero Icons) */}
           <div className="lg:col-span-7 flex items-center justify-center py-4">
             <svg
-              viewBox="0 0 480 220"
+              viewBox="0 0 520 220"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               className="w-full h-auto max-w-lg select-none"
             >
               {/* Background Architectural Grid Lines */}
-              <line x1="40" y1="30" x2="440" y2="30" stroke="currentColor" strokeOpacity="0.05" strokeWidth="1" strokeDasharray="3 4" />
-              <line x1="40" y1="110" x2="440" y2="110" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
-              <line x1="40" y1="190" x2="440" y2="190" stroke="currentColor" strokeOpacity="0.05" strokeWidth="1" strokeDasharray="3 4" />
+              <line x1="30" y1="36" x2="490" y2="36" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" strokeDasharray="3 4" />
+              <line x1="30" y1="110" x2="490" y2="110" stroke="currentColor" strokeOpacity="0.06" strokeWidth="1" />
+              <line x1="30" y1="184" x2="490" y2="184" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" strokeDasharray="3 4" />
 
-              <line x1="80" y1="20" x2="80" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
-              <line x1="240" y1="20" x2="240" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
-              <line x1="360" y1="20" x2="360" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
+              <line x1="160" y1="20" x2="160" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
+              <line x1="295" y1="20" x2="295" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
 
-              {/* Stream 1: Top Branch */}
-              <path
-                d="M 50 40 C 150 40, 200 110, 300 110"
-                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Stream 2: Upper Mid */}
-              <path
-                d="M 50 75 C 160 75, 210 110, 300 110"
-                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Stream 3: Center Direct Axis */}
+              {/* Left Side: Single Unified Master Ledger Trunk */}
               <line
-                x1="50"
+                x1="40"
                 y1="110"
-                x2="300"
-                y2="110"
-                className="stroke-indigo-500/60 dark:stroke-indigo-400/60"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Stream 4: Lower Mid */}
-              <path
-                d="M 50 145 C 160 145, 210 110, 300 110"
-                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Stream 5: Bottom Branch */}
-              <path
-                d="M 50 180 C 150 180, 200 110, 300 110"
-                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-
-              {/* Input Nodes along Left Coordinates */}
-              <circle cx="50" cy="40" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-              <circle cx="50" cy="75" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-              <circle cx="50" cy="110" r="3.5" className="fill-background stroke-indigo-500" strokeWidth="2" />
-              <circle cx="50" cy="145" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-              <circle cx="50" cy="180" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
-
-              {/* Harmonic Convergence Core */}
-              <circle cx="300" cy="110" r="14" className="fill-indigo-500/10 dark:fill-indigo-500/20" />
-              <circle cx="300" cy="110" r="7" className="fill-indigo-500/30" />
-              <circle cx="300" cy="110" r="3" className="fill-indigo-600 dark:fill-indigo-400" />
-
-              {/* Unified Durable Horizon Trunk */}
-              <line
-                x1="300"
-                y1="110"
-                x2="430"
+                x2="160"
                 y2="110"
                 className="stroke-indigo-600 dark:stroke-indigo-400"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
 
-              {/* Architectural Ticks on Unified Trunk */}
-              <line x1="330" y1="104" x2="330" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
-              <line x1="360" y1="102" x2="360" y2="118" className="stroke-indigo-500/70" strokeWidth="1.5" />
-              <line x1="390" y1="104" x2="390" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
-              <line x1="420" y1="106" x2="420" y2="114" className="stroke-indigo-500/40" strokeWidth="1.5" />
+              {/* Precision Measurement Ticks along Master Trunk */}
+              <line x1="60" y1="104" x2="60" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
+              <line x1="85" y1="102" x2="85" y2="118" className="stroke-indigo-500/70" strokeWidth="1.5" />
+              <line x1="110" y1="100" x2="110" y2="120" className="stroke-indigo-600 dark:stroke-indigo-400" strokeWidth="1.5" />
+              <line x1="135" y1="104" x2="135" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
 
-              {/* Clean Typography Annotations */}
-              <text x="50" y="22" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
-                DISTRIBUTED CAREER INPUTS [5]
+              {/* Master Trunk Annotations on Left */}
+              <text x="40" y="88" className="fill-indigo-600 dark:fill-indigo-400 text-[10px] font-mono font-semibold tracking-wider">
+                MASTER RECORD
               </text>
-              <text x="315" y="95" className="fill-indigo-600 dark:fill-indigo-400 text-[10px] font-mono font-semibold tracking-wider">
-                UNIFIED BASELINE
+              <text x="40" y="136" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                SINGLE SOURCE
               </text>
+
+              {/* Branching Hub Core */}
+              <circle cx="160" cy="110" r="14" className="fill-indigo-500/10 dark:fill-indigo-500/20" />
+              <circle cx="160" cy="110" r="7" className="fill-indigo-500/30" />
+              <circle cx="160" cy="110" r="3" className="fill-indigo-600 dark:fill-indigo-400" />
+
+              {/* 5 Fanning Out Tailored Branch Streams */}
+              {/* Branch 1: Staff Systems */}
+              <path
+                d="M 160 110 C 215 110, 240 36, 295 36"
+                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Branch 2: Platform Lead */}
+              <path
+                d="M 160 110 C 215 110, 245 73, 295 73"
+                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Branch 3: Senior Backend (Active Core Axis) */}
+              <line
+                x1="160"
+                y1="110"
+                x2="295"
+                y2="110"
+                className="stroke-indigo-600 dark:stroke-indigo-400"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              {/* Branch 4: Infrastructure */}
+              <path
+                d="M 160 110 C 215 110, 245 147, 295 147"
+                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Branch 5: Cloud Core */}
+              <path
+                d="M 160 110 C 215 110, 240 184, 295 184"
+                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+
+              {/* Branch Endpoint Nodes */}
+              <circle cx="295" cy="36" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+              <circle cx="295" cy="73" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+              <circle cx="295" cy="110" r="3.5" className="fill-indigo-600 dark:fill-indigo-400" />
+              <circle cx="295" cy="147" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+              <circle cx="295" cy="184" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+
+              {/* Connecting Dashed Guides to Tags */}
+              <line x1="298" y1="36" x2="312" y2="36" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
+              <line x1="298" y1="73" x2="312" y2="73" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
+              <line x1="298" y1="110" x2="312" y2="110" className="stroke-indigo-600 dark:stroke-indigo-400" strokeWidth="1.5" />
+              <line x1="298" y1="147" x2="312" y2="147" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
+              <line x1="298" y1="184" x2="312" y2="184" className="stroke-indigo-400/40" strokeWidth="1" strokeDasharray="2 2" />
+
+              {/* Right Side: Tailored Output Tags Header */}
+              <text x="312" y="16" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                TAILORED TARGETS [5]
+              </text>
+
+              {/* Tag Row 1 */}
+              <rect x="312" y="25" width="86" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
+              <text x="320" y="40" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Staff Systems</text>
+              <rect x="404" y="25" width="46" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
+              <text x="412" y="40" className="fill-muted-foreground text-[9px] font-mono">eBPF</text>
+
+              {/* Tag Row 2 */}
+              <rect x="312" y="62" width="88" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
+              <text x="320" y="77" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Platform Lead</text>
+              <rect x="406" y="62" width="76" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
+              <text x="414" y="77" className="fill-muted-foreground text-[9px] font-mono">Kubernetes</text>
+
+              {/* Tag Row 3 (Active Highlight) */}
+              <rect x="312" y="99" width="96" height="22" rx="4" className="fill-indigo-600 dark:fill-indigo-500" />
+              <text x="320" y="114" className="fill-white text-[10px] font-mono font-semibold">Senior Backend</text>
+              <rect x="414" y="99" width="84" height="22" rx="4" className="fill-indigo-500/15 dark:fill-indigo-500/25" />
+              <text x="422" y="114" className="fill-indigo-700 dark:fill-indigo-300 text-[9px] font-mono font-semibold">Distributed Go</text>
+
+              {/* Tag Row 4 */}
+              <rect x="312" y="136" width="90" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
+              <text x="320" y="151" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Infrastructure</text>
+              <rect x="408" y="136" width="68" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
+              <text x="416" y="151" className="fill-muted-foreground text-[9px] font-mono">Terraform</text>
+
+              {/* Tag Row 5 */}
+              <rect x="312" y="173" width="76" height="22" rx="4" className="fill-indigo-500/10 dark:fill-indigo-500/15" />
+              <text x="320" y="188" className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-mono font-medium">Cloud Core</text>
+              <rect x="394" y="173" width="96" height="22" rx="4" className="fill-muted/60 dark:fill-muted/20" />
+              <text x="402" y="188" className="fill-muted-foreground text-[9px] font-mono">Zero-Downtime</text>
             </svg>
           </div>
         </div>
