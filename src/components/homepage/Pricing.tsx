@@ -6,10 +6,96 @@ import Heading from "./Heading";
 import { useAuth } from "@/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { Check, ShieldCheck, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-const PricingSection = () => {
+interface PricingTier {
+  id: "starter" | "active" | "pro";
+  name: string;
+  tag: string;
+  price: string;
+  credits: string;
+  rate: string;
+  isPopular?: boolean;
+  features: string[];
+  ctaText: string;
+}
+
+const PRICING_TIERS: PricingTier[] = [
+  {
+    id: "starter",
+    name: "STARTER",
+    tag: "OCCASIONAL SEARCH",
+    price: "₹99",
+    credits: "100 Non-Expiring Credits",
+    rate: "₹0.99 / credit",
+    features: [
+      "10 targeted resume exports",
+      "100 AI editing copilot messages",
+      "Instant ATS-clean PDF download",
+      "Credits never expire",
+    ],
+    ctaText: "Select Starter",
+  },
+  {
+    id: "active",
+    name: "ACTIVE SEEKER",
+    tag: "MOST POPULAR",
+    price: "₹299",
+    credits: "400 Non-Expiring Credits",
+    rate: "₹0.75 / credit",
+    isPopular: true,
+    features: [
+      "40 targeted resume exports",
+      "Up to 20 synchronized cover letters",
+      "Save 25% compared to Starter",
+      "Unlimited Master Ledger edits",
+    ],
+    ctaText: "Select Active Seeker",
+  },
+  {
+    id: "pro",
+    name: "PRO SCALE",
+    tag: "MAXIMUM VALUE",
+    price: "₹599",
+    credits: "1,000 Non-Expiring Credits",
+    rate: "₹0.59 / credit",
+    features: [
+      "100 targeted resume exports",
+      "Tailor for multiple distinct job tracks",
+      "Lowest per-credit rate (40% discount)",
+      "Priority parser throughput",
+    ],
+    ctaText: "Select Pro Scale",
+  },
+];
+
+const CREDIT_DEDUCTIONS = [
+  {
+    action: "Tailored resume generation",
+    detail: "Full JD analysis, semantic alignment & machine-parseable PDF output",
+    cost: "10 credits",
+    isFree: false,
+  },
+  {
+    action: "Synchronized cover letter",
+    detail: "Targeted narrative matching specific job rubric and verified metrics",
+    cost: "5 credits",
+    isFree: false,
+  },
+  {
+    action: "Interactive AI copilot message",
+    detail: "Refine phrasing, elevate verb strength, or calibrate seniority",
+    cost: "1 credit",
+    isFree: false,
+  },
+  {
+    action: "Master Profile updates & additions",
+    detail: "Add new roles, skills, metrics, and project records anytime",
+    cost: "Free",
+    isFree: true,
+  },
+];
+
+export default function PricingSection() {
   const { isAuthenticated } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<"starter" | "active" | "pro" | null>(null);
 
@@ -51,211 +137,138 @@ const PricingSection = () => {
   };
 
   return (
-    <section id="pricing" className="px-6 py-24 md:py-32 relative z-10 max-w-5xl mx-auto">
-      <div className="mb-14 md:mb-20 text-left">
+    <section id="pricing" className="px-6 py-24 md:py-32 relative z-10 max-w-6xl mx-auto">
+      {/* Section Header */}
+      <div className="mb-14 md:mb-20 max-w-2xl text-left">
+        <div className="font-mono text-xs font-semibold tracking-wider text-muted-foreground uppercase mb-3">
+          TRANSPARENT PRICING // NO SUBSCRIPTIONS
+        </div>
         <Heading as="h2" className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
           Pay per credit.
           <br />
-          <span className="text-muted-foreground font-normal">Never trapped in a subscription.</span>
+          <span className="text-muted-foreground font-normal">Never trapped in a recurring subscription.</span>
         </Heading>
-        <p className="text-base sm:text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
-          Job searches are temporary; recurring subscriptions shouldn't be. Buy credits once, use them at your own pace, and keep your unused balance forever.
+        <p className="text-base sm:text-lg text-muted-foreground mt-4 leading-relaxed">
+          Job searches are temporary; recurring subscriptions shouldn&apos;t be. Buy credits once, use them at your own pace, and keep your unused balance forever.
         </p>
       </div>
 
-      {/* Pricing Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-16 items-stretch">
-        {/* Starter Plan */}
-        <div className="rounded-2xl border border-border/70 bg-card/40 backdrop-blur-xs p-6 sm:p-8 flex flex-col justify-between hover:border-border transition-colors duration-200">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                STARTER
-              </span>
-              <span className="text-xs font-mono text-muted-foreground">₹0.99 / credit</span>
+      {/* Editorial 3-Column Pricing Grid (Zero Cards, Zero Box Borders) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 pt-8 border-t border-border/40 text-left items-stretch">
+        {PRICING_TIERS.map((tier, idx) => {
+          const isMiddle = tier.isPopular;
+
+          return (
+            <div
+              key={tier.id}
+              className={`flex flex-col justify-between pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-border/40 md:pl-8 first:border-l-0 first:pl-0 transition-colors duration-200`}
+            >
+              <div>
+                {/* Header Tag */}
+                <div className="flex items-center justify-between font-mono text-xs mb-4">
+                  <span
+                    className={`font-semibold tracking-wider uppercase ${
+                      isMiddle
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {tier.name}
+                  </span>
+                  <span
+                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                      isMiddle
+                        ? "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold"
+                        : "text-muted-foreground/60"
+                    }`}
+                  >
+                    {tier.tag}
+                  </span>
+                </div>
+
+                {/* Price Display */}
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+                    {tier.price}
+                  </span>
+                  <span className="font-mono text-xs text-muted-foreground">one-time</span>
+                </div>
+
+                {/* Subtitle & Rate */}
+                <div className="flex items-center justify-between font-mono text-xs text-muted-foreground/80 pb-5 mb-6 border-b border-border/40">
+                  <span className="font-medium text-foreground/80">{tier.credits}</span>
+                  <span className="text-[11px]">{tier.rate}</span>
+                </div>
+
+                {/* Specification Features List (Zero Icons, Pure Typography) */}
+                <div className="space-y-3 font-mono text-xs text-muted-foreground mb-8">
+                  {tier.features.map((feat, fIdx) => (
+                    <div key={fIdx} className="flex items-start gap-2.5">
+                      <span className="text-muted-foreground/40 shrink-0 select-none">—</span>
+                      <span className="leading-snug text-foreground/80">{feat}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Checkout Button */}
+              <div className="pt-4 border-t border-border/30">
+                <Button
+                  variant={isMiddle ? "default" : "outline"}
+                  className={`w-full rounded-md h-11 text-xs font-mono font-semibold tracking-wider uppercase transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+                    isMiddle
+                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      : "border-border/60 hover:border-foreground/40 hover:bg-muted/30 text-foreground"
+                  }`}
+                  onClick={() => handleCheckout(tier.id)}
+                  disabled={loadingPlan !== null}
+                >
+                  {loadingPlan === tier.id ? "Connecting..." : tier.ctaText}
+                </Button>
+              </div>
             </div>
-            <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-4xl font-bold tracking-tight text-foreground">₹99</span>
-              <span className="text-xs text-muted-foreground font-mono">one-time</span>
-            </div>
-            <p className="text-sm font-medium text-foreground/80 mb-6 pb-6 border-b border-border/50">
-              100 Non-Expiring Credits
-            </p>
-
-            <ul className="space-y-3 text-xs sm:text-sm text-muted-foreground mb-8">
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-emerald-500 shrink-0" />
-                <span>10 targeted resume exports</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-emerald-500 shrink-0" />
-                <span>Or 100 AI editing chat messages</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-emerald-500 shrink-0" />
-                <span>ATS PDF instant download</span>
-              </li>
-            </ul>
-          </div>
-
-          <Button
-            variant="outline"
-            className="w-full rounded-full h-11 text-sm font-semibold active:scale-[0.97] transition-all duration-150 cursor-pointer"
-            onClick={() => handleCheckout("starter")}
-            disabled={loadingPlan !== null}
-          >
-            {loadingPlan === "starter" ? "Connecting..." : "Select Starter"}
-          </Button>
-        </div>
-
-        {/* Popular Active Plan */}
-        <div className="relative rounded-2xl border border-foreground/30 bg-foreground text-background p-6 sm:p-8 flex flex-col justify-between shadow-2xl transition-all duration-200 md:-translate-y-2">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background text-foreground text-[10px] font-mono font-bold tracking-wider px-3 py-1 rounded-full border border-border shadow-xs uppercase">
-            Most Popular
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-background/70">
-                ACTIVE SEEKER
-              </span>
-              <span className="text-xs font-mono text-background/80 font-semibold">₹0.75 / credit</span>
-            </div>
-            <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-4xl font-bold tracking-tight text-background">₹299</span>
-              <span className="text-xs text-background/70 font-mono">one-time</span>
-            </div>
-            <p className="text-sm font-medium text-background/90 mb-6 pb-6 border-b border-background/20">
-              400 Non-Expiring Credits
-            </p>
-
-            <ul className="space-y-3 text-xs sm:text-sm text-background/90 mb-8">
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-background shrink-0" />
-                <span>40 targeted resume exports</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-background shrink-0" />
-                <span>Up to 20 synchronized cover letters</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-background shrink-0" />
-                <span>Save 25% compared to Starter</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-background shrink-0" />
-                <span>Unlimited Master Profile revisions</span>
-              </li>
-            </ul>
-          </div>
-
-          <Button
-            variant="secondary"
-            className="w-full rounded-full h-11 text-sm font-semibold bg-background text-foreground hover:bg-background/90 active:scale-[0.97] transition-all duration-150 cursor-pointer"
-            onClick={() => handleCheckout("active")}
-            disabled={loadingPlan !== null}
-          >
-            {loadingPlan === "active" ? "Connecting..." : "Select Active Seeker"}
-          </Button>
-        </div>
-
-        {/* Pro Plan */}
-        <div className="rounded-2xl border border-border/70 bg-card/40 backdrop-blur-xs p-6 sm:p-8 flex flex-col justify-between hover:border-border transition-colors duration-200">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                PRO SCALE
-              </span>
-              <span className="text-xs font-mono text-muted-foreground">₹0.59 / credit</span>
-            </div>
-            <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-4xl font-bold tracking-tight text-foreground">₹599</span>
-              <span className="text-xs text-muted-foreground font-mono">one-time</span>
-            </div>
-            <p className="text-sm font-medium text-foreground/80 mb-6 pb-6 border-b border-border/50">
-              1000 Non-Expiring Credits
-            </p>
-
-            <ul className="space-y-3 text-xs sm:text-sm text-muted-foreground mb-8">
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-emerald-500 shrink-0" />
-                <span>100 targeted resume exports</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-emerald-500 shrink-0" />
-                <span>Tailor for multiple distinct job tracks</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="size-4 text-emerald-500 shrink-0" />
-                <span>Lowest per-credit rate (40% discount)</span>
-              </li>
-            </ul>
-          </div>
-
-          <Button
-            variant="outline"
-            className="w-full rounded-full h-11 text-sm font-semibold active:scale-[0.97] transition-all duration-150 cursor-pointer"
-            onClick={() => handleCheckout("pro")}
-            disabled={loadingPlan !== null}
-          >
-            {loadingPlan === "pro" ? "Connecting..." : "Select Pro"}
-          </Button>
-        </div>
+          );
+        })}
       </div>
 
-      {/* Credit Consumption Transparency Table */}
-      <div className="rounded-2xl border border-border/70 overflow-hidden bg-card/30 backdrop-blur-xs max-w-2xl mx-auto">
-        <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-muted/20">
-          <div className="flex items-center gap-2">
-            <Zap className="size-4 text-primary" />
-            <span className="font-mono text-xs font-semibold text-foreground uppercase tracking-wider">
-              Transparent Credit Ledger
-            </span>
+      {/* Credit Consumption Schedule (Open Editorial Ledger, Zero Cards) */}
+      <div className="mt-16 pt-10 border-t border-border/40 text-left">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 font-mono text-xs mb-6">
+          <div className="font-semibold text-foreground uppercase tracking-wider">
+            TRANSPARENT CREDIT DEDUCTION SCHEDULE
           </div>
-          <span className="font-mono text-[11px] text-muted-foreground">No hidden charges</span>
+          <div className="text-muted-foreground/70 text-[11px]">
+            EXACT CONSUMPTION · NO HIDDEN DEDUCTIONS
+          </div>
         </div>
-        <table className="w-full text-xs sm:text-sm text-left">
-          <tbody className="divide-y divide-border/50">
-            <tr className="hover:bg-muted/10 transition-colors">
-              <td className="px-6 py-3.5 text-foreground font-medium">
-                Tailored resume generation
-                <span className="block text-xs text-muted-foreground">Full JD analysis, semantic alignment & PDF output</span>
-              </td>
-              <td className="px-6 py-3.5 text-right font-mono font-semibold text-foreground tabular-nums">
-                10 credits
-              </td>
-            </tr>
-            <tr className="hover:bg-muted/10 transition-colors">
-              <td className="px-6 py-3.5 text-foreground font-medium">
-                Synchronized cover letter
-                <span className="block text-xs text-muted-foreground">Aligned narrative matching target role and resume points</span>
-              </td>
-              <td className="px-6 py-3.5 text-right font-mono font-semibold text-foreground tabular-nums">
-                5 credits
-              </td>
-            </tr>
-            <tr className="hover:bg-muted/10 transition-colors">
-              <td className="px-6 py-3.5 text-foreground font-medium">
-                Interactive AI editing prompt
-                <span className="block text-xs text-muted-foreground">Refine phrasing, quantify metrics, or change voice</span>
-              </td>
-              <td className="px-6 py-3.5 text-right font-mono font-semibold text-foreground tabular-nums">
-                1 credit
-              </td>
-            </tr>
-            <tr className="hover:bg-muted/10 transition-colors">
-              <td className="px-6 py-3.5 text-foreground font-medium">
-                Master profile updates & edits
-                <span className="block text-xs text-muted-foreground">Add new jobs, skills, or projects anytime</span>
-              </td>
-              <td className="px-6 py-3.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                Free
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div className="border-t border-border/30 divide-y divide-border/30">
+          {CREDIT_DEDUCTIONS.map((row, idx) => (
+            <div
+              key={idx}
+              className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 hover:bg-muted/10 transition-colors"
+            >
+              <div>
+                <div className="text-sm font-medium text-foreground">
+                  {row.action}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {row.detail}
+                </div>
+              </div>
+              <div
+                className={`font-mono text-xs font-semibold tabular-nums sm:text-right shrink-0 ${
+                  row.isFree
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-foreground"
+                }`}
+              >
+                {row.cost}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
-};
-
-export default PricingSection;
+}
