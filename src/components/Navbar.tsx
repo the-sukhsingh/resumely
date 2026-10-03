@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { signIn, signOut } from "next-auth/react";
@@ -16,6 +17,17 @@ import AnimatedSwitcher from "./custom/animated-switcher";
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 15);
+        };
+        handleScroll();
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const links = [
         { href: "/resume", label: "Resumes", icon: FileText },
         { href: "/tracker", label: "Job Tracker", icon: Briefcase },
@@ -26,8 +38,13 @@ const Navbar = () => {
     }
 
     return (
-        <nav className={cn("fixed top-0 z-50 w-full",
-            pathname.match(/^\/resume\/[^/]+$/) ? "bg-background" : "bg-transparent"
+        <nav className={cn(
+            "fixed top-0 z-50 w-full transition-all duration-200",
+            pathname.match(/^\/resume\/[^/]+$/) 
+                ? "bg-background border-b border-border/50" 
+                : scrolled 
+                    ? "bg-background/80 backdrop-blur-md border-b border-border/40 shadow-xs" 
+                    : "bg-transparent border-b border-transparent"
         )}>
             <div className="max-w-5xl mx-auto px-6">
                 {/* Skip link for keyboard users */}

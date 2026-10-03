@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { cn } from "@/lib/utils"
 
 const FRAGMENT_SOURCE = `float hash21(vec2 p)
 {
@@ -18,19 +19,30 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     // Normalized screen uvs [0, 1]
     vec2 uv = fragCoord / iResolution.xy;
     
-    // 1. Create the Bar Columns (controlled from JS via )
+    // 1. Create the Bar Columns
     float numBars = uNumBars; 
-    // Multiply by bar count and floor to get a constant value for each bar width
-    float barID = floor(uv.x * numBars) / numBars;
+    float barIndex = floor(uv.x * numBars);
+    float barID = barIndex / numBars;
     
-    // 2. Create the V-Shape Logic
-    // Shift center to 0.0 so we can use abs() for symmetry
-    float centeredX = (barID - 0.5) * 2.0; 
-    float vShape = abs(centeredX); 
+    // 2. Stepped Height Logic:
+    // If uDecreaseFromLeft > 0.5:
+    //   Left bar (index = 0) has slope = 1.0 (highest)
+    //   Right bar (index = numBars - 1) has slope = 0.0 (lowest)
+    //   Heights decrease moving from left to right.
+    // Else:
+    //   Right bar (index = numBars - 1) has slope = 1.0 (highest)
+    //   Left bar (index = 0) has slope = 0.0 (lowest)
+    //   Heights decrease moving from right to left.
+    float normalizedBar = barIndex / max(numBars - 1.0, 1.0);
+    float barProgress = (uDecreaseFromLeft > 0.5)
+        ? (1.0 - normalizedBar)
+        : normalizedBar;
+    barProgress = clamp(barProgress, 0.0, 1.0);
     
     // 3. Define the Stepped Height
-    // The height of each bar increases as we move away from the center
-    float threshold = 0.2 + vShape * 0.6;
+    float minHeight = 0.18;
+    float maxHeight = 0.82;
+    float threshold = minHeight + barProgress * (maxHeight - minHeight);
 
     // Optional one-time height animation from a shared start height
     float animationProgress = ENABLE_REVEAL_ANIMATION
@@ -71,6 +83,7 @@ uniform vec2 iResolution;
 uniform float uNumBars;
 uniform float iTime;
 uniform vec4 iMouse;
+uniform float uDecreaseFromLeft;
 
 ${source}
 
@@ -81,10 +94,27 @@ void main() {
 }`
 }
 
-export function BarsPreview() {
+export interface BarsPreviewProps {
+    /**
+     * When true (default), bar heights decrease from left to right.
+     * When false, bar heights decrease from right to left.
+     */
+    decreaseFromLeft?: boolean;
+    className?: string;
+    numBars?: number;
+}
+
+export function BarsPreview({
+    decreaseFromLeft = true,
+    className = "",
+    numBars,
+}: BarsPreviewProps = {}) {
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
+    const decreaseFromLeftRef = React.useRef(decreaseFromLeft)
+    decreaseFromLeftRef.current = decreaseFromLeft
     
- 
+    const numBarsRef = React.useRef(numBars)
+    numBarsRef.current = numBars
     
     React.useEffect(() => {
         const canvas = canvasRef.current
@@ -92,7 +122,6 @@ export function BarsPreview() {
         
         const gl = canvas.getContext("webgl")
         if (!gl) return
-        
 
         const fragmentShader = buildFragmentShader(FRAGMENT_SOURCE)
         const program = gl.createProgram()
@@ -121,6 +150,7 @@ export function BarsPreview() {
         const iTime = gl.getUniformLocation(program, "iTime")
         const iMouse = gl.getUniformLocation(program, "iMouse")
         const uNumBars = gl.getUniformLocation(program, "uNumBars")
+        const uDecreaseFromLeft = gl.getUniformLocation(program, "uDecreaseFromLeft")
 
         const mouse = { x: 0, y: 0, prevX: 0, prevY: 0, initialized: false }
 
@@ -143,7 +173,7 @@ export function BarsPreview() {
             updateMouse(event)
         }
 
-        canvas.addEventListener("pointermove", onPointerMove)
+        window.addEventListener("pointermove", onPointerMove, { passive: true })
 
         let frameId = 0
         let resizeObserver: ResizeObserver | null = null
@@ -159,8 +189,11 @@ export function BarsPreview() {
                 gl.uniform2f(iResolution, canvas.width, canvas.height)
             }
             if (uNumBars) {
-                const bars = window.innerWidth < 768 ? 10.0 : 20.0
+                const bars = numBarsRef.current ?? (window.innerWidth < 768 ? 12.0 : 22.0)
                 gl.uniform1f(uNumBars, bars)
+            }
+            if (uDecreaseFromLeft) {
+                gl.uniform1f(uDecreaseFromLeft, decreaseFromLeftRef.current ? 1.0 : 0.0)
             }
         }
         resize()
@@ -176,6 +209,9 @@ export function BarsPreview() {
         const render = (now: number) => {
             gl.uniform2f(iResolution, canvas.width, canvas.height)
             gl.uniform1f(iTime, (now - start) / 1000)
+            if (uDecreaseFromLeft) {
+                gl.uniform1f(uDecreaseFromLeft, decreaseFromLeftRef.current ? 1.0 : 0.0)
+            }
             if (iMouse) {
                 gl.uniform4f(iMouse, mouse.x, mouse.y, mouse.prevX, mouse.prevY)
             }
@@ -189,7 +225,7 @@ export function BarsPreview() {
 
         return () => {
             cancelAnimationFrame(frameId)
-            canvas.removeEventListener("pointermove", onPointerMove)
+            window.removeEventListener("pointermove", onPointerMove)
             window.removeEventListener("resize", resize)
             if (resizeObserver) {
                 resizeObserver.disconnect()
@@ -201,5 +237,14 @@ export function BarsPreview() {
         }
     }, [])
 
-    return <canvas ref={canvasRef} className="h-full w-full rounded-2xl absolute inset-0 invert-100 contrast-100 dark:invert-0 transition-all ease-linear duration-50 z-10" />
+    return (
+        <canvas 
+            ref={canvasRef} 
+            className={cn(
+                "h-full w-full rounded-2xl absolute inset-0 pointer-events-none invert-100 contrast-100 dark:invert-0 transition-opacity ease-linear duration-300 z-0",
+                className
+            )} 
+        />
+    )
 }
+
