@@ -45,7 +45,7 @@ export default function FaqSection() {
   };
 
   return (
-    <section id="faq" className="px-6 py-24 md:py-32 relative z-10 max-w-6xl mx-auto">
+    <section id="faq" className="px-6 py-24 md:py-32 relative z-10 max-w-6xl mx-auto border-t border-border/40">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start text-left">
         {/* Left Sticky Header */}
         <div className="lg:col-span-4 lg:sticky lg:top-24">
@@ -62,13 +62,13 @@ export default function FaqSection() {
           </p>
         </div>
 
-        {/* Right Hairline Accordion List (Zero Cards, Zero Box Borders) */}
+        {/* Right Hairline Accordion List (Zero Cards, Smooth Grid-Rows Transition) */}
         <div className="lg:col-span-8 border-t border-border/40 divide-y divide-border/40">
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
 
             return (
-              <div key={faq.id} className="py-2">
+              <div key={faq.id} className="py-1">
                 <button
                   type="button"
                   onClick={() => toggleItem(idx)}
@@ -76,7 +76,7 @@ export default function FaqSection() {
                   aria-expanded={isOpen}
                 >
                   <div className="flex items-start gap-4">
-                    <span className="font-mono text-xs text-muted-foreground/60 mt-1 select-none">
+                    <span className="font-mono text-xs text-muted-foreground/50 mt-1 select-none">
                       {faq.id}
                     </span>
                     <span
@@ -90,12 +90,12 @@ export default function FaqSection() {
                     </span>
                   </div>
 
-                  {/* Minimal Vector Glyph Toggle (Pure SVG, Zero Icon Libraries) */}
+                  {/* Smooth Rotating Vector Glyph Toggle */}
                   <span
-                    className={`size-6 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-transform duration-200 ${
+                    className={`size-6 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
                       isOpen
-                        ? "rotate-45 text-foreground bg-muted/60"
-                        : "text-muted-foreground group-hover:text-foreground"
+                        ? "rotate-45 text-foreground bg-muted/70"
+                        : "text-muted-foreground/70 group-hover:text-foreground group-hover:bg-muted/30"
                     }`}
                   >
                     <svg
@@ -112,11 +112,18 @@ export default function FaqSection() {
                   </span>
                 </button>
 
-                {isOpen && (
-                  <div className="pl-8 md:pl-10 pb-6 pr-4 text-sm sm:text-base text-muted-foreground leading-relaxed animate-in fade-in-50 duration-200">
-                    {faq.a}
+                {/* CSS Grid-Rows Smooth Height & Opacity Transition */}
+                <div
+                  className={`grid transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="pl-8 md:pl-10 pb-6 pr-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+                      {faq.a}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

@@ -98,6 +98,7 @@ const CREDIT_DEDUCTIONS = [
 export default function PricingSection() {
   const { isAuthenticated } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<"starter" | "active" | "pro" | null>(null);
+  const [hoveredTier, setHoveredTier] = useState<string | null>(null);
 
   const handleCheckout = async (planType: "starter" | "active" | "pro") => {
     if (!isAuthenticated) {
@@ -137,7 +138,7 @@ export default function PricingSection() {
   };
 
   return (
-    <section id="pricing" className="px-6 py-24 md:py-32 relative z-10 max-w-6xl mx-auto">
+    <section id="pricing" className="px-6 py-24 md:py-32 relative z-10 max-w-6xl mx-auto border-t border-border/40">
       {/* Section Header */}
       <div className="mb-14 md:mb-20 max-w-2xl text-left">
         <div className="font-mono text-xs font-semibold tracking-wider text-muted-foreground uppercase mb-3">
@@ -155,19 +156,22 @@ export default function PricingSection() {
 
       {/* Editorial 3-Column Pricing Grid (Zero Cards, Zero Box Borders) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 pt-8 border-t border-border/40 text-left items-stretch">
-        {PRICING_TIERS.map((tier, idx) => {
+        {PRICING_TIERS.map((tier) => {
           const isMiddle = tier.isPopular;
+          const isHovered = hoveredTier === tier.id;
 
           return (
             <div
               key={tier.id}
-              className={`flex flex-col justify-between pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-border/40 md:pl-8 first:border-l-0 first:pl-0 transition-colors duration-200`}
+              onMouseEnter={() => setHoveredTier(tier.id)}
+              onMouseLeave={() => setHoveredTier(null)}
+              className="flex flex-col justify-between pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-border/40 md:pl-8 first:border-l-0 first:pl-0 transition-all duration-300"
             >
               <div>
                 {/* Header Tag */}
                 <div className="flex items-center justify-between font-mono text-xs mb-4">
                   <span
-                    className={`font-semibold tracking-wider uppercase ${
+                    className={`font-semibold tracking-wider uppercase transition-colors duration-200 ${
                       isMiddle
                         ? "text-indigo-600 dark:text-indigo-400"
                         : "text-muted-foreground"
@@ -176,7 +180,7 @@ export default function PricingSection() {
                     {tier.name}
                   </span>
                   <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                    className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full transition-colors duration-200 ${
                       isMiddle
                         ? "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold"
                         : "text-muted-foreground/60"
@@ -188,7 +192,7 @@ export default function PricingSection() {
 
                 {/* Price Display */}
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+                  <span className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground tabular-nums">
                     {tier.price}
                   </span>
                   <span className="font-mono text-xs text-muted-foreground">one-time</span>
@@ -201,11 +205,11 @@ export default function PricingSection() {
                 </div>
 
                 {/* Specification Features List (Zero Icons, Pure Typography) */}
-                <div className="space-y-3 font-mono text-xs text-muted-foreground mb-8">
+                <div className="space-y-3.5 font-mono text-xs text-muted-foreground mb-8">
                   {tier.features.map((feat, fIdx) => (
-                    <div key={fIdx} className="flex items-start gap-2.5">
-                      <span className="text-muted-foreground/40 shrink-0 select-none">—</span>
-                      <span className="leading-snug text-foreground/80">{feat}</span>
+                    <div key={fIdx} className="flex items-start gap-3">
+                      <span className="size-1 rounded-full bg-foreground/40 mt-1.5 shrink-0" />
+                      <span className="leading-snug text-foreground/85">{feat}</span>
                     </div>
                   ))}
                 </div>
@@ -215,9 +219,9 @@ export default function PricingSection() {
               <div className="pt-4 border-t border-border/30">
                 <Button
                   variant={isMiddle ? "default" : "outline"}
-                  className={`w-full rounded-md h-11 text-xs font-mono font-semibold tracking-wider uppercase transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+                  className={`w-full rounded-md h-11 text-xs font-mono font-semibold tracking-wider uppercase transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                     isMiddle
-                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      ? "bg-foreground text-background hover:bg-foreground/90 shadow-sm"
                       : "border-border/60 hover:border-foreground/40 hover:bg-muted/30 text-foreground"
                   }`}
                   onClick={() => handleCheckout(tier.id)}
@@ -246,7 +250,7 @@ export default function PricingSection() {
           {CREDIT_DEDUCTIONS.map((row, idx) => (
             <div
               key={idx}
-              className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 hover:bg-muted/10 transition-colors"
+              className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 hover:bg-muted/10 px-2 -mx-2 rounded-md transition-colors duration-150"
             >
               <div>
                 <div className="text-sm font-medium text-foreground">
@@ -256,14 +260,16 @@ export default function PricingSection() {
                   {row.detail}
                 </div>
               </div>
-              <div
-                className={`font-mono text-xs font-semibold tabular-nums sm:text-right shrink-0 ${
-                  row.isFree
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-foreground"
-                }`}
-              >
-                {row.cost}
+              <div className="sm:text-right shrink-0 mt-1 sm:mt-0">
+                <span
+                  className={`inline-block px-2.5 py-1 rounded text-[11px] font-mono font-semibold tracking-tight ${
+                    row.isFree
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                      : "bg-muted/50 text-foreground border border-border/50"
+                  }`}
+                >
+                  {row.cost}
+                </span>
               </div>
             </div>
           ))}
