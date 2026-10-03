@@ -105,6 +105,73 @@ const RUBRIC_CRITERIA: RubricCriterion[] = [
   },
 ];
 
+interface SculptorPreset {
+  id: string;
+  tabLabel: string;
+  tabWidth: number;
+  rawVerb: string;
+  rawMetric: string;
+  sculptedVerb: string;
+  sculptedScope: string;
+  sculptedMetric: string;
+  peakLabel: string;
+  amplitudeGain: string;
+  sculptedCurve: string;
+  peakX: number;
+  peakY: number;
+}
+
+const SCULPTOR_PRESETS: SculptorPreset[] = [
+  {
+    id: "latency",
+    tabLabel: "P99 SLA",
+    tabWidth: 78,
+    rawVerb: "HELPED WITH",
+    rawMetric: "MISSING",
+    sculptedVerb: "ARCHITECTED",
+    sculptedScope: "100M+ QPS",
+    sculptedMetric: "+42% SLA",
+    peakLabel: "PEAK: +42% SLA",
+    amplitudeGain: "+3.8X IMPACT",
+    sculptedCurve:
+      "M 235 115 L 275 115 C 295 115, 305 48, 335 48 C 365 48, 385 162, 415 162 C 435 162, 445 115, 475 115 L 532 115",
+    peakX: 335,
+    peakY: 48,
+  },
+  {
+    id: "scale",
+    tabLabel: "FLEET SCALE",
+    tabWidth: 74,
+    rawVerb: "MAINTAINED",
+    rawMetric: "ROUTINE",
+    sculptedVerb: "ORCHESTRATED",
+    sculptedScope: "14 REGIONS",
+    sculptedMetric: "99.99% UP",
+    peakLabel: "PEAK: 99.99% UP",
+    amplitudeGain: "+4.4X IMPACT",
+    sculptedCurve:
+      "M 235 115 L 270 115 C 290 115, 300 44, 335 44 C 370 44, 390 166, 420 166 C 440 166, 450 115, 480 115 L 532 115",
+    peakX: 335,
+    peakY: 44,
+  },
+  {
+    id: "cost",
+    tabLabel: "CLOUD OPEX",
+    tabWidth: 70,
+    rawVerb: "REDUCED BILL",
+    rawMetric: "ESTIMATED",
+    sculptedVerb: "ELIMINATED",
+    sculptedScope: "eBPF ENGINE",
+    sculptedMetric: "-$180K/YR",
+    peakLabel: "PEAK: -$180K/YR",
+    amplitudeGain: "+3.2X IMPACT",
+    sculptedCurve:
+      "M 235 115 L 280 115 C 300 115, 310 52, 335 52 C 365 52, 385 158, 415 158 C 435 158, 445 115, 475 115 L 532 115",
+    peakX: 335,
+    peakY: 52,
+  },
+];
+
 export default function FeatureSection() {
   const [activeBranch, setActiveBranch] = useState<number>(2);
   const [hoveredBranch, setHoveredBranch] = useState<number | null>(null);
@@ -113,6 +180,11 @@ export default function FeatureSection() {
   const [activeRubric, setActiveRubric] = useState<number>(0);
   const [hoveredRubric, setHoveredRubric] = useState<number | null>(null);
   const selectedRubric = hoveredRubric !== null ? hoveredRubric : activeRubric;
+
+  const [activePreset, setActivePreset] = useState<number>(0);
+  const [hoveredPreset, setHoveredPreset] = useState<number | null>(null);
+  const selectedPresetIndex = hoveredPreset !== null ? hoveredPreset : activePreset;
+  const currentPreset = SCULPTOR_PRESETS[selectedPresetIndex];
 
   return (
     <section id="features" className="mx-auto px-6 py-24 md:py-32 relative z-10 max-w-6xl">
@@ -597,71 +669,319 @@ export default function FeatureSection() {
             </div>
           </div>
 
-          {/* Borderless Geometric Illustration: The Signal Sculptor */}
+          {/* Borderless Geometric Illustration: The Redesigned Signal Sculptor */}
           <div className="lg:col-span-7 flex items-center justify-center py-4">
             <svg
-              viewBox="0 0 480 220"
+              viewBox="0 0 560 220"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               className="w-full h-auto max-w-lg select-none"
             >
-              {/* Baseline reference */}
-              <line x1="40" y1="110" x2="440" y2="110" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
+              {/* Header Row: Engine Label + Preset Tabs + Live Gain Telemetry */}
+              <text x="28" y="21" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-semibold tracking-wider">
+                SIGNAL SCULPTOR
+              </text>
 
-              {/* Left Side: Loose, Passive, Low-Frequency Waveform */}
+              {/* Mode Selector Tabs inside SVG */}
+              {SCULPTOR_PRESETS.map((p, idx) => {
+                const isActive = selectedPresetIndex === idx;
+                const isHovered = hoveredPreset === idx;
+                // Compute X offset for tabs: Tab 0 at 214, Tab 1 at 296, Tab 2 at 374
+                const tabX = idx === 0 ? 214 : idx === 1 ? 296 : 374;
+
+                return (
+                  <g
+                    key={p.id}
+                    className="cursor-pointer"
+                    onMouseEnter={() => setHoveredPreset(idx)}
+                    onMouseLeave={() => setHoveredPreset(null)}
+                    onClick={() => setActivePreset(idx)}
+                  >
+                    <rect
+                      x={tabX}
+                      y="8"
+                      width={p.tabWidth}
+                      height="20"
+                      rx="4"
+                      className={`transition-colors duration-200 ${
+                        isActive
+                          ? "fill-amber-600 dark:fill-amber-500"
+                          : isHovered
+                          ? "fill-amber-500/20 dark:fill-amber-500/25"
+                          : "fill-amber-500/10 dark:fill-amber-500/15"
+                      }`}
+                    />
+                    <text
+                      x={tabX + p.tabWidth / 2}
+                      y="18"
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      className={`text-[9px] font-mono select-none transition-colors duration-200 ${
+                        isActive
+                          ? "fill-white font-bold"
+                          : "fill-amber-700 dark:fill-amber-300 font-medium"
+                      }`}
+                    >
+                      {p.tabLabel}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Live Telemetry Gain Indicator on Right */}
+              <circle cx="470" cy="18" r="3" className="fill-amber-500">
+                <animate attributeName="r" values="2.5;4;2.5" dur="2s" repeatCount="indefinite" />
+              </circle>
+              <text x="480" y="21" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-bold tracking-tight">
+                {currentPreset.amplitudeGain}
+              </text>
+
+              {/* Header Hairline Divider */}
+              <line x1="28" y1="33" x2="532" y2="33" stroke="currentColor" strokeOpacity="0.06" strokeWidth="1" />
+
+              {/* Continuous Baseline Reference Axis */}
+              <line x1="28" y1="115" x2="532" y2="115" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
+
+              {/* -------------------------------------------------------------
+                  LEFT CHAMBER: Raw Input (Diffuse & Passive)
+                 ------------------------------------------------------------- */}
+              <text x="28" y="49" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                INPUT: DIFFUSE &amp; PASSIVE
+              </text>
+              <text x="28" y="61" className="fill-muted-foreground/40 text-[8px] font-mono">
+                SIGNAL: UNCALIBRATED (18%)
+              </text>
+
+              {/* Multi-harmonic diffuse interference waves */}
               <path
-                d="M 40 110 Q 75 75 110 110 T 180 110 T 230 110"
+                d="M 28 115 Q 80 85 130 115 T 235 115"
                 className="stroke-amber-400/40 dark:stroke-amber-400/30"
                 strokeWidth="1.5"
                 strokeLinecap="round"
               />
               <path
-                d="M 40 110 Q 85 135 130 110 T 230 110"
-                className="stroke-amber-400/30 dark:stroke-amber-400/20"
-                strokeWidth="1.5"
+                d="M 28 115 Q 80 145 130 115 T 235 115"
+                className="stroke-amber-400/25"
+                strokeWidth="1"
                 strokeDasharray="3 3"
               />
-
-              {/* Focus Lens Aperture Threshold (Pure geometry, Zero Border Box) */}
-              <line x1="230" y1="50" x2="230" y2="170" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="3 3" />
-              <circle cx="230" cy="110" r="10" className="fill-amber-500/10">
-                <animate attributeName="r" values="8;12;8" dur="2.8s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="230" cy="110" r="3" className="fill-amber-600 dark:fill-amber-400" />
-
-              {/* Right Side: Sculpted, High-Contrast Precision Vector Impulse */}
               <path
-                d="M 230 110 L 270 110 Q 300 20 330 110 T 390 110 L 440 110"
-                className="stroke-amber-600 dark:stroke-amber-400"
-                strokeWidth="2.5"
-                strokeLinecap="round"
+                d="M 28 115 Q 65 100 100 115 T 170 115 T 235 115"
+                className="stroke-amber-400/15"
+                strokeWidth="1"
               />
 
-              {/* Traveling Signal Pulse along the Sculpted Peak */}
-              <circle r="2.5" className="fill-amber-500">
+              {/* Traveling Diffuse Waveform Particles */}
+              <circle r="2" className="fill-amber-400/70">
                 <animateMotion
-                  path="M 230 110 L 270 110 Q 300 20 330 110 T 390 110 L 440 110"
-                  dur="2.5s"
+                  path="M 28 115 Q 80 85 130 115 T 235 115"
+                  dur="3.4s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              <circle r="1.5" className="fill-amber-400/50">
+                <animateMotion
+                  path="M 28 115 Q 80 145 130 115 T 235 115"
+                  dur="4.2s"
                   repeatCount="indefinite"
                 />
               </circle>
 
-              {/* Dimension guide for the peak with breathing indicator */}
-              <line x1="330" y1="20" x2="330" y2="110" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="2 2" />
-              <circle cx="330" cy="20" r="4" className="fill-background stroke-amber-600 dark:stroke-amber-400" strokeWidth="2">
-                <animate attributeName="r" values="3.5;5;3.5" dur="2.5s" repeatCount="indefinite" />
+              {/* Left Chamber Label & Input Pills */}
+              <text x="28" y="156" className="fill-muted-foreground/50 text-[8.5px] font-mono tracking-wider">
+                UNSTRUCTURED DRAFT
+              </text>
+
+              {/* Raw Verb Pill */}
+              <rect x="28" y="166" width="94" height="24" rx="5" className="fill-muted/50 dark:fill-muted/20" />
+              <text
+                x={28 + 47}
+                y={178}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="text-[9px] font-mono select-none fill-muted-foreground font-medium"
+              >
+                &ldquo;{currentPreset.rawVerb}&rdquo;
+              </text>
+
+              {/* Raw Metric Pill */}
+              <rect x="128" y="166" width="92" height="24" rx="5" className="fill-muted/40 dark:fill-muted/15" />
+              <text
+                x={128 + 46}
+                y={178}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="text-[9px] font-mono select-none fill-muted-foreground/80 font-medium"
+              >
+                METRIC: 0.0%
+              </text>
+
+              {/* -------------------------------------------------------------
+                  CENTER APERTURE: Editorial Semantic Filter Axis
+                 ------------------------------------------------------------- */}
+              <line
+                x1="235"
+                y1="38"
+                x2="235"
+                y2="200"
+                className="stroke-amber-500/30"
+                strokeWidth="1"
+                strokeDasharray="2 3"
+              />
+
+              {/* Precision Calibration Ticks on Center Axis */}
+              <line x1="231" y1="78" x2="239" y2="78" className="stroke-amber-500/40" strokeWidth="1" />
+              <line x1="231" y1="152" x2="239" y2="152" className="stroke-amber-500/40" strokeWidth="1" />
+
+              {/* Focal Lens Aperture Rings */}
+              <circle cx="235" cy="115" r="14" className="fill-amber-500/10 dark:fill-amber-500/20">
+                <animate attributeName="r" values="11;15;11" dur="2.8s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="235" cy="115" r="6" className="fill-amber-500/25" />
+              <circle cx="235" cy="115" r="2.5" className="fill-amber-600 dark:fill-amber-400" />
+              <text x="235" y="212" textAnchor="middle" className="text-[8px] font-mono fill-muted-foreground/40 tracking-widest">
+                APERTURE
+              </text>
+
+              {/* -------------------------------------------------------------
+                  RIGHT CHAMBER: Sculpted Executive Directive Impulse
+                 ------------------------------------------------------------- */}
+              {/* Second Harmonic Ghost Curve */}
+              <path
+                d={currentPreset.sculptedCurve}
+                className="stroke-amber-500/20 stroke-[1.5px] [stroke-dasharray:3_3]"
+                transform="translate(0, 3)"
+              />
+
+              {/* Primary Sculpted High-Amplitude Waveform */}
+              <path
+                d={currentPreset.sculptedCurve}
+                className="stroke-amber-600 dark:stroke-amber-400 stroke-[2.5px]"
+                strokeLinecap="round"
+              />
+
+              {/* High-Energy Traveling Signal Pulse */}
+              <circle r="3" className="fill-amber-500">
+                <animateMotion
+                  path={currentPreset.sculptedCurve}
+                  dur="2.6s"
+                  repeatCount="indefinite"
+                />
               </circle>
 
-              {/* Clean Monospace Annotations */}
-              <text x="50" y="55" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
-                INPUT: DIFFUSE &amp; PASSIVE
+              {/* Peak Measurement Indicator Guide & Beacon */}
+              <line
+                x1={currentPreset.peakX}
+                y1={currentPreset.peakY}
+                x2={currentPreset.peakX}
+                y2="115"
+                className="stroke-amber-500/35"
+                strokeWidth="1"
+                strokeDasharray="2 2"
+              />
+              <circle cx={currentPreset.peakX} cy={currentPreset.peakY} r="7" className="fill-amber-500/15">
+                <animate attributeName="r" values="5;9;5" dur="2.2s" repeatCount="indefinite" />
+              </circle>
+              <circle cx={currentPreset.peakX} cy={currentPreset.peakY} r="3" className="fill-amber-600 dark:fill-amber-400" />
+
+              {/* Peak Dimension Callout Bracket */}
+              <line
+                x1={currentPreset.peakX}
+                y1={currentPreset.peakY}
+                x2={currentPreset.peakX + 14}
+                y2="48"
+                className="stroke-amber-500/40"
+                strokeWidth="1"
+              />
+
+              {/* Peak Impact Badge Pill (Zero Overlap, Generous Padding) */}
+              <g
+                transform="translate(0, 0)"
+                style={{ transition: "transform 200ms cubic-bezier(0.23, 1, 0.32, 1)" }}
+              >
+                <rect
+                  x={currentPreset.peakX + 14}
+                  y="38"
+                  width="100"
+                  height="20"
+                  rx="4"
+                  className="fill-amber-500/10 dark:fill-amber-500/20"
+                />
+                <text
+                  x={currentPreset.peakX + 14 + 50}
+                  y="48"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="text-[9px] font-mono select-none fill-amber-700 dark:fill-amber-300 font-bold tracking-tight"
+                >
+                  {currentPreset.peakLabel}
+                </text>
+              </g>
+
+              {/* Executive Directive Label */}
+              <text x="260" y="156" className="fill-amber-600 dark:fill-amber-400 text-[8.5px] font-mono font-medium tracking-wider">
+                QUANTIFIED DIRECTIVE
               </text>
-              <text x="345" y="32" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-semibold tracking-wider">
-                PEAK IMPACT
-              </text>
-              <text x="345" y="135" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
-                QUANTIFIED EXECUTIVE DIRECTIVE
-              </text>
+
+              {/* Calibrated Executive Output Pills */}
+              <g>
+                {/* Active Executive Verb Pill */}
+                <rect
+                  x="260"
+                  y="166"
+                  width="98"
+                  height="24"
+                  rx="5"
+                  className="fill-amber-600 dark:fill-amber-500"
+                />
+                <text
+                  x={260 + 49}
+                  y={178}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="text-[9.5px] font-mono select-none fill-white font-bold"
+                >
+                  {currentPreset.sculptedVerb}
+                </text>
+
+                {/* Scope Pill */}
+                <rect
+                  x="364"
+                  y="166"
+                  width="86"
+                  height="24"
+                  rx="5"
+                  className="fill-amber-500/15 dark:fill-amber-500/25"
+                />
+                <text
+                  x={364 + 43}
+                  y={178}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="text-[9px] font-mono select-none fill-amber-700 dark:fill-amber-300 font-semibold"
+                >
+                  {currentPreset.sculptedScope}
+                </text>
+
+                {/* Quantified Metric Pill */}
+                <rect
+                  x="456"
+                  y="166"
+                  width="76"
+                  height="24"
+                  rx="5"
+                  className="fill-amber-500/10 dark:fill-amber-500/20"
+                />
+                <text
+                  x={456 + 38}
+                  y={178}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="text-[9px] font-mono select-none fill-amber-700 dark:fill-amber-300 font-bold"
+                >
+                  {currentPreset.sculptedMetric}
+                </text>
+              </g>
             </svg>
           </div>
         </div>
