@@ -22,7 +22,7 @@ export default function FeatureSection() {
       <div className="space-y-20 md:space-y-28">
         {/* =========================================================================
             FEATURE 01: Centralized Ledger
-            Layout: Text Left (5 cols) | Visual Right (7 cols) - Indigo Duo-Shade
+            Illustration: The Convergence Horizon (Indigo Duo-Shade)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
@@ -54,194 +54,210 @@ export default function FeatureSection() {
             </div>
           </div>
 
-          {/* Visual Workspace (Open Duo-Shade Stage, NOT a Card) */}
-          <div className="lg:col-span-7 rounded-2xl bg-indigo-500/[0.03] dark:bg-indigo-500/[0.06] border border-indigo-500/20 p-6 sm:p-8 relative overflow-hidden">
-            {/* Top Workspace Bar */}
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-indigo-500/15 font-mono text-xs">
-              <div className="flex items-center gap-2">
-                <span className="inline-block size-2 rounded-full bg-indigo-500" />
-                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
-                  CAREER_LEDGER_V4.2
-                </span>
-              </div>
-              <span className="text-muted-foreground text-[11px]">
-                48 Accomplishments Indexed
-              </span>
-            </div>
+          {/* Minimalist Geometric Illustration: The Convergence Horizon (Zero Icons) */}
+          <div className="lg:col-span-7 rounded-2xl bg-indigo-500/[0.02] dark:bg-indigo-500/[0.04] border border-indigo-500/15 p-6 sm:p-8 flex items-center justify-center">
+            <svg
+              viewBox="0 0 480 220"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-auto max-w-lg select-none"
+            >
+              {/* Background Architectural Grid Lines */}
+              <line x1="40" y1="30" x2="440" y2="30" stroke="currentColor" strokeOpacity="0.05" strokeWidth="1" strokeDasharray="3 4" />
+              <line x1="40" y1="110" x2="440" y2="110" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
+              <line x1="40" y1="190" x2="440" y2="190" stroke="currentColor" strokeOpacity="0.05" strokeWidth="1" strokeDasharray="3 4" />
 
-            {/* Split Visual Layout: Timeline Feed + Master Profile */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
-              {/* Left Column: Historical Experience Stream */}
-              <div className="space-y-3">
-                <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground/80 font-semibold">
-                  Input Stream
-                </div>
+              <line x1="80" y1="20" x2="80" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
+              <line x1="240" y1="20" x2="240" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
+              <line x1="360" y1="20" x2="360" y2="200" stroke="currentColor" strokeOpacity="0.04" strokeWidth="1" />
 
-                <div className="p-3.5 rounded-xl bg-background/80 border border-indigo-500/15 shadow-xs">
-                  <div className="flex justify-between items-center text-xs mb-1">
-                    <span className="font-semibold text-foreground">HyperScale Cloud</span>
-                    <span className="font-mono text-[10px] text-muted-foreground">2021–2023</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Senior Backend Engineer
-                  </div>
-                  <div className="mt-2 flex gap-1.5 flex-wrap">
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
-                      Go
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
-                      Kafka
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-muted text-muted-foreground">
-                      +14 metrics
-                    </span>
-                  </div>
-                </div>
+              {/* Stream 1: Top Branch */}
+              <path
+                d="M 50 40 C 150 40, 200 110, 300 110"
+                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Stream 2: Upper Mid */}
+              <path
+                d="M 50 75 C 160 75, 210 110, 300 110"
+                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Stream 3: Center Direct Axis */}
+              <line
+                x1="50"
+                y1="110"
+                x2="300"
+                y2="110"
+                className="stroke-indigo-500/60 dark:stroke-indigo-400/60"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Stream 4: Lower Mid */}
+              <path
+                d="M 50 145 C 160 145, 210 110, 300 110"
+                className="stroke-indigo-400/50 dark:stroke-indigo-400/40"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Stream 5: Bottom Branch */}
+              <path
+                d="M 50 180 C 150 180, 200 110, 300 110"
+                className="stroke-indigo-400/40 dark:stroke-indigo-400/30"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
 
-                <div className="p-3.5 rounded-xl bg-background border border-indigo-500/30 shadow-xs ring-1 ring-indigo-500/20">
-                  <div className="flex justify-between items-center text-xs mb-1">
-                    <span className="font-semibold text-foreground">Vanguard Systems</span>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
-                      Current
-                    </span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Staff Infrastructure Architect
-                  </div>
-                  <div className="mt-2 flex gap-1.5 flex-wrap">
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-medium">
-                      Kubernetes
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-medium">
-                      eBPF
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-medium">
-                      Terraform
-                    </span>
-                  </div>
-                </div>
-              </div>
+              {/* Input Nodes along Left Coordinates */}
+              <circle cx="50" cy="40" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+              <circle cx="50" cy="75" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+              <circle cx="50" cy="110" r="3.5" className="fill-background stroke-indigo-500" strokeWidth="2" />
+              <circle cx="50" cy="145" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
+              <circle cx="50" cy="180" r="3" className="fill-background stroke-indigo-400" strokeWidth="1.5" />
 
-              {/* Right Column: Synchronized Master Node */}
-              <div className="flex flex-col justify-between p-4 rounded-xl bg-background border border-indigo-500/25 shadow-xs">
-                <div>
-                  <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/60">
-                    <span className="text-[11px] font-mono font-bold text-foreground">
-                      Master Sync Target
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                      Synced
-                    </span>
-                  </div>
+              {/* Harmonic Convergence Core */}
+              <circle cx="300" cy="110" r="14" className="fill-indigo-500/10 dark:fill-indigo-500/20" />
+              <circle cx="300" cy="110" r="7" className="fill-indigo-500/30" />
+              <circle cx="300" cy="110" r="3" className="fill-indigo-600 dark:fill-indigo-400" />
 
-                  <div className="space-y-2.5">
-                    <div className="p-2.5 rounded-lg bg-indigo-500/[0.04] dark:bg-indigo-500/[0.08] border border-indigo-500/15">
-                      <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-semibold mb-1">
-                        P99 OPTIMIZATION • VERIFIED
-                      </div>
-                      <p className="text-xs text-foreground/90 leading-relaxed font-medium">
-                        Architected multi-region mesh handling 450M queries/day with 99.99% uptime.
-                      </p>
-                    </div>
+              {/* Unified Durable Horizon Trunk */}
+              <line
+                x1="300"
+                y1="110"
+                x2="430"
+                y2="110"
+                className="stroke-indigo-600 dark:stroke-indigo-400"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
 
-                    <div className="p-2.5 rounded-lg bg-background border border-border/70">
-                      <div className="text-[10px] font-mono text-muted-foreground mb-1">
-                        CLOUD EFFICIENCY • VERIFIED
-                      </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Automated compute topology, reducing annual cloud spend by 34% ($1.2M).
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              {/* Architectural Ticks on Unified Trunk */}
+              <line x1="330" y1="104" x2="330" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
+              <line x1="360" y1="102" x2="360" y2="118" className="stroke-indigo-500/70" strokeWidth="1.5" />
+              <line x1="390" y1="104" x2="390" y2="116" className="stroke-indigo-500/50" strokeWidth="1.5" />
+              <line x1="420" y1="106" x2="420" y2="114" className="stroke-indigo-500/40" strokeWidth="1.5" />
 
-                <div className="mt-4 pt-2.5 border-t border-border/60 flex items-center justify-between text-[11px] font-mono text-muted-foreground">
-                  <span>Confidence: 100%</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 font-medium">Auto-Mapped</span>
-                </div>
-              </div>
-            </div>
+              {/* Clean Typography Annotations */}
+              <text x="50" y="22" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                DISTRIBUTED CAREER INPUTS [5]
+              </text>
+              <text x="315" y="95" className="fill-indigo-600 dark:fill-indigo-400 text-[10px] font-mono font-semibold tracking-wider">
+                UNIFIED BASELINE
+              </text>
+            </svg>
           </div>
         </div>
 
         {/* =========================================================================
             FEATURE 02: Semantic Keyword Scanner
-            Layout: Visual Left (7 cols) | Text Right (5 cols) - Emerald Duo-Shade
+            Illustration: The Vernier Alignment Matrix (Emerald Duo-Shade)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Visual Workspace on Left */}
-          <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl bg-emerald-500/[0.03] dark:bg-emerald-500/[0.06] border border-emerald-500/20 p-6 sm:p-8 relative overflow-hidden">
-            {/* Top Rubric Header */}
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-emerald-500/15">
-              <div>
-                <div className="text-[11px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ATS Rubric Benchmark
-                </div>
-                <div className="text-sm font-bold text-foreground">
-                  Senior Staff Infrastructure Rubric
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold font-mono tracking-tight text-emerald-600 dark:text-emerald-400">
-                  98.4%
-                </div>
-                <div className="text-[10px] font-mono text-muted-foreground">
-                  Recruiter Match Score
-                </div>
-              </div>
-            </div>
+          {/* Minimalist Geometric Illustration: The Vernier Alignment Matrix */}
+          <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl bg-emerald-500/[0.02] dark:bg-emerald-500/[0.04] border border-emerald-500/15 p-6 sm:p-8 flex items-center justify-center">
+            <svg
+              viewBox="0 0 480 220"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-auto max-w-lg select-none"
+            >
+              {/* Background Reference Track */}
+              <line x1="40" y1="70" x2="440" y2="70" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
+              <line x1="40" y1="150" x2="440" y2="150" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
 
-            {/* Radar Wave Graphic (Pure SVG Geometry, Zero Icons) */}
-            <div className="py-2 mb-6 flex justify-center">
-              <svg viewBox="0 0 320 80" fill="none" className="w-full max-w-sm h-16">
-                <ellipse cx="160" cy="40" rx="140" ry="32" className="stroke-emerald-500/15" strokeWidth="1" strokeDasharray="3 3" />
-                <ellipse cx="160" cy="40" rx="95" ry="22" className="stroke-emerald-500/25" strokeWidth="1" />
-                <ellipse cx="160" cy="40" rx="50" ry="12" className="stroke-emerald-500/40" strokeWidth="1.5" />
-                <ellipse cx="160" cy="40" rx="14" ry="5" className="fill-emerald-500/20 stroke-emerald-600 dark:stroke-emerald-400" strokeWidth="1.5" />
+              {/* Top Scale: Job Description Rubric Ticks */}
+              {Array.from({ length: 25 }).map((_, i) => {
+                const x = 50 + i * 16;
+                const isMajor = i % 5 === 0;
+                return (
+                  <line
+                    key={`top-${i}`}
+                    x1={x}
+                    y1={70 - (isMajor ? 14 : 7)}
+                    x2={x}
+                    y2={70}
+                    className={
+                      i >= 8 && i <= 16
+                        ? "stroke-emerald-600 dark:stroke-emerald-400"
+                        : "stroke-muted-foreground/35"
+                    }
+                    strokeWidth={isMajor ? 1.5 : 1}
+                  />
+                );
+              })}
 
-                <line x1="20" y1="40" x2="300" y2="40" className="stroke-emerald-500/20" strokeWidth="1" />
-                <line x1="160" y1="8" x2="160" y2="72" className="stroke-emerald-500/20" strokeWidth="1" />
+              {/* Bottom Scale: Candidate Record Ticks */}
+              {Array.from({ length: 25 }).map((_, i) => {
+                const x = 50 + i * 16;
+                const isMajor = i % 5 === 0;
+                return (
+                  <line
+                    key={`bot-${i}`}
+                    x1={x}
+                    y1={150}
+                    x2={x}
+                    y2={150 + (isMajor ? 14 : 7)}
+                    className={
+                      i >= 8 && i <= 16
+                        ? "stroke-emerald-600 dark:stroke-emerald-400"
+                        : "stroke-muted-foreground/35"
+                    }
+                    strokeWidth={isMajor ? 1.5 : 1}
+                  />
+                );
+              })}
 
-                <circle cx="115" cy="32" r="3" className="fill-emerald-600 dark:fill-emerald-400" />
-                <circle cx="210" cy="28" r="3" className="fill-emerald-600 dark:fill-emerald-400" />
-                <circle cx="180" cy="52" r="3" className="fill-emerald-600 dark:fill-emerald-400" />
-              </svg>
-            </div>
+              {/* Central Resonance Lock Field */}
+              <rect
+                x="170"
+                y="55"
+                width="140"
+                height="110"
+                rx="6"
+                className="fill-emerald-500/[0.04] dark:fill-emerald-500/[0.08] stroke-emerald-500/25"
+                strokeWidth="1"
+                strokeDasharray="4 4"
+              />
 
-            {/* Competency Alignment Rows */}
-            <div className="space-y-2.5">
-              <div className="p-3 rounded-xl bg-background/90 border border-emerald-500/25 flex items-center justify-between text-xs">
-                <span className="font-mono font-medium text-foreground">
-                  Distributed Systems & Data Mesh
-                </span>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shrink-0">
-                  100% Match
-                </span>
-              </div>
+              {/* In-Phase Resonance Alignment Rays */}
+              {[178, 194, 210, 226, 242, 258, 274, 290, 306].map((x, idx) => (
+                <line
+                  key={`ray-${idx}`}
+                  x1={x}
+                  y1={70}
+                  x2={x}
+                  y2={150}
+                  className="stroke-emerald-500/40 dark:stroke-emerald-400/40"
+                  strokeWidth="1"
+                  strokeDasharray="2 3"
+                />
+              ))}
 
-              <div className="p-3 rounded-xl bg-background/90 border border-emerald-500/25 flex items-center justify-between text-xs">
-                <span className="font-mono font-medium text-foreground">
-                  Kubernetes Multi-Cluster Mesh
-                </span>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shrink-0">
-                  100% Match
-                </span>
-              </div>
+              {/* Central Prime Coincidence Alignment Beam */}
+              <line
+                x1="242"
+                y1="40"
+                x2="242"
+                y2="180"
+                className="stroke-emerald-600 dark:stroke-emerald-400"
+                strokeWidth="2"
+              />
+              <circle cx="242" cy="110" r="18" className="stroke-emerald-500/30 fill-emerald-500/10" strokeWidth="1" />
+              <circle cx="242" cy="110" r="4" className="fill-emerald-600 dark:fill-emerald-400" />
 
-              <div className="p-3 rounded-xl bg-background/60 border border-emerald-500/15 flex items-center justify-between text-xs">
-                <span className="font-mono text-muted-foreground">
-                  Terraform & Infrastructure as Code
-                </span>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-muted text-muted-foreground font-semibold shrink-0">
-                  96% Match
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-emerald-500/15 flex items-center justify-between text-xs font-mono text-emerald-700/80 dark:text-emerald-300/80">
-              <span>0 Missing Core Competencies</span>
-              <span>100% ATS Safe</span>
-            </div>
+              {/* Minimal Clean Labels */}
+              <text x="50" y="46" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                RECRUITER RUBRIC AXIS
+              </text>
+              <text x="50" y="184" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                CANDIDATE RECORD AXIS
+              </text>
+              <text x="270" y="114" className="fill-emerald-600 dark:fill-emerald-400 text-[10px] font-mono font-semibold tracking-wider">
+                98.4% ALIGNED
+              </text>
+            </svg>
           </div>
 
           {/* Text Narrative on Right */}
@@ -276,7 +292,7 @@ export default function FeatureSection() {
 
         {/* =========================================================================
             FEATURE 03: Conversational Copilot
-            Layout: Text Left (5 cols) | Visual Right (7 cols) - Amber Duo-Shade
+            Illustration: The Signal Sculptor (Amber Duo-Shade)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
@@ -308,165 +324,161 @@ export default function FeatureSection() {
             </div>
           </div>
 
-          {/* Visual Workspace on Right (Amber Duo-Shade) */}
-          <div className="lg:col-span-7 rounded-2xl bg-amber-500/[0.03] dark:bg-amber-500/[0.06] border border-amber-500/20 p-6 sm:p-8 relative overflow-hidden">
-            {/* Top Inspector Bar */}
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-amber-500/15 font-mono text-xs">
-              <span className="text-[11px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-semibold">
-                Impact Precision Studio
-              </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                Active Diff
-              </span>
-            </div>
+          {/* Minimalist Geometric Illustration: The Signal Sculptor */}
+          <div className="lg:col-span-7 rounded-2xl bg-amber-500/[0.02] dark:bg-amber-500/[0.04] border border-amber-500/15 p-6 sm:p-8 flex items-center justify-center">
+            <svg
+              viewBox="0 0 480 220"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-auto max-w-lg select-none"
+            >
+              {/* Baseline reference */}
+              <line x1="40" y1="110" x2="440" y2="110" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
 
-            {/* Transformation Diff Stage */}
-            <div className="space-y-3.5">
-              {/* Original Draft (Passive, Unquantified) */}
-              <div>
-                <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60 mb-1.5">
-                  Original Draft
-                </div>
-                <div className="p-3 rounded-xl bg-background/50 border border-amber-500/15 font-mono text-xs text-muted-foreground/70 line-through decoration-amber-500/40 leading-relaxed">
-                  Worked on backend APIs and helped improve database performance.
-                </div>
-              </div>
+              {/* Left Side: Loose, Passive, Low-Frequency Waveform */}
+              <path
+                d="M 40 110 Q 75 75 110 110 T 180 110 T 230 110"
+                className="stroke-amber-400/40 dark:stroke-amber-400/30"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M 40 110 Q 85 135 130 110 T 230 110"
+                className="stroke-amber-400/30 dark:stroke-amber-400/20"
+                strokeWidth="1.5"
+                strokeDasharray="3 3"
+              />
 
-              {/* Transformation Conduit */}
-              <div className="flex items-center justify-between px-1 text-[11px] font-mono text-amber-600 dark:text-amber-400 font-semibold">
-                <span>DIRECTIVE CALIBRATION</span>
-                <span>+36 Impact Score</span>
-              </div>
+              {/* Focus Lens Aperture Threshold */}
+              <line x1="230" y1="50" x2="230" y2="170" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="3 3" />
+              <rect x="224" y="98" width="12" height="24" rx="3" className="fill-amber-500/15 stroke-amber-500/40" strokeWidth="1" />
+              <circle cx="230" cy="110" r="3" className="fill-amber-600 dark:fill-amber-400" />
 
-              {/* Refined Directive (Active Voice, Quantified) */}
-              <div>
-                <div className="text-[10px] font-mono uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold mb-1.5">
-                  Refined Directive
-                </div>
-                <div className="p-3.5 rounded-xl bg-background border border-amber-500/35 shadow-xs font-mono text-xs text-foreground leading-relaxed">
-                  <span className="text-amber-600 dark:text-amber-400 font-bold">
-                    Engineered
-                  </span>{" "}
-                  distributed caching layer, reducing P99 latency by{" "}
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/30">
-                    38%
-                  </span>{" "}
-                  under 450M daily queries.
-                </div>
-              </div>
-            </div>
+              {/* Right Side: Sculpted, High-Contrast Precision Vector Impulse */}
+              <path
+                d="M 230 110 L 270 110 Q 300 20 330 110 T 390 110 L 440 110"
+                className="stroke-amber-600 dark:stroke-amber-400"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
 
-            {/* Calibration Slider Gauge */}
-            <div className="mt-5 pt-3 border-t border-amber-500/15 space-y-1.5">
-              <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
-                <span>PASSIVE TASK</span>
-                <span className="text-amber-600 dark:text-amber-400 font-semibold">EXECUTIVE DIRECTIVE</span>
-              </div>
-              <div className="h-1.5 w-full rounded-full bg-amber-500/15 overflow-hidden">
-                <div className="h-full bg-amber-500 rounded-full w-[94%]" />
-              </div>
-            </div>
+              {/* Dimension guide for the peak */}
+              <line x1="330" y1="20" x2="330" y2="110" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="2 2" />
+              <circle cx="330" cy="20" r="4" className="fill-background stroke-amber-600 dark:stroke-amber-400" strokeWidth="2" />
+
+              {/* Clean Monospace Annotations */}
+              <text x="50" y="55" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                INPUT: DIFFUSE &amp; PASSIVE
+              </text>
+              <text x="345" y="32" className="fill-amber-600 dark:fill-amber-400 text-[10px] font-mono font-semibold tracking-wider">
+                PEAK IMPACT
+              </text>
+              <text x="345" y="135" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                QUANTIFIED EXECUTIVE DIRECTIVE
+              </text>
+            </svg>
           </div>
         </div>
 
         {/* =========================================================================
             FEATURE 04: Unified Package
-            Layout: Visual Left (7 cols) | Text Right (5 cols) - Sky Duo-Shade
+            Illustration: The Proportional Document Blueprint (Sky Duo-Shade)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Visual Workspace on Left (Sky Duo-Shade) */}
-          <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl bg-sky-500/[0.03] dark:bg-sky-500/[0.06] border border-sky-500/20 p-6 sm:p-8 relative overflow-hidden">
-            {/* Top Blueprint Bar */}
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-sky-500/15 font-mono text-xs">
-              <span className="text-[11px] uppercase tracking-wider text-sky-600 dark:text-sky-400 font-semibold">
-                Twin Document Alignment System
-              </span>
-              <span className="text-muted-foreground text-[11px]">
-                1:1 Typographic Parity
-              </span>
-            </div>
+          {/* Minimalist Geometric Illustration: The Proportional Document Blueprint */}
+          <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl bg-sky-500/[0.02] dark:bg-sky-500/[0.04] border border-sky-500/15 p-6 sm:p-8 flex items-center justify-center">
+            <svg
+              viewBox="0 0 480 220"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-auto max-w-lg select-none"
+            >
+              {/* Drafting Plane Corner Alignment Markers */}
+              <line x1="45" y1="20" x2="55" y2="20" stroke="currentColor" strokeOpacity="0.1" strokeWidth="1" />
+              <line x1="50" y1="15" x2="50" y2="25" stroke="currentColor" strokeOpacity="0.1" strokeWidth="1" />
+              <line x1="425" y1="20" x2="435" y2="20" stroke="currentColor" strokeOpacity="0.1" strokeWidth="1" />
+              <line x1="430" y1="15" x2="430" y2="25" stroke="currentColor" strokeOpacity="0.1" strokeWidth="1" />
 
-            {/* Side-by-Side Document Leaves */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Document Leaf 1: Resume */}
-              <div className="p-4 rounded-xl bg-background border border-sky-500/30 shadow-xs">
-                <div className="pb-2 mb-3 border-b border-border/70 flex justify-between items-baseline">
-                  <div>
-                    <div className="font-bold text-xs text-foreground">
-                      ALEX R. CHEN
-                    </div>
-                    <div className="text-[9px] font-mono text-sky-600 dark:text-sky-400 font-medium">
-                      STAFF INFRASTRUCTURE
-                    </div>
-                  </div>
-                  <span className="font-mono text-[9px] text-muted-foreground/60">
-                    RESUME_A4
-                  </span>
-                </div>
+              {/* Sheet 01: Tailored Resume Silhouette (1 : √2 Proportions) */}
+              <g transform="translate(75, 25)">
+                <rect
+                  x="0"
+                  y="0"
+                  width="130"
+                  height="170"
+                  rx="4"
+                  className="fill-background stroke-sky-500/35"
+                  strokeWidth="1.5"
+                />
+                {/* Header branding rule */}
+                <line x1="16" y1="22" x2="65" y2="22" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="16" y1="30" x2="90" y2="30" className="stroke-sky-500/30" strokeWidth="1" strokeLinecap="round" />
+                <line x1="16" y1="40" x2="114" y2="40" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
 
-                <div className="space-y-2 text-[10px]">
-                  <div className="font-mono text-muted-foreground uppercase text-[9px] font-semibold">
-                    Core Impact
-                  </div>
-                  <div className="p-2 rounded bg-sky-500/[0.05] border border-sky-500/15 text-foreground leading-relaxed">
-                    Scaled global data mesh across 4 continents, sustaining{" "}
-                    <span className="font-semibold text-sky-600 dark:text-sky-400 underline decoration-sky-500/40">
-                      450M queries/day
-                    </span>{" "}
-                    at P99 &lt; 14ms.
-                  </div>
-                  <div className="p-2 rounded bg-background border border-border/80 text-muted-foreground leading-relaxed">
-                    Directed 14-engineer team migrating 280 microservices to unified clusters.
-                  </div>
-                </div>
+                {/* Section 1 Block */}
+                <line x1="16" y1="54" x2="55" y2="54" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="64" x2="114" y2="64" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="74" x2="105" y2="74" className="stroke-sky-500/50" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="84" x2="95" y2="84" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
 
-                <div className="mt-3 pt-2 border-t border-border/60 flex justify-between text-[9px] font-mono text-muted-foreground">
-                  <span>ATS Margins</span>
-                  <span className="text-sky-600 dark:text-sky-400 font-medium">Single Column</span>
-                </div>
-              </div>
+                {/* Section 2 Block */}
+                <line x1="16" y1="102" x2="60" y2="102" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="112" x2="114" y2="112" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="122" x2="100" y2="122" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="132" x2="110" y2="132" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+              </g>
 
-              {/* Document Leaf 2: Cover Letter */}
-              <div className="p-4 rounded-xl bg-background border border-sky-500/30 shadow-xs">
-                <div className="pb-2 mb-3 border-b border-border/70 flex justify-between items-baseline">
-                  <div>
-                    <div className="font-bold text-xs text-foreground">
-                      ALEX R. CHEN
-                    </div>
-                    <div className="text-[9px] font-mono text-sky-600 dark:text-sky-400 font-medium">
-                      COVER LETTER RE: LEAD
-                    </div>
-                  </div>
-                  <span className="font-mono text-[9px] text-muted-foreground/60">
-                    LETTER_A4
-                  </span>
-                </div>
+              {/* Connecting Typographic Alignment Guides Between the Documents */}
+              <line x1="205" y1="47" x2="275" y2="47" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="2 3" />
+              <circle cx="240" cy="47" r="2.5" className="fill-sky-500" />
 
-                <div className="space-y-2 text-[10px] leading-relaxed">
-                  <p className="text-muted-foreground text-[9px]">
-                    Dear Hiring Committee,
-                  </p>
-                  <div className="p-2 rounded bg-sky-500/[0.05] border border-sky-500/15 text-foreground">
-                    In my recent work, I focused directly on high-throughput reliability, having{" "}
-                    <span className="font-semibold text-sky-600 dark:text-sky-400 underline decoration-sky-500/40">
-                      scaled global data mesh across 4 continents to 450M queries/day
-                    </span>
-                    —the exact distributed throughput targets outlined in your role specifications.
-                  </div>
-                </div>
+              <line x1="205" y1="99" x2="275" y2="99" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeDasharray="3 3" />
+              <circle cx="240" cy="99" r="3" className="fill-sky-600 dark:fill-sky-400" />
 
-                <div className="mt-3 pt-2 border-t border-border/60 flex justify-between text-[9px] font-mono text-muted-foreground">
-                  <span>Narrative Match</span>
-                  <span className="text-sky-600 dark:text-sky-400 font-medium">100% Cohesion</span>
-                </div>
-              </div>
-            </div>
+              <line x1="205" y1="147" x2="275" y2="147" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="2 3" />
+              <circle cx="240" cy="147" r="2.5" className="fill-sky-500" />
 
-            {/* Bottom Status Rule */}
-            <div className="mt-5 pt-3 border-t border-sky-500/15 flex items-center justify-between text-xs font-mono text-sky-700/80 dark:text-sky-300/80">
-              <span>Standardized Vector PDF Pipeline</span>
-              <span>Zero Style Drift</span>
-            </div>
+              {/* Sheet 02: Matching Cover Letter Silhouette */}
+              <g transform="translate(275, 25)">
+                <rect
+                  x="0"
+                  y="0"
+                  width="130"
+                  height="170"
+                  rx="4"
+                  className="fill-background stroke-sky-500/35"
+                  strokeWidth="1.5"
+                />
+                {/* Identical header branding */}
+                <line x1="16" y1="22" x2="65" y2="22" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="16" y1="30" x2="90" y2="30" className="stroke-sky-500/30" strokeWidth="1" strokeLinecap="round" />
+                <line x1="16" y1="40" x2="114" y2="40" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
+
+                {/* Letter Body Paragraph 1 */}
+                <line x1="16" y1="56" x2="114" y2="56" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="66" x2="110" y2="66" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="76" x2="105" y2="76" className="stroke-sky-500/50" strokeWidth="1.5" strokeLinecap="round" />
+
+                {/* Letter Body Paragraph 2 (Synchronized achievement narrative) */}
+                <line x1="16" y1="94" x2="114" y2="94" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="104" x2="105" y2="104" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="16" y1="114" x2="90" y2="114" className="stroke-muted-foreground/35" strokeWidth="1.5" strokeLinecap="round" />
+
+                {/* Signoff */}
+                <line x1="16" y1="136" x2="45" y2="136" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="1.5" strokeLinecap="round" />
+              </g>
+
+              {/* Clean Dimension Annotations */}
+              <text x="85" y="16" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                DOC_01: RESUME (ISO A4)
+              </text>
+              <text x="285" y="16" className="fill-muted-foreground/60 text-[9px] font-mono tracking-wider">
+                DOC_02: COVER LETTER
+              </text>
+              <text x="206" y="85" className="fill-sky-600 dark:fill-sky-400 text-[9px] font-mono font-semibold tracking-wider">
+                1:1 PARITY
+              </text>
+            </svg>
           </div>
 
           {/* Text Narrative on Right */}
