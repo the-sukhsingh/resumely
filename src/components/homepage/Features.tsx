@@ -181,9 +181,9 @@ export default function FeatureSection() {
   const selectedJob = hoveredJob !== null ? hoveredJob : activeJob;
 
   return (
-    <section id="features" className="mx-auto px-6 py-24 md:py-32 relative z-10 max-w-6xl">
+    <section id="features" className="mx-auto px-6 pt-32 pb-24 relative z-10 max-w-6xl">
       {/* Section Header */}
-      <div className="mb-16 md:mb-24 max-w-2xl text-left">
+      <div className="mt-12 mb-8 max-w-2xl text-left">
         <Heading as="h2" className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
           Built for relevance.
           <br />
@@ -195,12 +195,12 @@ export default function FeatureSection() {
       </div>
 
       {/* Open Editorial Capability Showcase (Zero Cards, Zero Illustration Borders, Clean Hairline Dividers) */}
-      <div className="space-y-20 md:space-y-28">
+      <div className="space-y-6">
         {/* =========================================================================
             FEATURE 01: Centralized Ledger
             Illustration: Animated Dynamic Master Ledger & Branching Targets (Fixed Padding)
            ========================================================================= */}
-        <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="pt-12 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
           <div className="lg:col-span-5 text-left">
             <div className="font-mono text-xs font-semibold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase mb-3">
@@ -427,7 +427,7 @@ export default function FeatureSection() {
             FEATURE 02: Semantic Keyword Scanner
             Illustration: Redesigned Dynamic Rubric Alignment Matrix & Sweep Scanner
            ========================================================================= */}
-        <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="pt-12 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Borderless Geometric Illustration: The Dynamic Rubric Matrix */}
           <div className="lg:col-span-7 order-2 lg:order-1 flex items-center justify-center py-4">
             <svg
@@ -633,7 +633,7 @@ export default function FeatureSection() {
             FEATURE 03: Job Application Pipeline Tracking
             Illustration: Real-time Application State Machine & Lifecycle Telemetry
            ========================================================================= */}
-        <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="pt-12 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
           <div className="lg:col-span-5 text-left">
             <div className="font-mono text-xs font-semibold tracking-wider text-amber-600 dark:text-amber-400 uppercase mb-3">
@@ -899,7 +899,7 @@ export default function FeatureSection() {
             FEATURE 04: Unified Package
             Illustration: The Proportional Document Blueprint (Sky Duo-Shade, Borderless)
            ========================================================================= */}
-        <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="pt-12 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Borderless Geometric Illustration: The Proportional Document Blueprint */}
           <div className="lg:col-span-7 order-2 lg:order-1 flex items-center justify-center py-4">
             <svg

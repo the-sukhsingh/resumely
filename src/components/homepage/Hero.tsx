@@ -77,18 +77,6 @@ export default function HeroSection() {
           </a>
         </Button>
       </motion.div>
-
-      {/* Clean & Minimal Editorial Alignment Specimen (Shifted a bit to the right) */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.22, ease: [0.23, 1, 0.32, 1] }}
-        className="w-full mt-14 sm:mt-16 flex justify-end"
-      >
-        <div className="w-full max-w-2xl lg:max-w-3xl ml-auto sm:translate-x-2 md:translate-x-6 lg:translate-x-10">
-          <InteractiveResumeDemo />
-        </div>
-      </motion.div>
     </section>
   );
 }

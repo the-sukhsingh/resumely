@@ -54,7 +54,7 @@ export default function WorkflowSection() {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
   return (
-    <section id="how-it-works" className="relative px-6 py-24 md:py-32 z-10 max-w-6xl mx-auto">
+    <section id="how-it-works" className="relative px-6 py-12 z-10 max-w-6xl mx-auto">
       {/* Section Header */}
       <div className="mb-14 md:mb-20 max-w-2xl text-left">
         <div className="font-mono text-xs font-semibold tracking-wider text-muted-foreground uppercase mb-3">

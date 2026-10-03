@@ -19,10 +19,8 @@ export default function HomePage() {
         <div className="absolute inset-0 noise dark:opacity-30 pointer-events-none" />
         
         {/* Background Shader: smooth architectural backdrop visible in both light & dark modes */}
-        <div className="absolute inset-0 h-[680px] sm:h-[750px] md:h-[820px] overflow-hidden pointer-events-none opacity-45 sm:opacity-55 dark:opacity-[0.25] transition-opacity duration-300">
+        <div className="absolute inset-0 h-dvh overflow-hidden pointer-events-none ">
           <BarsPreview decreaseFromLeft={false} />
-          {/* Subtle gradient to softly blend shader into the content background below */}
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-linear-to-b from-transparent to-background pointer-events-none" />
         </div>
 
         {/* Hero Section */}
