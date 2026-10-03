@@ -38,9 +38,6 @@ const WorkflowSection = () => {
   return (
     <section id="how-it-works" className="relative px-6 py-24 md:py-32 z-10 max-w-5xl mx-auto">
       <div className="mb-14 md:mb-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/80 bg-muted/40 font-mono text-xs text-muted-foreground uppercase tracking-wider mb-4">
-          The 3-Step Workflow
-        </div>
         <Heading as="h2" className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
           From master history
           <br />

@@ -14,10 +14,6 @@ const Footer = () => {
     <footer className="w-full bg-background border-t border-border/60 relative z-10 pt-20 pb-16 px-6">
       {/* Final Action Strip */}
       <div className="max-w-4xl mx-auto text-center mb-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/80 bg-muted/40 font-mono text-xs text-muted-foreground uppercase tracking-wider mb-5">
-          <Sparkles className="size-3" />
-          Ready When You Are
-        </div>
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-5 leading-tight">
           Never write another resume
           <br />
