@@ -18,11 +18,11 @@ export default function FeatureSection() {
         </p>
       </div>
 
-      {/* Open Editorial Capability Showcase (Zero Cards, Clean Hairline Rows) */}
+      {/* Open Editorial Capability Showcase (Zero Cards, Zero Illustration Borders, Clean Hairline Dividers) */}
       <div className="space-y-20 md:space-y-28">
         {/* =========================================================================
             FEATURE 01: Centralized Ledger
-            Illustration: The Convergence Horizon (Indigo Duo-Shade)
+            Illustration: The Convergence Horizon (Indigo Duo-Shade, Borderless)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
@@ -54,8 +54,8 @@ export default function FeatureSection() {
             </div>
           </div>
 
-          {/* Minimalist Geometric Illustration: The Convergence Horizon (Zero Icons) */}
-          <div className="lg:col-span-7 rounded-2xl bg-indigo-500/[0.02] dark:bg-indigo-500/[0.04] border border-indigo-500/15 p-6 sm:p-8 flex items-center justify-center">
+          {/* Borderless Geometric Illustration: The Convergence Horizon (Zero Icons) */}
+          <div className="lg:col-span-7 flex items-center justify-center py-4">
             <svg
               viewBox="0 0 480 220"
               fill="none"
@@ -152,11 +152,11 @@ export default function FeatureSection() {
 
         {/* =========================================================================
             FEATURE 02: Semantic Keyword Scanner
-            Illustration: The Vernier Alignment Matrix (Emerald Duo-Shade)
+            Illustration: The Vernier Alignment Matrix (Emerald Duo-Shade, Borderless)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Minimalist Geometric Illustration: The Vernier Alignment Matrix */}
-          <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl bg-emerald-500/[0.02] dark:bg-emerald-500/[0.04] border border-emerald-500/15 p-6 sm:p-8 flex items-center justify-center">
+          {/* Borderless Geometric Illustration: The Vernier Alignment Matrix */}
+          <div className="lg:col-span-7 order-2 lg:order-1 flex items-center justify-center py-4">
             <svg
               viewBox="0 0 480 220"
               fill="none"
@@ -209,16 +209,14 @@ export default function FeatureSection() {
                 );
               })}
 
-              {/* Central Resonance Lock Field */}
+              {/* Central Resonance Lock Field (Pure Soft Wash, Zero Border Stroke) */}
               <rect
                 x="170"
                 y="55"
                 width="140"
                 height="110"
                 rx="6"
-                className="fill-emerald-500/[0.04] dark:fill-emerald-500/[0.08] stroke-emerald-500/25"
-                strokeWidth="1"
-                strokeDasharray="4 4"
+                className="fill-emerald-500/[0.04] dark:fill-emerald-500/[0.08]"
               />
 
               {/* In-Phase Resonance Alignment Rays */}
@@ -244,7 +242,7 @@ export default function FeatureSection() {
                 className="stroke-emerald-600 dark:stroke-emerald-400"
                 strokeWidth="2"
               />
-              <circle cx="242" cy="110" r="18" className="stroke-emerald-500/30 fill-emerald-500/10" strokeWidth="1" />
+              <circle cx="242" cy="110" r="18" className="fill-emerald-500/10 stroke-emerald-500/20" strokeWidth="1" />
               <circle cx="242" cy="110" r="4" className="fill-emerald-600 dark:fill-emerald-400" />
 
               {/* Minimal Clean Labels */}
@@ -292,7 +290,7 @@ export default function FeatureSection() {
 
         {/* =========================================================================
             FEATURE 03: Conversational Copilot
-            Illustration: The Signal Sculptor (Amber Duo-Shade)
+            Illustration: The Signal Sculptor (Amber Duo-Shade, Borderless)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Text Narrative */}
@@ -324,8 +322,8 @@ export default function FeatureSection() {
             </div>
           </div>
 
-          {/* Minimalist Geometric Illustration: The Signal Sculptor */}
-          <div className="lg:col-span-7 rounded-2xl bg-amber-500/[0.02] dark:bg-amber-500/[0.04] border border-amber-500/15 p-6 sm:p-8 flex items-center justify-center">
+          {/* Borderless Geometric Illustration: The Signal Sculptor */}
+          <div className="lg:col-span-7 flex items-center justify-center py-4">
             <svg
               viewBox="0 0 480 220"
               fill="none"
@@ -349,9 +347,9 @@ export default function FeatureSection() {
                 strokeDasharray="3 3"
               />
 
-              {/* Focus Lens Aperture Threshold */}
+              {/* Focus Lens Aperture Threshold (Pure geometry, Zero Border Box) */}
               <line x1="230" y1="50" x2="230" y2="170" className="stroke-amber-500/30" strokeWidth="1" strokeDasharray="3 3" />
-              <rect x="224" y="98" width="12" height="24" rx="3" className="fill-amber-500/15 stroke-amber-500/40" strokeWidth="1" />
+              <circle cx="230" cy="110" r="10" className="fill-amber-500/10" />
               <circle cx="230" cy="110" r="3" className="fill-amber-600 dark:fill-amber-400" />
 
               {/* Right Side: Sculpted, High-Contrast Precision Vector Impulse */}
@@ -382,11 +380,11 @@ export default function FeatureSection() {
 
         {/* =========================================================================
             FEATURE 04: Unified Package
-            Illustration: The Proportional Document Blueprint (Sky Duo-Shade)
+            Illustration: The Proportional Document Blueprint (Sky Duo-Shade, Borderless)
            ========================================================================= */}
         <div className="pt-12 md:pt-16 border-t border-border/50 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Minimalist Geometric Illustration: The Proportional Document Blueprint */}
-          <div className="lg:col-span-7 order-2 lg:order-1 rounded-2xl bg-sky-500/[0.02] dark:bg-sky-500/[0.04] border border-sky-500/15 p-6 sm:p-8 flex items-center justify-center">
+          {/* Borderless Geometric Illustration: The Proportional Document Blueprint */}
+          <div className="lg:col-span-7 order-2 lg:order-1 flex items-center justify-center py-4">
             <svg
               viewBox="0 0 480 220"
               fill="none"
@@ -399,7 +397,7 @@ export default function FeatureSection() {
               <line x1="425" y1="20" x2="435" y2="20" stroke="currentColor" strokeOpacity="0.1" strokeWidth="1" />
               <line x1="430" y1="15" x2="430" y2="25" stroke="currentColor" strokeOpacity="0.1" strokeWidth="1" />
 
-              {/* Sheet 01: Tailored Resume Silhouette (1 : √2 Proportions) */}
+              {/* Sheet 01: Tailored Resume Silhouette (Soft Flat Tone, Zero Border Stroke) */}
               <g transform="translate(75, 25)">
                 <rect
                   x="0"
@@ -407,8 +405,7 @@ export default function FeatureSection() {
                   width="130"
                   height="170"
                   rx="4"
-                  className="fill-background stroke-sky-500/35"
-                  strokeWidth="1.5"
+                  className="fill-muted/30 dark:fill-muted/15"
                 />
                 {/* Header branding rule */}
                 <line x1="16" y1="22" x2="65" y2="22" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="2.5" strokeLinecap="round" />
@@ -438,7 +435,7 @@ export default function FeatureSection() {
               <line x1="205" y1="147" x2="275" y2="147" className="stroke-sky-500/50" strokeWidth="1" strokeDasharray="2 3" />
               <circle cx="240" cy="147" r="2.5" className="fill-sky-500" />
 
-              {/* Sheet 02: Matching Cover Letter Silhouette */}
+              {/* Sheet 02: Matching Cover Letter Silhouette (Soft Flat Tone, Zero Border Stroke) */}
               <g transform="translate(275, 25)">
                 <rect
                   x="0"
@@ -446,8 +443,7 @@ export default function FeatureSection() {
                   width="130"
                   height="170"
                   rx="4"
-                  className="fill-background stroke-sky-500/35"
-                  strokeWidth="1.5"
+                  className="fill-muted/30 dark:fill-muted/15"
                 />
                 {/* Identical header branding */}
                 <line x1="16" y1="22" x2="65" y2="22" className="stroke-sky-600 dark:stroke-sky-400" strokeWidth="2.5" strokeLinecap="round" />
