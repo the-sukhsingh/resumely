@@ -2,7 +2,7 @@
 
 import React, { useId } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export interface SwitcherItem<T extends string = string> {
@@ -77,21 +77,17 @@ export default function AnimatedSwitcher<T extends string = string>({
 
         const content = (
           <>
-            <AnimatePresence mode="wait">
-              {isActive && (
-                <motion.span
-                  layoutId={activeLayoutId}
-                  transition={{
-                    layout: {
-                      type: 'spring',
-                      stiffness: 300,
-                      damping: 30,
-                    },
-                  }}
-                  className="absolute inset-0 bg-background rounded-full shadow-2xs"
-                />
-              )}
-            </AnimatePresence>
+            {isActive && (
+              <motion.span
+                layoutId={activeLayoutId}
+                transition={{
+                  type: 'spring',
+                  stiffness: 450,
+                  damping: 35,
+                }}
+                className="absolute inset-0 bg-background rounded-full shadow-2xs"
+              />
+            )}
             <span className="flex items-center justify-center gap-1.5 relative z-10 min-w-0">
               {Icon && <Icon size={iconSizes} className="shrink-0" />}
               <span className="truncate">{item.label}</span>
@@ -105,6 +101,7 @@ export default function AnimatedSwitcher<T extends string = string>({
             <Link
               key={item.value}
               href={item.href}
+              prefetch={true}
               title={item.title}
               role="tab"
               aria-selected={isActive}

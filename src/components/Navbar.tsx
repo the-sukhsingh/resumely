@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { signIn, signOut } from "next-auth/react";
@@ -12,10 +13,22 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import ColoredButton from "./custom/colored-button";
 import AnimatedSwitcher from "./custom/animated-switcher";
+import WorkspaceWarmer from "./workspace/WorkspaceWarmer";
 
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 15);
+        };
+        handleScroll();
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const links = [
         { href: "/resume", label: "Resumes", icon: FileText },
         { href: "/tracker", label: "Job Tracker", icon: Briefcase },
@@ -26,8 +39,13 @@ const Navbar = () => {
     }
 
     return (
-        <nav className={cn("fixed top-0 z-50 w-full",
-            pathname.match(/^\/resume\/[^/]+$/) ? "bg-background" : "bg-transparent"
+        <nav className={cn(
+            "fixed top-0 z-50 w-full transition-all duration-200",
+            pathname.match(/^\/resume\/[^/]+$/) 
+                ? "bg-background border-b border-border/50" 
+                : scrolled 
+                    ? "bg-background/80 backdrop-blur-md border-b border-border/40 shadow-xs" 
+                    : "bg-transparent border-b border-transparent"
         )}>
             <div className="max-w-5xl mx-auto px-6">
                 {/* Skip link for keyboard users */}
@@ -41,17 +59,21 @@ const Navbar = () => {
 
                     {/* Desktop Links Switcher */}
                     {isAuthenticated && (
-                        <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
-                            <AnimatedSwitcher
-                                value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
-                                items={links.map((link) => ({
-                                    value: link.href,
-                                    label: link.label,
-                                    icon: link.icon,
-                                    href: link.href,
-                                }))}
-                            />
-                        </div>
+                        <>
+                            {user && <WorkspaceWarmer userId={user._id} />}
+                            <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
+                                <AnimatedSwitcher
+                                    value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
+                                    layoutId="navbar-tab-indicator"
+                                    items={links.map((link) => ({
+                                        value: link.href,
+                                        label: link.label,
+                                        icon: link.icon,
+                                        href: link.href,
+                                    }))}
+                                />
+                            </div>
+                        </>
                     )}
 
                     {/* Right side: auth / mobile menu */}
@@ -76,6 +98,7 @@ const Navbar = () => {
                                                             <Link
                                                                 key={link.href}
                                                                 href={link.href}
+                                                                prefetch={true}
                                                                 className={cn(
                                                                     "flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors font-medium text-sm",
                                                                     isActive
