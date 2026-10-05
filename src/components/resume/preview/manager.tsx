@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react'
 import { Button } from '../../ui/button';
-import { ChevronDownIcon, Link2, Check, ExternalLink, Briefcase } from 'lucide-react';
+import { ChevronDownIcon, Check } from 'lucide-react';
+import { LinkDuo, ExternalLinkDuo, Briefcase } from '@/components/icons';
 import { toast } from 'sonner';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
@@ -175,12 +176,12 @@ const Manager: React.FC<ManagerProps> = ({
                                     {linkCopied ? (
                                         <Check className="w-4 h-4 mr-2 text-emerald-500 animate-in fade-in" />
                                     ) : (
-                                        <Link2 className="w-4 h-4 mr-2 text-foreground" />
+                                        <LinkDuo className="w-4 h-4 mr-2 text-foreground" />
                                     )}
                                     {linkCopied ? 'Link Copied!' : 'Copy Resume Link'}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={handleOpenPublicView} className='cursor-pointer whitespace-nowrap'>
-                                    <ExternalLink className="w-4 h-4 mr-2 text-foreground" />
+                                    <ExternalLinkDuo className="w-4 h-4 mr-2 text-foreground" />
                                     Open Public View
                                 </DropdownMenuItem>
                                 {linkedJob && (

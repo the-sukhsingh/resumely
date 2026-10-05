@@ -1,7 +1,8 @@
 "use client"
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { MessageCircleIcon, X, Check } from 'lucide-react'
+import { X, Check } from 'lucide-react'
+import { Message2 } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
@@ -69,7 +70,7 @@ const Feedback = () => {
                 onClick={() => { setIsOpen(!isOpen) }} 
                 className='bg-black dark:bg-white text-white dark:text-black p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer border border-transparent dark:border-neutral-800'
             >
-                {isOpen ? <X className='size-5' /> : <MessageCircleIcon className='size-5' />}
+                {isOpen ? <X className='size-5' /> : <Message2 className='size-5' />}
             </button>
             <AnimatePresence>
                 {isOpen && (
