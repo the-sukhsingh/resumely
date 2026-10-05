@@ -7,13 +7,10 @@ import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import StageBadge from './StageBadge';
-import { TrashDuo } from '@/components/icons';
+import { TrashDuo, ExternalLinkDuo, File as DuoFile, LinkDuo } from '@/components/icons';
 import {
-  ExternalLink,
-  FileText,
   Loader2,
   Check,
-  Link2,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -176,7 +173,7 @@ export default function JobListView({
                           title="Open job posting"
                           className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60"
                         >
-                          <ExternalLink className="size-4" />
+                          <ExternalLinkDuo className="size-4" />
                         </a>
                       )}
                       <button
@@ -209,7 +206,7 @@ export default function JobListView({
                             onClick={() => router.push(`/resume/${app.resumeVersionId}`)}
                             className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/40 hover:bg-muted/70 text-foreground text-[11px] font-medium max-w-[140px] truncate cursor-pointer"
                           >
-                            <FileText className="size-3 text-primary shrink-0" />
+                            <DuoFile className="size-3 text-primary shrink-0" />
                             <span className="truncate">{app.resumeVersion.name}</span>
                           </button>
                           {app.resumeVersion.matchScore && (
@@ -222,7 +219,7 @@ export default function JobListView({
                             onClick={(e) => handleCopyLink(e, app.resumeVersionId!)}
                             className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground"
                           >
-                            {copiedId === app.resumeVersionId ? <Check className="size-3.5 text-emerald-500" /> : <Link2 className="size-3.5" />}
+                            {copiedId === app.resumeVersionId ? <Check className="size-3.5 text-emerald-500" /> : <LinkDuo className="size-3.5" />}
                           </button>
                         </div>
                       ) : (
@@ -290,7 +287,7 @@ export default function JobListView({
                           onClick={() => router.push(`/resume/${app.resumeVersionId}`)}
                           className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/40 hover:bg-muted/70 text-foreground transition-colors min-w-0 max-w-[180px] cursor-pointer"
                         >
-                          <FileText className="size-3 text-primary shrink-0" />
+                          <DuoFile className="size-3 text-primary shrink-0" />
                           <span className="text-[11px] font-medium truncate">
                             {app.resumeVersion.name}
                           </span>
@@ -311,7 +308,7 @@ export default function JobListView({
                           {copiedId === app.resumeVersionId ? (
                             <Check className="size-3.5 text-emerald-500" />
                           ) : (
-                            <Link2 className="size-3.5" />
+                            <LinkDuo className="size-3.5" />
                           )}
                         </button>
                       </div>
@@ -358,7 +355,7 @@ export default function JobListView({
                         title="Open job posting"
                         className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
                       >
-                        <ExternalLink className="size-3.5" />
+                        <ExternalLinkDuo className="size-3.5" />
                       </a>
                     )}
 

@@ -14,19 +14,21 @@ import DitheredSphere from '@/components/custom/dithered-sphere';
 import { Textarea } from '@/components/ui/textarea';
 import {
   X,
-  ExternalLink,
-  FileText,
-  Clock,
-  MapPin,
   DollarSign,
-  Calendar,
-  Trash2,
   Check,
-  Link2,
   Loader2,
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
+import {
+  ExternalLinkDuo,
+  File as DuoFile,
+  Clock,
+  Location,
+  Calendar,
+  TrashDuo,
+  LinkDuo,
+} from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -201,7 +203,7 @@ export default function JobDetailsDrawer({
                       className="text-muted-foreground hover:text-foreground inline-flex items-center gap-0.5 text-[11px] underline underline-offset-2 shrink-0"
                     >
                       <span>Posting</span>
-                      <ExternalLink className="size-2.5" />
+                      <ExternalLinkDuo className="size-3" />
                     </a>
                   )}
                 </div>
@@ -247,7 +249,7 @@ export default function JobDetailsDrawer({
             <div className="p-4 rounded-2xl border border-border/70 bg-card/50 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileText className="size-4 text-primary" />
+                  <DuoFile className="size-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground tracking-tight">
                     Tailored Resume
                   </span>
@@ -282,7 +284,7 @@ export default function JobDetailsDrawer({
                         {copiedLink ? (
                           <Check className="size-3.5 text-emerald-500" />
                         ) : (
-                          <Link2 className="size-3.5" />
+                          <LinkDuo className="size-3.5" />
                         )}
                       </button>
 
@@ -329,7 +331,7 @@ export default function JobDetailsDrawer({
             <div className="grid grid-cols-2 gap-3 text-xs">
               {application.location && (
                 <div className="p-3 rounded-xl border border-border/50 bg-card/30 flex items-start gap-2.5">
-                  <MapPin className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                  <Location className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
                       Location
@@ -431,7 +433,7 @@ export default function JobDetailsDrawer({
               onClick={() => setShowDeleteConfirm(true)}
               className="inline-flex items-center gap-1.5 text-xs text-destructive hover:opacity-80 transition-opacity cursor-pointer font-medium"
             >
-              <Trash2 className="size-3.5" />
+              <TrashDuo className="size-3.5" />
               <span>Delete Job</span>
             </button>
 
