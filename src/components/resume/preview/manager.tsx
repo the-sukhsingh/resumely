@@ -100,9 +100,9 @@ const Manager: React.FC<ManagerProps> = ({
     };
     console.log('Manager render', { resumeName, activeView, isMaster });
     return (
-        < div className='w-full bg-background flex items-center justify-between py-2' >
-            <div className='flex items-center'>
-                <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'resume' | 'cover-letter')} className="w-50">
+        <div className='w-full bg-background flex items-center justify-between gap-2 py-1.5 px-0.5 sm:px-1 min-w-0'>
+            <div className='flex items-center shrink-0'>
+                <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'resume' | 'cover-letter')} className="w-auto">
                     <TabsList variant={"line"} className=''>
                         <TabsTrigger value="resume">
                             <span className="flex items-center gap-2">
@@ -122,7 +122,7 @@ const Manager: React.FC<ManagerProps> = ({
             </div>
 
             {resumeName && (
-                <div className='flex items-center gap-2 max-w-[320px]'>
+                <div className='hidden md:flex items-center gap-2 max-w-[200px] lg:max-w-[320px] truncate'>
                     <span className='text-xs font-medium truncate'>{resumeName}</span>
                     {linkedJob && (
                         <StageBadge
@@ -138,7 +138,7 @@ const Manager: React.FC<ManagerProps> = ({
                 </div>
             )}
 
-            <div className='flex gap-4 items-center '>
+            <div className='flex gap-2 sm:gap-4 items-center shrink-0'>
                 {isCreateMode && onSave && (
                     <Button
                         onClick={onSave}

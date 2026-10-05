@@ -151,129 +151,226 @@ export default function JobListView({
                     onSelectApplication(app);
                   }
                 }}
-                className="group relative md:grid md:grid-cols-12 gap-4 items-center px-4 sm:px-5 py-3 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
+                className="group relative px-4 sm:px-5 py-3 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
               >
-                {/* 1. Role & Company */}
-                <div className="col-span-4 flex items-center gap-3 min-w-0">
-                  <div className="min-w-0 flex-1">
-                    <span className="font-medium text-sm text-foreground truncate block tracking-tight group-hover:text-foreground">
-                      {app.title}
-                    </span>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider truncate">
-                        {app.company}
+                {/* ── Mobile Layout (< md) ── */}
+                <div className="flex md:hidden flex-col gap-2.5 w-full">
+                  {/* Top: Role title & Row Actions */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-semibold text-sm text-foreground truncate block tracking-tight">
+                        {app.title}
                       </span>
-                      {app.location && (
-                        <span className="hidden sm:inline-block font-mono text-[10px] text-muted-foreground/70 truncate">
-                          · {app.location}
-                        </span>
+                      <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
+                        <span className="font-mono text-[11px] uppercase tracking-wider font-medium">{app.company}</span>
+                        {app.location && <span>· {app.location}</span>}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      {app.jobUrl && (
+                        <a
+                          href={app.jobUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open job posting"
+                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                        >
+                          <ExternalLink className="size-4" />
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(app)}
+                        title="Delete application"
+                        className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+                      >
+                        <TrashDuo className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Middle: Stage badge & Tailored Resume connection */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/30">
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <StageBadge
+                        stage={app.stage}
+                        size="sm"
+                        interactive
+                        onStageChange={(newStage) => handleStageChange(app._id, newStage)}
+                      />
+                    </div>
+
+                    <div onClick={(e) => e.stopPropagation()}>
+                      {app.resumeVersionId && app.resumeVersion ? (
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/resume/${app.resumeVersionId}`)}
+                            className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/40 hover:bg-muted/70 text-foreground text-[11px] font-medium max-w-[140px] truncate cursor-pointer"
+                          >
+                            <FileText className="size-3 text-primary shrink-0" />
+                            <span className="truncate">{app.resumeVersion.name}</span>
+                          </button>
+                          {app.resumeVersion.matchScore && (
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+                              {app.resumeVersion.matchScore}%
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={(e) => handleCopyLink(e, app.resumeVersionId!)}
+                            className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground"
+                          >
+                            {copiedId === app.resumeVersionId ? <Check className="size-3.5 text-emerald-500" /> : <Link2 className="size-3.5" />}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => handleTailor(e, app)}
+                          disabled={tailoringId === app._id}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400 text-xs font-medium cursor-pointer"
+                        >
+                          {tailoringId === app._id ? <Loader2 className="size-3 animate-spin" /> : null}
+                          <span>Tailor Resume</span>
+                        </button>
                       )}
                     </div>
                   </div>
+
+                  {/* Bottom: Date */}
+                  <div className="text-[10px] font-mono text-muted-foreground/70">
+                    {app.stage === 'applied' && app.appliedAt
+                      ? `Applied: ${format(new Date(app.appliedAt), 'MMM d, yyyy')}`
+                      : `Updated: ${formatDistanceToNow(new Date(app.updatedAt), { addSuffix: true })}`}
+                  </div>
                 </div>
 
-                {/* 2. Stage (Interactive) */}
-                <div className="col-span-2 mt-2 md:mt-0 flex items-center">
-                  <StageBadge
-                    stage={app.stage}
-                    size="sm"
-                    interactive
-                    onStageChange={(newStage) => handleStageChange(app._id, newStage)}
-                  />
-                </div>
+                {/* ── Desktop Layout (md+) ── */}
+                <div className="hidden md:grid md:grid-cols-12 gap-4 items-center w-full">
+                  {/* 1. Role & Company */}
+                  <div className="col-span-4 flex items-center gap-3 min-w-0">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-medium text-sm text-foreground truncate block tracking-tight group-hover:text-foreground">
+                        {app.title}
+                      </span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider truncate">
+                          {app.company}
+                        </span>
+                        {app.location && (
+                          <span className="hidden sm:inline-block font-mono text-[10px] text-muted-foreground/70 truncate">
+                            · {app.location}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
-                {/* 3. Tailored Resume connection */}
-                <div
-                  className="col-span-3 mt-2 md:mt-0 flex items-center"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {app.resumeVersionId && app.resumeVersion ? (
-                    <div className="flex items-center gap-2 min-w-0 max-w-full">
+                  {/* 2. Stage (Interactive) */}
+                  <div className="col-span-2 flex items-center">
+                    <StageBadge
+                      stage={app.stage}
+                      size="sm"
+                      interactive
+                      onStageChange={(newStage) => handleStageChange(app._id, newStage)}
+                    />
+                  </div>
+
+                  {/* 3. Tailored Resume connection */}
+                  <div
+                    className="col-span-3 flex items-center"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {app.resumeVersionId && app.resumeVersion ? (
+                      <div className="flex items-center gap-2 min-w-0 max-w-full">
+                        <button
+                          type="button"
+                          onClick={() => router.push(`/resume/${app.resumeVersionId}`)}
+                          className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/40 hover:bg-muted/70 text-foreground transition-colors min-w-0 max-w-[180px] cursor-pointer"
+                        >
+                          <FileText className="size-3 text-primary shrink-0" />
+                          <span className="text-[11px] font-medium truncate">
+                            {app.resumeVersion.name}
+                          </span>
+                        </button>
+
+                        {app.resumeVersion.matchScore && (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+                            {app.resumeVersion.matchScore}%
+                          </span>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={(e) => handleCopyLink(e, app.resumeVersionId!)}
+                          title="Copy public resume link"
+                          className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
+                        >
+                          {copiedId === app.resumeVersionId ? (
+                            <Check className="size-3.5 text-emerald-500" />
+                          ) : (
+                            <Link2 className="size-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    ) : (
                       <button
                         type="button"
-                        onClick={() => router.push(`/resume/${app.resumeVersionId}`)}
-                        className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/40 hover:bg-muted/70 text-foreground transition-colors min-w-0 max-w-[180px] cursor-pointer"
+                        onClick={(e) => handleTailor(e, app)}
+                        disabled={tailoringId === app._id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium transition-all active:scale-[0.98] cursor-pointer"
                       >
-                        <FileText className="size-3 text-primary shrink-0" />
-                        <span className="text-[11px] font-medium truncate">
-                          {app.resumeVersion.name}
-                        </span>
-                      </button>
-
-                      {app.resumeVersion.matchScore && (
-                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                          {app.resumeVersion.matchScore}%
-                        </span>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={(e) => handleCopyLink(e, app.resumeVersionId!)}
-                        title="Copy public resume link"
-                        className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
-                      >
-                        {copiedId === app.resumeVersionId ? (
-                          <Check className="size-3.5 text-emerald-500" />
+                        {tailoringId === app._id ? (
+                          <>
+                            <Loader2 className="size-3 animate-spin" />
+                            <span>Tailoring...</span>
+                          </>
                         ) : (
-                          <Link2 className="size-3.5" />
+                          <>
+                            Tailor Resume
+                          </>
                         )}
                       </button>
-                    </div>
-                  ) : (
+                    )}
+                  </div>
+
+                  {/* 4. Applied / Saved Date */}
+                  <div className="col-span-2">
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {app.stage === 'applied' && app.appliedAt
+                        ? format(new Date(app.appliedAt), 'MMM d, yyyy')
+                        : formatDistanceToNow(new Date(app.updatedAt), { addSuffix: true })}
+                    </span>
+                  </div>
+
+                  {/* 5. Row Actions */}
+                  <div
+                    className="col-span-1 flex items-center justify-end gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {app.jobUrl && (
+                      <a
+                        href={app.jobUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Open job posting"
+                        className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                      >
+                        <ExternalLink className="size-3.5" />
+                      </a>
+                    )}
+
                     <button
                       type="button"
-                      onClick={(e) => handleTailor(e, app)}
-                      disabled={tailoringId === app._id}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium transition-all active:scale-[0.98] cursor-pointer"
+                      onClick={() => setDeleteTarget(app)}
+                      title="Delete application"
+                      className="size-7 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all cursor-pointer"
                     >
-                      {tailoringId === app._id ? (
-                        <>
-                          <Loader2 className="size-3 animate-spin" />
-                          <span>Tailoring...</span>
-                        </>
-                      ) : (
-                        <>
-                          Tailor Resume
-                        </>
-                      )}
+                      <TrashDuo className="size-3.5" />
                     </button>
-                  )}
-                </div>
-
-                {/* 4. Applied / Saved Date */}
-                <div className="col-span-2 mt-2 md:mt-0">
-                  <span className="font-mono text-[11px] text-muted-foreground">
-                    {app.stage === 'applied' && app.appliedAt
-                      ? format(new Date(app.appliedAt), 'MMM d, yyyy')
-                      : formatDistanceToNow(new Date(app.updatedAt), { addSuffix: true })}
-                  </span>
-                </div>
-
-                {/* 5. Row Actions */}
-                <div
-                  className="col-span-1 mt-2 md:mt-0 flex items-center justify-end gap-1"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {app.jobUrl && (
-                    <a
-                      href={app.jobUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Open job posting"
-                      className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-                    >
-                      <ExternalLink className="size-3.5" />
-                    </a>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(app)}
-                    title="Delete application"
-                    className="size-7 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all cursor-pointer"
-                  >
-                    <TrashDuo className="size-3.5" />
-                  </button>
+                  </div>
                 </div>
               </div>
             );

@@ -181,7 +181,7 @@ export default function JobDetailsDrawer({
         className="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-xs select-auto animate-in fade-in duration-200 cursor-pointer"
       >
         <div
-          className="relative w-full max-w-lg h-full bg-background border-l border-border/70 shadow-2xl flex flex-col overflow-hidden text-foreground animate-in slide-in-from-right duration-250 cursor-default"
+          className="relative w-full max-w-full sm:max-w-lg h-full bg-background border-l border-border/70 shadow-2xl flex flex-col overflow-hidden text-foreground animate-in slide-in-from-right duration-250 cursor-default"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -425,7 +425,7 @@ export default function JobDetailsDrawer({
           </div>
 
           {/* Footer with Delete Action */}
-          <div className="p-4 border-t border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between shrink-0">
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between shrink-0">
             <button
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
