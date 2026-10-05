@@ -42,17 +42,25 @@ export default function ResumeUploader({ userId, onSuccess, className }: ResumeU
         body: formData,
       });
 
-      const { text } = await response.json();
-      if (!text) {
-        throw new Error("Failed to extract text from PDF");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to process PDF file.");
       }
+
+      const { text } = data;
+      if (!text || text.trim().length < 50) {
+        throw new Error("The uploaded PDF does not contain readable text. Please upload a PDF with selectable text.");
+      }
+
       await parseResume({ text, userId });
 
       toast.success("Resume uploaded and parsed successfully!");
       onSuccess?.();
-    } catch (error) {
-      toast.error("Failed to parse resume. Please try again.");
-      console.error(error);
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to parse resume. Please try again.";
+      toast.error(errorMessage);
+      console.error("Resume upload error:", error);
     } finally {
       setLoading(false);
       setFile(null);
