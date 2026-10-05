@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export interface DuoIconProps extends React.SVGProps<SVGSVGElement> {
-  size?: number | string;
+  size?: number;
   secondaryOpacity?: number | string;
 }
 

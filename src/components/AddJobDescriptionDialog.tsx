@@ -13,7 +13,15 @@ import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
-import { X, Plus, Link2, FileText, Loader2, Clock, Send } from 'lucide-react';
+import {
+  LinkDuo,
+  SendDuo,
+  Clock,
+  File as DuoFile,
+  AddCircle,
+  Plus,
+} from '@/components/icons';
+import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Props {
@@ -178,7 +186,7 @@ export default function AddJobDescriptionDialog({
         </ColoredButton>
       ) : (
         <ColoredButton onClick={() => setOpen(true)} color="cyan">
-          <Plus className="size-4 mr-1" />
+          <AddCircle className="size-4 mr-1" />
           {buttonLabel}
         </ColoredButton>
       )}
@@ -271,8 +279,8 @@ export default function AddJobDescriptionDialog({
                       fullWidth
                       className="max-w-xs"
                       items={[
-                        { value: 'link', label: 'From Job Link', icon: Link2 },
-                        { value: 'text', label: 'Paste JD Text', icon: FileText },
+                        { value: 'link', label: 'From Job Link', icon: LinkDuo },
+                        { value: 'text', label: 'Paste JD Text', icon: DuoFile },
                       ]}
                     />
                   </div>
@@ -287,7 +295,7 @@ export default function AddJobDescriptionDialog({
                               Job Link URL
                             </Label>
                             <div className="relative">
-                              <Link2 className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                              <LinkDuo className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                               <Input
                                 type="url"
                                 placeholder="https://jobs.lever.co/... or greenhouse, ashby, linkedin..."
@@ -319,7 +327,7 @@ export default function AddJobDescriptionDialog({
                                     : 'border-border/60 bg-card/40 text-muted-foreground'
                                 }`}
                               >
-                                <Send className="size-3.5 text-blue-500" />
+                                <SendDuo className="size-3.5 text-blue-500" />
                                 <span>Mark Applied</span>
                               </button>
                               <button

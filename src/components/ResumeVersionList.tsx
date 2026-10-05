@@ -7,14 +7,18 @@ import { api } from '../../convex/_generated/api';
 import { Id, Doc } from '../../convex/_generated/dataModel';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
-import { TrashDuo } from '@/components/icons';
-import { AddCircle, File as DuoFile, CheckCircle as DuoCheckCircle } from '@duo-icons/react';
 import {
-  Search,
+  TrashDuo,
+  SearchDuo,
+  ExternalLinkDuo,
+  LinkDuo,
+  AddCircle,
   Plus,
-  ArrowUpRight,
+  File as DuoFile,
+  CheckCircle as DuoCheckCircle,
+} from '@/components/icons';
+import {
   X,
-  Link2,
   Check,
 } from 'lucide-react';
 import {
@@ -304,14 +308,14 @@ export default function ResumeVersionList({ userId }: Props) {
               className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 transition-colors border border-border/40"
             >
               <span>Track in Pipeline</span>
-              <ArrowUpRight className="size-3" />
+              <ExternalLinkDuo className="size-3" />
             </Link>
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
             {/* Search Input */}
             <div className="relative flex-1 min-w-[180px] sm:w-64">
-              <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <SearchDuo className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search versions..."
@@ -472,7 +476,7 @@ export default function ResumeVersionList({ userId }: Props) {
                           {copiedId === item._id ? (
                             <Check className="size-4 text-emerald-500 animate-in fade-in duration-200" />
                           ) : (
-                            <Link2 className="size-4" />
+                            <LinkDuo className="size-4" />
                           )}
                           <span className="sr-only">Copy resume link</span>
                         </button>
