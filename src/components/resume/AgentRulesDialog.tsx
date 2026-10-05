@@ -133,11 +133,16 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl border-border bg-card">
+      <DialogContent className="w-full sm:max-w-2xl max-h-[90dvh] sm:max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl border-t sm:border border-border bg-card">
+        {/* Mobile Pull Handle */}
+        <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0 bg-muted/20">
+          <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
+        </div>
+
         {/* Header with gradient badge */}
-        <div className="p-6 pb-4 border-b border-border/50 bg-linear-to-b from-muted/30 to-transparent">
+        <div className="p-4 sm:p-6 pb-4 border-b border-border/50 bg-linear-to-b from-muted/30 to-transparent shrink-0">
           <div className="flex items-center gap-2.5 mb-1.5">
-            <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
               <Bot className="size-4" />
             </div>
             <div>
@@ -155,7 +160,7 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
         </div>
 
         {/* Scrollable Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
           {/* Current Active Rules List */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -291,11 +296,11 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
         </div>
 
         {/* Footer Actions */}
-        <DialogFooter className="p-4 px-6 border-t border-border/50 bg-muted/10 flex flex-row items-center justify-between sm:justify-between gap-3">
-          <p className="text-[11px] text-muted-foreground font-mono">
-            {localRules.length} rules will be injected into chat
+        <DialogFooter className="p-3 sm:p-4 px-4 sm:px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-4 border-t border-border/50 bg-muted/10 flex flex-row items-center justify-between sm:justify-between gap-3 shrink-0">
+          <p className="text-[11px] text-muted-foreground font-mono truncate max-w-[150px] sm:max-w-none">
+            {localRules.length} rules injected into chat
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Button
               type="button"
               variant="outline"
