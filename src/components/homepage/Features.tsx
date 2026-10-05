@@ -215,15 +215,15 @@ export default function FeatureSection() {
 
             {/* Micro-Specifications (Hairline typographic items, Zero Icons) */}
             <div className="space-y-3 pt-4 border-t border-border/40 font-mono text-xs">
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">100% History Preserved</span>
                 <span>Historical variations stay intact</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Dynamic Deduplication</span>
                 <span>Zero repetitive bullet phrasing</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Instant Branching</span>
                 <span>Tailor in seconds without starting over</span>
               </div>
@@ -613,15 +613,15 @@ export default function FeatureSection() {
 
             {/* Micro-Specifications */}
             <div className="space-y-3 pt-4 border-t border-border/40 font-mono text-xs">
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Greenhouse & Lever Ready</span>
                 <span>Optimized for standard parsers</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Contextual Gap Analysis</span>
                 <span>Surfaces missing rubric elements</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Truth Anchored</span>
                 <span>Zero fabricated buzzwords</span>
               </div>
@@ -648,15 +648,15 @@ export default function FeatureSection() {
 
             {/* Micro-Specifications */}
             <div className="space-y-3 pt-4 border-t border-border/40 font-mono text-xs">
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Version-Linked Records</span>
                 <span>Exact tailored PDF preserved per application</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">5-Stage Pipeline Tracking</span>
                 <span>Applied · Screen · Technical · Onsite · Offer</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Proactive Follow-up SLAs</span>
                 <span>Automated prompts before recruiter ghosting</span>
               </div>
@@ -1014,15 +1014,15 @@ export default function FeatureSection() {
 
             {/* Micro-Specifications */}
             <div className="space-y-3 pt-4 border-t border-border/40 font-mono text-xs">
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">1:1 Narrative Parity</span>
                 <span>Story and resume cite identical achievements</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Single-Column Standard</span>
                 <span>Zero formatting bugs or table traps</span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 text-muted-foreground">
                 <span className="text-foreground font-medium">Vector PDF Compilation</span>
                 <span>Crisp typographic export ready for upload</span>
               </div>
