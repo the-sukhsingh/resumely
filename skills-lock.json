@@ -67,6 +67,12 @@
       "skillPath": "skills/find-animation-opportunities/SKILL.md",
       "computedHash": "c6673fadf179233cc0a52c978ea9acc9b82a210665c749307a571a86ed4c092e"
     },
+    "hairline-create": {
+      "source": "lucasmarkes/hairline",
+      "sourceType": "github",
+      "skillPath": "skills/hairline-create/SKILL.md",
+      "computedHash": "1a92bba7583e6091cdb83082b85aa70024955fb9f2274e454503b9c7352f3988"
+    },
     "hallmark": {
       "source": "nutlope/hallmark",
       "sourceType": "github",

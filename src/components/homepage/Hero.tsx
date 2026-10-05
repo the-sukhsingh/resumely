@@ -12,7 +12,7 @@ export default function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <section className="mx-auto max-w-6xl px-6 pt-36 sm:pt-44 md:pt-48 pb-20 flex flex-col items-start text-left relative z-10">
+    <section className="mx-auto max-w-5xl px-6 pt-36 sm:pt-44 md:pt-48 pb-20 flex flex-col items-start text-left relative z-10">
       {/* Upright Roman Headline (Left-aligned) */}
       <motion.h1
         initial={{ opacity: 0, y: 8 }}

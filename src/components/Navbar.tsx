@@ -63,7 +63,7 @@ const Navbar = () => {
                             {user && <WorkspaceWarmer userId={user._id} />}
                             <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
                                 <AnimatedSwitcher
-                                    value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
+                                    value={pathname.startsWith("/tracker") ? "/tracker" : pathname.startsWith("/resume") ? "/resume" : "/" }
                                     layoutId="navbar-tab-indicator"
                                     items={links.map((link) => ({
                                         value: link.href,
