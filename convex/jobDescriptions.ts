@@ -51,31 +51,70 @@ export const getJobDescriptionsByUser = query({
 export const parseJobDescription = action({
   args: { jdText: v.string() },
   handler: async (ctx, args) => {
+    const trimmed = args.jdText?.trim() || "";
+    if (trimmed.length < 40) {
+      throw new Error(
+        "Job description text is too short. Please provide a complete job posting with role details or requirements."
+      );
+    }
+
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
-        title: z.string(),
-        company: z.string(),
-        skills: z.array(z.string()),
-        responsibilities: z.array(z.string()),
-        keywords: z.array(z.string()),
+        isValidJobDescription: z
+          .boolean()
+          .describe(
+            "True ONLY if this text represents an authentic job posting, employment opportunity, or role specification. False if it is random text, casual message, recipe, code snippet, article, or resume."
+          ),
+        rejectionReason: z
+          .string()
+          .optional()
+          .describe(
+            "If isValidJobDescription is false, provide a polite explanation of why this text cannot be processed as a job description."
+          ),
+        title: z.string().optional().default("Role"),
+        company: z.string().optional().default("Company"),
+        skills: z.array(z.string()).optional().default([]),
+        responsibilities: z.array(z.string()).optional().default([]),
+        keywords: z.array(z.string()).optional().default([]),
       }),
-      prompt: `Parse this job description and extract title, company, skills, responsibilities, keywords:\n\n${args.jdText}`,
+      prompt: `Analyze this text for Resumely. Determine whether it represents an authentic job posting or employment description.
+If it is NOT a job description (such as random chat, a personal message, recipe, code snippet, or resume), set isValidJobDescription to false and provide a rejectionReason.
+If it IS a job description, extract title, company, skills, responsibilities, keywords:\n\n${trimmed}`,
     });
-    return object;
+
+    if (!object.isValidJobDescription) {
+      throw new Error(
+        object.rejectionReason ||
+          "The provided text does not appear to be a valid job description. Please provide a genuine job posting detailing role responsibilities or requirements."
+      );
+    }
+
+    const { isValidJobDescription: _, rejectionReason: __, ...result } = object;
+    return result;
   },
 });
 
 export const extractKeywords = action({
   args: { jdText: v.string() },
   handler: async (ctx, args) => {
+    const trimmed = args.jdText?.trim() || "";
+    if (trimmed.length < 40) {
+      return [];
+    }
+
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
-        keywords: z.array(z.string()),
+        isValidJobDescription: z.boolean().describe("Whether this text is an authentic job posting"),
+        keywords: z.array(z.string()).optional().default([]),
       }),
-      prompt: `Extract the most important keywords and technical terms from this job description:\n\n${args.jdText}`,
+      prompt: `Extract the most important technical keywords and ATS terms from this job description. If the text is NOT a job posting, mark isValidJobDescription as false:\n\n${trimmed}`,
     });
+
+    if (!object.isValidJobDescription) {
+      return [];
+    }
     return object.keywords || [];
   },
 });
@@ -83,17 +122,35 @@ export const extractKeywords = action({
 export const analyzeJobRequirements = action({
   args: { jdText: v.string() },
   handler: async (ctx, args) => {
+    const trimmed = args.jdText?.trim() || "";
+    if (trimmed.length < 40) {
+      throw new Error("Job description is too short to analyze requirements.");
+    }
+
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
-        requiredSkills: z.array(z.string()),
-        preferredSkills: z.array(z.string()),
-        responsibilities: z.array(z.string()),
-        qualifications: z.array(z.string()),
+        isValidJobDescription: z.boolean().describe("Whether this text is an authentic job posting"),
+        rejectionReason: z.string().optional(),
+        requiredSkills: z.array(z.string()).optional().default([]),
+        preferredSkills: z.array(z.string()).optional().default([]),
+        responsibilities: z.array(z.string()).optional().default([]),
+        qualifications: z.array(z.string()).optional().default([]),
       }),
-      prompt: `Analyze this job description and categorize into requiredSkills, preferredSkills, responsibilities, qualifications:\n\n${args.jdText}`,
+      prompt: `Analyze this text for Resumely. Determine whether it is an authentic job description.
+If it is NOT a job description, set isValidJobDescription to false.
+Otherwise, categorize into requiredSkills, preferredSkills, responsibilities, qualifications:\n\n${trimmed}`,
     });
-    return object;
+
+    if (!object.isValidJobDescription) {
+      throw new Error(
+        object.rejectionReason ||
+          "The provided text does not appear to be a valid job description. Please provide a real job posting."
+      );
+    }
+
+    const { isValidJobDescription: _, rejectionReason: __, ...result } = object;
+    return result;
   },
 });
 
@@ -104,6 +161,13 @@ export const createJDAndVersion = action({
     jdText: v.string(),
   },
   handler: async (ctx, args): Promise<{ jobDescriptionId: Id<"jobDescriptions">; versionId: Id<"resumeVersions"> }> => {
+    const trimmedJd = args.jdText?.trim() || "";
+    if (trimmedJd.length < 40) {
+      throw new Error(
+        "The job description is too short to analyze. Please paste a more complete job description (at least a couple of sentences detailing the role or requirements)."
+      );
+    }
+
     const requiredCredits = 10;
     const currentCredits: number = await ctx.runQuery(internal.users.getCreditBalance, {
       userId: args.userId,
@@ -115,25 +179,51 @@ export const createJDAndVersion = action({
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
-        company: z.string().describe("Company name hiring for this role, or Company if not found"),
-        title: z.string().describe("Job title"),
-        requirements: z.array(z.string()).describe("List of job requirements"),
-        responsibilities: z.array(z.string()).describe("List of job responsibilities"),
-        extractedSkills: z.array(z.string()).describe("Technical skills required"),
-        extractedKeywords: z.array(z.string()).describe("Important keywords from the JD"),
+        isValidJobDescription: z
+          .boolean()
+          .describe(
+            "True ONLY if this text represents an authentic job posting, role specification, employment vacancy, or job description. False if it is unrelated content, casual conversation, code, recipe, article, resume, or nonsense."
+          ),
+        rejectionReason: z
+          .string()
+          .optional()
+          .describe(
+            "If isValidJobDescription is false, a polite, clear explanation of why this text cannot be processed as a job description."
+          ),
+        company: z.string().optional().describe("Company name hiring for this role, or 'Company' if not found"),
+        title: z.string().optional().describe("Job title"),
+        requirements: z.array(z.string()).optional().default([]).describe("List of job requirements"),
+        responsibilities: z.array(z.string()).optional().default([]).describe("List of job responsibilities"),
+        extractedSkills: z.array(z.string()).optional().default([]).describe("Technical skills required"),
+        extractedKeywords: z.array(z.string()).optional().default([]).describe("Important keywords from the JD"),
       }),
-      prompt: `You are a job description parser. Analyze the job description and extract the required fields:\n\n${args.jdText}`,
+      prompt: `You are an expert job description validator and parser for Resumely.
+First, determine whether this text represents a genuine job posting, employment opportunity, or role description.
+If it is NOT a job description (such as random chat, a personal note, code snippet, recipe, resume, or unrelated article), set isValidJobDescription to false and explain why in rejectionReason.
+If it IS an authentic job description, set isValidJobDescription to true and extract the required fields:\n\n${trimmedJd}`,
     });
 
-    const { title, company, ...jdFields } = object;
+    if (!object.isValidJobDescription) {
+      throw new Error(
+        object.rejectionReason ||
+          "The provided text does not appear to be a valid job description. Please paste an authentic job listing detailing the role, requirements, or responsibilities."
+      );
+    }
+
+    const company = object.company?.trim() || "Company";
+    const title = object.title?.trim() || "Target Role";
+    const { isValidJobDescription: _, rejectionReason: __, ...jdFields } = object;
 
     const jobDescriptionId: Id<"jobDescriptions"> = await ctx.runMutation(api.jobDescriptions.createJobDescription, {
       userId: args.userId,
-      description: args.jdText,
-      ...jdFields,
+      description: trimmedJd,
+      requirements: jdFields.requirements ?? [],
+      responsibilities: jdFields.responsibilities ?? [],
+      extractedSkills: jdFields.extractedSkills ?? [],
+      extractedKeywords: jdFields.extractedKeywords ?? [],
     });
 
-    const versionName = company && company !== "Company" ? `${company} - ${title ?? "New Version"}` : (title ?? "New Version");
+    const versionName = company && company !== "Company" ? `${company} - ${title}` : title;
 
     const { versionId } = await ctx.runAction(api.resumeVersions.createResumeVersion, {
       masterResumeId: args.masterResumeId,
@@ -145,8 +235,8 @@ export const createJDAndVersion = action({
     try {
       await ctx.runMutation(api.jobTracker.createJobApplication, {
         userId: args.userId,
-        company: company || "Company",
-        title: title || "Target Role",
+        company,
+        title,
         stage: "applied",
         jobDescriptionId,
         resumeVersionId: versionId,
@@ -158,4 +248,5 @@ export const createJDAndVersion = action({
     return { jobDescriptionId, versionId };
   },
 });
+
 

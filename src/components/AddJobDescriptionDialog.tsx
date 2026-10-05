@@ -80,7 +80,18 @@ export default function AddJobDescriptionDialog({
       if (!trimmedUrl) return;
 
       if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
-        toast.error('Please enter a valid URL starting with https://');
+        toast.error('Please enter a valid job URL starting with https://');
+        return;
+      }
+
+      // Check for common non-job domains
+      const lowerUrl = trimmedUrl.toLowerCase();
+      const nonJobDomains = [
+        'youtube.com', 'youtu.be', 'tiktok.com', 'instagram.com', 'facebook.com',
+        'twitter.com', 'x.com', 'spotify.com', 'netflix.com', 'reddit.com'
+      ];
+      if (nonJobDomains.some((d) => lowerUrl.includes(d))) {
+        toast.error('The provided link is from a media or social network, not an active job vacancy. Please paste a direct job posting link.');
         return;
       }
 
@@ -111,6 +122,11 @@ export default function AddJobDescriptionDialog({
     } else {
       const trimmed = description.trim();
       if (!trimmed) return;
+
+      if (trimmed.length < 40) {
+        toast.error('Please paste a more complete job description detailing role responsibilities or requirements.');
+        return;
+      }
 
       setLoading(true);
       try {

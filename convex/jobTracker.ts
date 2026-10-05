@@ -346,6 +346,32 @@ export const extractJobFromUrl = action({
     let cleanText = "";
     let pageTitle: string | undefined = undefined;
 
+    // Validate URL syntax
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(args.url.trim());
+      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+        throw new Error("Invalid protocol");
+      }
+    } catch {
+      throw new Error(
+        `The provided link "${args.url}" is not a valid URL. Please provide a valid web address starting with https://`
+      );
+    }
+
+    // Check obviously non-job domains (entertainment, streaming, social media)
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const wrongDomains = [
+      "youtube.com", "youtu.be", "tiktok.com", "instagram.com", "facebook.com",
+      "twitter.com", "x.com", "spotify.com", "netflix.com", "twitch.tv",
+      "pinterest.com", "reddit.com"
+    ];
+    if (wrongDomains.some((d) => hostname === d || hostname.endsWith(`.${d}`))) {
+      throw new Error(
+        `The provided link (${hostname}) is a media or social network site, not a job vacancy listing. Please provide a direct link to an active job posting (e.g., Greenhouse, Lever, LinkedIn job, or company careers page).`
+      );
+    }
+
     try {
       const response = await fetch(args.url, {
         headers: {
@@ -371,25 +397,54 @@ export const extractJobFromUrl = action({
     }
 
     if (cleanText.length < 50) {
-      throw new Error("Could not extract readable job content from this URL. Please paste job description manually.");
+      throw new Error(
+        "Could not extract readable job content from this URL. The page may require login, JavaScript rendering, or is not a job listing. Please paste the job description manually."
+      );
     }
 
-    // Parse the extracted content using Gemini AI
+    // Parse and validate the extracted content using Gemini AI
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
-        company: z.string().describe("Company name hiring for this role"),
-        title: z.string().describe("Exact or clean job title (e.g. Senior Frontend Engineer)"),
-        location: z.string().describe("Job location, e.g. San Francisco, CA (Remote) or Hybrid"),
-        salary: z.string().describe("Salary or compensation range if mentioned, otherwise empty string"),
-        description: z.string().describe("Cleaned, formatted job description in Markdown"),
-        requirements: z.array(z.string()).describe("List of requirements/qualifications"),
-        responsibilities: z.array(z.string()).describe("List of core responsibilities"),
-        extractedSkills: z.array(z.string()).describe("Technical & functional skills required"),
-        extractedKeywords: z.array(z.string()).describe("Important ATS keywords"),
+        isJobPosting: z
+          .boolean()
+          .describe(
+            "True ONLY if this webpage represents an authentic job vacancy, employment opening, or role description. False if it is a general website, homepage, article, video, search result list, code repository, shopping item, or login wall."
+          ),
+        rejectionReason: z
+          .string()
+          .optional()
+          .describe(
+            "If isJobPosting is false, explain politely why this page is not a valid job posting (e.g., 'This link points to a company homepage rather than a specific job vacancy. Please link directly to an open role.')."
+          ),
+        company: z.string().optional().describe("Company name hiring for this role"),
+        title: z.string().optional().describe("Exact or clean job title (e.g. Senior Frontend Engineer)"),
+        location: z.string().optional().describe("Job location, e.g. San Francisco, CA (Remote) or Hybrid"),
+        salary: z.string().optional().describe("Salary or compensation range if mentioned, otherwise empty string"),
+        description: z.string().optional().describe("Cleaned, formatted job description in Markdown"),
+        requirements: z.array(z.string()).optional().default([]).describe("List of requirements/qualifications"),
+        responsibilities: z.array(z.string()).optional().default([]).describe("List of core responsibilities"),
+        extractedSkills: z.array(z.string()).optional().default([]).describe("Technical & functional skills required"),
+        extractedKeywords: z.array(z.string()).optional().default([]).describe("Important ATS keywords"),
       }),
-      prompt: `Extract structured job application details from this web page content. Be accurate and concise.\nURL: ${args.url}\n\nContent:\n${cleanText}`,
+      prompt: `Analyze this webpage content for Resumely.
+First, determine whether this page represents an authentic job vacancy or role posting.
+If it is NOT a job vacancy (such as a generic homepage, article, video, social profile, search listing, or login screen), set isJobPosting to false and provide a rejectionReason.
+If it IS an authentic job vacancy, set isJobPosting to true and extract the job application details accurately.
+
+URL: ${args.url}
+Page Title: ${pageTitle ?? "Unknown"}
+
+Content:
+${cleanText}`,
     });
+
+    if (!object.isJobPosting) {
+      throw new Error(
+        object.rejectionReason ||
+          "The provided link does not lead to an active job posting. Please provide a direct link to an employment vacancy or paste the job description manually."
+      );
+    }
 
     const company = object.company?.trim() || "Company";
     const title = object.title?.trim() || pageTitle || "Role";
@@ -419,7 +474,7 @@ export const extractJobFromUrl = action({
         location: object.location?.trim() || undefined,
         salary: object.salary?.trim() || undefined,
         jobDescriptionId,
-        tags: object.extractedSkills.slice(0, 5),
+        tags: (object.extractedSkills ?? []).slice(0, 5),
       }
     );
 
@@ -480,26 +535,52 @@ export const extractJobFromText = action({
     salary?: string;
   }> => {
     const rawText = args.text.trim();
-    if (rawText.length < 20) {
-      throw new Error("Job description is too short. Please paste the full job description.");
+    if (rawText.length < 40) {
+      throw new Error(
+        "Job description is too short to analyze. Please paste the full job description detailing role responsibilities or requirements."
+      );
     }
 
-    // Parse the pasted content using Gemini AI
+    // Parse and validate the pasted content using Gemini AI
     const { object } = await generateObject({
       model: defaultModel,
       schema: z.object({
-        company: z.string().describe("Company name hiring for this role, or Company if not mentioned"),
-        title: z.string().describe("Exact or clean job title (e.g. Senior Frontend Engineer)"),
-        location: z.string().describe("Job location, e.g. San Francisco, CA (Remote) or Hybrid"),
-        salary: z.string().describe("Salary or compensation range if mentioned, otherwise empty string"),
-        description: z.string().describe("Cleaned, formatted job description in Markdown"),
-        requirements: z.array(z.string()).describe("List of requirements/qualifications"),
-        responsibilities: z.array(z.string()).describe("List of core responsibilities"),
-        extractedSkills: z.array(z.string()).describe("Technical & functional skills required"),
-        extractedKeywords: z.array(z.string()).describe("Important ATS keywords"),
+        isValidJobDescription: z
+          .boolean()
+          .describe(
+            "True ONLY if this text represents an authentic job posting, role specification, or employment vacancy. False if it is unrelated content, casual conversation, code, recipe, resume, or gibberish."
+          ),
+        rejectionReason: z
+          .string()
+          .optional()
+          .describe(
+            "If isValidJobDescription is false, a polite explanation of why this text cannot be tracked as a job description."
+          ),
+        company: z.string().optional().describe("Company name hiring for this role, or 'Company' if not mentioned"),
+        title: z.string().optional().describe("Exact or clean job title (e.g. Senior Frontend Engineer)"),
+        location: z.string().optional().describe("Job location, e.g. San Francisco, CA (Remote) or Hybrid"),
+        salary: z.string().optional().describe("Salary or compensation range if mentioned, otherwise empty string"),
+        description: z.string().optional().describe("Cleaned, formatted job description in Markdown"),
+        requirements: z.array(z.string()).optional().default([]).describe("List of requirements/qualifications"),
+        responsibilities: z.array(z.string()).optional().default([]).describe("List of core responsibilities"),
+        extractedSkills: z.array(z.string()).optional().default([]).describe("Technical & functional skills required"),
+        extractedKeywords: z.array(z.string()).optional().default([]).describe("Important ATS keywords"),
       }),
-      prompt: `Extract structured job application details from this raw job description text. Be accurate, concise, and clean.\n\nRaw Job Description:\n${rawText.slice(0, 16000)}`,
+      prompt: `Analyze this text for Resumely.
+First, determine whether it is an authentic job vacancy or role description.
+If it is NOT a job description (such as random chat, a personal note, recipe, code, resume, or unrelated article), set isValidJobDescription to false and provide a rejectionReason.
+If it IS an authentic job description, set isValidJobDescription to true and extract structured job application details accurately:
+
+Raw Job Description:
+${rawText.slice(0, 16000)}`,
     });
+
+    if (!object.isValidJobDescription) {
+      throw new Error(
+        object.rejectionReason ||
+          "The provided text does not appear to be a valid job description. Please paste an authentic job listing detailing the role, requirements, or responsibilities."
+      );
+    }
 
     const company = object.company?.trim() || "Company";
     const title = object.title?.trim() || "Role";
@@ -529,7 +610,7 @@ export const extractJobFromText = action({
         location: object.location?.trim() || undefined,
         salary: object.salary?.trim() || undefined,
         jobDescriptionId,
-        tags: object.extractedSkills.slice(0, 5),
+        tags: (object.extractedSkills ?? []).slice(0, 5),
       }
     );
 
