@@ -18,17 +18,18 @@ import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
 import {
   X,
-  Plus,
-  Link2,
-  FileText,
-  Loader2,
-  Clock,
-  Send,
-  Building,
-  MapPin,
   DollarSign,
-  Clipboard,
+  Loader2,
 } from 'lucide-react';
+import {
+  AddCircle,
+  LinkDuo,
+  Clock,
+  SendDuo,
+  Building,
+  Location,
+  Clipboard,
+} from '@/components/icons';
 import { toast } from 'sonner';
 
 interface Props {
@@ -327,7 +328,7 @@ export default function AddTrackedJobDialog({
           onClick={() => setOpen(true)}
           className="rounded-full px-4 shadow-xs"
         >
-          <Plus className="size-3.5 mr-1" />
+          <AddCircle className="size-3.5 mr-1" />
           <span>Track Job</span>
         </ColoredButton>
       )}
@@ -471,7 +472,7 @@ export default function AddTrackedJobDialog({
                             <span>Job Posting Link (Optional)</span>
                           </Label>
                           <div className="relative">
-                            <Link2 className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                            <LinkDuo className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                             <Input
                               type="url"
                               placeholder="https://..."
@@ -499,7 +500,7 @@ export default function AddTrackedJobDialog({
                             layoutId="paste-stage-switcher"
                             items={[
                               { value: 'saved', label: 'Save for later', icon: Clock },
-                              { value: 'applied', label: 'Applied', icon: Send },
+                              { value: 'applied', label: 'Applied', icon: SendDuo },
                             ]}
                           />
                         </div>
@@ -610,7 +611,7 @@ export default function AddTrackedJobDialog({
                             Job Posting URL
                           </Label>
                           <div className="relative">
-                            <Link2 className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                            <LinkDuo className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                             <Input
                               type="url"
                               placeholder="https://jobs.lever.co/... or greenhouse, ashby, linkedin..."
@@ -643,7 +644,7 @@ export default function AddTrackedJobDialog({
                             layoutId="link-stage-switcher"
                             items={[
                               { value: 'saved', label: 'Save for later', icon: Clock },
-                              { value: 'applied', label: 'Applied', icon: Send },
+                              { value: 'applied', label: 'Applied', icon: SendDuo },
                             ]}
                           />
                         </div>
@@ -800,7 +801,7 @@ export default function AddTrackedJobDialog({
                           <div className="space-y-1.5">
                             <Label className="text-xs font-medium">Location (Optional)</Label>
                             <div className="relative">
-                              <MapPin className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                              <Location className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                               <Input
                                 placeholder="Remote, SF, NY"
                                 value={manualLocation}

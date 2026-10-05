@@ -12,16 +12,18 @@ import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
 import {
-  SlidersHorizontal,
-  Sparkles,
-  Plus,
-  Trash2,
   Check,
   X,
   Loader2,
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
+import {
+  SlidersDuo,
+  SparklesDuo,
+  TrashDuo,
+  Plus,
+} from '@/components/icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -216,7 +218,7 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
             'bg-card/90 hover:bg-muted/70 text-foreground border-border/70 hover:border-foreground/20 shadow-2xs hover:shadow-xs active:scale-[0.98]'
           )}
         >
-          <SlidersHorizontal className="size-3.5 text-primary" />
+          <SlidersDuo className="size-3.5 text-primary" />
           <span>AI Agent Rules</span>
           {activeCount > 0 ? (
             <span className="inline-flex items-center justify-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20">
@@ -331,12 +333,12 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
                               </span>
                             </span>
                           ),
-                          icon: SlidersHorizontal,
+                          icon: SlidersDuo,
                         },
                         {
                           value: 'presets',
                           label: 'Presets Library',
-                          icon: Sparkles,
+                          icon: SparklesDuo,
                         },
                       ]}
                     />
@@ -396,7 +398,7 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
                                 onClick={() => setActiveTab('presets')}
                                 className="text-xs h-8 rounded-xl gap-1.5 cursor-pointer"
                               >
-                                <Sparkles className="size-3.5 text-primary" />
+                                <SparklesDuo className="size-3.5 text-primary" />
                                 <span>Browse Presets</span>
                               </Button>
                               <Button
@@ -442,7 +444,7 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
                                   className="text-muted-foreground hover:text-destructive p-1 rounded-md hover:bg-destructive/10 transition-colors shrink-0 cursor-pointer"
                                   title="Remove rule"
                                 >
-                                  <Trash2 className="size-3.5" />
+                                  <TrashDuo className="size-3.5" />
                                 </button>
                               </div>
                             ))}
