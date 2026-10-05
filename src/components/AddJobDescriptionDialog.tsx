@@ -201,7 +201,7 @@ export default function AddJobDescriptionDialog({
                     handleClose();
                   }
                 }}
-                className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none backdrop-blur-xs"
+                className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 select-none backdrop-blur-xs"
               >
                 {/* Wave Background Preview */}
                 <motion.div
@@ -231,17 +231,17 @@ export default function AddJobDescriptionDialog({
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[86dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl max-h-[92dvh] sm:max-h-[86dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
+                  <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border/60 shrink-0">
                     <div>
                       <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                         <span>Resume</span>
                         <span className="text-border">/</span>
                         <span>Tailor for Job</span>
                       </div>
-                      <h2 className="font-sans text-xl font-semibold tracking-tight mt-0.5">
+                      <h2 className="font-sans text-lg sm:text-xl font-semibold tracking-tight mt-0.5">
                         Tailor Resume for a Job
                       </h2>
                     </div>
@@ -259,7 +259,7 @@ export default function AddJobDescriptionDialog({
                   </div>
 
                   {/* Mode Selector: Link vs Raw Text */}
-                  <div className="px-6 pt-3 shrink-0">
+                  <div className="px-4 sm:px-6 pt-3 shrink-0">
                     <AnimatedSwitcher
                       value={mode}
                       onChange={setMode}
@@ -274,7 +274,7 @@ export default function AddJobDescriptionDialog({
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-                    <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 flex flex-col gap-4">
                       {mode === 'link' ? (
                         <div className="space-y-4">
                           <div className="space-y-1.5">
@@ -304,7 +304,7 @@ export default function AddJobDescriptionDialog({
                             <Label className="text-xs font-medium text-foreground">
                               Application Stage
                             </Label>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               <button
                                 type="button"
                                 onClick={() => setStage('applied')}
@@ -349,7 +349,7 @@ export default function AddJobDescriptionDialog({
                     </div>
 
                     {/* Footer */}
-                    <div className="flex justify-between items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                    <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                       <div className="text-xs text-muted-foreground">
                         {loading && (
                           <span className="inline-flex items-center gap-1.5 text-primary">

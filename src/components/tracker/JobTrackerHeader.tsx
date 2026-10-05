@@ -85,7 +85,7 @@ export default function JobTrackerHeader({
       {/* Controls Bar: View Mode Switcher on Left, Search & "+ Track New Job" on Right (mirroring /resume) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         {/* View Mode Switcher (List vs Board) */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center justify-between sm:justify-start gap-2 shrink-0">
           <AnimatedSwitcher
             value={viewMode}
             onChange={onViewModeChange}
@@ -97,8 +97,8 @@ export default function JobTrackerHeader({
         </div>
 
         {/* Search Input & Action Button Grouped together */}
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-64">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+          <div className="relative flex-1 min-w-[180px] sm:w-64">
             <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input
               type="text"
