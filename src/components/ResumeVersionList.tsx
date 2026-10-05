@@ -34,6 +34,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
 import DitheredSphere from './custom/dithered-sphere';
+import AgentRulesDialog from './resume/AgentRulesDialog';
 import { cn } from 'cn';
 interface Props {
   userId: Id<'users'>;
@@ -177,6 +178,7 @@ export default function ResumeVersionList({ userId }: Props) {
 
             {/* Alternative Pathway: ColoredButton with AddCircle */}
             <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+              <AgentRulesDialog userId={userId} />
               <Link href="/resume/create">
                 <ColoredButton
                   type="button"
@@ -276,7 +278,8 @@ export default function ResumeVersionList({ userId }: Props) {
             </div>
 
             {/* Action CTA with Emil Kowalski Micro-interactions */}
-            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
+              <AgentRulesDialog userId={userId} />
               <Link href={`/resume/${master._id}`}>
                 <ColoredButton color="amber" className="px-5 rounded-full active:scale-[0.97]" size="lg">
                   <span>Edit Base Profile</span>
