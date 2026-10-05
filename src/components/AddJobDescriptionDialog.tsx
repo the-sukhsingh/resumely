@@ -201,7 +201,7 @@ export default function AddJobDescriptionDialog({
                     handleClose();
                   }
                 }}
-                className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 select-none backdrop-blur-xs"
+                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 select-none backdrop-blur-xs"
               >
                 {/* Wave Background Preview */}
                 <motion.div
@@ -218,23 +218,28 @@ export default function AddJobDescriptionDialog({
                   <WaveBackgroundPreview className="w-full h-full mask-t-from-80%" />
                 </motion.div>
 
-                {/* Modal Window */}
+                {/* Modal Window / Mobile Drawer */}
                 <motion.div
                   key="jd-modal-window"
-                  initial={{ opacity: 0, scale: 0.95, y: 12 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 32, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{
                     opacity: 0,
-                    scale: 0.95,
-                    y: 12,
+                    y: 32,
+                    scale: 0.98,
                     transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[92dvh] sm:max-h-[86dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl max-h-[90dvh] sm:max-h-[86dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
+                  {/* Mobile Pull Handle */}
+                  <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
+                    <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
+                  </div>
+
                   {/* Header */}
-                  <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border/60 shrink-0">
+                  <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 shrink-0">
                     <div>
                       <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                         <span>Resume</span>
@@ -349,7 +354,7 @@ export default function AddJobDescriptionDialog({
                     </div>
 
                     {/* Footer */}
-                    <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                    <div className="flex justify-between items-center px-4 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                       <div className="text-xs text-muted-foreground">
                         {loading && (
                           <span className="inline-flex items-center gap-1.5 text-primary">

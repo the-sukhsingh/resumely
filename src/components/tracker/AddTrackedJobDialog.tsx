@@ -350,7 +350,7 @@ export default function AddTrackedJobDialog({
                     handleClose();
                   }
                 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 select-none backdrop-blur-xs"
+                className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 select-none backdrop-blur-xs"
               >
                 {/* Wave Backdrop */}
                 <motion.div
@@ -364,30 +364,35 @@ export default function AddTrackedJobDialog({
                   <WaveBackgroundPreview className="w-full h-full mask-t-from-80%" />
                 </motion.div>
 
-                {/* Modal Container */}
+                {/* Modal Container / Mobile Drawer */}
                 <motion.div
                   key="track-modal-window"
-                  initial={{ opacity: 0, scale: 0.95, y: 12 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 32, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{
                     opacity: 0,
-                    scale: 0.95,
-                    y: 12,
+                    y: 32,
+                    scale: 0.98,
                     transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[88dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl max-h-[90dvh] sm:max-h-[88dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
+                  {/* Mobile Pull Handle */}
+                  <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
+                    <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
+                  </div>
+
                   {/* Header */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
+                  <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border/60 shrink-0">
                     <div>
                       <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                         <span>Tracker</span>
                         <span className="text-border">/</span>
                         <span>New Application</span>
                       </div>
-                      <h2 className="font-sans text-xl font-semibold tracking-tight mt-0.5">
+                      <h2 className="font-sans text-lg sm:text-xl font-semibold tracking-tight mt-0.5">
                         Track a Job Application
                       </h2>
                     </div>
@@ -405,7 +410,7 @@ export default function AddTrackedJobDialog({
                   </div>
 
                   {/* Tabs: Paste JD vs Link vs Manual */}
-                  <div className="px-6 pt-3 pb-1 shrink-0">
+                  <div className="px-4 sm:px-6 pt-3 pb-1 shrink-0">
                     <AnimatedSwitcher
                       value={tab}
                       onChange={setTab}
@@ -422,7 +427,7 @@ export default function AddTrackedJobDialog({
                   {/* Tab 1: Paste Job Description */}
                   {tab === 'paste' ? (
                     <form onSubmit={handlePasteSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-6 space-y-4 overflow-y-auto max-h-[58vh]">
+                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[58vh]">
                         {/* Job Description Textarea */}
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
@@ -563,7 +568,7 @@ export default function AddTrackedJobDialog({
                       </div>
 
                       {/* Footer */}
-                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                      <div className="flex justify-end gap-2 items-center px-4 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                         <Button
                           type="button"
                           variant="ghost"
@@ -599,7 +604,7 @@ export default function AddTrackedJobDialog({
                   ) : tab === 'link' ? (
                     /* Tab 2: From Job Link */
                     <form onSubmit={handleExtractSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-6 space-y-4 overflow-y-auto max-h-[58vh]">
+                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[58vh]">
                         <div className="space-y-2">
                           <Label className="text-xs font-medium text-foreground">
                             Job Posting URL
@@ -712,7 +717,7 @@ export default function AddTrackedJobDialog({
                       </div>
 
                       {/* Footer */}
-                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                      <div className="flex justify-end gap-2 items-center px-4 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                         <Button
                           type="button"
                           variant="ghost"
@@ -748,7 +753,7 @@ export default function AddTrackedJobDialog({
                   ) : (
                     /* Tab 3: Manual Entry */
                     <form onSubmit={handleManualSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-6 space-y-4 overflow-y-auto max-h-[58vh]">
+                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[58vh]">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="space-y-1.5">
                             <Label className="text-xs font-medium">Company *</Label>
@@ -854,7 +859,7 @@ export default function AddTrackedJobDialog({
                       </div>
 
                       {/* Footer */}
-                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                      <div className="flex justify-end gap-2 items-center px-4 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                         <Button
                           type="button"
                           variant="ghost"
