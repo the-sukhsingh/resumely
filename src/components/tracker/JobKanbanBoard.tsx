@@ -5,7 +5,7 @@ import { TrackedJobApplication, JobStage } from './types';
 import JobCard from './JobCard';
 import { Id } from '../../../convex/_generated/dataModel';
 import AddTrackedJobDialog from './AddTrackedJobDialog';
-import { Plus } from 'lucide-react';
+import { AddCircle } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
@@ -162,7 +162,7 @@ export default function JobKanbanBoard({
                     title={`Add job to ${col.label}`}
                     className="size-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
                   >
-                    <Plus className="size-3.5" />
+                    <AddCircle className="size-3.5" />
                   </button>
                 }
               />
@@ -194,7 +194,7 @@ export default function JobKanbanBoard({
                             type="button"
                             className="text-[10px] text-primary/80 hover:text-primary hover:underline mt-1 font-medium cursor-pointer inline-flex items-center gap-1"
                           >
-                            <Plus className="size-3" />
+                            <AddCircle className="size-3" />
                             <span>Add job</span>
                           </button>
                         }

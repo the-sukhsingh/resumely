@@ -3,10 +3,9 @@
 import { TrackedJobApplication } from './types';
 import AddTrackedJobDialog from './AddTrackedJobDialog';
 import { Id } from '../../../convex/_generated/dataModel';
-import { Search, X, Plus } from 'lucide-react';
+import { X } from 'lucide-react';
 import ColoredButton from '@/components/custom/colored-button';
-import { Menu } from '@duo-icons/react';
-import { Dashboard } from '@duo-icons/react';
+import { Menu, Dashboard, SearchDuo, AddCircle } from '@/components/icons';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
 
 interface Props {
@@ -99,7 +98,7 @@ export default function JobTrackerHeader({
         {/* Search Input & Action Button Grouped together */}
         <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
           <div className="relative flex-1 min-w-[180px] sm:w-64">
-            <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <SearchDuo className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input
               type="text"
               placeholder="Search applications..."
@@ -128,7 +127,7 @@ export default function JobTrackerHeader({
                 size="default"
                 className="rounded-full px-4 text-xs font-medium shrink-0"
               >
-                <Plus className="size-3.5 mr-1" />
+                <AddCircle className="size-3.5 mr-1" />
                 <span>Track New Job</span>
               </ColoredButton>
             }
