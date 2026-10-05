@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 
 function PaymentStatusDialogContent() {
@@ -39,7 +39,7 @@ function PaymentStatusDialogContent() {
         <DialogDescription className="sr-only">Your payment was successful</DialogDescription>
         
         <div className="rounded-full p-3 sm:p-4 bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20">
-          <CheckCircle2 className="size-12 sm:size-16" />
+          <CheckCircle className="size-12 sm:size-16" />
         </div>
         
         <div className="flex flex-col gap-1.5 sm:gap-2">

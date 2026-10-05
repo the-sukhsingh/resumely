@@ -1,7 +1,7 @@
 'use client';
 
-import { Edit2, GripVertical } from 'lucide-react';
-import { TrashDuo } from '@/components/icons';
+import { GripVertical } from 'lucide-react';
+import { TrashDuo, EditDuo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Reorder } from 'motion/react';
 
@@ -70,7 +70,7 @@ export function DataTable<T extends { id: string }>({
                     size="icon-sm"
                     className="h-7 w-7 p-0 hover:bg-cherry/20 hover:text-cherry"
                   >
-                    <Edit2 className="w-3.5 h-3.5" />
+                    <EditDuo className="w-3.5 h-3.5" />
                   </Button>
                   <Button
                     onClick={() => onDelete(item.id)}
