@@ -14,6 +14,7 @@ export default defineSchema({
     name: v.optional(v.string()),
     picture: v.optional(v.union(v.string(), v.null())),
     credits: v.optional(v.number()),
+    agentRules: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }).index("by_email", ["email"]),
 

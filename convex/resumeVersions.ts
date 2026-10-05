@@ -606,7 +606,12 @@ function decodeHtmlEntities(str: string): string {
     });
 }
 
-function buildSystemPrompt(resume: Doc<"resumeVersions">, jd: Doc<"jobDescriptions"> | null, focusSection?: string) {
+function buildSystemPrompt(
+  resume: Doc<"resumeVersions">,
+  jd: Doc<"jobDescriptions"> | null,
+  focusSection?: string,
+  userRules: string[] = []
+) {
   const jdSection = jd
     ? `TARGET JOB DESCRIPTION:
 Overview: ${jd.description ? jd.description.slice(0, 300) : "Not specified"}
@@ -646,6 +651,16 @@ Responsibilities: ${jd.responsibilities.join(" | ")}`
   const focusInstruction = focusSection && focusSection !== "all"
     ? `\nFOCUS DIRECTION: The user is specifically focusing on the "${focusSection}" section. You must focus your suggestions, updates, and edits ONLY on this section. Do not modify or reference other sections unless absolutely necessary or explicitly asked by the user.`
     : "";
+
+  const userRulesSection =
+    userRules && userRules.length > 0
+      ? `\n==================================================
+5. CANDIDATE'S CUSTOM AGENT RULES (HIGH PRIORITY):
+==================================================
+The candidate has established the following personal rules and style constraints for their resume. You MUST strictly adhere to every one of these rules across all suggestions, edits, and answers:
+${userRules.map((rule, idx) => `${idx + 1}. ${rule}`).join("\n")}
+`
+      : "";
 
   return `You are Resumely AI, an elite AI career coach, professional resume editor, and job application specialist built into the Resumely platform.
 Your single and exclusive purpose is to help the candidate craft, optimize, tailor, and audit high-impact, ATS-optimized resumes, CVs, cover letters, and job application materials.
@@ -707,7 +722,7 @@ ${JSON.stringify(resumeData, null, 2)}
 
 ${jdSection}
 ${focusInstruction}
-
+${userRulesSection}
 ==================================================
 4. EDITING & TOOL USAGE INSTRUCTIONS:
 ==================================================
@@ -776,7 +791,16 @@ export const chat = action({
       focusSection: args.focusSection,
     });
 
-    const systemPrompt = buildSystemPrompt(resume as Doc<"resumeVersions">, jobDescription, args.focusSection);
+    const userRules: string[] = await ctx.runQuery(api.users.getUserAgentRules, {
+      userId: resume.userId,
+    });
+
+    const systemPrompt = buildSystemPrompt(
+      resume as Doc<"resumeVersions">,
+      jobDescription,
+      args.focusSection,
+      userRules
+    );
     const messages = [...pastMessages, { role: "user" as const, content: args.message }];
 
     const tools: any = {

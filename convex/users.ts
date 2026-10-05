@@ -125,3 +125,36 @@ export const upsertUser = mutation({
     });
   },
 });
+
+export const getUserAgentRules = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args): Promise<string[]> => {
+    const user = await ctx.db.get(args.userId);
+    return user?.agentRules ?? [];
+  },
+});
+
+export const updateAgentRules = mutation({
+  args: {
+    userId: v.id("users"),
+    rules: v.array(v.string()),
+  },
+  handler: async (ctx, args): Promise<string[]> => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    const cleanRules = args.rules
+      .map((r) => r.trim())
+      .filter((r) => r.length > 0)
+      .slice(0, 25);
+
+    await ctx.db.patch(args.userId, {
+      agentRules: cleanRules,
+    });
+
+    return cleanRules;
+  },
+});
+
