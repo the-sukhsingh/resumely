@@ -19,6 +19,7 @@ const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,7 +48,7 @@ const Navbar = () => {
                     ? "bg-background/80 backdrop-blur-md border-b border-border/40 shadow-xs" 
                     : "bg-transparent border-b border-transparent"
         )}>
-            <div className="max-w-5xl mx-auto px-6">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6">
                 {/* Skip link for keyboard users */}
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 bg-background px-4 py-2 rounded-xl border border-border transition-all">Skip to content</a>
 
@@ -77,12 +78,13 @@ const Navbar = () => {
                     )}
 
                     {/* Right side: auth / mobile menu */}
-                    <div className="flex items-center gap-4">
-                        {/* Mobile Menu */}
-                        <div className="md:hidden">
-                            <Popover>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Mobile Controls */}
+                        <div className="flex md:hidden items-center gap-1.5">
+                            <ModeToggle />
+                            <Popover open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="rounded-full">
+                                    <Button variant="ghost" size="icon" className="rounded-full h-9 w-9" aria-label="Open navigation menu">
                                         <Menu className="h-5 w-5" />
                                     </Button>
                                 </PopoverTrigger>
@@ -99,6 +101,7 @@ const Navbar = () => {
                                                                 key={link.href}
                                                                 href={link.href}
                                                                 prefetch={true}
+                                                                onClick={() => setMobileMenuOpen(false)}
                                                                 className={cn(
                                                                     "flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors font-medium text-sm",
                                                                     isActive
@@ -114,9 +117,12 @@ const Navbar = () => {
                                                 </div>
 
                                                 <div className="pt-4 border-t border-border/50">
-                                                    <div className="flex items-center gap-4 mb-6 px-3">
+                                                    <div className="flex items-center gap-4 mb-4 px-3">
                                                         <Avatar className="h-10 w-10 rounded-full border border-border">
                                                             <AvatarImage src={user?.picture} />
+                                                            <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                                                                {user?.name?.charAt(0).toUpperCase() || "U"}
+                                                            </AvatarFallback>
                                                         </Avatar>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="text-sm font-semibold truncate">{user?.name}</div>
@@ -124,15 +130,27 @@ const Navbar = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center justify-between p-4 mb-4 mx-1 rounded-2xl bg-muted/30 border border-border/50">
+                                                    <div className="flex items-center justify-between p-3.5 mb-3 mx-1 rounded-2xl bg-muted/30 border border-border/50">
                                                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Credits</span>
                                                         <span className="text-sm font-semibold">{user?.credits ?? 0}</span>
                                                     </div>
 
+                                                    <Link
+                                                        href="/"
+                                                        onClick={() => setMobileMenuOpen(false)}
+                                                        className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors font-medium text-sm mb-1"
+                                                    >
+                                                        <CreditCard className="size-4 shrink-0" />
+                                                        <span>Buy Credits</span>
+                                                    </Link>
+
                                                     <Button
                                                         variant="ghost"
-                                                        className="w-full rounded-2xl gap-2 justify-start h-12 px-4 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                                        onClick={() => signOut()}
+                                                        className="w-full rounded-2xl gap-2 justify-start h-11 px-4 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                                        onClick={() => {
+                                                            setMobileMenuOpen(false);
+                                                            signOut();
+                                                        }}
                                                     >
                                                         <LogOut className="h-4 w-4" />
                                                         Sign Out
@@ -140,7 +158,10 @@ const Navbar = () => {
                                                 </div>
                                             </>
                                         ) : (
-                                            <Button variant="neo" className="w-full rounded-full h-12 text-sm font-semibold" onClick={() => signIn("google")}>
+                                            <Button variant="neo" className="w-full rounded-full h-12 text-sm font-semibold" onClick={() => {
+                                                setMobileMenuOpen(false);
+                                                signIn("google");
+                                            }}>
                                                 Get Started
                                             </Button>
                                         )}
