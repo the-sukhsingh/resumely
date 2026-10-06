@@ -12,6 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
@@ -62,6 +69,7 @@ export default function AddTrackedJobDialog({
 
   // Link Form State
   const [url, setUrl] = useState('');
+  const [linkDescription, setLinkDescription] = useState('');
   const [linkStage, setLinkStage] = useState<JobStage>(initialStage);
   const [autoTailor, setAutoTailor] = useState(Boolean(masterResumeId));
   const [extracting, setExtracting] = useState(false);
@@ -104,6 +112,7 @@ export default function AddTrackedJobDialog({
     setPastePhase('idle');
     // Reset link state
     setUrl('');
+    setLinkDescription('');
     setExtractPhase('idle');
     // Reset manual state
     setManualCompany('');
@@ -246,6 +255,7 @@ export default function AddTrackedJobDialog({
         stage: linkStage,
         autoTailor: Boolean(autoTailor && masterResumeId),
         masterResumeId: masterResumeId || undefined,
+        customDescription: linkDescription.trim() || undefined,
       });
 
       clearTimeout(phaseTimer);
@@ -723,6 +733,25 @@ export default function AddTrackedJobDialog({
                           </p>
                         </div>
 
+                        {/* Full Job Description (Optional) */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs font-medium text-foreground">
+                              Full Job Description <span className="text-muted-foreground font-normal">(Optional)</span>
+                            </Label>
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              Auto-extracted from URL if empty
+                            </span>
+                          </div>
+                          <Textarea
+                            placeholder="Optional: Paste the full job description text here if the URL requires authentication, has bot protection, or to guarantee exact requirements..."
+                            value={linkDescription}
+                            onChange={(e) => setLinkDescription(e.target.value)}
+                            disabled={extracting}
+                            className="min-h-[85px] text-xs resize-none rounded-xl border-border/70 placeholder:text-muted-foreground/70"
+                          />
+                        </div>
+
                         {/* Initial Stage Selector */}
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
@@ -965,17 +994,27 @@ export default function AddTrackedJobDialog({
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div className="space-y-1.5">
                             <Label className="text-xs font-medium">Stage</Label>
-                            <select
+                            <Select
                               value={manualStage}
-                              onChange={(e) => setManualStage(e.target.value as JobStage)}
-                              className="w-full text-xs h-9 px-2.5 rounded-xl bg-background border border-border/70 text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20"
+                              onValueChange={(val) => setManualStage(val as JobStage)}
                             >
-                              {(Object.keys(STAGE_CONFIGS) as JobStage[]).map((st) => (
-                                <option key={st} value={st}>
-                                  {STAGE_CONFIGS[st].label}
-                                </option>
-                              ))}
-                            </select>
+                              <SelectTrigger className="w-full text-xs h-9 px-3 rounded-xl bg-background border border-border/70 text-foreground focus-visible:ring-1 focus-visible:ring-foreground/20">
+                                <div className="flex items-center gap-2">
+                                  <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[manualStage].dotClass)} />
+                                  <SelectValue />
+                                </div>
+                              </SelectTrigger>
+                              <SelectContent position="popper" className="z-[110]">
+                                {(Object.keys(STAGE_CONFIGS) as JobStage[]).map((st) => (
+                                  <SelectItem key={st} value={st} className="text-xs cursor-pointer">
+                                    <div className="flex items-center gap-2">
+                                      <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[st].dotClass)} />
+                                      <span>{STAGE_CONFIGS[st].label}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
 
                           <div className="space-y-1.5">

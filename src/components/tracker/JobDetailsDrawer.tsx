@@ -19,6 +19,10 @@ import {
   Loader2,
   ArrowRight,
   ShieldCheck,
+  Copy,
+  Pencil,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   ExternalLinkDuo,
@@ -29,6 +33,7 @@ import {
   TrashDuo,
   LinkDuo,
 } from '@/components/icons';
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,6 +74,15 @@ export default function JobDetailsDrawer({
   const [copiedLink, setCopiedLink] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Job Description View / Edit State
+  const [isJdExpanded, setIsJdExpanded] = useState(false);
+  const [isEditingJd, setIsEditingJd] = useState(false);
+  const [jdText, setJdText] = useState(
+    application?.description || application?.jobDescription?.description || ''
+  );
+  const [copiedJd, setCopiedJd] = useState(false);
+  const [isSavingJd, setIsSavingJd] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -76,6 +90,9 @@ export default function JobDetailsDrawer({
   useEffect(() => {
     if (application) {
       setNotes(application.notes || '');
+      setJdText(application.description || application.jobDescription?.description || '');
+      setIsEditingJd(false);
+      setIsJdExpanded(false);
     }
   }, [application]);
 
@@ -119,6 +136,37 @@ export default function JobDetailsDrawer({
       toast.error('Failed to save notes');
     } finally {
       setIsSavingNotes(false);
+    }
+  };
+
+  const handleSaveJd = async () => {
+    setIsSavingJd(true);
+    try {
+      await updateJob({
+        applicationId: application._id,
+        description: jdText.trim() || undefined,
+      });
+      setIsEditingJd(false);
+      toast.success('Job description saved');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to save job description');
+    } finally {
+      setIsSavingJd(false);
+    }
+  };
+
+  const handleCopyJd = async () => {
+    const textToCopy = application.description || application.jobDescription?.description || jdText;
+    if (!textToCopy) return;
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedJd(true);
+      toast.success('Full job description copied to clipboard!');
+      setTimeout(() => setCopiedJd(false), 2000);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to copy text');
     }
   };
 
@@ -377,6 +425,192 @@ export default function JobDetailsDrawer({
                 </div>
               </div>
             </div>
+
+            {/* Full Job Description Section */}
+            {(() => {
+              const activeDescription = application.description || application.jobDescription?.description || jdText;
+              const wordCount = activeDescription
+                ? activeDescription.trim().split(/\s+/).filter(Boolean).length
+                : 0;
+              const isLongDescription = (activeDescription || '').length > 320;
+
+              return (
+                <div className="p-4 rounded-2xl border border-border/70 bg-card/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <DuoFile className="size-4 text-primary shrink-0" />
+                      <span className="text-xs font-semibold text-foreground tracking-tight">
+                        Full Job Description
+                      </span>
+                      {activeDescription && (
+                        <span className="text-[10px] font-mono text-muted-foreground px-1.5 py-0.5 rounded-md bg-muted/60 border border-border/40 shrink-0">
+                          ~{wordCount} words
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      {activeDescription && (
+                        <button
+                          type="button"
+                          onClick={handleCopyJd}
+                          title="Copy full job description"
+                          className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/70 active:scale-[0.94] transition-all cursor-pointer"
+                        >
+                          {copiedJd ? (
+                            <Check className="size-3.5 text-emerald-500" />
+                          ) : (
+                            <Copy className="size-3.5" />
+                          )}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingJd(!isEditingJd)}
+                        title={isEditingJd ? 'Cancel editing' : 'Edit description'}
+                        className={cn(
+                          'size-7 rounded-lg flex items-center justify-center transition-all cursor-pointer active:scale-[0.94]',
+                          isEditingJd
+                            ? 'bg-primary/15 text-primary'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/70'
+                        )}
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {isEditingJd ? (
+                    <div className="space-y-2">
+                      <Textarea
+                        placeholder="Paste or edit the full job description text..."
+                        value={jdText}
+                        onChange={(e) => setJdText(e.target.value)}
+                        className="min-h-[140px] text-xs resize-y rounded-xl bg-background"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setJdText(activeDescription);
+                            setIsEditingJd(false);
+                          }}
+                          className="h-7 text-xs px-2.5"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={handleSaveJd}
+                          disabled={isSavingJd}
+                          className="h-7 text-xs px-3"
+                        >
+                          {isSavingJd ? (
+                            <>
+                              <Loader2 className="size-3 animate-spin mr-1" />
+                              Saving...
+                            </>
+                          ) : (
+                            'Save Description'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : activeDescription ? (
+                    <div className="relative">
+                      <div
+                        className={cn(
+                          'text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap font-sans transition-all duration-200 overflow-hidden',
+                          !isJdExpanded && isLongDescription && 'max-h-[160px]'
+                        )}
+                      >
+                        {activeDescription}
+                      </div>
+
+                      {!isJdExpanded && isLongDescription && (
+                        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none" />
+                      )}
+
+                      {isLongDescription && (
+                        <div className="pt-2 flex justify-center">
+                          <button
+                            type="button"
+                            onClick={() => setIsJdExpanded(!isJdExpanded)}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline cursor-pointer active:scale-98 transition-all"
+                          >
+                            {isJdExpanded ? (
+                              <>
+                                <span>Show less</span>
+                                <ChevronUp className="size-3" />
+                              </>
+                            ) : (
+                              <>
+                                <span>Read full description</span>
+                                <ChevronDown className="size-3" />
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 px-2 border border-dashed border-border/60 rounded-xl bg-background/50 space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        No full job description saved yet.
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsEditingJd(true)}
+                        className="h-7 text-xs rounded-lg"
+                      >
+                        <Pencil className="size-3 mr-1.5" />
+                        Paste Job Description
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Responsibilities & Requirements pills/chips if parsed by AI */}
+                  {((application.jobDescription?.responsibilities && application.jobDescription.responsibilities.length > 0) ||
+                    (application.jobDescription?.requirements && application.jobDescription.requirements.length > 0)) && (
+                    <div className="pt-2 border-t border-border/40 space-y-2.5">
+                      {application.jobDescription?.responsibilities &&
+                        application.jobDescription.responsibilities.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                              Key Responsibilities
+                            </span>
+                            <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                              {application.jobDescription.responsibilities.slice(0, 4).map((resp, i) => (
+                                <li key={i} className="leading-snug">
+                                  {resp}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                      {application.jobDescription?.requirements &&
+                        application.jobDescription.requirements.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                              Core Requirements
+                            </span>
+                            <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                              {application.jobDescription.requirements.slice(0, 4).map((req, i) => (
+                                <li key={i} className="leading-snug">
+                                  {req}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Extracted Skills / Tags */}
             {application.jobDescription?.extractedSkills &&
