@@ -220,12 +220,10 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
         >
           <SlidersDuo className="size-3.5 text-primary" />
           <span>AI Agent Rules</span>
-          {activeCount > 0 ? (
+          {activeCount > 0 && (
             <span className="inline-flex items-center justify-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20">
               {activeCount} active
             </span>
-          ) : (
-            <span className="text-[10px] text-muted-foreground font-mono">Configure</span>
           )}
         </button>
       )}
@@ -276,7 +274,7 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[90dvh] sm:max-h-[86dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl h-[88dvh] sm:h-[600px] max-h-[90dvh] sm:max-h-[86dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
                   {/* Mobile Pull Handle */}
                   <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
@@ -345,186 +343,202 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
                   </div>
 
                   {/* Body Content */}
-                  <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
-                    {activeTab === 'active' ? (
-                      /* Tab 1: Active Rules Management */
-                      <div className="space-y-4">
-                        {/* Custom Rule Input Bar */}
-                        <div className="relative flex items-center">
-                          <Plus className="size-4 absolute left-3 text-muted-foreground pointer-events-none" />
-                          <Input
-                            value={newRuleInput}
-                            onChange={(e) => setNewRuleInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleAddRule(newRuleInput);
-                              }
-                            }}
-                            placeholder="Add rule (e.g. Always quantify metrics with %)..."
-                            disabled={localRules.length >= 20 || saving}
-                            className="pl-9 pr-16 h-10 text-xs rounded-xl bg-muted/30 border-border/70 focus-visible:ring-1 focus-visible:bg-background transition-all"
-                          />
-                          <Button
-                            type="button"
-                            size="sm"
-                            onClick={() => handleAddRule(newRuleInput)}
-                            disabled={!newRuleInput.trim() || localRules.length >= 20 || saving}
-                            className="absolute right-1.5 h-7 px-3 text-[11px] rounded-lg cursor-pointer"
-                          >
-                            Add
-                          </Button>
-                        </div>
-
-                        {/* Rules List or Empty State */}
-                        {localRules.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-dashed border-border/70 bg-muted/10 text-center space-y-3.5 my-2">
-                            <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                              <ShieldCheck className="size-5" />
-                            </div>
-                            <div className="space-y-1 max-w-sm">
-                              <h3 className="text-sm font-semibold text-foreground">
-                                No custom rules active
-                              </h3>
-                              <p className="text-xs text-muted-foreground leading-relaxed">
-                                Custom directives ensure the AI tailors bullet points, tone, and keywords according to your exact preferences.
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setActiveTab('presets')}
-                                className="text-xs h-8 rounded-xl gap-1.5 cursor-pointer"
-                              >
-                                <SparklesDuo className="size-3.5 text-primary" />
-                                <span>Browse Presets</span>
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleLoadStarterPack}
-                                className="text-xs h-8 rounded-xl text-muted-foreground hover:text-foreground cursor-pointer"
-                              >
-                                <span>Load Recommended Pack</span>
-                              </Button>
-                            </div>
+                  <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 min-h-0">
+                    <AnimatePresence mode="wait" initial={false}>
+                      {activeTab === 'active' ? (
+                        /* Tab 1: Active Rules Management */
+                        <motion.div
+                          key="agent-rules-active-tab"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15, ease: 'easeOut' }}
+                          className="space-y-4 min-h-full flex flex-col"
+                        >
+                          {/* Custom Rule Input Bar */}
+                          <div className="relative flex items-center shrink-0">
+                            <Plus className="size-4 absolute left-3 text-muted-foreground pointer-events-none" />
+                            <Input
+                              value={newRuleInput}
+                              onChange={(e) => setNewRuleInput(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleAddRule(newRuleInput);
+                                }
+                              }}
+                              placeholder="Add rule (e.g. Always quantify metrics with %)..."
+                              disabled={localRules.length >= 20 || saving}
+                              className="pl-9 pr-16 h-10 text-xs rounded-xl bg-muted/30 border-border/70 focus-visible:ring-1 focus-visible:bg-background transition-all"
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => handleAddRule(newRuleInput)}
+                              disabled={!newRuleInput.trim() || localRules.length >= 20 || saving}
+                              className="absolute right-1.5 h-7 px-3 text-[11px] rounded-lg cursor-pointer"
+                            >
+                              Add
+                            </Button>
                           </div>
-                        ) : (
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between px-0.5 text-[11px] text-muted-foreground font-mono">
-                              <span>
-                                {localRules.length} {localRules.length === 1 ? 'rule' : 'rules'} active
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setLocalRules([])}
-                                className="text-[11px] text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
-                              >
-                                Clear all
-                              </button>
-                            </div>
 
-                            {localRules.map((rule, idx) => (
-                              <div
-                                key={idx}
-                                className="group relative flex items-start gap-3 p-3 rounded-xl bg-card/60 hover:bg-muted/40 border border-border/60 hover:border-border transition-all duration-150"
-                              >
-                                <span className="font-mono text-[10px] font-semibold text-muted-foreground/80 mt-0.5 size-5 rounded-md bg-muted/60 flex items-center justify-center shrink-0">
-                                  {String(idx + 1).padStart(2, '0')}
-                                </span>
-                                <p className="flex-1 text-xs text-foreground leading-relaxed pr-2">
-                                  {rule}
+                          {/* Rules List or Empty State */}
+                          {localRules.length === 0 ? (
+                            <div className="flex-1 flex flex-col items-center justify-center p-8 rounded-2xl border border-dashed border-border/70 bg-muted/10 text-center space-y-3.5 my-auto">
+                              <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                <ShieldCheck className="size-5" />
+                              </div>
+                              <div className="space-y-1 max-w-sm">
+                                <h3 className="text-sm font-semibold text-foreground">
+                                  No custom rules active
+                                </h3>
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                  Custom directives ensure the AI tailors bullet points, tone, and keywords according to your exact preferences.
                                 </p>
+                              </div>
+                              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setActiveTab('presets')}
+                                  className="text-xs h-8 rounded-xl gap-1.5 cursor-pointer"
+                                >
+                                  <SparklesDuo className="size-3.5 text-primary" />
+                                  <span>Browse Presets</span>
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleLoadStarterPack}
+                                  className="text-xs h-8 rounded-xl text-muted-foreground hover:text-foreground cursor-pointer"
+                                >
+                                  <span>Load Recommended Pack</span>
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between px-0.5 text-[11px] text-muted-foreground font-mono">
+                                <span>
+                                  {localRules.length} {localRules.length === 1 ? 'rule' : 'rules'} active
+                                </span>
                                 <button
                                   type="button"
-                                  onClick={() => handleRemoveRule(idx)}
-                                  className="text-muted-foreground hover:text-destructive p-1 rounded-md hover:bg-destructive/10 transition-colors shrink-0 cursor-pointer"
-                                  title="Remove rule"
+                                  onClick={() => setLocalRules([])}
+                                  className="text-[11px] text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                                 >
-                                  <TrashDuo className="size-3.5" />
+                                  Clear all
                                 </button>
+                              </div>
+
+                              {localRules.map((rule, idx) => (
+                                <div
+                                  key={idx}
+                                  className="group relative flex items-start gap-3 p-3 rounded-xl bg-card/60 hover:bg-muted/40 border border-border/60 hover:border-border transition-all duration-150"
+                                >
+                                  <span className="font-mono text-[10px] font-semibold text-muted-foreground/80 mt-0.5 size-5 rounded-md bg-muted/60 flex items-center justify-center shrink-0">
+                                    {String(idx + 1).padStart(2, '0')}
+                                  </span>
+                                  <p className="flex-1 text-xs text-foreground leading-relaxed pr-2">
+                                    {rule}
+                                  </p>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveRule(idx)}
+                                    className="text-muted-foreground hover:text-destructive p-1 rounded-md hover:bg-destructive/10 transition-colors shrink-0 cursor-pointer"
+                                    title="Remove rule"
+                                  >
+                                    <TrashDuo className="size-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </motion.div>
+                      ) : (
+                        /* Tab 2: Curated Presets Library */
+                        <motion.div
+                          key="agent-rules-presets-tab"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15, ease: 'easeOut' }}
+                          className="space-y-4"
+                        >
+                          {/* Category Filter Pills */}
+                          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                            {categories.map((cat) => (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => setSelectedCategory(cat)}
+                                className={cn(
+                                  'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer border select-none',
+                                  selectedCategory === cat
+                                    ? 'bg-foreground text-background border-foreground font-semibold'
+                                    : 'bg-muted/30 hover:bg-muted/60 text-muted-foreground border-border/50 hover:text-foreground'
+                                )}
+                              >
+                                {cat}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Presets List */}
+                          <div className="space-y-4">
+                            {filteredPresets.map((categoryGroup, groupIdx) => (
+                              <div key={groupIdx} className="space-y-2">
+                                {selectedCategory === 'All' && (
+                                  <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-muted-foreground px-0.5">
+                                    <span>{categoryGroup.category}</span>
+                                  </div>
+                                )}
+                                <div className="space-y-1.5">
+                                  {categoryGroup.rules.map((preset, pIdx) => {
+                                    const isAdded = localRules.includes(preset);
+                                    return (
+                                      <div
+                                        key={pIdx}
+                                        onClick={() => handleToggleRule(preset)}
+                                        className={cn(
+                                          'group p-3 rounded-xl border text-xs transition-all duration-150 flex items-center justify-between gap-3 cursor-pointer select-none',
+                                          isAdded
+                                            ? 'border-emerald-500/30 bg-emerald-500/5 text-foreground hover:border-emerald-500/40'
+                                            : 'border-border/60 bg-card/40 hover:bg-muted/30 text-foreground hover:border-border'
+                                        )}
+                                      >
+                                        <div className="flex items-start gap-2.5 min-w-0 pr-2">
+                                          <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground shrink-0 mt-0.5">
+                                            {categoryGroup.tag}
+                                          </span>
+                                          <p className="leading-snug">{preset}</p>
+                                        </div>
+
+                                        <div className="shrink-0">
+                                          {isAdded ? (
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                                              <Check className="size-3" />
+                                              <span>Active</span>
+                                            </span>
+                                          ) : (
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium text-muted-foreground group-hover:text-foreground group-hover:bg-muted/60 transition-all">
+                                              <Plus className="size-3" />
+                                              <span>Add</span>
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             ))}
                           </div>
-                        )}
-                      </div>
-                    ) : (
-                      /* Tab 2: Curated Presets Library */
-                      <div className="space-y-4">
-                        {/* Category Filter Pills */}
-                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                          {categories.map((cat) => (
-                            <button
-                              key={cat}
-                              type="button"
-                              onClick={() => setSelectedCategory(cat)}
-                              className={cn(
-                                'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer border select-none',
-                                selectedCategory === cat
-                                  ? 'bg-foreground text-background border-foreground font-semibold'
-                                  : 'bg-muted/30 hover:bg-muted/60 text-muted-foreground border-border/50 hover:text-foreground'
-                              )}
-                            >
-                              {cat}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Presets List */}
-                        <div className="space-y-4">
-                          {filteredPresets.map((categoryGroup, groupIdx) => (
-                            <div key={groupIdx} className="space-y-2">
-                              {selectedCategory === 'All' && (
-                                <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-muted-foreground px-0.5">
-                                  <span>{categoryGroup.category}</span>
-                                </div>
-                              )}
-                              <div className="space-y-1.5">
-                                {categoryGroup.rules.map((preset, pIdx) => {
-                                  const isAdded = localRules.includes(preset);
-                                  return (
-                                    <div
-                                      key={pIdx}
-                                      onClick={() => handleToggleRule(preset)}
-                                      className={cn(
-                                        'group p-3 rounded-xl border text-xs transition-all duration-150 flex items-center justify-between gap-3 cursor-pointer select-none',
-                                        isAdded
-                                          ? 'border-emerald-500/30 bg-emerald-500/5 text-foreground hover:border-emerald-500/40'
-                                          : 'border-border/60 bg-card/40 hover:bg-muted/30 text-foreground hover:border-border'
-                                      )}
-                                    >
-                                      <div className="flex items-start gap-2.5 min-w-0 pr-2">
-                                        <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground shrink-0 mt-0.5">
-                                          {categoryGroup.tag}
-                                        </span>
-                                        <p className="leading-snug">{preset}</p>
-                                      </div>
-
-                                      <div className="shrink-0">
-                                        {isAdded ? (
-                                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                                            <Check className="size-3" />
-                                            <span>Active</span>
-                                          </span>
-                                        ) : (
-                                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium text-muted-foreground group-hover:text-foreground group-hover:bg-muted/60 transition-all">
-                                            <Plus className="size-3" />
-                                            <span>Add</span>
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Footer */}

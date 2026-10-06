@@ -378,7 +378,7 @@ export default function AddTrackedJobDialog({
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[90dvh] sm:max-h-[88dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl h-[88dvh] sm:h-[640px] max-h-[90dvh] sm:max-h-[88dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
                   {/* Mobile Pull Handle */}
                   <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
@@ -425,10 +425,20 @@ export default function AddTrackedJobDialog({
                     />
                   </div>
 
-                  {/* Tab 1: Paste Job Description */}
-                  {tab === 'paste' ? (
-                    <form onSubmit={handlePasteSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[58vh]">
+                  {/* Tab Content with fixed container height and smooth transitions */}
+                  <AnimatePresence mode="wait" initial={false}>
+                    {tab === 'paste' ? (
+                      /* Tab 1: Paste Job Description */
+                      <motion.form
+                        key="tab-paste"
+                        onSubmit={handlePasteSubmit}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                        className="flex flex-col flex-1 min-h-0 overflow-hidden"
+                      >
+                        <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
                         {/* Job Description Textarea */}
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
@@ -601,11 +611,19 @@ export default function AddTrackedJobDialog({
                           )}
                         </ColoredButton>
                       </div>
-                    </form>
+                    </motion.form>
                   ) : tab === 'link' ? (
                     /* Tab 2: From Job Link */
-                    <form onSubmit={handleExtractSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[58vh]">
+                    <motion.form
+                      key="tab-link"
+                      onSubmit={handleExtractSubmit}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="flex flex-col flex-1 min-h-0 overflow-hidden"
+                    >
+                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
                         <div className="space-y-2">
                           <Label className="text-xs font-medium text-foreground">
                             Job Posting URL
@@ -750,11 +768,19 @@ export default function AddTrackedJobDialog({
                           )}
                         </ColoredButton>
                       </div>
-                    </form>
+                    </motion.form>
                   ) : (
                     /* Tab 3: Manual Entry */
-                    <form onSubmit={handleManualSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[58vh]">
+                    <motion.form
+                      key="tab-manual"
+                      onSubmit={handleManualSubmit}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="flex flex-col flex-1 min-h-0 overflow-hidden"
+                    >
+                      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="space-y-1.5">
                             <Label className="text-xs font-medium">Company *</Label>
@@ -879,8 +905,9 @@ export default function AddTrackedJobDialog({
                           {manualSubmitting ? 'Saving...' : 'Track Application'}
                         </ColoredButton>
                       </div>
-                    </form>
+                    </motion.form>
                   )}
+                </AnimatePresence>
                 </motion.div>
               </motion.div>
             )}

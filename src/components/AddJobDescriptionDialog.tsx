@@ -239,7 +239,7 @@ export default function AddJobDescriptionDialog({
                   }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[90dvh] sm:max-h-[86dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-xl h-[88dvh] sm:h-[520px] max-h-[90dvh] sm:max-h-[86dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
                   {/* Mobile Pull Handle */}
                   <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
@@ -286,79 +286,95 @@ export default function AddJobDescriptionDialog({
                   </div>
 
                   {/* Form */}
-                  <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 flex flex-col gap-4">
-                      {mode === 'link' ? (
-                        <div className="space-y-4">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium text-foreground">
-                              Job Link URL
-                            </Label>
-                            <div className="relative">
-                              <LinkDuo className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                              <Input
-                                type="url"
-                                placeholder="https://jobs.lever.co/... or greenhouse, ashby, linkedin..."
-                                value={linkUrl}
-                                onChange={(e) => setLinkUrl(e.target.value)}
-                                disabled={loading}
-                                required
-                                autoFocus
-                                className="pl-9 text-xs h-10 rounded-xl"
-                              />
+                  <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 flex flex-col gap-4 min-h-0">
+                      <AnimatePresence mode="wait" initial={false}>
+                        {mode === 'link' ? (
+                          <motion.div
+                            key="jd-mode-link"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15, ease: 'easeOut' }}
+                            className="space-y-4"
+                          >
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-foreground">
+                                Job Link URL
+                              </Label>
+                              <div className="relative">
+                                <LinkDuo className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                                <Input
+                                  type="url"
+                                  placeholder="https://jobs.lever.co/... or greenhouse, ashby, linkedin..."
+                                  value={linkUrl}
+                                  onChange={(e) => setLinkUrl(e.target.value)}
+                                  disabled={loading}
+                                  required
+                                  autoFocus
+                                  className="pl-9 text-xs h-10 rounded-xl"
+                                />
+                              </div>
+                              <p className="text-[11px] text-muted-foreground">
+                                Resumely will read the posting, extract requirements, generate a tailored resume version, and track the role in your pipeline.
+                              </p>
                             </div>
-                            <p className="text-[11px] text-muted-foreground">
-                              Resumely will read the posting, extract requirements, generate a tailored resume version, and track the role in your pipeline.
-                            </p>
-                          </div>
 
-                          {/* Initial Tracker Stage Selector */}
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium text-foreground">
-                              Application Stage
-                            </Label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              <button
-                                type="button"
-                                onClick={() => setStage('applied')}
-                                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs text-left transition-all ${
-                                  stage === 'applied'
-                                    ? 'border-blue-500/40 bg-blue-500/10 font-medium'
-                                    : 'border-border/60 bg-card/40 text-muted-foreground'
-                                }`}
-                              >
-                                <SendDuo className="size-3.5 text-blue-500" />
-                                <span>Mark Applied</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setStage('saved')}
-                                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs text-left transition-all ${
-                                  stage === 'saved'
-                                    ? 'border-foreground/30 bg-muted/60 font-medium'
-                                    : 'border-border/60 bg-card/40 text-muted-foreground'
-                                }`}
-                              >
-                                <Clock className="size-3.5 text-slate-500" />
-                                <span>Add for later (Saved)</span>
-                              </button>
+                            {/* Initial Tracker Stage Selector */}
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-foreground">
+                                Application Stage
+                              </Label>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setStage('applied')}
+                                  className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs text-left transition-all ${
+                                    stage === 'applied'
+                                      ? 'border-blue-500/40 bg-blue-500/10 font-medium'
+                                      : 'border-border/60 bg-card/40 text-muted-foreground'
+                                  }`}
+                                >
+                                  <SendDuo className="size-3.5 text-blue-500" />
+                                  <span>Mark Applied</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setStage('saved')}
+                                  className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs text-left transition-all ${
+                                    stage === 'saved'
+                                      ? 'border-foreground/30 bg-muted/60 font-medium'
+                                      : 'border-border/60 bg-card/40 text-muted-foreground'
+                                  }`}
+                                >
+                                  <Clock className="size-3.5 text-slate-500" />
+                                  <span>Add for later (Saved)</span>
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col flex-1 gap-1.5 min-h-0">
-                          <Label className="text-xs text-foreground font-medium">
-                            Job Description Text
-                          </Label>
-                          <Textarea
-                            placeholder="Paste the job description text, requirements, and responsibilities here..."
-                            value={description}
-                            onChange={(event) => setDescription(event.target.value)}
-                            className="flex-1 min-h-[200px] resize-none leading-relaxed font-sans text-xs border-border/60 p-3.5 rounded-xl focus-visible:ring-1"
-                            autoFocus
-                          />
-                        </div>
-                      )}
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="jd-mode-text"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15, ease: 'easeOut' }}
+                            className="flex flex-col flex-1 gap-1.5 min-h-0 h-full"
+                          >
+                            <Label className="text-xs text-foreground font-medium">
+                              Job Description Text
+                            </Label>
+                            <Textarea
+                              placeholder="Paste the job description text, requirements, and responsibilities here..."
+                              value={description}
+                              onChange={(event) => setDescription(event.target.value)}
+                              className="flex-1 min-h-[240px] resize-none leading-relaxed font-sans text-xs border-border/60 p-3.5 rounded-xl focus-visible:ring-1"
+                              autoFocus
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     {/* Footer */}
