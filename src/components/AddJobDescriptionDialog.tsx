@@ -45,6 +45,7 @@ export default function AddJobDescriptionDialog({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<'text' | 'link'>('link');
   const [linkUrl, setLinkUrl] = useState('');
+  const [linkDescription, setLinkDescription] = useState('');
   const [description, setDescription] = useState('');
   const [stage, setStage] = useState<'applied' | 'saved'>('applied');
   const [loading, setLoading] = useState(false);
@@ -58,6 +59,7 @@ export default function AddJobDescriptionDialog({
     setOpen(false);
     setDescription('');
     setLinkUrl('');
+    setLinkDescription('');
   };
 
   useEffect(() => {
@@ -112,6 +114,7 @@ export default function AddJobDescriptionDialog({
           stage,
           autoTailor: true,
           masterResumeId,
+          customDescription: linkDescription.trim() || undefined,
         });
 
         if (result.resumeVersionId) {
@@ -319,6 +322,25 @@ export default function AddJobDescriptionDialog({
                               <p className="text-[11px] text-muted-foreground">
                                 Resumely will read the posting, extract requirements, generate a tailored resume version, and track the role in your pipeline.
                               </p>
+                            </div>
+
+                            {/* Full Job Description (Optional) */}
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-xs font-medium text-foreground">
+                                  Full Job Description <span className="text-muted-foreground font-normal">(Optional)</span>
+                                </Label>
+                                <span className="text-[10px] text-muted-foreground font-mono">
+                                  Auto-extracted from URL if empty
+                                </span>
+                              </div>
+                              <Textarea
+                                placeholder="Optional: Paste the full job description text here if the URL requires authentication or has bot protection..."
+                                value={linkDescription}
+                                onChange={(e) => setLinkDescription(e.target.value)}
+                                disabled={loading}
+                                className="min-h-[85px] text-xs resize-none rounded-xl border-border/70 placeholder:text-muted-foreground/70"
+                              />
                             </div>
 
                             {/* Initial Tracker Stage Selector */}
