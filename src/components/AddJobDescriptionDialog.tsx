@@ -345,72 +345,35 @@ export default function AddJobDescriptionDialog({
 
                             {/* Initial Tracker Stage Selector */}
                             <div className="space-y-1.5">
-                              <div className="flex items-center justify-between">
-                                <Label className="text-xs font-semibold text-foreground tracking-tight">
-                                  Application Stage
-                                </Label>
-                                <span className="text-[11px] font-mono text-muted-foreground">
-                                  {stage === 'applied' ? 'Marked as Applied' : 'Queued in Saved'}
-                                </span>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-2">
+                              <Label className="text-xs font-medium text-foreground">
+                                Application Stage
+                              </Label>
+                              <div className="grid grid-cols-2 p-1 bg-muted/40 dark:bg-muted/20 rounded-xl border border-border/60 gap-1">
                                 <button
                                   type="button"
                                   onClick={() => setStage('applied')}
                                   className={cn(
-                                    'group relative flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none active:scale-[0.98]',
+                                    'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98]',
                                     stage === 'applied'
-                                      ? 'border-blue-500/40 bg-blue-500/8 text-foreground ring-1 ring-blue-500/20 shadow-2xs'
-                                      : 'border-border/60 bg-card/40 hover:bg-muted/40 hover:border-border text-muted-foreground hover:text-foreground'
+                                      ? 'bg-background text-foreground shadow-2xs border border-border/60 font-semibold'
+                                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                                   )}
                                 >
-                                  <div
-                                    className={cn(
-                                      'size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors border',
-                                      stage === 'applied'
-                                        ? 'bg-blue-500/15 text-blue-500 border-blue-500/25 shadow-2xs'
-                                        : 'bg-muted/60 text-muted-foreground border-border/40 group-hover:text-foreground'
-                                    )}
-                                  >
-                                    <SendDuo className="size-4" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-semibold leading-tight text-foreground">Mark Applied</p>
-                                    <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Track active pipeline</p>
-                                  </div>
-                                  {stage === 'applied' && (
-                                    <span className="size-1.5 rounded-full bg-blue-500 shrink-0 mr-0.5" />
-                                  )}
+                                  <span className="size-2 rounded-full bg-blue-500 shrink-0" />
+                                  <span>Mark Applied</span>
                                 </button>
-
                                 <button
                                   type="button"
                                   onClick={() => setStage('saved')}
                                   className={cn(
-                                    'group relative flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none active:scale-[0.98]',
+                                    'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98]',
                                     stage === 'saved'
-                                      ? 'border-amber-500/40 bg-amber-500/8 text-foreground ring-1 ring-amber-500/20 shadow-2xs'
-                                      : 'border-border/60 bg-card/40 hover:bg-muted/40 hover:border-border text-muted-foreground hover:text-foreground'
+                                      ? 'bg-background text-foreground shadow-2xs border border-border/60 font-semibold'
+                                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                                   )}
                                 >
-                                  <div
-                                    className={cn(
-                                      'size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors border',
-                                      stage === 'saved'
-                                        ? 'bg-amber-500/15 text-amber-500 border-amber-500/25 shadow-2xs'
-                                        : 'bg-muted/60 text-muted-foreground border-border/40 group-hover:text-foreground'
-                                    )}
-                                  >
-                                    <Clock className="size-4" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-semibold leading-tight text-foreground">Save for later</p>
-                                    <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Apply when ready</p>
-                                  </div>
-                                  {stage === 'saved' && (
-                                    <span className="size-1.5 rounded-full bg-amber-500 shrink-0 mr-0.5" />
-                                  )}
+                                  <span className="size-2 rounded-full bg-amber-500 shrink-0" />
+                                  <span>Save for later</span>
                                 </button>
                               </div>
                             </div>

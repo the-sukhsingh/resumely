@@ -507,74 +507,35 @@ export default function AddTrackedJobDialog({
 
                         {/* Initial Stage Selector */}
                         <div className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-semibold text-foreground tracking-tight">
-                              Initial Stage
-                            </Label>
-                            <span className="text-[11px] font-mono text-muted-foreground">
-                              {pasteStage === 'saved' ? 'Queued in Saved' : 'Marked as Applied'}
-                            </span>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-2">
-                            {/* Option 1: Saved for later */}
+                          <Label className="text-xs font-medium text-foreground">
+                            Initial Stage
+                          </Label>
+                          <div className="grid grid-cols-2 p-1 bg-muted/40 dark:bg-muted/20 rounded-xl border border-border/60 gap-1">
                             <button
                               type="button"
                               onClick={() => setPasteStage('saved')}
                               className={cn(
-                                'group relative flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none active:scale-[0.98]',
+                                'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98]',
                                 pasteStage === 'saved'
-                                  ? 'border-amber-500/40 bg-amber-500/8 text-foreground ring-1 ring-amber-500/20 shadow-2xs'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/40 hover:border-border text-muted-foreground hover:text-foreground'
+                                  ? 'bg-background text-foreground shadow-2xs border border-border/60 font-semibold'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                               )}
                             >
-                              <div
-                                className={cn(
-                                  'size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors border',
-                                  pasteStage === 'saved'
-                                    ? 'bg-amber-500/15 text-amber-500 border-amber-500/25 shadow-2xs'
-                                    : 'bg-muted/60 text-muted-foreground border-border/40 group-hover:text-foreground'
-                                )}
-                              >
-                                <Clock className="size-4" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-xs font-semibold leading-tight text-foreground">Save for later</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Apply when ready</p>
-                              </div>
-                              {pasteStage === 'saved' && (
-                                <span className="size-1.5 rounded-full bg-amber-500 shrink-0 mr-0.5" />
-                              )}
+                              <span className="size-2 rounded-full bg-amber-500 shrink-0" />
+                              <span>Save for later</span>
                             </button>
-
-                            {/* Option 2: Already Applied */}
                             <button
                               type="button"
                               onClick={() => setPasteStage('applied')}
                               className={cn(
-                                'group relative flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none active:scale-[0.98]',
+                                'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98]',
                                 pasteStage === 'applied'
-                                  ? 'border-blue-500/40 bg-blue-500/8 text-foreground ring-1 ring-blue-500/20 shadow-2xs'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/40 hover:border-border text-muted-foreground hover:text-foreground'
+                                  ? 'bg-background text-foreground shadow-2xs border border-border/60 font-semibold'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                               )}
                             >
-                              <div
-                                className={cn(
-                                  'size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors border',
-                                  pasteStage === 'applied'
-                                    ? 'bg-blue-500/15 text-blue-500 border-blue-500/25 shadow-2xs'
-                                    : 'bg-muted/60 text-muted-foreground border-border/40 group-hover:text-foreground'
-                                )}
-                              >
-                                <SendDuo className="size-4" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-xs font-semibold leading-tight text-foreground">Already Applied</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Track active pipeline</p>
-                              </div>
-                              {pasteStage === 'applied' && (
-                                <span className="size-1.5 rounded-full bg-blue-500 shrink-0 mr-0.5" />
-                              )}
+                              <span className="size-2 rounded-full bg-blue-500 shrink-0" />
+                              <span>Already Applied</span>
                             </button>
                           </div>
                         </div>
@@ -587,50 +548,35 @@ export default function AddTrackedJobDialog({
                             }
                           }}
                           className={cn(
-                            'group relative flex items-center justify-between p-3 rounded-xl border transition-all duration-200 select-none',
+                            'group flex items-center justify-between p-3 rounded-xl border transition-all duration-150 select-none',
                             !masterResumeId
                               ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
                               : pasteAutoTailor
-                                ? 'border-emerald-500/40 bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent hover:border-emerald-500/50 shadow-2xs cursor-pointer ring-1 ring-emerald-500/20'
-                                : 'border-border/60 bg-card/40 hover:bg-muted/30 hover:border-border cursor-pointer active:scale-[0.99]'
+                                ? 'border-border/80 bg-muted/20 hover:bg-muted/30 cursor-pointer'
+                                : 'border-border/50 bg-transparent hover:bg-muted/15 cursor-pointer'
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0 pr-3">
                             <div
                               className={cn(
-                                'size-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 border',
+                                'size-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors',
                                 pasteAutoTailor && masterResumeId
-                                  ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30 shadow-2xs'
-                                  : 'bg-muted/60 text-muted-foreground border-border/50 group-hover:text-foreground'
+                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25'
+                                  : 'bg-muted/50 text-muted-foreground border-border/50 group-hover:text-foreground'
                               )}
                             >
-                              <SparklesDuo className="size-4.5" />
+                              <SparklesDuo className="size-4" />
                             </div>
 
-                            <div className="min-w-0 space-y-0.5">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-foreground tracking-tight">
-                                  Tailor Resume with AI
-                                </span>
-                                <span
-                                  className={cn(
-                                    'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-mono font-medium transition-colors',
-                                    pasteAutoTailor && masterResumeId
-                                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25'
-                                      : 'bg-muted/60 text-muted-foreground border border-border/50'
-                                  )}
-                                >
-                                  {pasteAutoTailor && masterResumeId ? 'Enabled' : 'Recommended'}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground leading-snug">
-                                Automatically adapts bullet points & ATS keywords for this role
+                            <div className="min-w-0">
+                              <p className="text-xs font-medium text-foreground leading-tight">
+                                Tailor Resume with AI
                               </p>
-                              {!masterResumeId && (
-                                <p className="text-[10px] text-amber-500/90 font-medium pt-0.5">
-                                  Requires a master resume. You can track now and tailor later.
-                                </p>
-                              )}
+                              <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                                {masterResumeId
+                                  ? 'Adapts bullet points & ATS keywords for this role'
+                                  : 'Requires a master resume. You can track now and tailor later.'}
+                              </p>
                             </div>
                           </div>
 
@@ -754,74 +700,35 @@ export default function AddTrackedJobDialog({
 
                         {/* Initial Stage Selector */}
                         <div className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-semibold text-foreground tracking-tight">
-                              Initial Stage
-                            </Label>
-                            <span className="text-[11px] font-mono text-muted-foreground">
-                              {linkStage === 'saved' ? 'Queued in Saved' : 'Marked as Applied'}
-                            </span>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-2">
-                            {/* Option 1: Saved for later */}
+                          <Label className="text-xs font-medium text-foreground">
+                            Initial Stage
+                          </Label>
+                          <div className="grid grid-cols-2 p-1 bg-muted/40 dark:bg-muted/20 rounded-xl border border-border/60 gap-1">
                             <button
                               type="button"
                               onClick={() => setLinkStage('saved')}
                               className={cn(
-                                'group relative flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none active:scale-[0.98]',
+                                'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98]',
                                 linkStage === 'saved'
-                                  ? 'border-amber-500/40 bg-amber-500/8 text-foreground ring-1 ring-amber-500/20 shadow-2xs'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/40 hover:border-border text-muted-foreground hover:text-foreground'
+                                  ? 'bg-background text-foreground shadow-2xs border border-border/60 font-semibold'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                               )}
                             >
-                              <div
-                                className={cn(
-                                  'size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors border',
-                                  linkStage === 'saved'
-                                    ? 'bg-amber-500/15 text-amber-500 border-amber-500/25 shadow-2xs'
-                                    : 'bg-muted/60 text-muted-foreground border-border/40 group-hover:text-foreground'
-                                )}
-                              >
-                                <Clock className="size-4" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-xs font-semibold leading-tight text-foreground">Save for later</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Apply when ready</p>
-                              </div>
-                              {linkStage === 'saved' && (
-                                <span className="size-1.5 rounded-full bg-amber-500 shrink-0 mr-0.5" />
-                              )}
+                              <span className="size-2 rounded-full bg-amber-500 shrink-0" />
+                              <span>Save for later</span>
                             </button>
-
-                            {/* Option 2: Already Applied */}
                             <button
                               type="button"
                               onClick={() => setLinkStage('applied')}
                               className={cn(
-                                'group relative flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none active:scale-[0.98]',
+                                'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98]',
                                 linkStage === 'applied'
-                                  ? 'border-blue-500/40 bg-blue-500/8 text-foreground ring-1 ring-blue-500/20 shadow-2xs'
-                                  : 'border-border/60 bg-card/40 hover:bg-muted/40 hover:border-border text-muted-foreground hover:text-foreground'
+                                  ? 'bg-background text-foreground shadow-2xs border border-border/60 font-semibold'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                               )}
                             >
-                              <div
-                                className={cn(
-                                  'size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors border',
-                                  linkStage === 'applied'
-                                    ? 'bg-blue-500/15 text-blue-500 border-blue-500/25 shadow-2xs'
-                                    : 'bg-muted/60 text-muted-foreground border-border/40 group-hover:text-foreground'
-                                )}
-                              >
-                                <SendDuo className="size-4" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-xs font-semibold leading-tight text-foreground">Already Applied</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Track active pipeline</p>
-                              </div>
-                              {linkStage === 'applied' && (
-                                <span className="size-1.5 rounded-full bg-blue-500 shrink-0 mr-0.5" />
-                              )}
+                              <span className="size-2 rounded-full bg-blue-500 shrink-0" />
+                              <span>Already Applied</span>
                             </button>
                           </div>
                         </div>
@@ -834,50 +741,35 @@ export default function AddTrackedJobDialog({
                             }
                           }}
                           className={cn(
-                            'group relative flex items-center justify-between p-3 rounded-xl border transition-all duration-200 select-none',
+                            'group flex items-center justify-between p-3 rounded-xl border transition-all duration-150 select-none',
                             !masterResumeId
                               ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
                               : autoTailor
-                                ? 'border-emerald-500/40 bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent hover:border-emerald-500/50 shadow-2xs cursor-pointer ring-1 ring-emerald-500/20'
-                                : 'border-border/60 bg-card/40 hover:bg-muted/30 hover:border-border cursor-pointer active:scale-[0.99]'
+                                ? 'border-border/80 bg-muted/20 hover:bg-muted/30 cursor-pointer'
+                                : 'border-border/50 bg-transparent hover:bg-muted/15 cursor-pointer'
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0 pr-3">
                             <div
                               className={cn(
-                                'size-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 border',
+                                'size-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors',
                                 autoTailor && masterResumeId
-                                  ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30 shadow-2xs'
-                                  : 'bg-muted/60 text-muted-foreground border-border/50 group-hover:text-foreground'
+                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25'
+                                  : 'bg-muted/50 text-muted-foreground border-border/50 group-hover:text-foreground'
                               )}
                             >
-                              <SparklesDuo className="size-4.5" />
+                              <SparklesDuo className="size-4" />
                             </div>
 
-                            <div className="min-w-0 space-y-0.5">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-foreground tracking-tight">
-                                  Tailor Resume with AI
-                                </span>
-                                <span
-                                  className={cn(
-                                    'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-mono font-medium transition-colors',
-                                    autoTailor && masterResumeId
-                                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25'
-                                      : 'bg-muted/60 text-muted-foreground border border-border/50'
-                                  )}
-                                >
-                                  {autoTailor && masterResumeId ? 'Enabled' : 'Recommended'}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground leading-snug">
-                                Automatically adapts bullet points & ATS keywords for this role
+                            <div className="min-w-0">
+                              <p className="text-xs font-medium text-foreground leading-tight">
+                                Tailor Resume with AI
                               </p>
-                              {!masterResumeId && (
-                                <p className="text-[10px] text-amber-500/90 font-medium pt-0.5">
-                                  Requires a master resume. You can track now and tailor later.
-                                </p>
-                              )}
+                              <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                                {masterResumeId
+                                  ? 'Adapts bullet points & ATS keywords for this role'
+                                  : 'Requires a master resume. You can track now and tailor later.'}
+                              </p>
                             </div>
                           </div>
 
