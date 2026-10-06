@@ -719,7 +719,7 @@ var HL = (() => {
 </script>
 <script type="module" id="hl-figure">
 /**
- * Ledger: a master resume plinth in the center powering five fanned
+ * Ledger: a master resume plinth in the center powering five diversified
  * variant resume cards around it via grounded hairline conduits.
  */
 const {
@@ -728,11 +728,14 @@ const {
   tval, tween, disposer, put,
 } = HL;
 
-const N = 5, WM = 42, HM = 54, TKM = 1.4, WC = 22, HC = 32, TKC = 1.2;
+const N = 5, WM = 44, HM = 56, TKM = 1.4, TKC = 1.2;
 const SQ2 = Math.SQRT1_2, MCX = -15, MCY = -15, M_REST_TH = -10;
 const CARDS = [
-  { cx: -19, cy: 29, th: -12 }, { cx: -3, cy: 21, th: -10 },
-  { cx: 12, cy: 12, th: -8 }, { cx: 21, cy: -3, th: -10 }, { cx: 29, cy: -19, th: -12 },
+  { cx: -19, cy: 29, th: -13, pt: [-22, -10] },
+  { cx: -3, cy: 21, th: -10, pt: [-18, -6] },
+  { cx: 12, cy: 12, th: -7, pt: [-10, -10] },
+  { cx: 21, cy: -3, th: -10, pt: [-6, -18] },
+  { cx: 29, cy: -19, th: -13, pt: [-10, -22] },
 ];
 
 const mShape = fillet(
@@ -740,13 +743,13 @@ const mShape = fillet(
   [1.2, 1.2, 2.5, 1.5, 2, 2, 1.5, 2.5],
 );
 
-const cShape = (i) => {
-  const t0 = -WC / 2 + 2 + i * 3.2;
-  return fillet(
-    [[-WC / 2, 0], [WC / 2, 0], [WC / 2, HC], [t0 + 6, HC], [t0 + 6, HC + 4], [t0, HC + 4], [t0, HC], [-WC / 2, HC]],
-    [1, 1, 2, 1.2, 1.5, 1.5, 1.2, 2],
-  );
-};
+const cShapes = [
+  fillet([[-11, 0], [11, 0], [11, 32], [-2, 32], [-2, 36], [-11, 36]], [1, 1, 2, 1.5, 1.5, 2]),
+  fillet([[-11, 0], [11, 0], [11, 34], [4, 34], [4, 38], [-4, 38], [-4, 34], [-11, 34]], [1, 1, 2, 1.5, 1.5, 1.5, 1.5, 2]),
+  fillet([[-12, 0], [12, 0], [12, 36], [6, 36], [6, 40], [-6, 40], [-6, 34], [-12, 34]], [1, 1, 2, 1.5, 1.5, 1.5, 1.5, 2]),
+  fillet([[-11, 0], [11, 0], [11, 34], [11, 38], [2, 38], [2, 34], [-11, 34]], [1, 1, 2, 1.5, 1.5, 1.5, 2]),
+  fillet([[-11, 0], [11, 0], [11, 32], [11, 36], [3, 36], [3, 32], [-11, 32]], [1, 1, 2, 1.5, 1.5, 1.5, 2]),
+];
 
 const w = (P, cx, cy, u, v, th, lift) => {
   const s = Math.sin(rad(th)), c = Math.cos(rad(th));
@@ -760,26 +763,30 @@ const wb = (P, cx, cy, u, v, th, lift, tk) => {
 function masterPose(P, th, lift) {
   const mw = (u, v) => w(P, MCX, MCY, u, v, th, lift);
   const mwb = (u, v) => wb(P, MCX, MCY, u, v, th, lift, TKM);
+  const vSec = [39, 32, 25, 18, 11];
   return {
     back: poly(mShape.map((p) => mwb(p[0], p[1]))),
     face: poly(mShape.map((p) => mw(p[0], p[1]))),
     head: seg(mw(-WM / 2 + 4, HM - 8), mw(WM / 2 - 4, HM - 8)),
-    sub: seg(mw(-WM / 2 + 4, HM - 14), mw(WM / 2 - 10, HM - 14)),
-    rules: [HM - 22, HM - 28, HM - 34, HM - 40, HM - 46].map((v) => seg(mw(-WM / 2 + 8, v), mw(WM / 2 - 4, v))),
-    punches: [HM - 22, HM - 28, HM - 34, HM - 40, HM - 46].map((v) => mw(-WM / 2 + 4, v)),
+    sub: seg(mw(-WM / 2 + 4, HM - 13), mw(WM / 2 - 12, HM - 13)),
+    rules: vSec.map((v) => seg(mw(-WM / 2 + 8, v), mw(WM / 2 - 4, v)) + seg(mw(-WM / 2 + 8, v - 3), mw(WM / 2 - 12, v - 3))),
+    punches: vSec.map((v) => mw(-WM / 2 + 4, v)),
   };
 }
 
-function cardPose(P, i, shape, th, lift) {
-  const cd = CARDS[i], cw = (u, v) => w(P, cd.cx, cd.cy, u, v, th, lift);
-  const cwb = (u, v) => wb(P, cd.cx, cd.cy, u, v, th, lift, TKC), t0 = -WC / 2 + 2 + i * 3.2;
-  return {
-    back: poly(shape.map((p) => cwb(p[0], p[1]))),
-    face: poly(shape.map((p) => cw(p[0], p[1]))),
-    head: seg(cw(-WC / 2 + 3, HC - 6), cw(WC / 2 - 3, HC - 6)),
-    rules: [HC - 13, HC - 19, HC - 25].map((v) => seg(cw(-WC / 2 + 3, v), cw(WC / 2 - 3, v))).join(""),
-    punch: cw(t0 + 3, HC + 2),
-  };
+function cardPose(P, i, th, lift) {
+  const cd = CARDS[i], shape = cShapes[i], cw = (u, v) => w(P, cd.cx, cd.cy, u, v, th, lift);
+  const cwb = (u, v) => wb(P, cd.cx, cd.cy, u, v, th, lift, TKC);
+  const head = i === 2 ? seg(cw(-9, 29), cw(9, 29)) : seg(cw(-8, 27), cw(8, 27));
+  const sub = i === 2 ? seg(cw(-9, 25), cw(4, 25)) : i === 1 ? seg(cw(-8, 23), cw(3, 23)) : "";
+  let r = "";
+  if (i === 0) r = seg(cw(-8, 20), cw(-1, 20)) + seg(cw(2, 20), cw(8, 20)) + seg(cw(-8, 14), cw(8, 14)) + seg(cw(-8, 7), cw(5, 7));
+  else if (i === 1) r = seg(cw(-8, 17), cw(8, 17)) + seg(cw(0, 15), cw(0, 19)) + seg(cw(-8, 11), cw(8, 11)) + seg(cw(-8, 6), cw(6, 6));
+  else if (i === 2) r = seg(cw(0, 20), cw(0, 5)) + seg(cw(-9, 17), cw(-2, 17)) + seg(cw(2, 17), cw(9, 17)) + seg(cw(-9, 10), cw(-2, 10)) + seg(cw(2, 10), cw(9, 10));
+  else if (i === 3) r = seg(cw(-8, 21), cw(8, 21)) + seg(cw(-8, 16), cw(8, 16)) + seg(cw(-8, 11), cw(6, 11)) + seg(cw(-8, 6), cw(8, 6));
+  else r = seg(cw(-8, 21), cw(1, 21)) + seg(cw(-8, 15), cw(8, 15)) + seg(cw(-8, 10), cw(5, 10)) + seg(cw(-8, 5), cw(8, 5));
+  const punch = i === 0 ? cw(-7, 34) : i === 1 ? cw(0, 36) : i === 2 ? cw(0, 38) : i === 3 ? cw(7, 36) : cw(7, 34);
+  return { back: poly(shape.map((p) => cwb(p[0], p[1]))), face: poly(shape.map((p) => cw(p[0], p[1]))), head: head + sub, rules: r, punch };
 }
 
 function mount({ stage, svg, read }, value) {
@@ -797,22 +804,21 @@ function mount({ stage, svg, read }, value) {
   const plinth = solid(g);
   put(plinth, prism(P, front, outer, inner, -6, 0));
 
-  const hubOrigin = P(MCX + 8 * SQ2, MCY + 8 * SQ2, 0.2);
-  const conduits = CARDS.map((cd) => mk("path", { d: seg(hubOrigin, P(cd.cx, cd.cy, 0.2)), class: "dash" }, g));
+  const conduits = CARDS.map((cd) => mk("path", { d: seg(P(cd.pt[0], cd.pt[1], 0.2), P(cd.cx, cd.cy, 0.2)), class: "dash" }, g));
 
   const mGrp = mk("g", {}, g);
   const mBack = mk("path", { class: "lo" }, mGrp), mFace = mk("path", { class: "sil" }, mGrp);
   const mHead = mk("path", { class: "hi" }, mGrp), mSub = mk("path", { class: "lo" }, mGrp);
   const mRules = [0, 1, 2, 3, 4].map(() => mk("path", { class: "lo" }, mGrp));
-  const mPunches = [0, 1, 2, 3, 4].map(() => mk("circle", { r: 1.1, class: "dot off" }, mGrp));
+  const mPunches = [0, 1, 2, 3, 4].map(() => mk("circle", { r: 1.15, class: "dot off" }, mGrp));
   const master = { th: tween(M_REST_TH), z: tween(0) };
 
   const cards = CARDS.map((cd, i) => {
-    const shape = cShape(i), grp = mk("g", {}, g);
+    const grp = mk("g", {}, g);
     const back = mk("path", { class: "lo" }, grp), face = mk("path", { class: "sil" }, grp);
     const head = mk("path", { class: "lo" }, grp), rules = mk("path", { class: "lo" }, grp);
     const punch = mk("circle", { r: 1.05, class: "dot m" }, grp);
-    return { shape, back, face, head, rules, punch, th: tween(cd.th), z: tween(0) };
+    return { back, face, head, rules, punch, th: tween(cd.th), z: tween(0) };
   });
 
   const cM = P(MCX, MCY, 27), cardCenters = CARDS.map((c) => P(c.cx, c.cy, 16));
@@ -836,7 +842,7 @@ function mount({ stage, svg, read }, value) {
   }
 
   function drawCard(i, th, lift) {
-    const cd = cards[i], q = cardPose(P, i, cd.shape, th, lift);
+    const cd = cards[i], q = cardPose(P, i, th, lift);
     cd.back.setAttribute("d", q.back); cd.face.setAttribute("d", q.face);
     cd.head.setAttribute("d", q.head); cd.rules.setAttribute("d", q.rules);
     place(cd.punch, q.punch);
