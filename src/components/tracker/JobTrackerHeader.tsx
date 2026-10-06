@@ -9,7 +9,6 @@ import { X, ChevronDown, SlidersHorizontal, Check } from 'lucide-react';
 import ColoredButton from '@/components/custom/colored-button';
 import { Menu, Dashboard, SearchDuo, AddCircle, ExternalLinkDuo } from '@/components/icons';
 import AnimatedSwitcher from '@/components/custom/animated-switcher';
-import AgentRulesDialog from '@/components/resume/AgentRulesDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -126,7 +125,6 @@ export default function JobTrackerHeader({
 
           {/* Action CTAs matching /resume pattern */}
           <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0 flex-wrap">
-            <AgentRulesDialog userId={userId} />
             <AddTrackedJobDialog
               userId={userId}
               masterResumeId={masterResumeId}
