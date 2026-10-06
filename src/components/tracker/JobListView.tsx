@@ -8,9 +8,13 @@ import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import StageBadge from './StageBadge';
 import { TrashDuo, ExternalLinkDuo, File as DuoFile, LinkDuo } from '@/components/icons';
+import DitheredSphere from '@/components/custom/dithered-sphere';
+import AddTrackedJobDialog from './AddTrackedJobDialog';
+import ColoredButton from '@/components/custom/colored-button';
 import {
   Loader2,
   Check,
+  Plus,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -27,14 +31,26 @@ import { toast } from 'sonner';
 
 interface Props {
   applications: TrackedJobApplication[];
+  totalApplicationsCount?: number;
   onSelectApplication: (application: TrackedJobApplication) => void;
   masterResumeId?: Id<'resumeVersions'>;
+  userId?: Id<'users'>;
+  stageFilter?: string;
+  onResetStageFilter?: () => void;
+  search?: string;
+  onClearSearch?: () => void;
 }
 
 export default function JobListView({
   applications,
+  totalApplicationsCount,
   onSelectApplication,
   masterResumeId,
+  userId,
+  stageFilter = 'all',
+  onResetStageFilter,
+  search = '',
+  onClearSearch,
 }: Props) {
   const router = useRouter();
   const updateStage = useMutation(api.jobTracker.updateJobApplicationStage);
@@ -111,12 +127,77 @@ export default function JobListView({
   };
 
   if (applications.length === 0) {
+    const isFiltered = (stageFilter && stageFilter !== 'all') || (search && search.trim().length > 0);
+
     return (
-      <div className="py-16 text-center rounded-2xl border border-border/70 bg-card/40">
-        <p className="text-sm font-medium text-foreground">No applications found</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Add a job from a URL or manual entry to begin tracking.
-        </p>
+      <div className="py-16 px-4 text-center rounded-2xl border border-border/70 bg-card/40">
+        {isFiltered ? (
+          <div className="max-w-md mx-auto space-y-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">No applications matching current filters</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                {stageFilter !== 'all' && search.trim() ? (
+                  <>
+                    No jobs in stage <strong className="text-foreground">{STAGE_CONFIGS[stageFilter as JobStage]?.label || stageFilter}</strong> matching &ldquo;<span className="text-foreground">{search}</span>&rdquo;
+                  </>
+                ) : stageFilter !== 'all' ? (
+                  <>
+                    No jobs currently in stage <strong className="text-foreground">{STAGE_CONFIGS[stageFilter as JobStage]?.label || stageFilter}</strong>
+                  </>
+                ) : (
+                  <>
+                    No jobs matching search query &ldquo;<span className="text-foreground">{search}</span>&rdquo;
+                  </>
+                )}
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-1">
+              {stageFilter !== 'all' && onResetStageFilter && (
+                <button
+                  type="button"
+                  onClick={onResetStageFilter}
+                  className="text-xs text-primary hover:underline font-medium cursor-pointer"
+                >
+                  Show all stages
+                </button>
+              )}
+              {search.trim() && onClearSearch && (
+                <button
+                  type="button"
+                  onClick={onClearSearch}
+                  className="text-xs text-primary hover:underline font-medium cursor-pointer"
+                >
+                  Clear search
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="max-w-md mx-auto space-y-3">
+            <p className="text-sm font-medium text-foreground">No applications found</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Add a job from a URL or manual entry to begin tracking.
+            </p>
+            {userId && (
+              <div className="pt-2">
+                <AddTrackedJobDialog
+                  userId={userId}
+                  masterResumeId={masterResumeId}
+                  trigger={
+                    <ColoredButton
+                      color="amber"
+                      size="default"
+                      className="rounded-full px-5 text-xs font-medium cursor-pointer"
+                    >
+                      <Plus className="size-3.5 mr-1" />
+                      <span>Track New Job</span>
+                    </ColoredButton>
+                  }
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   }
@@ -153,14 +234,17 @@ export default function JobListView({
                 {/* ── Mobile Layout (< md) ── */}
                 <div className="flex md:hidden flex-col gap-2.5 w-full">
                   {/* Top: Role title & Row Actions */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <span className="font-semibold text-sm text-foreground truncate block tracking-tight">
-                        {app.title}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
-                        <span className="font-mono text-[11px] uppercase tracking-wider font-medium">{app.company}</span>
-                        {app.location && <span>· {app.location}</span>}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                      <DitheredSphere index={index} seed={app._id} size={30} />
+                      <div className="min-w-0 flex-1">
+                        <span className="font-semibold text-sm text-foreground truncate block tracking-tight">
+                          {app.title}
+                        </span>
+                        <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
+                          <span className="font-mono text-[11px] uppercase tracking-wider font-medium">{app.company}</span>
+                          {app.location && <span>· {app.location}</span>}
+                        </div>
                       </div>
                     </div>
 
@@ -248,6 +332,7 @@ export default function JobListView({
                 <div className="hidden md:grid md:grid-cols-12 gap-4 items-center w-full">
                   {/* 1. Role & Company */}
                   <div className="col-span-4 flex items-center gap-3 min-w-0">
+                    <DitheredSphere index={index} seed={app._id} size={32} />
                     <div className="min-w-0 flex-1">
                       <span className="font-medium text-sm text-foreground truncate block tracking-tight group-hover:text-foreground">
                         {app.title}
@@ -373,6 +458,30 @@ export default function JobListView({
             );
           })}
         </div>
+
+        {/* Table Footer: Inline Add Row Trigger */}
+        {userId && applications.length > 0 && (
+          <AddTrackedJobDialog
+            userId={userId}
+            masterResumeId={masterResumeId}
+            trigger={
+              <div className="w-full flex items-center justify-between px-5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 border-t border-border/40 transition-colors cursor-pointer group">
+                <div className="flex items-center gap-2">
+                  <div className="size-7 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                    <Plus className="size-3.5" />
+                  </div>
+                  <span className="font-medium">Track another job posting...</span>
+                </div>
+                <span className="text-[11px] font-mono text-muted-foreground/70 hidden sm:inline">
+                  Showing {applications.length} {applications.length === 1 ? 'role' : 'roles'}
+                  {typeof totalApplicationsCount === 'number' && totalApplicationsCount !== applications.length && (
+                    <span> of {totalApplicationsCount}</span>
+                  )}
+                </span>
+              </div>
+            }
+          />
+        )}
       </div>
 
       {/* Delete Confirmation Alert */}

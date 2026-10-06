@@ -39,8 +39,8 @@ export default function JobTrackerPage() {
     if (!applications) return [];
     let list = applications as TrackedJobApplication[];
 
-    // Stage filter
-    if (stageFilter !== 'all') {
+    // Stage filter applies in list view
+    if (viewMode === 'list' && stageFilter !== 'all') {
       list = list.filter((app) => app.stage === stageFilter);
     }
 
@@ -56,7 +56,7 @@ export default function JobTrackerPage() {
     }
 
     return list;
-  }, [applications, search, stageFilter]);
+  }, [applications, search, stageFilter, viewMode]);
 
   // Keep selectedApplication synced with live database updates
   const activeSelectedApp = useMemo(() => {
@@ -169,8 +169,14 @@ export default function JobTrackerPage() {
             ) : (
               <JobListView
                 applications={filteredApplications}
+                totalApplicationsCount={applications.length}
                 onSelectApplication={(app) => setSelectedApplication(app)}
                 masterResumeId={masterResume?._id}
+                userId={user._id}
+                stageFilter={stageFilter}
+                onResetStageFilter={() => setStageFilter('all')}
+                search={search}
+                onClearSearch={() => setSearch('')}
               />
             )}
           </>
