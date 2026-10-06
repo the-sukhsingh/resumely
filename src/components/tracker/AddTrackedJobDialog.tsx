@@ -892,7 +892,6 @@ export default function AddTrackedJobDialog({
                             >
                               <SelectTrigger className="w-full text-xs h-9 px-3 rounded-xl bg-background border border-border/70 text-foreground focus-visible:ring-1 focus-visible:ring-foreground/20">
                                 <div className="flex items-center gap-2">
-                                  <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[manualStage].dotClass)} />
                                   <SelectValue />
                                 </div>
                               </SelectTrigger>
