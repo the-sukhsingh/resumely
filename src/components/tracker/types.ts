@@ -96,6 +96,7 @@ export interface TrackedJobApplication {
   appliedAt?: number | null;
   deadline?: number | null;
   notes?: string | null;
+  description?: string | null;
   jobDescriptionId?: Id<'jobDescriptions'> | null;
   resumeVersionId?: Id<'resumeVersions'> | null;
   tags?: string[];
@@ -115,7 +116,9 @@ export interface TrackedJobApplication {
   } | null;
   jobDescription?: {
     _id: Id<'jobDescriptions'>;
+    description?: string | null;
     extractedSkills: string[];
     requirements: string[];
+    responsibilities?: string[];
   } | null;
 }

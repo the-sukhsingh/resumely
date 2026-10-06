@@ -161,6 +161,7 @@ export default defineSchema({
     appliedAt: v.optional(v.union(v.number(), v.null())),
     deadline: v.optional(v.union(v.number(), v.null())),
     notes: v.optional(v.union(v.string(), v.null())),
+    description: v.optional(v.union(v.string(), v.null())),
     jobDescriptionId: v.optional(v.union(v.id("jobDescriptions"), v.null())),
     resumeVersionId: v.optional(v.union(v.id("resumeVersions"), v.null())),
     tags: v.optional(v.array(v.string())),

@@ -63,8 +63,10 @@ export const getJobApplications = query({
 
         let jobDescription: {
           _id: Id<"jobDescriptions">;
+          description?: string;
           extractedSkills: string[];
           requirements: string[];
+          responsibilities: string[];
         } | null = null;
 
         if (app.jobDescriptionId) {
@@ -72,14 +74,17 @@ export const getJobApplications = query({
           if (jd) {
             jobDescription = {
               _id: jd._id,
+              description: jd.description,
               extractedSkills: jd.extractedSkills ?? [],
               requirements: jd.requirements ?? [],
+              responsibilities: jd.responsibilities ?? [],
             };
           }
         }
 
         return {
           ...app,
+          description: app.description || jobDescription?.description || null,
           resumeVersion,
           jobDescription,
         };
@@ -140,6 +145,7 @@ export const createJobApplication = mutation({
     appliedAt: v.optional(v.union(v.number(), v.null())),
     deadline: v.optional(v.union(v.number(), v.null())),
     notes: v.optional(v.union(v.string(), v.null())),
+    description: v.optional(v.union(v.string(), v.null())),
     jobDescriptionId: v.optional(v.union(v.id("jobDescriptions"), v.null())),
     resumeVersionId: v.optional(v.union(v.id("resumeVersions"), v.null())),
     tags: v.optional(v.array(v.string())),
@@ -212,6 +218,7 @@ export const updateJobApplication = mutation({
     appliedAt: v.optional(v.union(v.number(), v.null())),
     deadline: v.optional(v.union(v.number(), v.null())),
     notes: v.optional(v.union(v.string(), v.null())),
+    description: v.optional(v.union(v.string(), v.null())),
     jobDescriptionId: v.optional(v.union(v.id("jobDescriptions"), v.null())),
     resumeVersionId: v.optional(v.union(v.id("resumeVersions"), v.null())),
     tags: v.optional(v.array(v.string())),
@@ -330,6 +337,7 @@ export const extractJobFromUrl = action({
     stage: stageValidator,
     autoTailor: v.optional(v.boolean()),
     masterResumeId: v.optional(v.id("resumeVersions")),
+    customDescription: v.optional(v.string()),
   },
   handler: async (
     ctx,
@@ -342,9 +350,11 @@ export const extractJobFromUrl = action({
     title: string;
     location?: string;
     salary?: string;
+    description?: string;
   }> => {
     let cleanText = "";
     let pageTitle: string | undefined = undefined;
+    const userProvidedDesc = args.customDescription?.trim() || "";
 
     // Validate URL syntax
     let parsedUrl: URL;
@@ -384,19 +394,28 @@ export const extractJobFromUrl = action({
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch job page: HTTP ${response.status}`);
+        if (!userProvidedDesc) {
+          throw new Error(`Failed to fetch job page: HTTP ${response.status}`);
+        }
+      } else {
+        const html = await response.text();
+        const parsed = cleanHtmlToText(html);
+        cleanText = parsed.text;
+        pageTitle = parsed.title;
       }
-
-      const html = await response.text();
-      const parsed = cleanHtmlToText(html);
-      cleanText = parsed.text;
-      pageTitle = parsed.title;
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      throw new Error(`Could not access job link: ${errorMsg}. Please paste job description manually.`);
+      if (!userProvidedDesc) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        throw new Error(`Could not access job link: ${errorMsg}. Please paste job description manually.`);
+      }
     }
 
-    if (cleanText.length < 50) {
+    // Combine extracted text with any user-provided full description
+    const effectiveContent = userProvidedDesc
+      ? (cleanText ? `${cleanText}\n\nUser Provided Full Job Description:\n${userProvidedDesc}` : userProvidedDesc)
+      : cleanText;
+
+    if (effectiveContent.length < 40) {
       throw new Error(
         "Could not extract readable job content from this URL. The page may require login, JavaScript rendering, or is not a job listing. Please paste the job description manually."
       );
@@ -436,7 +455,7 @@ URL: ${args.url}
 Page Title: ${pageTitle ?? "Unknown"}
 
 Content:
-${cleanText}`,
+${effectiveContent.slice(0, 16000)}`,
     });
 
     if (!object.isJobPosting) {
@@ -448,13 +467,14 @@ ${cleanText}`,
 
     const company = object.company?.trim() || "Company";
     const title = object.title?.trim() || pageTitle || "Role";
+    const finalDescription = object.description || userProvidedDesc || cleanText;
 
     // 1. Create job description row
     const jobDescriptionId: Id<"jobDescriptions"> = await ctx.runMutation(
       api.jobDescriptions.createJobDescription,
       {
         userId: args.userId,
-        description: object.description || cleanText,
+        description: finalDescription,
         requirements: object.requirements ?? [],
         responsibilities: object.responsibilities ?? [],
         extractedSkills: object.extractedSkills ?? [],
@@ -473,6 +493,7 @@ ${cleanText}`,
         jobUrl: args.url,
         location: object.location?.trim() || undefined,
         salary: object.salary?.trim() || undefined,
+        description: finalDescription,
         jobDescriptionId,
         tags: (object.extractedSkills ?? []).slice(0, 5),
       }
@@ -509,6 +530,7 @@ ${cleanText}`,
       title,
       location: object.location,
       salary: object.salary,
+      description: finalDescription,
     };
   },
 });
@@ -609,6 +631,7 @@ ${rawText.slice(0, 16000)}`,
         jobUrl: args.jobUrl?.trim() || undefined,
         location: object.location?.trim() || undefined,
         salary: object.salary?.trim() || undefined,
+        description: object.description || rawText,
         jobDescriptionId,
         tags: (object.extractedSkills ?? []).slice(0, 5),
       }
