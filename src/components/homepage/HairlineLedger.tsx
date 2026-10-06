@@ -319,7 +319,7 @@ export default function HairlineLedger() {
   return (
     <div className="w-full flex flex-col items-center">
       {/* Top Hairline Telemetry Ribbon */}
-      <div className="w-full max-w-lg flex items-center justify-between font-mono text-[10px] text-muted-foreground pb-2 px-1 border-b border-border/40 select-none">
+      <div className="w-full max-w-lg flex items-center justify-between font-mono text-[10px] text-muted-foreground pb-2 px-1 select-none">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
           <span className="font-semibold tracking-wider text-foreground">
@@ -339,8 +339,8 @@ export default function HairlineLedger() {
         </div>
       </div>
 
-      {/* Isometric Hairline Stage Plate */}
-      <div className="relative w-full max-w-lg aspect-[5/4] my-2 select-none overflow-hidden rounded-xl border border-border/40 bg-gradient-to-b from-muted/20 to-transparent">
+      {/* Isometric Hairline Stage Plate (Borderless Floating Illustration) */}
+      <div className="relative w-full max-w-lg aspect-[5/4] my-2 select-none">
         <div ref={stageRef} className="w-full h-full cursor-crosshair" />
 
         {/* Ambient Corner Crosshairs (Architectural Drafting marks) */}
