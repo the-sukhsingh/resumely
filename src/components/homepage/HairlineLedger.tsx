@@ -3,22 +3,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as HL from '@/lib/hairline/kernel';
 
-const N = 5,
+const N = 4,
   WM = 44,
   HM = 56,
   TKM = 1.4,
   TKC = 1.2;
 const SQ2 = Math.SQRT1_2,
-  MCX = -15,
-  MCY = -15,
+  MCX = 0,
+  MCY = 0,
   M_REST_TH = -10;
 
 const VARIANTS = [
-  { id: 'staff', role: 'Staff Systems', format: 'Technical Arch', tag: 'eBPF · P99 Kernels', cx: -19, cy: 29, th: -13, pt: [-22, -10] },
-  { id: 'platform', role: 'Platform Lead', format: 'Exec Leadership', tag: 'K8s Mesh · SLAs', cx: -3, cy: 21, th: -10, pt: [-18, -6] },
-  { id: 'backend', role: 'Senior Backend', format: 'Distributed Core', tag: 'Go · Concurrency', cx: 12, cy: 12, th: -7, pt: [-10, -10] },
-  { id: 'infra', role: 'Infrastructure', format: 'Cloud Systems', tag: 'Terraform · VPCs', cx: 21, cy: -3, th: -10, pt: [-6, -18] },
-  { id: 'cloud', role: 'Cloud Core', format: 'High Availability', tag: 'Zero-Downtime · HA', cx: 29, cy: -19, th: -13, pt: [-10, -22] },
+  { id: 'staff', role: 'Staff Systems', format: 'Technical Arch', tag: 'eBPF · P99 Kernels', cx: -67, cy: 13, th: -12, pt: [-16, 12], edgeU: 11 },
+  { id: 'lead', role: 'Platform Lead', format: 'Exec Leadership', tag: 'K8s Mesh · SLAs', cx: -13, cy: 67, th: -8, pt: [-12, 16], edgeU: 11 },
+  { id: 'backend', role: 'Distributed Core', format: 'High Throughput', tag: 'Go · Concurrency', cx: 13, cy: -67, th: -12, pt: [12, -16], edgeU: -11 },
+  { id: 'infra', role: 'Cloud Infrastructure', format: 'Cloud Systems', tag: 'Terraform · VPCs', cx: 67, cy: -13, th: -8, pt: [16, -12], edgeU: -11 },
 ];
 
 const mShape = HL.fillet(
@@ -38,7 +37,6 @@ const mShape = HL.fillet(
 const cShapes = [
   HL.fillet([[-11, 0], [11, 0], [11, 32], [-2, 32], [-2, 36], [-11, 36]], [1, 1, 2, 1.5, 1.5, 2]),
   HL.fillet([[-11, 0], [11, 0], [11, 34], [4, 34], [4, 38], [-4, 38], [-4, 34], [-11, 34]], [1, 1, 2, 1.5, 1.5, 1.5, 1.5, 2]),
-  HL.fillet([[-12, 0], [12, 0], [12, 36], [6, 36], [6, 40], [-6, 40], [-6, 34], [-12, 34]], [1, 1, 2, 1.5, 1.5, 1.5, 1.5, 2]),
   HL.fillet([[-11, 0], [11, 0], [11, 34], [11, 38], [2, 38], [2, 34], [-11, 34]], [1, 1, 2, 1.5, 1.5, 1.5, 2]),
   HL.fillet([[-11, 0], [11, 0], [11, 32], [11, 36], [3, 36], [3, 32], [-11, 32]], [1, 1, 2, 1.5, 1.5, 1.5, 2]),
 ];
@@ -75,7 +73,7 @@ const wb = (
 function masterPose(P: (x: number, y: number, z: number) => HL.Point2D, th: number, lift: number) {
   const mw = (u: number, v: number) => w(P, MCX, MCY, u, v, th, lift);
   const mwb = (u: number, v: number) => wb(P, MCX, MCY, u, v, th, lift, TKM);
-  const vSec = [39, 32, 25, 18, 11];
+  const vSec = [36, 28, 20, 12];
   return {
     back: HL.poly(mShape.map((p) => mwb(p[0], p[1]))),
     face: HL.poly(mShape.map((p) => mw(p[0], p[1]))),
@@ -86,7 +84,12 @@ function masterPose(P: (x: number, y: number, z: number) => HL.Point2D, th: numb
         HL.seg(mw(-WM / 2 + 8, v), mw(WM / 2 - 4, v)) +
         HL.seg(mw(-WM / 2 + 8, v - 3), mw(WM / 2 - 12, v - 3)),
     ),
-    punches: vSec.map((v) => mw(-WM / 2 + 4, v)),
+    punches: [
+      mw(-WM / 2 + 4, 36),
+      mw(-WM / 2 + 4, 28),
+      mw(WM / 2 - 4, 20),
+      mw(WM / 2 - 4, 12),
+    ],
   };
 }
 
@@ -100,11 +103,11 @@ function cardPose(
     shape = cShapes[i],
     cw = (u: number, v: number) => w(P, cd.cx, cd.cy, u, v, th, lift);
   const cwb = (u: number, v: number) => wb(P, cd.cx, cd.cy, u, v, th, lift, TKC);
-  const head = i === 2 ? HL.seg(cw(-9, 29), cw(9, 29)) : HL.seg(cw(-8, 27), cw(8, 27));
+  const head = i === 1 ? HL.seg(cw(-9, 29), cw(9, 29)) : HL.seg(cw(-8, 27), cw(8, 27));
   const sub =
-    i === 2
+    i === 1
       ? HL.seg(cw(-9, 25), cw(4, 25))
-      : i === 1
+      : i === 0
       ? HL.seg(cw(-8, 23), cw(3, 23))
       : '';
   let r = '';
@@ -121,13 +124,6 @@ function cardPose(
       HL.seg(cw(-8, 11), cw(8, 11)) +
       HL.seg(cw(-8, 6), cw(6, 6));
   else if (i === 2)
-    r =
-      HL.seg(cw(0, 20), cw(0, 5)) +
-      HL.seg(cw(-9, 17), cw(-2, 17)) +
-      HL.seg(cw(2, 17), cw(9, 17)) +
-      HL.seg(cw(-9, 10), cw(-2, 10)) +
-      HL.seg(cw(2, 10), cw(9, 10));
-  else if (i === 3)
     r =
       HL.seg(cw(-8, 21), cw(8, 21)) +
       HL.seg(cw(-8, 16), cw(8, 16)) +
@@ -146,8 +142,6 @@ function cardPose(
       : i === 1
       ? cw(0, 36)
       : i === 2
-      ? cw(0, 38)
-      : i === 3
       ? cw(7, 36)
       : cw(7, 34);
 
@@ -178,17 +172,20 @@ export default function HairlineLedger() {
     const bag = HL.disposer();
     const maxLift = 15;
 
-    const C = HL.Cam(45, 0.5, 1.62);
+    const C = HL.Cam(45, 0.5, 1.48);
+    const plinthR = 82;
     HL.fit(
       C,
       [
-        [-62, -56, -6],
-        [62, 56, -6],
-        [-62, 56, 0],
-        [62, -56, 0],
-        [-15, -15, 80],
-        [-19, 29, 60],
-        [29, -19, 60],
+        [-plinthR, -plinthR, -6],
+        [plinthR, plinthR, -6],
+        [-plinthR, plinthR, 0],
+        [plinthR, -plinthR, 0],
+        [0, 0, 75],
+        [-67, 13, 50],
+        [-13, 67, 50],
+        [13, -67, 50],
+        [67, -13, 50],
       ],
       200,
       166,
@@ -196,25 +193,18 @@ export default function HairlineLedger() {
     const P = HL.proj(C),
       front = HL.facing(C);
 
-    const [outer, inner] = HL.rings(-60, -54, 60, 54, 10, 2.2);
+    const [outer, inner] = HL.rings(-plinthR, -plinthR, plinthR, plinthR, 14, 2.2);
     const g = HL.mk('g', {}, svg);
     HL.reflect(svg, g, P, front, outer, -6, 14);
 
     const plinth = HL.solid(g);
     HL.put(plinth, HL.prism(P, front, outer, inner, -6, 0));
 
-    const conduits = VARIANTS.map((cd) =>
-      HL.mk('path', { d: HL.seg(P(cd.pt[0], cd.pt[1], 0.2), P(cd.cx, cd.cy, 0.2)), class: 'dash' }, g),
-    );
-
-    const mGrp = HL.mk('g', {}, g);
-    const mBack = HL.mk('path', { class: 'lo' }, mGrp),
-      mFace = HL.mk('path', { class: 'sil' }, mGrp);
-    const mHead = HL.mk('path', { class: 'hi' }, mGrp),
-      mSub = HL.mk('path', { class: 'lo' }, mGrp);
-    const mRules = [0, 1, 2, 3, 4].map(() => HL.mk('path', { class: 'lo' }, mGrp));
-    const mPunches = [0, 1, 2, 3, 4].map(() => HL.mk('circle', { r: 1.15, class: 'dot off' }, mGrp));
-    const master = { th: HL.tween(M_REST_TH), z: HL.tween(0) };
+    const conduits = VARIANTS.map((cd) => {
+      const endX = cd.cx + cd.edgeU * SQ2,
+        endY = cd.cy - cd.edgeU * SQ2;
+      return HL.mk('path', { d: HL.seg(P(cd.pt[0], cd.pt[1], 0.2), P(endX, endY, 0.2)), class: 'dash' }, g);
+    });
 
     const cards = VARIANTS.map((cd) => {
       const grp = HL.mk('g', {}, g);
@@ -223,14 +213,28 @@ export default function HairlineLedger() {
       const head = HL.mk('path', { class: 'lo' }, grp),
         rules = HL.mk('path', { class: 'lo' }, grp);
       const punch = HL.mk('circle', { r: 1.05, class: 'dot m' }, grp);
-      return { back, face, head, rules, punch, th: HL.tween(cd.th), z: HL.tween(0) };
+      return { grp, back, face, head, rules, punch, th: HL.tween(cd.th), z: HL.tween(0) };
     });
 
-    const cM = P(MCX, MCY, 27),
-      cardCenters = VARIANTS.map((c) => P(c.cx, c.cy, 16));
+    const mGrp = HL.mk('g', {}, g);
+    const mBack = HL.mk('path', { class: 'lo' }, mGrp),
+      mFace = HL.mk('path', { class: 'sil' }, mGrp);
+    const mHead = HL.mk('path', { class: 'hi' }, mGrp),
+      mSub = HL.mk('path', { class: 'lo' }, mGrp);
+    const mRules = [0, 1, 2, 3].map(() => HL.mk('path', { class: 'lo' }, mGrp));
+    const mPunches = [0, 1, 2, 3].map(() => HL.mk('circle', { r: 1.15, class: 'dot off' }, mGrp));
+    const master = { th: HL.tween(M_REST_TH), z: HL.tween(0) };
+
+    // Strict back-to-front paint order: far cards (0, 2), master, near cards (1, 3)
+    [0, 2].forEach((i) => g.appendChild(cards[i].grp));
+    g.appendChild(mGrp);
+    [1, 3].forEach((i) => g.appendChild(cards[i].grp));
+
+    const cM = P(MCX, MCY, 28),
+      cardCenters = VARIANTS.map((c) => P(c.cx, c.cy, 17));
     function hit([x, y]: HL.Point2D) {
       let best = -1,
-        minD = 22;
+        minD = 26;
       for (let i = 0; i < N; i++) {
         const c = cardCenters[i],
           d = Math.hypot(x - c[0], y - c[1]);
@@ -240,7 +244,7 @@ export default function HairlineLedger() {
         }
       }
       if (best >= 0) return best;
-      if (Math.hypot(x - cM[0], y - cM[1]) < 32) return 5;
+      if (Math.hypot(x - cM[0], y - cM[1]) < 32) return 4;
       return -1;
     }
 
@@ -283,20 +287,20 @@ export default function HairlineLedger() {
       act = a;
       setActiveItem(a);
 
-      HL.tset(master.th, a === 5 ? 0 : M_REST_TH, now, 0);
-      HL.tset(master.z, a === 5 ? maxLift + 2 : 0, now, 0);
-      mFace.classList.toggle('hi', a === 5);
+      HL.tset(master.th, a === 4 ? 0 : M_REST_TH, now, 0);
+      HL.tset(master.z, a === 4 ? maxLift + 2 : 0, now, 0);
+      mFace.classList.toggle('hi', a === 4);
       mHead.classList.toggle('hi', a < 0);
 
       cards.forEach((cd, i) => {
-        const delay = a < 0 ? Math.abs(i - 2) * 25 : a === 5 ? Math.abs(i - 2) * 35 : Math.abs(i - a) * 35;
-        const targetTh = a < 0 ? VARIANTS[i].th : a === i ? 0 : VARIANTS[i].th - 6;
+        const delay = a < 0 ? Math.abs(i - 1.5) * 25 : a === 4 ? 35 : Math.hypot(VARIANTS[i].cx - VARIANTS[a].cx, VARIANTS[i].cy - VARIANTS[a].cy) * 0.35;
+        const targetTh = a < 0 ? VARIANTS[i].th : a === i ? 0 : VARIANTS[i].th - 4;
         HL.tset(cd.th, targetTh, now, delay);
         HL.tset(cd.z, a === i ? maxLift : 0, now, delay);
         cd.face.classList.toggle('hi', a === i);
         cd.head.classList.toggle('hi', a === i);
-        conduits[i].classList.toggle('hi', a === i || a === 5);
-        conduits[i].classList.toggle('dash', a !== i && a !== 5);
+        conduits[i].classList.toggle('hi', a === i || a === 4);
+        conduits[i].classList.toggle('dash', a !== i && a !== 4);
         mRules[i].classList.toggle('hi', a === i);
         mPunches[i].classList.toggle('m', a === i);
         mPunches[i].classList.toggle('off', a !== i);
@@ -325,15 +329,15 @@ export default function HairlineLedger() {
           <span className="font-semibold tracking-wider text-foreground">
             {activeItem === -1
               ? 'MANIFOLD : IDLE REST'
-              : activeItem === 5
-              ? 'MANIFOLD : 5-CHAPTER MASTER RECORD'
+              : activeItem === 4
+              ? 'MANIFOLD : 4-CHANNEL MASTER RECORD'
               : `MANIFOLD : CHANNEL 0${activeItem + 1} ACTIVE`}
           </span>
         </div>
         <div className="text-right tracking-widest text-[9px] text-indigo-600 dark:text-indigo-400 font-semibold">
           {activeItem === -1
-            ? '5 DIVERSIFIED TARGETS'
-            : activeItem === 5
+            ? '4 DIVERSIFIED TARGETS'
+            : activeItem === 4
             ? 'FEEDING ALL DERIVATIVES'
             : `${VARIANTS[activeItem].role.toUpperCase()} [${VARIANTS[activeItem].format.toUpperCase()}]`}
         </div>
@@ -350,12 +354,12 @@ export default function HairlineLedger() {
         <div className="absolute top-2.5 right-3 text-[8px] font-mono text-muted-foreground/40 pointer-events-none">
           {activeItem < 0
             ? 'STATUS: REST'
-            : activeItem === 5
+            : activeItem === 4
             ? 'TARGET: ROOT'
             : `PULLING: ${VARIANTS[activeItem].tag}`}
         </div>
         <div className="absolute bottom-2.5 left-3 text-[8px] font-mono text-muted-foreground/40 pointer-events-none">
-          5-WAY BRANCH
+          4-WAY BRANCH
         </div>
         <div className="absolute bottom-2.5 right-3 text-[8px] font-mono text-muted-foreground/40 pointer-events-none">
           ISO · HAIRLINE
@@ -363,15 +367,15 @@ export default function HairlineLedger() {
       </div>
 
       {/* Interactive Diversified Target Route Buttons */}
-      <div className="w-full max-w-lg grid grid-cols-6 gap-1 pt-2 font-mono text-[9px]">
+      <div className="w-full max-w-lg grid grid-cols-5 gap-1.5 pt-2 font-mono text-[9px]">
         {/* Master Center Button */}
         <button
           type="button"
-          onClick={() => setTargetRef.current?.(5)}
-          onMouseEnter={() => setTargetRef.current?.(5)}
+          onClick={() => setTargetRef.current?.(4)}
+          onMouseEnter={() => setTargetRef.current?.(4)}
           onMouseLeave={() => setTargetRef.current?.(-1)}
           className={`py-1.5 px-1 rounded transition-colors text-center truncate ${
-            activeItem === 5
+            activeItem === 4
               ? 'bg-indigo-600 text-white font-semibold shadow-sm'
               : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}
@@ -380,7 +384,7 @@ export default function HairlineLedger() {
           ★ MASTER
         </button>
 
-        {/* 5 Diversified Variant Buttons */}
+        {/* 4 Diversified Variant Buttons */}
         {VARIANTS.map((v, idx) => (
           <button
             key={v.id}
