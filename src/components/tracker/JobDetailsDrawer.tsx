@@ -34,16 +34,7 @@ import {
   LinkDuo,
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -69,7 +60,6 @@ export default function JobDetailsDrawer({
   const [notes, setNotes] = useState(application?.notes || '');
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [isTailoring, setIsTailoring] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -198,7 +188,6 @@ export default function JobDetailsDrawer({
     try {
       await deleteJob({ applicationId: application._id });
       toast.success(`Deleted application for ${application.company}`);
-      setShowDeleteConfirm(false);
       onClose();
     } catch (err) {
       console.error(err);
@@ -662,14 +651,29 @@ export default function JobDetailsDrawer({
 
           {/* Footer with Delete Action */}
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="inline-flex items-center gap-1.5 text-xs text-destructive hover:opacity-80 transition-opacity cursor-pointer font-medium"
+            <DeleteConfirmPopover
+              title="Delete this tracked job?"
+              description={
+                <>
+                  Are you sure you want to remove <strong className="text-foreground">{application.title}</strong> at{' '}
+                  <strong className="text-foreground">{application.company}</strong>?
+                  {application.resumeVersionId && ' Your tailored resume will remain intact.'}
+                </>
+              }
+              confirmText="Delete Job"
+              onConfirm={handleDelete}
+              isDeleting={isDeleting}
+              side="top"
+              align="start"
             >
-              <TrashDuo className="size-3.5" />
-              <span>Delete Job</span>
-            </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 text-xs text-destructive hover:opacity-80 data-[state=open]:opacity-100 transition-opacity cursor-pointer font-medium"
+              >
+                <TrashDuo className="size-3.5" />
+                <span>Delete Job</span>
+              </button>
+            </DeleteConfirmPopover>
 
             <Button size="sm" variant="ghost" onClick={onClose} className="text-xs">
               Close
@@ -678,29 +682,6 @@ export default function JobDetailsDrawer({
         </div>
       </div>
 
-      {/* Delete Confirmation Alert */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this tracked job?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to remove <strong className="text-foreground">{application.title}</strong> at{' '}
-              <strong className="text-foreground">{application.company}</strong>?
-              {application.resumeVersionId && ' Your tailored resume will remain intact.'}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Job'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>,
     document.body
   );

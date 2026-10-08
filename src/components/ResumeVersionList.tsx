@@ -21,16 +21,7 @@ import {
   X,
   Check,
 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import AddJobDescriptionDialog from './AddJobDescriptionDialog';
 import StageBadge from './tracker/StageBadge';
 import { TrackedJobApplication } from './tracker/types';
@@ -55,8 +46,6 @@ export default function ResumeVersionList({ userId }: Props) {
   const createJobApplication = useMutation(api.jobTracker.createJobApplication);
 
   const [search, setSearch] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ id: Id<'resumeVersions'>; name: string } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [trackingId, setTrackingId] = useState<string | null>(null);
 
@@ -123,20 +112,6 @@ export default function ResumeVersionList({ userId }: Props) {
     return tailoredVersions.filter((v) => (v.name ?? '').toLowerCase().includes(q));
   }, [tailoredVersions, search]);
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-    try {
-      await deleteVersion({ versionId: deleteTarget.id });
-      toast.success(`"${deleteTarget.name}" deleted`);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete resume');
-    } finally {
-      setIsDeleting(false);
-      setDeleteTarget(null);
-    }
-  };
 
 
 
@@ -481,20 +456,35 @@ export default function ResumeVersionList({ userId }: Props) {
                           <span className="sr-only">Copy resume link</span>
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDeleteTarget({
-                              id: item._id,
-                              name: item.name || 'Untitled Version',
-                            })
+                        <DeleteConfirmPopover
+                          title="Delete resume version?"
+                          description={
+                            <>
+                              Are you sure you want to delete <strong className="text-foreground">{item.name || 'Untitled Version'}</strong>? This action cannot be undone. Your Master Resume remains untouched.
+                            </>
                           }
-                          title="Delete version"
-                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all duration-150 cursor-pointer"
+                          confirmText="Delete Version"
+                          onConfirm={async () => {
+                            try {
+                              await deleteVersion({ versionId: item._id });
+                              toast.success(`"${item.name || 'Untitled Version'}" deleted`);
+                            } catch (err) {
+                              console.error(err);
+                              toast.error('Failed to delete resume');
+                            }
+                          }}
+                          side="top"
+                          align="end"
                         >
-                          <TrashDuo className="size-4" />
-                          <span className="sr-only">Delete Version</span>
-                        </button>
+                          <button
+                            type="button"
+                            title="Delete version"
+                            className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 data-[state=open]:text-destructive data-[state=open]:bg-destructive/10 active:scale-[0.93] transition-all duration-150 cursor-pointer"
+                          >
+                            <TrashDuo className="size-4" />
+                            <span className="sr-only">Delete Version</span>
+                          </button>
+                        </DeleteConfirmPopover>
                       </div>
                     </div>
                   </div>
@@ -525,30 +515,6 @@ export default function ResumeVersionList({ userId }: Props) {
           )}
         </div>
       </section>
-
-      {/* Accessible Custom Delete Confirmation Alert */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this resume version?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <strong className="text-foreground">{deleteTarget?.name}</strong>? This action cannot be undone. Your Master Resume remains untouched.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting} className="active:scale-[0.98]">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-[0.98]"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Version'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

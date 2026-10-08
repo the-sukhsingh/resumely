@@ -16,16 +16,7 @@ import {
   Check,
   Plus,
 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -57,8 +48,6 @@ export default function JobListView({
   const deleteJob = useMutation(api.jobTracker.deleteJobApplication);
   const tailorForJob = useAction(api.jobTracker.tailorResumeForJob);
 
-  const [deleteTarget, setDeleteTarget] = useState<TrackedJobApplication | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [tailoringId, setTailoringId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -96,20 +85,6 @@ export default function JobListView({
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-    try {
-      await deleteJob({ applicationId: deleteTarget._id });
-      toast.success(`Deleted application for ${deleteTarget.company}`);
-      setDeleteTarget(null);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete job application');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const handleCopyLink = async (e: React.MouseEvent, resumeId: string) => {
     e.stopPropagation();
@@ -260,14 +235,35 @@ export default function JobListView({
                           <ExternalLinkDuo className="size-4" />
                         </a>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(app)}
-                        title="Delete application"
-                        className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+                      <DeleteConfirmPopover
+                        title="Delete tracked job?"
+                        description={
+                          <>
+                            Are you sure you want to remove <strong className="text-foreground">{app.title}</strong> at{' '}
+                            <strong className="text-foreground">{app.company}</strong>?
+                          </>
+                        }
+                        confirmText="Delete Job"
+                        onConfirm={async () => {
+                          try {
+                            await deleteJob({ applicationId: app._id });
+                            toast.success(`Deleted application for ${app.company}`);
+                          } catch (err) {
+                            console.error(err);
+                            toast.error('Failed to delete job application');
+                          }
+                        }}
+                        side="top"
+                        align="end"
                       >
-                        <TrashDuo className="size-4" />
-                      </button>
+                        <button
+                          type="button"
+                          title="Delete application"
+                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 data-[state=open]:text-destructive data-[state=open]:bg-destructive/10 cursor-pointer"
+                        >
+                          <TrashDuo className="size-4" />
+                        </button>
+                      </DeleteConfirmPopover>
                     </div>
                   </div>
 
@@ -444,14 +440,35 @@ export default function JobListView({
                       </a>
                     )}
 
-                    <button
-                      type="button"
-                      onClick={() => setDeleteTarget(app)}
-                      title="Delete application"
-                      className="size-7 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all cursor-pointer"
+                    <DeleteConfirmPopover
+                      title="Delete tracked job?"
+                      description={
+                        <>
+                          Are you sure you want to remove <strong className="text-foreground">{app.title}</strong> at{' '}
+                          <strong className="text-foreground">{app.company}</strong>?
+                        </>
+                      }
+                      confirmText="Delete Job"
+                      onConfirm={async () => {
+                        try {
+                          await deleteJob({ applicationId: app._id });
+                          toast.success(`Deleted application for ${app.company}`);
+                        } catch (err) {
+                          console.error(err);
+                          toast.error('Failed to delete job application');
+                        }
+                      }}
+                      side="top"
+                      align="end"
                     >
-                      <TrashDuo className="size-3.5" />
-                    </button>
+                      <button
+                        type="button"
+                        title="Delete application"
+                        className="size-7 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 data-[state=open]:text-destructive data-[state=open]:bg-destructive/10 active:scale-[0.93] transition-all cursor-pointer"
+                      >
+                        <TrashDuo className="size-3.5" />
+                      </button>
+                    </DeleteConfirmPopover>
                   </div>
                 </div>
               </div>
@@ -483,29 +500,6 @@ export default function JobListView({
           />
         )}
       </div>
-
-      {/* Delete Confirmation Alert */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this tracked job?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to remove <strong className="text-foreground">{deleteTarget?.title}</strong> at{' '}
-              <strong className="text-foreground">{deleteTarget?.company}</strong>?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Job'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
