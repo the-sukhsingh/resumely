@@ -28,7 +28,7 @@ import { TrackedJobApplication } from './tracker/types';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
-import DitheredSphere from './custom/dithered-sphere';
+import JobAvatar from './tracker/JobAvatar';
 import AgentRulesDialog from './resume/AgentRulesDialog';
 import { cn } from 'cn';
 interface Props {
@@ -389,9 +389,16 @@ export default function ResumeVersionList({ userId }: Props) {
                     tabIndex={0}
                     className="group relative flex items-center justify-between gap-4 px-4 sm:px-5 py-2.5 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
                   >
-                    {/* Role Name & Dithered Sphere & Tracking Status */}
+                    {/* Role Name & Job Favicon / Dithered Sphere & Tracking Status */}
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <DitheredSphere index={index} seed={item._id} size={32} />
+                      <JobAvatar
+                        company={linkedJob?.company}
+                        companyUrl={linkedJob?.companyUrl}
+                        jobUrl={linkedJob?.jobUrl}
+                        seed={item._id}
+                        index={index}
+                        size={32}
+                      />
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">

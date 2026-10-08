@@ -10,7 +10,7 @@ import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import StageBadge from './StageBadge';
 import { Button } from '@/components/ui/button';
 import ColoredButton from '@/components/custom/colored-button';
-import DitheredSphere from '@/components/custom/dithered-sphere';
+import JobAvatar from './JobAvatar';
 import { Textarea } from '@/components/ui/textarea';
 import {
   X,
@@ -23,6 +23,7 @@ import {
   Pencil,
   ChevronDown,
   ChevronUp,
+  Globe,
 } from 'lucide-react';
 import {
   ExternalLinkDuo,
@@ -226,12 +227,30 @@ export default function JobDetailsDrawer({
           {/* Header */}
           <div className="flex items-start justify-between p-4 border-b border-border/60 shrink-0">
             <div className="flex items-start gap-3 min-w-0 flex-1">
-              <DitheredSphere index={0} seed={application._id} size={40} className="shrink-0 mt-0.5" />
+              <JobAvatar
+                company={application.company}
+                companyUrl={application.companyUrl}
+                jobUrl={application.jobUrl}
+                seed={application._id}
+                size={40}
+                className="shrink-0 mt-0.5"
+              />
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-xs font-mono uppercase tracking-wider text-muted-foreground truncate">
                     {application.company}
                   </h3>
+                  {application.companyUrl && (
+                    <a
+                      href={application.companyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-0.5 text-[11px] underline underline-offset-2 shrink-0"
+                    >
+                      <span>Website</span>
+                      <ExternalLinkDuo className="size-3" />
+                    </a>
+                  )}
                   {application.jobUrl && (
                     <a
                       href={application.jobUrl}
@@ -366,6 +385,25 @@ export default function JobDetailsDrawer({
 
             {/* Metadata Badges */}
             <div className="grid grid-cols-2 gap-3 text-xs">
+              {application.companyUrl && (
+                <div className="p-3 rounded-xl border border-border/50 bg-card/30 flex items-start gap-2.5">
+                  <Globe className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                      Company Website
+                    </span>
+                    <a
+                      href={application.companyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-primary hover:underline truncate block"
+                    >
+                      {application.companyUrl.replace(/^https?:\/\//i, '').replace(/\/$/, '')}
+                    </a>
+                  </div>
+                </div>
+              )}
+
               {application.location && (
                 <div className="p-3 rounded-xl border border-border/50 bg-card/30 flex items-start gap-2.5">
                   <Location className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />

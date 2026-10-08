@@ -80,6 +80,7 @@ export default function AddTrackedJobDialog({
   const [manualTitle, setManualTitle] = useState('');
   const [manualStage, setManualStage] = useState<JobStage>(initialStage);
   const [manualUrl, setManualUrl] = useState('');
+  const [manualCompanyUrl, setManualCompanyUrl] = useState('');
   const [manualLocation, setManualLocation] = useState('');
   const [manualSalary, setManualSalary] = useState('');
   const [manualDescription, setManualDescription] = useState('');
@@ -118,6 +119,7 @@ export default function AddTrackedJobDialog({
     setManualCompany('');
     setManualTitle('');
     setManualUrl('');
+    setManualCompanyUrl('');
     setManualLocation('');
     setManualSalary('');
     setManualDescription('');
@@ -309,6 +311,7 @@ export default function AddTrackedJobDialog({
         title: manualTitle.trim(),
         stage: manualStage,
         jobUrl: manualUrl.trim() || undefined,
+        companyUrl: manualCompanyUrl.trim() || undefined,
         location: manualLocation.trim() || undefined,
         salary: manualSalary.trim() || undefined,
         notes: manualNotes.trim() || undefined,
@@ -935,15 +938,28 @@ export default function AddTrackedJobDialog({
                           </div>
                         </div>
 
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-medium">Job URL (Optional)</Label>
-                          <Input
-                            type="url"
-                            placeholder="https://..."
-                            value={manualUrl}
-                            onChange={(e) => setManualUrl(e.target.value)}
-                            className="text-xs h-9 rounded-xl"
-                          />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium">Job URL (Optional)</Label>
+                            <Input
+                              type="url"
+                              placeholder="https://careers.company.com/..."
+                              value={manualUrl}
+                              onChange={(e) => setManualUrl(e.target.value)}
+                              className="text-xs h-9 rounded-xl"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium">Company Website (Optional)</Label>
+                            <Input
+                              type="url"
+                              placeholder="https://company.com"
+                              value={manualCompanyUrl}
+                              onChange={(e) => setManualCompanyUrl(e.target.value)}
+                              className="text-xs h-9 rounded-xl"
+                            />
+                          </div>
                         </div>
 
                         <div className="space-y-1.5">

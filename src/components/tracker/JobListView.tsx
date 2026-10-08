@@ -8,13 +8,14 @@ import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import StageBadge from './StageBadge';
 import { TrashDuo, ExternalLinkDuo, File as DuoFile, LinkDuo } from '@/components/icons';
-import DitheredSphere from '@/components/custom/dithered-sphere';
+import JobAvatar from './JobAvatar';
 import AddTrackedJobDialog from './AddTrackedJobDialog';
 import ColoredButton from '@/components/custom/colored-button';
 import {
   Loader2,
   Check,
   Plus,
+  Globe,
 } from 'lucide-react';
 import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -211,19 +212,49 @@ export default function JobListView({
                   {/* Top: Role title & Row Actions */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <DitheredSphere index={index} seed={app._id} size={30} />
+                      <JobAvatar
+                        company={app.company}
+                        companyUrl={app.companyUrl}
+                        jobUrl={app.jobUrl}
+                        seed={app._id}
+                        index={index}
+                        size={30}
+                      />
                       <div className="min-w-0 flex-1">
                         <span className="font-semibold text-sm text-foreground truncate block tracking-tight">
                           {app.title}
                         </span>
-                        <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground flex-wrap">
                           <span className="font-mono text-[11px] uppercase tracking-wider font-medium">{app.company}</span>
                           {app.location && <span>· {app.location}</span>}
+                          {app.companyUrl && (
+                            <a
+                              href={app.companyUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              title="Visit company website"
+                              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-0.5 font-mono text-[10px]"
+                            >
+                              <Globe className="size-2.5" />
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      {app.companyUrl && (
+                        <a
+                          href={app.companyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Visit company website"
+                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                        >
+                          <Globe className="size-4" />
+                        </a>
+                      )}
                       {app.jobUrl && (
                         <a
                           href={app.jobUrl}
@@ -328,7 +359,14 @@ export default function JobListView({
                 <div className="hidden md:grid md:grid-cols-12 gap-4 items-center w-full">
                   {/* 1. Role & Company */}
                   <div className="col-span-4 flex items-center gap-3 min-w-0">
-                    <DitheredSphere index={index} seed={app._id} size={32} />
+                    <JobAvatar
+                      company={app.company}
+                      companyUrl={app.companyUrl}
+                      jobUrl={app.jobUrl}
+                      seed={app._id}
+                      index={index}
+                      size={32}
+                    />
                     <div className="min-w-0 flex-1">
                       <span className="font-medium text-sm text-foreground truncate block tracking-tight group-hover:text-foreground">
                         {app.title}
@@ -337,6 +375,18 @@ export default function JobListView({
                         <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider truncate">
                           {app.company}
                         </span>
+                        {app.companyUrl && (
+                          <a
+                            href={app.companyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            title={`Visit ${app.company} website`}
+                            className="text-muted-foreground/60 hover:text-foreground inline-flex items-center gap-0.5 font-mono text-[10px]"
+                          >
+                            <Globe className="size-2.5" />
+                          </a>
+                        )}
                         {app.location && (
                           <span className="hidden sm:inline-block font-mono text-[10px] text-muted-foreground/70 truncate">
                             · {app.location}
@@ -428,6 +478,17 @@ export default function JobListView({
                     className="col-span-1 flex items-center justify-end gap-1"
                     onClick={(e) => e.stopPropagation()}
                   >
+                    {app.companyUrl && (
+                      <a
+                        href={app.companyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Visit company website"
+                        className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                      >
+                        <Globe className="size-3.5" />
+                      </a>
+                    )}
                     {app.jobUrl && (
                       <a
                         href={app.jobUrl}
