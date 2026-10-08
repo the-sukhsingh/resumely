@@ -191,6 +191,7 @@ export const createJDAndVersion = action({
             "If isValidJobDescription is false, a polite, clear explanation of why this text cannot be processed as a job description."
           ),
         company: z.string().optional().describe("Company name hiring for this role, or 'Company' if not found"),
+        companyUrl: z.string().optional().describe("Official homepage URL or domain of the hiring company (e.g. 'https://stripe.com' or 'https://google.com') inferred from your knowledge of the company"),
         title: z.string().optional().describe("Job title"),
         requirements: z.array(z.string()).optional().default([]).describe("List of job requirements"),
         responsibilities: z.array(z.string()).optional().default([]).describe("List of job responsibilities"),
@@ -238,6 +239,7 @@ If it IS an authentic job description, set isValidJobDescription to true and ext
         company,
         title,
         stage: "applied",
+        companyUrl: object.companyUrl?.trim() || undefined,
         jobDescriptionId,
         resumeVersionId: versionId,
       });

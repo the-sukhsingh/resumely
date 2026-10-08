@@ -91,6 +91,7 @@ export interface TrackedJobApplication {
   title: string;
   stage: JobStage;
   jobUrl?: string | null;
+  companyUrl?: string | null;
   location?: string | null;
   salary?: string | null;
   appliedAt?: number | null;

@@ -156,6 +156,7 @@ export default defineSchema({
       v.literal("archived")      // Archived / Withdrawn
     ),
     jobUrl: v.optional(v.union(v.string(), v.null())),
+    companyUrl: v.optional(v.union(v.string(), v.null())),
     location: v.optional(v.union(v.string(), v.null())),
     salary: v.optional(v.union(v.string(), v.null())),
     appliedAt: v.optional(v.union(v.number(), v.null())),
