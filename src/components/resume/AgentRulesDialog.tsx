@@ -24,6 +24,7 @@ import {
   TrashDuo,
   Plus,
 } from '@/components/icons';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -444,14 +445,23 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
                                   <p className="flex-1 text-xs text-foreground leading-relaxed pr-2">
                                     {rule}
                                   </p>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveRule(idx)}
-                                    className="text-muted-foreground hover:text-destructive p-1 rounded-md hover:bg-destructive/10 transition-colors shrink-0 cursor-pointer"
-                                    title="Remove rule"
+                                  <DeleteConfirmPopover
+                                    title="Remove rule?"
+                                    description="Are you sure you want to remove this instruction?"
+                                    confirmText="Remove"
+                                    onConfirm={() => handleRemoveRule(idx)}
+                                    side="top"
+                                    align="end"
+                                    compact
                                   >
-                                    <TrashDuo className="size-3.5" />
-                                  </button>
+                                    <button
+                                      type="button"
+                                      className="text-muted-foreground hover:text-destructive data-[state=open]:text-destructive p-1 rounded-md hover:bg-destructive/10 data-[state=open]:bg-destructive/10 transition-colors shrink-0 cursor-pointer"
+                                      title="Remove rule"
+                                    >
+                                      <TrashDuo className="size-3.5" />
+                                    </button>
+                                  </DeleteConfirmPopover>
                                 </div>
                               ))}
                             </div>
