@@ -26,6 +26,7 @@ export const CheckCircle = RawDuo.CheckCircle as unknown as DuoIconComponent;
 export const Chip = RawDuo.Chip as unknown as DuoIconComponent;
 export const Clipboard = RawDuo.Clipboard as unknown as DuoIconComponent;
 export const Clock = RawDuo.Clock as unknown as DuoIconComponent;
+export const CoinStack = RawDuo.CoinStack as unknown as DuoIconComponent;
 export const CreditCard = RawDuo.CreditCard as unknown as DuoIconComponent;
 export const Dashboard = RawDuo.Dashboard as unknown as DuoIconComponent;
 export const File = RawDuo.File as unknown as DuoIconComponent;

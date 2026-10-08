@@ -244,3 +244,101 @@ export const SendDuo = React.forwardRef<SVGSVGElement, DuoIconProps>(
   )
 );
 SendDuo.displayName = 'SendDuo';
+
+// Monitor / Display Duo: secondary inner display screen, primary outer rim and stand
+export const MonitorDuo = React.forwardRef<SVGSVGElement, DuoIconProps>(
+  ({ size = 24, className = '', secondaryOpacity = 0.25, ...props }, ref) => (
+    <svg
+      ref={ref}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`duo-icons ${className}`.trim()}
+      {...props}
+    >
+      <rect
+        x="5"
+        y="4"
+        width="14"
+        height="10"
+        rx="1"
+        className="duo-icons-secondary-layer"
+        fill="currentColor"
+        opacity={secondaryOpacity}
+      />
+      <path
+        className="duo-icons-primary-layer"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3 4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5.25v2.25H16a.75.75 0 0 1 0 1.5H8a.75.75 0 0 1 0-1.5h2.25V16H5a2 2 0 0 1-2-2V4zm2 0v10h14V4H5z"
+      />
+    </svg>
+  )
+);
+MonitorDuo.displayName = 'MonitorDuo';
+
+// LogOut Duo: secondary door frame, primary exit arrow
+export const LogOutDuo = React.forwardRef<SVGSVGElement, DuoIconProps>(
+  ({ size = 24, className = '', secondaryOpacity = 0.3, ...props }, ref) => (
+    <svg
+      ref={ref}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`duo-icons ${className}`.trim()}
+      {...props}
+    >
+      <path
+        className="duo-icons-secondary-layer"
+        fill="currentColor"
+        opacity={secondaryOpacity}
+        d="M5 4a2 2 0 0 1 2-2h6a1 1 0 1 1 0 2H7v16h6a1 1 0 1 1 0 2H7a2 2 0 0 1-2-2V4z"
+      />
+      <path
+        className="duo-icons-primary-layer"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M13.293 8.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L15.586 13H9a1 1 0 1 1 0-2h6.586l-2.293-2.293a1 1 0 0 1 0-1.414z"
+      />
+    </svg>
+  )
+);
+LogOutDuo.displayName = 'LogOutDuo';
+
+// Chevron Right Duo: secondary background halo, primary crisp chevron
+export const ChevronRightDuo = React.forwardRef<SVGSVGElement, DuoIconProps>(
+  ({ size = 24, className = '', secondaryOpacity = 0.2, ...props }, ref) => (
+    <svg
+      ref={ref}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`duo-icons ${className}`.trim()}
+      {...props}
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="8"
+        className="duo-icons-secondary-layer"
+        fill="currentColor"
+        opacity={secondaryOpacity}
+      />
+      <path
+        className="duo-icons-primary-layer"
+        fill="currentColor"
+        d="M10.293 8.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L12.586 12l-2.293-2.293a1 1 0 0 1 0-1.414z"
+      />
+    </svg>
+  )
+);
+ChevronRightDuo.displayName = 'ChevronRightDuo';
+
