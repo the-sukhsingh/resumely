@@ -29,10 +29,6 @@ import {
   AlertCircle,
   Check,
   ChevronDown,
-  Building2,
-  MapPin,
-  Globe,
-  FileText,
 } from 'lucide-react';
 import {
   AddCircle,
@@ -361,7 +357,7 @@ export default function AddTrackedJobDialog({
                   }}
                   transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-lg h-[86dvh] sm:h-[620px] max-h-[90dvh] sm:max-h-[85dvh] bg-background border-t sm:border border-border/60 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-2xl h-[86dvh] sm:h-[620px] max-h-[90dvh] sm:max-h-[85dvh] bg-background border-t sm:border border-border/60 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
                   {/* Mobile Pull Handle */}
                   <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
@@ -397,7 +393,7 @@ export default function AddTrackedJobDialog({
                   <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
                     <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
                       
-                      {/* Top Minimal Link Bar */}
+                      {/* Top Link Bar with Stateful Extract Button */}
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <Label className="text-xs font-medium text-foreground/90">
@@ -439,7 +435,9 @@ export default function AddTrackedJobDialog({
                             disabled={!url.trim() || extracting || submitting}
                             className={cn(
                               'h-9 px-3.5 text-xs font-medium rounded-xl shrink-0 transition-all cursor-pointer',
-                              url.trim() && !extracting
+                              extractSuccess
+                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/20'
+                                : url.trim() && !extracting
                                 ? 'bg-primary/10 text-primary hover:bg-primary/15 border border-primary/20'
                                 : 'text-muted-foreground'
                             )}
@@ -448,6 +446,11 @@ export default function AddTrackedJobDialog({
                               <>
                                 <Loader2 className="size-3 animate-spin mr-1.5 text-primary" />
                                 <span>Extracting...</span>
+                              </>
+                            ) : extractSuccess ? (
+                              <>
+                                <Check className="size-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
+                                <span>Fetched</span>
                               </>
                             ) : (
                               <>
@@ -458,7 +461,7 @@ export default function AddTrackedJobDialog({
                           </Button>
                         </div>
 
-                        {/* Subtle Status Feedback */}
+                        {/* Subtle Status Feedback on Error */}
                         {extractError && (
                           <div className="flex items-center gap-1.5 text-[11px] text-destructive bg-destructive/10 border border-destructive/15 rounded-lg px-2.5 py-1.5 animate-in fade-in duration-150">
                             <AlertCircle className="size-3.5 shrink-0" />
@@ -466,13 +469,6 @@ export default function AddTrackedJobDialog({
                             <span className="text-muted-foreground text-[10px]">
                               Fill below manually
                             </span>
-                          </div>
-                        )}
-
-                        {extractSuccess && !extractError && (
-                          <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/15 rounded-lg px-2.5 py-1.5 animate-in fade-in duration-150">
-                            <Check className="size-3.5 shrink-0" />
-                            <span className="leading-tight">Details extracted and filled below</span>
                           </div>
                         )}
                       </div>
@@ -521,32 +517,6 @@ export default function AddTrackedJobDialog({
                             className="text-xs h-9 rounded-xl border-border/60"
                           />
                         </div>
-                      </div>
-
-                      {/* Stage Selector */}
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-medium text-foreground/90">Application Stage</Label>
-                        <Select
-                          value={stage}
-                          onValueChange={(val) => setStage(val as JobStage)}
-                          disabled={submitting}
-                        >
-                          <SelectTrigger className="w-full text-xs h-9 px-3 rounded-xl bg-background border border-border/60 text-foreground focus-visible:ring-1 focus-visible:ring-foreground/20">
-                            <div className="flex items-center gap-2">
-                              <SelectValue />
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent position="popper" className="z-[110]">
-                            {(Object.keys(STAGE_CONFIGS) as JobStage[]).map((st) => (
-                              <SelectItem key={st} value={st} className="text-xs cursor-pointer">
-                                <div className="flex items-center gap-2">
-                                  <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[st].dotClass)} />
-                                  <span>{STAGE_CONFIGS[st].label}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
                       </div>
 
                       {/* Location & Salary in a compact grid */}
@@ -632,7 +602,7 @@ export default function AddTrackedJobDialog({
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 disabled={submitting}
-                                className="min-h-[100px] text-xs resize-y rounded-xl leading-relaxed font-sans placeholder:text-muted-foreground/50 border-border/60"
+                                className="min-h-[100px] text-xs resize-y rounded-xl leading-relaxed font-sans placeholder:text-muted-foreground/50 border-border/60 p-3"
                               />
                             </div>
 
@@ -657,7 +627,7 @@ export default function AddTrackedJobDialog({
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 disabled={submitting}
-                                className="min-h-[50px] text-xs resize-none rounded-xl border-border/60"
+                                className="min-h-[55px] text-xs resize-y rounded-xl border-border/60 p-3 leading-relaxed"
                               />
                             </div>
                           </motion.div>
@@ -735,35 +705,64 @@ export default function AddTrackedJobDialog({
                       )}
                     </div>
 
-                    {/* Clean Footer */}
-                    <div className="flex justify-end gap-2 items-center px-5 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/50 bg-background/90 backdrop-blur-sm shrink-0">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleClose}
-                        disabled={submitting || extracting}
-                        className="text-xs text-muted-foreground hover:text-foreground"
-                      >
-                        Cancel
-                      </Button>
-                      <ColoredButton
-                        type="submit"
-                        disabled={!company.trim() || !title.trim() || submitting || extracting}
-                        className="text-xs font-medium px-4 h-8.5 rounded-lg"
-                        color="emerald"
-                      >
-                        {submitting ? (
-                          <>
-                            <Loader2 className="size-3 animate-spin mr-1.5" />
-                            <span>Processing...</span>
-                          </>
-                        ) : autoTailor && masterResumeId ? (
-                          <>Create & Tailor</>
-                        ) : (
-                          <>Track Application</>
-                        )}
-                      </ColoredButton>
+                    {/* Footer with Stage Selector on the left */}
+                    <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/50 bg-background/90 backdrop-blur-sm shrink-0">
+                      {/* Left: Stage Selector in Footer */}
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Select
+                          value={stage}
+                          onValueChange={(val) => setStage(val as JobStage)}
+                          disabled={submitting}
+                        >
+                          <SelectTrigger className="h-8 px-2.5 rounded-lg border-border/60 bg-muted/25 hover:bg-muted/40 text-xs font-medium gap-1.5 focus-visible:ring-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[stage]?.dotClass || 'bg-slate-400')} />
+                              <SelectValue placeholder="Stage" />
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent position="popper" className="z-[110]">
+                            {(Object.keys(STAGE_CONFIGS) as JobStage[]).map((st) => (
+                              <SelectItem key={st} value={st} className="text-xs cursor-pointer">
+                                <div className="flex items-center gap-2">
+                                  <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[st].dotClass)} />
+                                  <span>{STAGE_CONFIGS[st].label}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Right: Actions */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleClose}
+                          disabled={submitting || extracting}
+                          className="text-xs text-muted-foreground hover:text-foreground h-8 px-3"
+                        >
+                          Cancel
+                        </Button>
+                        <ColoredButton
+                          type="submit"
+                          disabled={!company.trim() || !title.trim() || submitting || extracting}
+                          className="text-xs font-medium px-4 h-8 rounded-lg"
+                          color="emerald"
+                        >
+                          {submitting ? (
+                            <>
+                              <Loader2 className="size-3 animate-spin mr-1.5" />
+                              <span>Processing...</span>
+                            </>
+                          ) : autoTailor && masterResumeId ? (
+                            <>Create & Tailor</>
+                          ) : (
+                            <>Track Application</>
+                          )}
+                        </ColoredButton>
+                      </div>
                     </div>
                   </form>
                 </motion.div>
