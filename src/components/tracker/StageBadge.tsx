@@ -29,21 +29,8 @@ export default function StageBadge({
 }: Props) {
   const config = STAGE_CONFIGS[stage] || STAGE_CONFIGS.saved;
 
-  const badgeContent = (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 font-mono font-medium transition-colors',
-        variant === 'minimal'
-          ? 'px-1.5 py-0.5 text-[10px] text-muted-foreground/80 hover:text-foreground rounded-md'
-          : cn(
-              'rounded-full border transition-all duration-150',
-              size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs',
-              config.badgeClass
-            ),
-        interactive && 'cursor-pointer active:scale-[0.97]',
-        className
-      )}
-    >
+  const renderBadgeInner = () => (
+    <>
       <span
         className={cn(
           'rounded-full shrink-0',
@@ -53,22 +40,41 @@ export default function StageBadge({
       />
       <span className="truncate">{config.shortLabel}</span>
       {interactive && <ChevronDown className="size-2.5 opacity-50 ml-0.5 shrink-0" />}
-    </span>
+    </>
+  );
+
+  const badgeClasses = cn(
+    'inline-flex items-center gap-1.5 font-mono font-medium transition-colors select-none',
+    variant === 'minimal'
+      ? 'px-1.5 py-0.5 text-[10px] text-muted-foreground/80 hover:text-foreground rounded-md'
+      : cn(
+          'rounded-full border transition-all duration-150',
+          size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs',
+          config.badgeClass
+        ),
+    className
   );
 
   if (!interactive) {
-    return badgeContent;
+    return (
+      <span className={badgeClasses}>
+        {renderBadgeInner()}
+      </span>
+    );
   }
 
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div onClick={(e) => e.stopPropagation()} className="inline-flex">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="outline-none focus-visible:ring-1 focus-visible:ring-foreground/20 rounded-md"
+            className={cn(
+              badgeClasses,
+              'cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:ring-offset-1 focus-visible:ring-offset-background active:scale-[0.97]'
+            )}
           >
-            {badgeContent}
+            {renderBadgeInner()}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
