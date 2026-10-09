@@ -579,7 +579,7 @@ export default function AddTrackedJobDialog({
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.18, ease: 'easeOut' }}
-                            className="space-y-3.5 overflow-hidden pt-1"
+                            className="space-y-3.5 pt-1"
                           >
                             {/* Job Description Textarea */}
                             <div className="space-y-1.5">
@@ -602,7 +602,7 @@ export default function AddTrackedJobDialog({
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 disabled={submitting}
-                                className="min-h-[100px] text-xs resize-y rounded-xl leading-relaxed font-sans placeholder:text-muted-foreground/50 border-border/60 p-3"
+                                className="min-h-[100px] text-xs resize-y rounded-xl leading-relaxed font-sans placeholder:text-muted-foreground/50 border-border/60 px-3.5 py-2.5"
                               />
                             </div>
 
@@ -627,7 +627,7 @@ export default function AddTrackedJobDialog({
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 disabled={submitting}
-                                className="min-h-[55px] text-xs resize-y rounded-xl border-border/60 p-3 leading-relaxed"
+                                className="min-h-[64px] text-xs resize-y rounded-xl border-border/60 px-3.5 py-2.5 leading-relaxed"
                               />
                             </div>
                           </motion.div>
