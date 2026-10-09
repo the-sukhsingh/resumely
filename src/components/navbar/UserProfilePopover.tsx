@@ -54,7 +54,7 @@ export default function UserProfilePopover({ user, className }: Props) {
             aria-label="User account menu"
             className={cn(
               'group relative rounded-full p-0.5 outline-none transition-all duration-150 cursor-pointer select-none',
-              'hover:ring-2 hover:ring-primary/20 active:scale-[0.95]',
+              'hover:ring-2 hover:ring-primary/20',
               open && 'ring-2 ring-primary/30',
               className
             )}
@@ -73,8 +73,11 @@ export default function UserProfilePopover({ user, className }: Props) {
         <PopoverContent
           align="end"
           sideOffset={8}
-          className="w-[292px] p-0 rounded-2xl border border-border/60 bg-popover/95 dark:bg-card/95 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/40 overflow-hidden outline-none animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-1.5 data-[side=top]:slide-in-from-bottom-1.5 duration-150 z-50 select-none"
+          className="p-0 rounded-2xl border border-border/60 bg-popover/95 dark:bg-card/95 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/40 overflow-hidden outline-none animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-1.5 data-[side=top]:slide-in-from-bottom-1.5 duration-150 z-50 select-none"
         >
+          {/* <div className='absolute inset-0 -z-1 '>
+            <span className='size-84'></span>
+          </div> */}
           {/* ── User Header ── */}
           <div className="px-3.5 pt-3.5 pb-3 border-b border-border/40">
             <div className="flex items-center gap-3">

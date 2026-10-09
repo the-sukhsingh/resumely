@@ -145,19 +145,10 @@ export default function JobTrackerHeader({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
         {/* Left: Section Title, Resumes Link, and View Mode Switcher */}
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2.5">
-            <h3 className="text-sm font-semibold tracking-tight text-foreground">
-              Tracked Roles
-            </h3>
-            <Link
-              href="/resume"
-              prefetch={true}
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 transition-colors border border-border/40"
-            >
-              <span>Manage Resumes</span>
-              <ExternalLinkDuo className="size-3" />
-            </Link>
-          </div>
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">
+            Tracked Roles
+          </h3>
+
 
           <AnimatedSwitcher
             value={viewMode}

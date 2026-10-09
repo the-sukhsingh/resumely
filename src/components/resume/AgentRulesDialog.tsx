@@ -215,15 +215,15 @@ export default function AgentRulesDialog({ userId, trigger }: Props) {
           type="button"
           onClick={() => setOpen(true)}
           className={cn(
-            'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer border select-none',
+            'inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer border select-none',
             'bg-card/90 hover:bg-muted/70 text-foreground border-border/70 hover:border-foreground/20 shadow-2xs hover:shadow-xs active:scale-[0.98]'
           )}
         >
           <SlidersDuo className="size-3.5 text-primary" />
           <span>AI Agent Rules</span>
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20">
-              {activeCount} active
+            <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20">
+              {activeCount}
             </span>
           )}
         </button>

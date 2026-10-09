@@ -218,10 +218,10 @@ export default function ResumeVersionList({ userId }: Props) {
         <section className="group relative rounded-[30px] bg-linear-to-b from-card/90 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 shadow-xs overflow-hidden outline-2 outline-white dark:outline-black">
           {/* <VelocityStreakPreview className="absolute inset-0 opacity-45 pointer-events-none" /> */}
           <div className={cn("absolute inset-0 blur-2xl")}>
-          <span className='size-100 rounded-full bg-violet-200/50 dark:bg-violet-400/20 inline-flex absolute -left-5 -translate-y-1/2'></span>
-          <span className='size-100 rounded-full bg-emerald-200/50 dark:bg-emerald-400/10 inline-flex absolute -right-5 -translate-y-1/3'></span>
+            <span className='size-100 rounded-full bg-violet-200/50 dark:bg-violet-400/20 inline-flex absolute -left-5 -translate-y-1/2'></span>
+            <span className='size-100 rounded-full bg-emerald-200/50 dark:bg-emerald-400/10 inline-flex absolute -right-5 -translate-y-1/3'></span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
             <div className="flex items-start gap-4">
               <div className="space-y-2">
@@ -273,19 +273,10 @@ export default function ResumeVersionList({ userId }: Props) {
       <section className="space-y-3.5">
         {/* Section Header & Search Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-          <div className="flex items-center gap-2.5">
-            <h3 className="text-sm font-semibold tracking-tight text-foreground">
-              Tailored Resumes
-            </h3>
-            <Link
-              href="/tracker"
-              prefetch={true}
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 transition-colors border border-border/40"
-            >
-              <span>Track in Pipeline</span>
-              <ExternalLinkDuo className="size-3" />
-            </Link>
-          </div>
+
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">
+            Tailored Resumes
+          </h3>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
             {/* Search Input */}

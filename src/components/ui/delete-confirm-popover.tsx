@@ -200,7 +200,7 @@ export function DeleteConfirmPopover({
                 type="button"
                 onClick={handleConfirm}
                 disabled={isDeleting}
-                className="h-7 px-3 text-[11px] font-medium rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-[0.97] transition-all cursor-pointer flex items-center gap-1.5 shadow-xs disabled:opacity-60 disabled:pointer-events-none"
+                className="h-7 px-3 text-[11px] font-medium rounded-md bg-destructive text-secondary hover:bg-destructive/90 active:scale-[0.97] transition-all cursor-pointer flex items-center gap-1.5 shadow-xs disabled:opacity-60 disabled:pointer-events-none"
               >
                 {isDeleting && <Loader2 className="size-3 animate-spin shrink-0" />}
                 <span>{isDeleting ? 'Deleting...' : confirmText}</span>
