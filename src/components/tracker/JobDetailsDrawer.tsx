@@ -10,33 +10,32 @@ import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import StageBadge from './StageBadge';
 import { Button } from '@/components/ui/button';
 import ColoredButton from '@/components/custom/colored-button';
-import DitheredSphere from '@/components/custom/dithered-sphere';
+import JobAvatar from './JobAvatar';
 import { Textarea } from '@/components/ui/textarea';
 import {
   X,
-  ExternalLink,
-  FileText,
-  Clock,
-  MapPin,
   DollarSign,
-  Calendar,
-  Trash2,
   Check,
-  Link2,
   Loader2,
   ArrowRight,
   ShieldCheck,
+  Copy,
+  Pencil,
+  ChevronDown,
+  ChevronUp,
+  Globe,
 } from 'lucide-react';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+  ExternalLinkDuo,
+  File as DuoFile,
+  Clock,
+  Location,
+  Calendar,
+  TrashDuo,
+  LinkDuo,
+} from '@/components/icons';
+import { cn } from '@/lib/utils';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -62,10 +61,18 @@ export default function JobDetailsDrawer({
   const [notes, setNotes] = useState(application?.notes || '');
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [isTailoring, setIsTailoring] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Job Description View / Edit State
+  const [isJdExpanded, setIsJdExpanded] = useState(false);
+  const [isEditingJd, setIsEditingJd] = useState(false);
+  const [jdText, setJdText] = useState(
+    application?.description || application?.jobDescription?.description || ''
+  );
+  const [copiedJd, setCopiedJd] = useState(false);
+  const [isSavingJd, setIsSavingJd] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -74,6 +81,9 @@ export default function JobDetailsDrawer({
   useEffect(() => {
     if (application) {
       setNotes(application.notes || '');
+      setJdText(application.description || application.jobDescription?.description || '');
+      setIsEditingJd(false);
+      setIsJdExpanded(false);
     }
   }, [application]);
 
@@ -120,6 +130,37 @@ export default function JobDetailsDrawer({
     }
   };
 
+  const handleSaveJd = async () => {
+    setIsSavingJd(true);
+    try {
+      await updateJob({
+        applicationId: application._id,
+        description: jdText.trim() || undefined,
+      });
+      setIsEditingJd(false);
+      toast.success('Job description saved');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to save job description');
+    } finally {
+      setIsSavingJd(false);
+    }
+  };
+
+  const handleCopyJd = async () => {
+    const textToCopy = application.description || application.jobDescription?.description || jdText;
+    if (!textToCopy) return;
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedJd(true);
+      toast.success('Full job description copied to clipboard!');
+      setTimeout(() => setCopiedJd(false), 2000);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to copy text');
+    }
+  };
+
   const handleTailorResume = async () => {
     if (!masterResumeId) {
       toast.error('Please create a Master Resume first before tailoring');
@@ -148,7 +189,6 @@ export default function JobDetailsDrawer({
     try {
       await deleteJob({ applicationId: application._id });
       toast.success(`Deleted application for ${application.company}`);
-      setShowDeleteConfirm(false);
       onClose();
     } catch (err) {
       console.error(err);
@@ -181,18 +221,36 @@ export default function JobDetailsDrawer({
         className="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-xs select-auto animate-in fade-in duration-200 cursor-pointer"
       >
         <div
-          className="relative w-full max-w-lg h-full bg-background border-l border-border/70 shadow-2xl flex flex-col overflow-hidden text-foreground animate-in slide-in-from-right duration-250 cursor-default"
+          className="relative w-full max-w-full sm:max-w-lg h-full bg-background border-l border-border/70 shadow-2xl flex flex-col overflow-hidden text-foreground animate-in slide-in-from-right duration-250 cursor-default"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex items-start justify-between p-4 border-b border-border/60 shrink-0">
             <div className="flex items-start gap-3 min-w-0 flex-1">
-              <DitheredSphere index={0} seed={application._id} size={40} className="shrink-0 mt-0.5" />
+              <JobAvatar
+                company={application.company}
+                companyUrl={application.companyUrl}
+                jobUrl={application.jobUrl}
+                seed={application._id}
+                size={40}
+                className="shrink-0 mt-0.5"
+              />
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-xs font-mono uppercase tracking-wider text-muted-foreground truncate">
                     {application.company}
                   </h3>
+                  {application.companyUrl && (
+                    <a
+                      href={application.companyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-0.5 text-[11px] underline underline-offset-2 shrink-0"
+                    >
+                      <span>Website</span>
+                      <ExternalLinkDuo className="size-3" />
+                    </a>
+                  )}
                   {application.jobUrl && (
                     <a
                       href={application.jobUrl}
@@ -201,7 +259,7 @@ export default function JobDetailsDrawer({
                       className="text-muted-foreground hover:text-foreground inline-flex items-center gap-0.5 text-[11px] underline underline-offset-2 shrink-0"
                     >
                       <span>Posting</span>
-                      <ExternalLink className="size-2.5" />
+                      <ExternalLinkDuo className="size-3" />
                     </a>
                   )}
                 </div>
@@ -247,7 +305,7 @@ export default function JobDetailsDrawer({
             <div className="p-4 rounded-2xl border border-border/70 bg-card/50 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileText className="size-4 text-primary" />
+                  <DuoFile className="size-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground tracking-tight">
                     Tailored Resume
                   </span>
@@ -282,7 +340,7 @@ export default function JobDetailsDrawer({
                         {copiedLink ? (
                           <Check className="size-3.5 text-emerald-500" />
                         ) : (
-                          <Link2 className="size-3.5" />
+                          <LinkDuo className="size-3.5" />
                         )}
                       </button>
 
@@ -327,9 +385,28 @@ export default function JobDetailsDrawer({
 
             {/* Metadata Badges */}
             <div className="grid grid-cols-2 gap-3 text-xs">
+              {application.companyUrl && (
+                <div className="p-3 rounded-xl border border-border/50 bg-card/30 flex items-start gap-2.5">
+                  <Globe className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                      Company Website
+                    </span>
+                    <a
+                      href={application.companyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-primary hover:underline truncate block"
+                    >
+                      {application.companyUrl.replace(/^https?:\/\//i, '').replace(/\/$/, '')}
+                    </a>
+                  </div>
+                </div>
+              )}
+
               {application.location && (
                 <div className="p-3 rounded-xl border border-border/50 bg-card/30 flex items-start gap-2.5">
-                  <MapPin className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                  <Location className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
                       Location
@@ -375,6 +452,192 @@ export default function JobDetailsDrawer({
                 </div>
               </div>
             </div>
+
+            {/* Full Job Description Section */}
+            {(() => {
+              const activeDescription = application.description || application.jobDescription?.description || jdText;
+              const wordCount = activeDescription
+                ? activeDescription.trim().split(/\s+/).filter(Boolean).length
+                : 0;
+              const isLongDescription = (activeDescription || '').length > 320;
+
+              return (
+                <div className="p-4 rounded-2xl border border-border/70 bg-card/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <DuoFile className="size-4 text-primary shrink-0" />
+                      <span className="text-xs font-semibold text-foreground tracking-tight">
+                        Full Job Description
+                      </span>
+                      {activeDescription && (
+                        <span className="text-[10px] font-mono text-muted-foreground px-1.5 py-0.5 rounded-md bg-muted/60 border border-border/40 shrink-0">
+                          ~{wordCount} words
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      {activeDescription && (
+                        <button
+                          type="button"
+                          onClick={handleCopyJd}
+                          title="Copy full job description"
+                          className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/70 active:scale-[0.94] transition-all cursor-pointer"
+                        >
+                          {copiedJd ? (
+                            <Check className="size-3.5 text-emerald-500" />
+                          ) : (
+                            <Copy className="size-3.5" />
+                          )}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingJd(!isEditingJd)}
+                        title={isEditingJd ? 'Cancel editing' : 'Edit description'}
+                        className={cn(
+                          'size-7 rounded-lg flex items-center justify-center transition-all cursor-pointer active:scale-[0.94]',
+                          isEditingJd
+                            ? 'bg-primary/15 text-primary'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/70'
+                        )}
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {isEditingJd ? (
+                    <div className="space-y-2">
+                      <Textarea
+                        placeholder="Paste or edit the full job description text..."
+                        value={jdText}
+                        onChange={(e) => setJdText(e.target.value)}
+                        className="min-h-[140px] text-xs resize-y rounded-xl bg-background"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setJdText(activeDescription);
+                            setIsEditingJd(false);
+                          }}
+                          className="h-7 text-xs px-2.5"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={handleSaveJd}
+                          disabled={isSavingJd}
+                          className="h-7 text-xs px-3"
+                        >
+                          {isSavingJd ? (
+                            <>
+                              <Loader2 className="size-3 animate-spin mr-1" />
+                              Saving...
+                            </>
+                          ) : (
+                            'Save Description'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : activeDescription ? (
+                    <div className="relative">
+                      <div
+                        className={cn(
+                          'text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap font-sans transition-all duration-200 overflow-hidden',
+                          !isJdExpanded && isLongDescription && 'max-h-[160px]'
+                        )}
+                      >
+                        {activeDescription}
+                      </div>
+
+                      {!isJdExpanded && isLongDescription && (
+                        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none" />
+                      )}
+
+                      {isLongDescription && (
+                        <div className="pt-2 flex justify-center">
+                          <button
+                            type="button"
+                            onClick={() => setIsJdExpanded(!isJdExpanded)}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline cursor-pointer active:scale-98 transition-all"
+                          >
+                            {isJdExpanded ? (
+                              <>
+                                <span>Show less</span>
+                                <ChevronUp className="size-3" />
+                              </>
+                            ) : (
+                              <>
+                                <span>Read full description</span>
+                                <ChevronDown className="size-3" />
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 px-2 border border-dashed border-border/60 rounded-xl bg-background/50 space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        No full job description saved yet.
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsEditingJd(true)}
+                        className="h-7 text-xs rounded-lg"
+                      >
+                        <Pencil className="size-3 mr-1.5" />
+                        Paste Job Description
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Responsibilities & Requirements pills/chips if parsed by AI */}
+                  {((application.jobDescription?.responsibilities && application.jobDescription.responsibilities.length > 0) ||
+                    (application.jobDescription?.requirements && application.jobDescription.requirements.length > 0)) && (
+                    <div className="pt-2 border-t border-border/40 space-y-2.5">
+                      {application.jobDescription?.responsibilities &&
+                        application.jobDescription.responsibilities.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                              Key Responsibilities
+                            </span>
+                            <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                              {application.jobDescription.responsibilities.slice(0, 4).map((resp, i) => (
+                                <li key={i} className="leading-snug">
+                                  {resp}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                      {application.jobDescription?.requirements &&
+                        application.jobDescription.requirements.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                              Core Requirements
+                            </span>
+                            <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                              {application.jobDescription.requirements.slice(0, 4).map((req, i) => (
+                                <li key={i} className="leading-snug">
+                                  {req}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Extracted Skills / Tags */}
             {application.jobDescription?.extractedSkills &&
@@ -425,15 +688,30 @@ export default function JobDetailsDrawer({
           </div>
 
           {/* Footer with Delete Action */}
-          <div className="p-4 border-t border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="inline-flex items-center gap-1.5 text-xs text-destructive hover:opacity-80 transition-opacity cursor-pointer font-medium"
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between shrink-0">
+            <DeleteConfirmPopover
+              title="Delete this tracked job?"
+              description={
+                <>
+                  Are you sure you want to remove <strong className="text-foreground">{application.title}</strong> at{' '}
+                  <strong className="text-foreground">{application.company}</strong>?
+                  {application.resumeVersionId && ' Your tailored resume will remain intact.'}
+                </>
+              }
+              confirmText="Delete Job"
+              onConfirm={handleDelete}
+              isDeleting={isDeleting}
+              side="top"
+              align="start"
             >
-              <Trash2 className="size-3.5" />
-              <span>Delete Job</span>
-            </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 text-xs text-destructive hover:opacity-80 data-[state=open]:opacity-100 transition-opacity cursor-pointer font-medium"
+              >
+                <TrashDuo className="size-3.5" />
+                <span>Delete Job</span>
+              </button>
+            </DeleteConfirmPopover>
 
             <Button size="sm" variant="ghost" onClick={onClose} className="text-xs">
               Close
@@ -442,29 +720,6 @@ export default function JobDetailsDrawer({
         </div>
       </div>
 
-      {/* Delete Confirmation Alert */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this tracked job?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to remove <strong className="text-foreground">{application.title}</strong> at{' '}
-              <strong className="text-foreground">{application.company}</strong>?
-              {application.resumeVersionId && ' Your tailored resume will remain intact.'}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Job'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>,
     document.body
   );

@@ -1,8 +1,9 @@
 'use client';
 
-import { Edit2, GripVertical } from 'lucide-react';
-import { TrashDuo } from '@/components/icons';
+import { GripVertical } from 'lucide-react';
+import { TrashDuo, EditDuo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { Reorder } from 'motion/react';
 
 interface Column<T> {
@@ -70,16 +71,25 @@ export function DataTable<T extends { id: string }>({
                     size="icon-sm"
                     className="h-7 w-7 p-0 hover:bg-cherry/20 hover:text-cherry"
                   >
-                    <Edit2 className="w-3.5 h-3.5" />
+                    <EditDuo className="w-3.5 h-3.5" />
                   </Button>
-                  <Button
-                    onClick={() => onDelete(item.id)}
-                    variant="ghost"
-                    size="icon-sm"
-                    className="h-7 w-7 p-0 hover:bg-red-50 hover:text-red-700"
+                  <DeleteConfirmPopover
+                    title="Delete this entry?"
+                    description="Are you sure you want to delete this entry?"
+                    confirmText="Delete"
+                    onConfirm={() => onDelete(item.id)}
+                    side="top"
+                    align="end"
+                    compact
                   >
-                    <TrashDuo className="w-3.5 h-3.5" />
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive data-[state=open]:bg-destructive/10 data-[state=open]:text-destructive cursor-pointer"
+                    >
+                      <TrashDuo className="w-3.5 h-3.5" />
+                    </Button>
+                  </DeleteConfirmPopover>
                 </div>
               </td>
             </Reorder.Item>

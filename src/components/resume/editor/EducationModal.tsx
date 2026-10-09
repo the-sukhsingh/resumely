@@ -77,7 +77,7 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
               handleClose();
             }
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 select-none backdrop-blur-xs"
         >
           {/* Wave Shader Backdrop with synchronized exit */}
           <motion.div
@@ -94,24 +94,29 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
             <WaveBackgroundPreview className="w-full h-full mask-t-from-80%" />
           </motion.div>
 
-          {/* Minimalist, Sleek Modal Window */}
+          {/* Minimalist, Sleek Modal Window / Mobile Bottom Drawer */}
           <motion.div
             key="education-modal-window"
-            initial={{ opacity: 0, scale: 0.95, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, y: 32, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{
               opacity: 0,
-              scale: 0.95,
-              y: 12,
+              y: 32,
+              scale: 0.98,
               transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
             }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl max-h-[86dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+            className="relative w-full max-w-2xl h-[90dvh] sm:h-auto sm:max-h-[86dvh] bg-background border-t sm:border border-border/70 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
           >
+            {/* Mobile Pull Handle */}
+            <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
+              <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
+            </div>
+
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
-              <h2 className="font-sans text-xl font-semibold">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border/60 shrink-0">
+              <h2 className="font-sans text-lg sm:text-xl font-semibold">
                 {education.institution ? 'Edit Education' : 'Add Education'}
               </h2>
               <Button
@@ -128,7 +133,7 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4">
                 <div>
                   <Label className="text-xs text-primary/90 mb-1">Institution</Label>
                   <Input
@@ -140,7 +145,7 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
                   />
                 </div>
 
-                <div className="flex gap-3 *:w-1/2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-primary/90 mb-1">Degree</Label>
                     <Input
@@ -163,7 +168,7 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
                   </div>
                 </div>
 
-                <div className="flex gap-3 *:w-1/2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-primary/90 mb-1">Start Year</Label>
                     <Input
@@ -185,7 +190,7 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
                   </div>
                 </div>
 
-                <div className="flex gap-3 *:w-1/2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-primary/90 mb-1">Location (Optional)</Label>
                     <Input
@@ -208,7 +213,7 @@ export const EducationModal: React.FC<EducationModalProps> = ({ education, onSav
               </div>
 
               {/* Footer */}
-              <div className="flex justify-end items-center gap-2 px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+              <div className="flex justify-end items-center gap-2 px-4 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
                 <Button type="button" variant="ghost" onClick={handleClose}>
                   Cancel
                 </Button>

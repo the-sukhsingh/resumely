@@ -14,6 +14,7 @@ export default defineSchema({
     name: v.optional(v.string()),
     picture: v.optional(v.union(v.string(), v.null())),
     credits: v.optional(v.number()),
+    agentRules: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }).index("by_email", ["email"]),
 
@@ -155,11 +156,13 @@ export default defineSchema({
       v.literal("archived")      // Archived / Withdrawn
     ),
     jobUrl: v.optional(v.union(v.string(), v.null())),
+    companyUrl: v.optional(v.union(v.string(), v.null())),
     location: v.optional(v.union(v.string(), v.null())),
     salary: v.optional(v.union(v.string(), v.null())),
     appliedAt: v.optional(v.union(v.number(), v.null())),
     deadline: v.optional(v.union(v.number(), v.null())),
     notes: v.optional(v.union(v.string(), v.null())),
+    description: v.optional(v.union(v.string(), v.null())),
     jobDescriptionId: v.optional(v.union(v.id("jobDescriptions"), v.null())),
     resumeVersionId: v.optional(v.union(v.id("resumeVersions"), v.null())),
     tags: v.optional(v.array(v.string())),

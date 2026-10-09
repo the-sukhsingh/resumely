@@ -17,12 +17,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   Download,
-  Link2,
   Check,
   Printer,
   ChevronDown,
-  FileText,
 } from 'lucide-react';
+import { LinkDuo, File as DuoFile } from '@/components/icons';
 import { toast } from 'sonner';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';
 import { createBlobUrl, revokeBlobUrl } from '@/lib/pdf/create-blob-url';
@@ -278,7 +277,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
       <div className="h-screen w-full bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-4 p-8 rounded-3xl border border-border/70 bg-card/60 backdrop-blur-md shadow-lg">
           <div className="size-12 rounded-2xl bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto">
-            <FileText className="size-6" />
+            <DuoFile className="size-6" />
           </div>
           <div className="space-y-1.5">
             <h1 className="text-lg font-semibold tracking-tight text-foreground">Resume Not Found</h1>
@@ -326,7 +325,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
               </>
             ) : (
               <>
-                <Link2 className="size-3.5 text-muted-foreground" />
+                <LinkDuo className="size-3.5 text-muted-foreground" />
                 <span className="hidden sm:inline">Copy Link</span>
               </>
             )}

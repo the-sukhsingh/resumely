@@ -23,6 +23,8 @@ import dynamic from 'next/dynamic';
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
 import CoverLetterPreview from '@/components/resume/preview/CoverLetterPreview';
 import { Clipboard, Message2, Settings } from '@duo-icons/react';
+import { FileText } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { createPdfBlob } from '@/lib/pdf/create-pdf-blob';
 import { createBlobUrl, revokeBlobUrl } from '@/lib/pdf/create-blob-url';
 import Manager from '@/components/resume/preview/manager';
@@ -53,7 +55,7 @@ export default function ResumeVersionPage() {
 
           <div className="flex gap-2 flex-1">
             <Skeleton className="flex-1 h-full rounded-lg" />
-            <Skeleton className="w-130 h-full rounded-lg" />
+            <Skeleton className="hidden md:block w-130 h-full rounded-lg" />
           </div>
         </div>
       </>
@@ -91,6 +93,7 @@ function ResumeEditorContent({
   resumeId: string;
 }) {
   const [activeTab, setActiveTab] = useState<'editor' | 'agent' | 'setting'>('editor');
+  const [mobileTab, setMobileTab] = useState<'preview' | 'editor' | 'agent' | 'setting'>('preview');
   const [activeView, setActiveView] = useState<'resume' | 'cover-letter'>('resume');
   const [draft, setDraft] = useState<ResumeData>(resume);
   const [previewDraft, setPreviewDraft] = useState<ResumeData>(resume);
@@ -216,71 +219,150 @@ function ResumeEditorContent({
 
   const handleCopyCoverLetter = () => {
     navigator.clipboard.writeText(previewDraft.coverLetter || '');
-    // alert("Copied to clipboard")
   };
 
   return (
     <>
       <div className="flex flex-col h-dvh p-2 pt-14 bg-muted/80">
         <div className='absolute inset-0 noise dark:opacity-40'></div>
-        <ResizablePanelGroup
-          orientation="horizontal"
-          className="w-full h-full gap-2"
-        >
-          <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
-            <div className='h-10 bg-background flex justify-between px-1' >
-              <Manager resumeId={resumeId} resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
-            </div>
-            {activeView === 'resume' ? (
-              <ResumePreview resumeData={previewDraft} theme="classic" />
-            ) : (
-              <CoverLetterPreview resumeData={previewDraft} />
-            )}
-          </ResizablePanel>
 
-          <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>
-            <Tabs defaultValue={activeTab} onValueChange={(val) => {
-              setActiveTab(val as 'editor' | 'agent' | 'setting');
-            }} className='absolute top-0 inset-x-0 border-b z-10' >
-              <TabsList variant={"line"}>
-                <TabsTrigger value="editor" >
-                  <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-teal-400">
-                    <Clipboard size={18}  />
-                    Editor
+        {/* Desktop View: Side-by-side Resizable Panels */}
+        <div className="hidden md:block h-full w-full">
+          <ResizablePanelGroup
+            orientation="horizontal"
+            className="w-full h-full gap-2"
+          >
+            <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
+              <div className='h-10 bg-background flex justify-between px-1' >
+                <Manager resumeId={resumeId} resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
+              </div>
+              {activeView === 'resume' ? (
+                <ResumePreview resumeData={previewDraft} theme="classic" />
+              ) : (
+                <CoverLetterPreview resumeData={previewDraft} />
+              )}
+            </ResizablePanel>
+
+            <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>
+              <Tabs defaultValue={activeTab} onValueChange={(val) => {
+                setActiveTab(val as 'editor' | 'agent' | 'setting');
+              }} className='absolute top-0 inset-x-0 border-b z-10' >
+                <TabsList variant={"line"}>
+                  <TabsTrigger value="editor" >
+                    <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-teal-400">
+                      <Clipboard size={18}  />
+                      Editor
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger value="agent">
+                    <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-rose-400">
+                      <Message2 size={18} />
+                      Agent
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger value="setting">
+                    <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-purple-400">
+                      <Settings size={18} />
+                      Settings
+                    </span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              <div className={activeTab === 'editor' ? 'h-full' : 'hidden'}>
+                <EditorForm data={draft} onChange={handleDraftChange} />
+              </div>
+              <div className={activeTab === 'agent' ? 'h-full' : 'hidden'}>
+                <ChatPanel versionId={resumeId as Id<'resumeVersions'>} />
+              </div>
+              <div className={activeTab === 'setting' ? 'h-full' : 'hidden'}>
+                <SettingsPanel
+                  resumeId={resumeId}
+                  settings={settings}
+                  onChange={handleSettingsChange}
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+
+        {/* Mobile View: Clean tabbed layout */}
+        <div className="flex md:hidden flex-col h-full w-full overflow-hidden rounded-xl bg-background border border-border/50">
+          {/* Top Segmented Navigation */}
+          <div className="border-b border-border/60 bg-muted/20 px-1 py-1 shrink-0">
+            <Tabs value={mobileTab} onValueChange={(val) => setMobileTab(val as typeof mobileTab)} className="w-full">
+              <TabsList variant="line" className="w-full grid grid-cols-4 h-9">
+                <TabsTrigger value="preview" className="text-xs px-1">
+                  <span className="flex items-center gap-1.5 truncate">
+                    <FileText className="size-3.5 shrink-0" />
+                    <span>Preview</span>
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="agent">
-                  <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-rose-400">
-                    <Message2 size={18} />
-                    Agent
+                <TabsTrigger value="editor" className="text-xs px-1">
+                  <span className="flex items-center gap-1.5 truncate [&_.duo-icons-secondary-layer]:fill-teal-400">
+                    <Clipboard size={14} />
+                    <span>Editor</span>
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="setting">
-                  <span className="flex items-center gap-2 [&_.duo-icons-secondary-layer]:fill-purple-400">
-                    <Settings size={18} />
-                    Settings
+                <TabsTrigger value="agent" className="text-xs px-1">
+                  <span className="flex items-center gap-1.5 truncate [&_.duo-icons-secondary-layer]:fill-rose-400">
+                    <Message2 size={14} />
+                    <span>Agent</span>
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="setting" className="text-xs px-1">
+                  <span className="flex items-center gap-1.5 truncate [&_.duo-icons-secondary-layer]:fill-purple-400">
+                    <Settings size={14} />
+                    <span>Config</span>
                   </span>
                 </TabsTrigger>
               </TabsList>
-
             </Tabs>
+          </div>
 
-            <div className={activeTab === 'editor' ? 'h-full' : 'hidden'}>
+          {/* Active Mobile View */}
+          <div className="flex-1 overflow-hidden relative">
+            <div className={cn("h-full flex flex-col", mobileTab === 'preview' ? 'flex' : 'hidden')}>
+              <div className="min-h-10 bg-background flex items-center justify-between px-2 border-b border-border/40 shrink-0">
+                <Manager
+                  resumeId={resumeId}
+                  resumeName={previewDraft.name}
+                  handleViewPdf={handleViewPdf}
+                  isDownloading={isDownloading}
+                  onDownloadPdf={handleDownloadPdf}
+                  onDownloadImage={handleDownloadImage}
+                  activeView={activeView}
+                  setActiveView={setActiveView}
+                  handleCopyCoverLetter={handleCopyCoverLetter}
+                  isMaster={resume.isMasterResume}
+                />
+              </div>
+              <div className="flex-1 overflow-hidden">
+                {activeView === 'resume' ? (
+                  <ResumePreview resumeData={previewDraft} theme="classic" />
+                ) : (
+                  <CoverLetterPreview resumeData={previewDraft} />
+                )}
+              </div>
+            </div>
+
+            <div className={cn("h-full", mobileTab === 'editor' ? 'block' : 'hidden')}>
               <EditorForm data={draft} onChange={handleDraftChange} />
             </div>
-            <div className={activeTab === 'agent' ? 'h-full' : 'hidden'}>
+
+            <div className={cn("h-full", mobileTab === 'agent' ? 'block' : 'hidden')}>
               <ChatPanel versionId={resumeId as Id<'resumeVersions'>} />
             </div>
-            <div className={activeTab === 'setting' ? 'h-full' : 'hidden'}>
+
+            <div className={cn("h-full", mobileTab === 'setting' ? 'block' : 'hidden')}>
               <SettingsPanel
                 resumeId={resumeId}
                 settings={settings}
                 onChange={handleSettingsChange}
               />
             </div>
-          </ResizablePanel>
-
-        </ResizablePanelGroup>
+          </div>
+        </div>
       </div>
     </>
   );

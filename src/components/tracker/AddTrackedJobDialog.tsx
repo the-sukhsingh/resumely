@@ -12,23 +12,32 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { WaveBackgroundPreview } from '@/components/custom/bg-shader-modal';
-import AnimatedSwitcher from '@/components/custom/animated-switcher';
 import {
   X,
-  Plus,
-  Link2,
-  FileText,
-  Loader2,
-  Clock,
-  Send,
-  Building,
-  MapPin,
   DollarSign,
-  Clipboard,
+  Loader2,
+  AlertCircle,
+  Check,
+  ChevronDown,
 } from 'lucide-react';
+import {
+  AddCircle,
+  LinkDuo,
+  Building,
+  Location,
+  Clipboard,
+  SparklesDuo,
+} from '@/components/icons';
 import { toast } from 'sonner';
 
 interface Props {
@@ -47,70 +56,68 @@ export default function AddTrackedJobDialog({
   initialStage = 'saved',
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<'paste' | 'link' | 'manual'>('paste');
   const isBackdropClickRef = useRef(false);
 
-  // Paste JD Form State
-  const [pastedDescription, setPastedDescription] = useState('');
-  const [pasteJobUrl, setPasteJobUrl] = useState('');
-  const [pasteStage, setPasteStage] = useState<JobStage>(initialStage);
-  const [pasteAutoTailor, setPasteAutoTailor] = useState(Boolean(masterResumeId));
-  const [pasteExtracting, setPasteExtracting] = useState(false);
-  const [pastePhase, setPastePhase] = useState<'analyzing' | 'tailoring' | 'idle'>('idle');
-
-  // Link Form State
+  // Link Extraction State
   const [url, setUrl] = useState('');
-  const [linkStage, setLinkStage] = useState<JobStage>(initialStage);
-  const [autoTailor, setAutoTailor] = useState(Boolean(masterResumeId));
   const [extracting, setExtracting] = useState(false);
-  const [extractPhase, setExtractPhase] = useState<'scraping' | 'analyzing' | 'tailoring' | 'idle'>('idle');
+  const [extractError, setExtractError] = useState<string | null>(null);
+  const [extractSuccess, setExtractSuccess] = useState(false);
 
-  // Manual Form State
-  const [manualCompany, setManualCompany] = useState('');
-  const [manualTitle, setManualTitle] = useState('');
-  const [manualStage, setManualStage] = useState<JobStage>(initialStage);
-  const [manualUrl, setManualUrl] = useState('');
-  const [manualLocation, setManualLocation] = useState('');
-  const [manualSalary, setManualSalary] = useState('');
-  const [manualDescription, setManualDescription] = useState('');
-  const [manualNotes, setManualNotes] = useState('');
-  const [manualSubmitting, setManualSubmitting] = useState(false);
+  // Form Fields State
+  const [company, setCompany] = useState('');
+  const [title, setTitle] = useState('');
+  const [stage, setStage] = useState<JobStage>(initialStage);
+  const [location, setLocation] = useState('');
+  const [salary, setSalary] = useState('');
+  const [companyUrl, setCompanyUrl] = useState('');
+  const [description, setDescription] = useState('');
+  const [notes, setNotes] = useState('');
+
+  // Expandable sections
+  const [showOptionalFields, setShowOptionalFields] = useState(false);
+
+  // AI Tailor State
+  const [autoTailor, setAutoTailor] = useState(Boolean(masterResumeId));
+
+  // Submission State
+  const [submitting, setSubmitting] = useState(false);
+  const [submitPhase, setSubmitPhase] = useState<'saving' | 'tailoring' | 'idle'>('idle');
 
   // Convex actions & mutations
-  const extractJobFromText = useAction(api.jobTracker.extractJobFromText);
-  const extractJobFromUrl = useAction(api.jobTracker.extractJobFromUrl);
+  const parseJobDetailsFromUrl = useAction(api.jobTracker.parseJobDetailsFromUrl);
   const createJobApplication = useMutation(api.jobTracker.createJobApplication);
   const createJobDescription = useMutation(api.jobDescriptions.createJobDescription);
+  const createResumeVersion = useAction(api.resumeVersions.createResumeVersion);
+  const linkResumeToJob = useMutation(api.jobTracker.linkResumeToJob);
 
-  // Sync initialStage & masterResumeId on open
+  // Sync initial values on open
   useEffect(() => {
     if (open) {
-      setPasteStage(initialStage);
-      setLinkStage(initialStage);
-      setManualStage(initialStage);
-      setPasteAutoTailor(Boolean(masterResumeId));
+      setStage(initialStage);
       setAutoTailor(Boolean(masterResumeId));
     }
   }, [open, initialStage, masterResumeId]);
 
   const handleClose = () => {
-    if (extracting || pasteExtracting || manualSubmitting) return;
+    if (extracting || submitting) return;
     setOpen(false);
-    // Reset paste state
-    setPastedDescription('');
-    setPasteJobUrl('');
-    setPastePhase('idle');
-    // Reset link state
+    // Reset state
     setUrl('');
-    setExtractPhase('idle');
-    // Reset manual state
-    setManualCompany('');
-    setManualTitle('');
-    setManualUrl('');
-    setManualLocation('');
-    setManualSalary('');
-    setManualDescription('');
-    setManualNotes('');
+    setExtracting(false);
+    setExtractError(null);
+    setExtractSuccess(false);
+    setCompany('');
+    setTitle('');
+    setStage(initialStage);
+    setLocation('');
+    setSalary('');
+    setCompanyUrl('');
+    setDescription('');
+    setNotes('');
+    setShowOptionalFields(false);
+    setSubmitting(false);
+    setSubmitPhase('idle');
   };
 
   useEffect(() => {
@@ -120,7 +127,7 @@ export default function AddTrackedJobDialog({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, extracting, pasteExtracting, manualSubmitting]);
+  }, [open, extracting, submitting]);
 
   useEffect(() => {
     if (!open) return;
@@ -131,13 +138,59 @@ export default function AddTrackedJobDialog({
     };
   }, [open]);
 
-  // Clipboard Paste Helper
-  const handlePasteFromClipboard = async () => {
+  // Extract from URL handler
+  const handleExtractFromUrl = async () => {
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl || extracting) return;
+
+    if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
+      toast.error('Please enter a valid URL starting with https://');
+      setExtractError('Please enter a valid URL starting with https://');
+      return;
+    }
+
+    setExtracting(true);
+    setExtractError(null);
+    setExtractSuccess(false);
+
+    try {
+      const details = await parseJobDetailsFromUrl({ url: trimmedUrl });
+
+      if (details.company) setCompany(details.company);
+      if (details.title) setTitle(details.title);
+      if (details.location) setLocation(details.location);
+      if (details.salary) setSalary(details.salary);
+      if (details.companyUrl) setCompanyUrl(details.companyUrl);
+      if (details.description) setDescription(details.description);
+
+      // Auto-open additional details if filled
+      if (details.location || details.salary || details.companyUrl || details.description) {
+        setShowOptionalFields(true);
+      }
+
+      setExtractSuccess(true);
+      toast.success(
+        details.company && details.title
+          ? `Extracted details for ${details.title} at ${details.company}!`
+          : 'Extracted job details successfully!'
+      );
+    } catch (err: unknown) {
+      console.error('Extraction error:', err);
+      const msg = 'Failed to extract job details';
+      setExtractError(msg);
+      toast.error(msg);
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  // Clipboard Paste Helper for Job Description Textarea
+  const handlePasteDescriptionFromClipboard = async () => {
     try {
       if (navigator?.clipboard?.readText) {
         const text = await navigator.clipboard.readText();
         if (text && text.trim()) {
-          setPastedDescription(text.trim());
+          setDescription(text.trim());
           toast.success('Pasted job description from clipboard!');
         } else {
           toast.info('Clipboard is empty.');
@@ -150,129 +203,22 @@ export default function AddTrackedJobDialog({
     }
   };
 
-  // Handle Pasted JD Extraction Submit
-  const handlePasteSubmit = async (e: React.FormEvent) => {
+  // Submit Handler
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = pastedDescription.trim();
-    if (!trimmed || pasteExtracting) return;
+    if (!company.trim() || !title.trim() || submitting || extracting) return;
 
-    if (trimmed.length < 20) {
-      toast.error('Please paste a more complete job description (at least a couple sentences).');
-      return;
-    }
+    setSubmitting(true);
+    setSubmitPhase('saving');
 
-    setPasteExtracting(true);
-    setPastePhase('analyzing');
-
-    try {
-      const tailorPhaseTimer = setTimeout(() => {
-        if (pasteAutoTailor && masterResumeId) {
-          setPastePhase('tailoring');
-        }
-      }, 2600);
-
-      const result = await extractJobFromText({
-        userId,
-        text: trimmed,
-        stage: pasteStage,
-        jobUrl: pasteJobUrl.trim() || undefined,
-        autoTailor: Boolean(pasteAutoTailor && masterResumeId),
-        masterResumeId: masterResumeId || undefined,
-      });
-
-      clearTimeout(tailorPhaseTimer);
-
-      toast.success(
-        result.resumeVersionId
-          ? `Tracked "${result.title}" at ${result.company} & tailored resume!`
-          : `Tracked "${result.title}" at ${result.company}`
-      );
-
-      onCreated?.(result.jobApplicationId);
-      handleClose();
-    } catch (err: unknown) {
-      console.error(err);
-      const msg = err instanceof Error ? err.message : 'Failed to parse job description';
-      toast.error(msg);
-    } finally {
-      setPasteExtracting(false);
-      setPastePhase('idle');
-    }
-  };
-
-  // Handle URL Extraction Submit
-  const handleExtractSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedUrl = url.trim();
-    if (!trimmedUrl || extracting) return;
-
-    // Basic URL check
-    if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
-      toast.error('Please enter a valid URL starting with https://');
-      return;
-    }
-
-    setExtracting(true);
-    setExtractPhase('scraping');
-
-    try {
-      // Phase 1 -> 2 transition timer for visual responsiveness
-      const phaseTimer = setTimeout(() => {
-        setExtractPhase('analyzing');
-      }, 1200);
-
-      const tailorPhaseTimer = setTimeout(() => {
-        if (autoTailor && masterResumeId) {
-          setExtractPhase('tailoring');
-        }
-      }, 3500);
-
-      const result = await extractJobFromUrl({
-        userId,
-        url: trimmedUrl,
-        stage: linkStage,
-        autoTailor: Boolean(autoTailor && masterResumeId),
-        masterResumeId: masterResumeId || undefined,
-      });
-
-      clearTimeout(phaseTimer);
-      clearTimeout(tailorPhaseTimer);
-
-      toast.success(
-        result.resumeVersionId
-          ? `Tracked "${result.title}" at ${result.company} & tailored resume!`
-          : `Tracked "${result.title}" at ${result.company}`
-      );
-
-      onCreated?.(result.jobApplicationId);
-      handleClose();
-    } catch (err: unknown) {
-      console.error(err);
-      const msg = err instanceof Error ? err.message : 'Failed to extract job details';
-      toast.error(msg);
-      // Switch to paste mode pre-filling the URL so user can still proceed!
-      setPasteJobUrl(trimmedUrl);
-      setTab('paste');
-    } finally {
-      setExtracting(false);
-      setExtractPhase('idle');
-    }
-  };
-
-  // Handle Manual Submit
-  const handleManualSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!manualCompany.trim() || !manualTitle.trim() || manualSubmitting) return;
-
-    setManualSubmitting(true);
     try {
       let jobDescriptionId: Id<'jobDescriptions'> | undefined = undefined;
 
-      // If user pasted a job description, save it as a jobDescription record
-      if (manualDescription.trim()) {
+      // 1. If description provided, create job description entry
+      if (description.trim()) {
         jobDescriptionId = await createJobDescription({
           userId,
-          description: manualDescription.trim(),
+          description: description.trim(),
           requirements: [],
           responsibilities: [],
           extractedSkills: [],
@@ -280,26 +226,71 @@ export default function AddTrackedJobDialog({
         });
       }
 
-      const appId = await createJobApplication({
+      // 2. Create job application entry
+      const applicationId = await createJobApplication({
         userId,
-        company: manualCompany.trim(),
-        title: manualTitle.trim(),
-        stage: manualStage,
-        jobUrl: manualUrl.trim() || undefined,
-        location: manualLocation.trim() || undefined,
-        salary: manualSalary.trim() || undefined,
-        notes: manualNotes.trim() || undefined,
+        company: company.trim(),
+        title: title.trim(),
+        stage,
+        jobUrl: url.trim() || undefined,
+        companyUrl: companyUrl.trim() || undefined,
+        location: location.trim() || undefined,
+        salary: salary.trim() || undefined,
+        description: description.trim() || undefined,
+        notes: notes.trim() || undefined,
         jobDescriptionId,
       });
 
-      toast.success(`Tracked "${manualTitle.trim()}" at ${manualCompany.trim()}`);
-      onCreated?.(appId);
+      // 3. Tailor resume if requested and masterResumeId is present
+      if (autoTailor && masterResumeId) {
+        setSubmitPhase('tailoring');
+        try {
+          // If no JD was pasted, create a fallback JD from company and title for tailoring
+          let effectiveJdId = jobDescriptionId;
+          if (!effectiveJdId) {
+            effectiveJdId = await createJobDescription({
+              userId,
+              description: `Role: ${title.trim()}\nCompany: ${company.trim()}\nLocation: ${location.trim() || 'Not specified'}`,
+              requirements: [],
+              responsibilities: [],
+              extractedSkills: [],
+              extractedKeywords: [],
+            });
+          }
+
+          const tailored = await createResumeVersion({
+            masterResumeId,
+            jobDescriptionId: effectiveJdId,
+            versionName: `${company.trim()} - ${title.trim()}`,
+          });
+
+          if (tailored?.versionId) {
+            await linkResumeToJob({
+              applicationId,
+              resumeVersionId: tailored.versionId,
+              jobDescriptionId: effectiveJdId,
+            });
+          }
+        } catch (tailorErr) {
+          console.error('Tailoring error:', tailorErr);
+          toast.info('Job tracked! Resume tailoring can be generated anytime.');
+        }
+      }
+
+      toast.success(
+        autoTailor && masterResumeId
+          ? `Tracked "${title.trim()}" at ${company.trim()} & tailored resume!`
+          : `Tracked "${title.trim()}" at ${company.trim()}`
+      );
+
+      onCreated?.(applicationId);
       handleClose();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error('Failed to create job tracking entry');
+      toast.error('Failed to create job application');
     } finally {
-      setManualSubmitting(false);
+      setSubmitting(false);
+      setSubmitPhase('idle');
     }
   };
 
@@ -316,7 +307,7 @@ export default function AddTrackedJobDialog({
           onClick={() => setOpen(true)}
           className="rounded-full px-4 shadow-xs"
         >
-          <Plus className="size-3.5 mr-1" />
+          <AddCircle className="size-3.5 mr-1" />
           <span>Track Job</span>
         </ColoredButton>
       )}
@@ -329,7 +320,7 @@ export default function AddTrackedJobDialog({
                 key="track-modal-backdrop"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                exit={{ opacity: 0, transition: { duration: 0.18 } }}
                 transition={{ duration: 0.2 }}
                 onMouseDown={(e) => {
                   isBackdropClickRef.current = e.target === e.currentTarget;
@@ -339,7 +330,7 @@ export default function AddTrackedJobDialog({
                     handleClose();
                   }
                 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 select-none backdrop-blur-xs"
+                className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 select-none backdrop-blur-xs"
               >
                 {/* Wave Backdrop */}
                 <motion.div
@@ -356,28 +347,33 @@ export default function AddTrackedJobDialog({
                 {/* Modal Container */}
                 <motion.div
                   key="track-modal-window"
-                  initial={{ opacity: 0, scale: 0.95, y: 12 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{
                     opacity: 0,
-                    scale: 0.95,
-                    y: 12,
-                    transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
+                    y: 20,
+                    scale: 0.98,
+                    transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] },
                   }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-xl max-h-[88dvh] bg-background border border-border/60 shadow-2xl rounded-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
+                  className="relative w-full max-w-2xl h-[86dvh] sm:h-[620px] max-h-[90dvh] sm:max-h-[85dvh] bg-background border-t sm:border border-border/60 shadow-2xl rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl flex flex-col overflow-hidden text-foreground z-10 select-auto"
                 >
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
+                  {/* Mobile Pull Handle */}
+                  <div className="w-full flex sm:hidden items-center justify-center pt-2.5 pb-1 shrink-0">
+                    <div className="w-10 h-1 rounded-full bg-muted-foreground/25" />
+                  </div>
+
+                  {/* Clean Header */}
+                  <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 border-b border-border/50 shrink-0">
                     <div>
-                      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground/75">
                         <span>Tracker</span>
                         <span className="text-border">/</span>
                         <span>New Application</span>
                       </div>
-                      <h2 className="font-sans text-xl font-semibold tracking-tight mt-0.5">
-                        Track a Job Application
+                      <h2 className="font-sans text-base sm:text-lg font-semibold tracking-tight text-foreground mt-0.5">
+                        Track Application
                       </h2>
                     </div>
                     <Button
@@ -385,485 +381,390 @@ export default function AddTrackedJobDialog({
                       variant="ghost"
                       size="icon-sm"
                       onClick={handleClose}
-                      disabled={extracting || pasteExtracting || manualSubmitting}
-                      className="h-8 w-8 rounded-full p-0 text-muted-foreground hover:text-foreground"
+                      disabled={extracting || submitting}
+                      className="h-7 w-7 rounded-full p-0 text-muted-foreground/70 hover:text-foreground hover:bg-muted/60"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3.5 h-3.5" />
                       <span className="sr-only">Close</span>
                     </Button>
                   </div>
 
-                  {/* Tabs: Paste JD vs Link vs Manual */}
-                  <div className="px-6 pt-3 pb-1 shrink-0">
-                    <AnimatedSwitcher
-                      value={tab}
-                      onChange={setTab}
-                      fullWidth
-                      className="max-w-sm"
-                      items={[
-                        { value: 'paste', label: 'Paste JD' },
-                        { value: 'link', label: 'From Link'},
-                        { value: 'manual', label: 'Manual' },
-                      ]}
-                    />
-                  </div>
-
-                  {/* Tab 1: Paste Job Description */}
-                  {tab === 'paste' ? (
-                    <form onSubmit={handlePasteSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-6 space-y-4 overflow-y-auto max-h-[58vh]">
-                        {/* Job Description Textarea */}
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-medium text-foreground">
-                              Job Description <span className="text-destructive">*</span>
-                            </Label>
-                            <div className="flex items-center gap-2">
-                              {pastedDescription.trim().length > 0 && (
-                                <span className="text-[10px] text-muted-foreground font-mono">
-                                  {pastedDescription.trim().length.toLocaleString()} chars
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={handlePasteFromClipboard}
-                                disabled={pasteExtracting}
-                                className="text-[11px] text-primary hover:text-primary/80 hover:underline flex items-center gap-1 font-medium cursor-pointer"
-                              >
-                                <Clipboard className="size-3" />
-                                <span>Paste from clipboard</span>
-                              </button>
-                            </div>
-                          </div>
-                          <Textarea
-                            placeholder="Paste the full job description here (requirements, responsibilities, role details)..."
-                            value={pastedDescription}
-                            onChange={(e) => setPastedDescription(e.target.value)}
-                            disabled={pasteExtracting}
-                            required
-                            autoFocus
-                            className="min-h-[140px] text-xs resize-y rounded-xl leading-relaxed font-sans placeholder:text-muted-foreground/60"
-                          />
-                          <p className="text-[11px] text-muted-foreground leading-relaxed">
-                            Resumely AI automatically extracts the company name, job title, location, salary, ATS keywords, and required skills.
-                          </p>
-                        </div>
-
-                        {/* Optional Job URL */}
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-medium text-foreground flex items-center justify-between">
-                            <span>Job Posting Link (Optional)</span>
-                          </Label>
-                          <div className="relative">
-                            <Link2 className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                            <Input
-                              type="url"
-                              placeholder="https://..."
-                              value={pasteJobUrl}
-                              onChange={(e) => setPasteJobUrl(e.target.value)}
-                              disabled={pasteExtracting}
-                              className="pl-8 text-xs h-9 rounded-xl border-border/70"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Initial Stage */}
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-medium text-foreground">Initial Stage</Label>
-                            <span className="text-[11px] text-muted-foreground">
-                              {pasteStage === 'saved' ? 'Save to apply later' : 'Already applied'}
-                            </span>
-                          </div>
-                          <AnimatedSwitcher
-                            value={pasteStage}
-                            onChange={(v) => setPasteStage(v as 'saved' | 'applied')}
-                            fullWidth
-                            size="default"
-                            layoutId="paste-stage-switcher"
-                            items={[
-                              { value: 'saved', label: 'Save for later', icon: Clock },
-                              { value: 'applied', label: 'Applied', icon: Send },
-                            ]}
-                          />
-                        </div>
-
-                        {/* Tailor Resume Option */}
-                        <div
-                          onClick={() => {
-                            if (masterResumeId && !pasteExtracting) {
-                              setPasteAutoTailor(!pasteAutoTailor);
-                            }
-                          }}
-                          className={cn(
-                            'flex items-center justify-between p-3 rounded-xl border transition-all select-none',
-                            !masterResumeId
-                              ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
-                              : pasteAutoTailor
-                                ? 'border-primary/40 bg-primary/5 hover:border-primary/50 cursor-pointer'
-                                : 'border-border/60 bg-card/40 hover:bg-muted/30 cursor-pointer'
-                          )}
-                        >
-                          <div className="flex items-center gap-3 min-w-0 pr-3">
-                           
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-medium text-foreground">Tailor resume with AI</span>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground leading-snug">
-                                Automatically adapts bullet points & ATS keywords for this role
-                              </p>
-                              {!masterResumeId && (
-                                <p className="text-[10px] text-amber-500/90 mt-0.5 font-medium">
-                                  Requires a master resume. You can track now and tailor later.
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          <Switch
-                            checked={pasteAutoTailor && !!masterResumeId}
-                            onCheckedChange={(checked) => masterResumeId && setPasteAutoTailor(checked)}
-                            disabled={pasteExtracting || !masterResumeId}
-                            className="shrink-0"
-                          />
-                        </div>
-
-                        {/* Progress animation */}
-                        {pasteExtracting && (
-                          <div className="p-4 rounded-xl border border-border/70 bg-muted/30 space-y-2.5 animate-in fade-in duration-200">
-                            <div className="flex items-center gap-2.5">
-                              <Loader2 className="size-4 animate-spin text-primary" />
-                              <span className="text-xs font-medium text-foreground">
-                                {pastePhase === 'analyzing' && 'Analyzing requirements & ATS keywords with AI...'}
-                                {pastePhase === 'tailoring' && 'Crafting tailored resume version with AI...'}
-                                {pastePhase === 'idle' && 'Processing job details...'}
-                              </span>
-                            </div>
-                            <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
-                              <div
-                                className="bg-primary h-full transition-all duration-500"
-                                style={{
-                                  width: pastePhase === 'analyzing' ? '60%' : '95%',
-                                }}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Footer */}
-                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={handleClose}
-                          disabled={pasteExtracting}
-                          className="text-xs text-muted-foreground"
-                        >
-                          Cancel
-                        </Button>
-                        <ColoredButton
-                          type="submit"
-                          disabled={!pastedDescription.trim() || pasteExtracting}
-                          className="text-xs font-medium px-4"
-                          color="emerald"
-                        >
-                          {pasteExtracting ? (
-                            <>
-                              <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                              Processing...
-                            </>
-                          ) : pasteAutoTailor && masterResumeId ? (
-                            <>
-                              Create & Tailor
-                            </>
-                          ) : (
-                            <>
-                              Create Job
-                            </>
-                          )}
-                        </ColoredButton>
-                      </div>
-                    </form>
-                  ) : tab === 'link' ? (
-                    /* Tab 2: From Job Link */
-                    <form onSubmit={handleExtractSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-6 space-y-4 overflow-y-auto max-h-[58vh]">
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium text-foreground">
+                  {/* Form */}
+                  <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
+                      
+                      {/* Top Link Bar with Stateful Extract Button */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs font-medium text-foreground/90">
                             Job Posting URL
                           </Label>
-                          <div className="relative">
-                            <Link2 className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                          <span className="text-[11px] text-muted-foreground/70 font-normal">
+                            Auto-fills fields below
+                          </span>
+                        </div>
+
+                        <div className="relative flex items-center gap-2">
+                          <div className="relative flex-1 min-w-0">
+                            <LinkDuo className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none" />
                             <Input
                               type="url"
-                              placeholder="https://jobs.lever.co/... or greenhouse, ashby, linkedin..."
+                              placeholder="https://lever.co/... or linkedin, greenhouse, ashby..."
                               value={url}
-                              onChange={(e) => setUrl(e.target.value)}
-                              disabled={extracting}
-                              required
-                              autoFocus
-                              className="pl-9 pr-3 text-sm h-10 rounded-xl border-border/70 focus-visible:ring-1"
+                              onChange={(e) => {
+                                setUrl(e.target.value);
+                                if (extractError) setExtractError(null);
+                                if (extractSuccess) setExtractSuccess(false);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleExtractFromUrl();
+                                }
+                              }}
+                              disabled={extracting || submitting}
+                              className="pl-8.5 pr-3 text-xs h-9 rounded-xl border-border/60 bg-muted/20 hover:bg-muted/30 focus-visible:bg-background focus-visible:border-primary/50 transition-colors"
                             />
                           </div>
-                          <p className="text-[11px] text-muted-foreground leading-relaxed">
-                            Resumely will read the posting, extract company, role title, skills & ATS keywords automatically.
-                          </p>
+
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={handleExtractFromUrl}
+                            disabled={!url.trim() || extracting || submitting}
+                            className={cn(
+                              'h-9 px-3.5 text-xs font-medium rounded-xl shrink-0 transition-all cursor-pointer',
+                              extractSuccess
+                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/20'
+                                : url.trim() && !extracting
+                                ? 'bg-primary/10 text-primary hover:bg-primary/15 border border-primary/20'
+                                : 'text-muted-foreground'
+                            )}
+                          >
+                            {extracting ? (
+                              <>
+                                <Loader2 className="size-3 animate-spin mr-1.5 text-primary" />
+                                <span>Extracting...</span>
+                              </>
+                            ) : extractSuccess ? (
+                              <>
+                                <Check className="size-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
+                                <span>Fetched</span>
+                              </>
+                            ) : (
+                              <>
+                                <SparklesDuo className="size-3.5 mr-1.5 text-primary" />
+                                <span>Extract</span>
+                              </>
+                            )}
+                          </Button>
                         </div>
 
-                        {/* Initial Stage */}
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-medium text-foreground">Initial Stage</Label>
-                            <span className="text-[11px] text-muted-foreground">
-                              {linkStage === 'saved' ? 'Save to apply later' : 'Already applied'}
+                        {/* Subtle Status Feedback on Error */}
+                        {extractError && (
+                          <div className="flex items-center gap-1.5 text-[11px] text-destructive bg-destructive/10 border border-destructive/15 rounded-lg px-2.5 py-1.5 animate-in fade-in duration-150">
+                            <AlertCircle className="size-3.5 shrink-0" />
+                            <span className="flex-1 leading-tight">Failed to extract job details</span>
+                            <span className="text-muted-foreground text-[10px]">
+                              Fill below manually
                             </span>
-                          </div>
-                          <AnimatedSwitcher
-                            value={linkStage}
-                            onChange={(v) => setLinkStage(v as 'saved' | 'applied')}
-                            fullWidth
-                            size="default"
-                            layoutId="link-stage-switcher"
-                            items={[
-                              { value: 'saved', label: 'Save for later', icon: Clock },
-                              { value: 'applied', label: 'Applied', icon: Send },
-                            ]}
-                          />
-                        </div>
-
-                        {/* Tailor Resume Option */}
-                        <div
-                          onClick={() => {
-                            if (masterResumeId && !extracting) {
-                              setAutoTailor(!autoTailor);
-                            }
-                          }}
-                          className={cn(
-                            'flex items-center justify-between p-3 rounded-xl border transition-all select-none',
-                            !masterResumeId
-                              ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
-                              : autoTailor
-                                ? 'border-primary/40 bg-primary/5 hover:border-primary/50 cursor-pointer'
-                                : 'border-border/60 bg-card/40 hover:bg-muted/30 cursor-pointer'
-                          )}
-                        >
-                          <div className="flex items-center gap-3 min-w-0 pr-3">
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-medium text-foreground">Tailor resume with AI</span>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground leading-snug">
-                                Automatically adapts bullet points & ATS keywords for this role
-                              </p>
-                              {!masterResumeId && (
-                                <p className="text-[10px] text-amber-500/90 mt-0.5 font-medium">
-                                  Requires a master resume. You can track now and tailor later.
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          <Switch
-                            checked={autoTailor && !!masterResumeId}
-                            onCheckedChange={(checked) => masterResumeId && setAutoTailor(checked)}
-                            disabled={extracting || !masterResumeId}
-                            className="shrink-0"
-                          />
-                        </div>
-
-                        {/* Extracting Progress Animation */}
-                        {extracting && (
-                          <div className="p-4 rounded-xl border border-border/70 bg-muted/30 space-y-2.5 animate-in fade-in duration-200">
-                            <div className="flex items-center gap-2.5">
-                              <Loader2 className="size-4 animate-spin text-primary" />
-                              <span className="text-xs font-medium text-foreground">
-                                {extractPhase === 'scraping' && 'Fetching job posting page...'}
-                                {extractPhase === 'analyzing' && 'Analyzing requirements & ATS keywords with AI...'}
-                                {extractPhase === 'tailoring' && 'Crafting tailored resume version with AI...'}
-                                {extractPhase === 'idle' && 'Extracting job details...'}
-                              </span>
-                            </div>
-                            <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
-                              <div
-                                className="bg-primary h-full transition-all duration-500"
-                                style={{
-                                  width:
-                                    extractPhase === 'scraping'
-                                      ? '33%'
-                                      : extractPhase === 'analyzing'
-                                      ? '68%'
-                                      : '94%',
-                                }}
-                              />
-                            </div>
                           </div>
                         )}
                       </div>
 
-                      {/* Footer */}
-                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={handleClose}
-                          disabled={extracting}
-                          className="text-xs text-muted-foreground"
-                        >
-                          Cancel
-                        </Button>
-                        <ColoredButton
-                          type="submit"
-                          disabled={!url.trim() || extracting}
-                          className="text-xs font-medium px-4"
-                          color="emerald"
-                        >
-                          {extracting ? (
-                            <>
-                              <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                              Processing...
-                            </>
-                          ) : autoTailor && masterResumeId ? (
-                            <>
-                              Extract & Tailor
-                            </>
-                          ) : (
-                            <>
-                              Extract & Track
-                            </>
-                          )}
-                        </ColoredButton>
+                      {/* Divider */}
+                      <div className="relative my-1">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-border/40" />
+                        </div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-mono tracking-wider">
+                          <span className="bg-background px-2 text-muted-foreground/60">
+                            Job Details
+                          </span>
+                        </div>
                       </div>
-                    </form>
-                  ) : (
-                    /* Tab 3: Manual Entry */
-                    <form onSubmit={handleManualSubmit} className="flex flex-col flex-1 overflow-hidden">
-                      <div className="p-6 space-y-4 overflow-y-auto max-h-[58vh]">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium">Company *</Label>
-                            <div className="relative">
-                              <Building className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                              <Input
-                                placeholder="e.g. Stripe, Linear"
-                                value={manualCompany}
-                                onChange={(e) => setManualCompany(e.target.value)}
-                                required
-                                className="pl-8 text-xs h-9 rounded-xl"
-                              />
-                            </div>
-                          </div>
 
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium">Job Title *</Label>
+                      {/* Primary Role & Company Fields */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-medium text-foreground/90">
+                            Company <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="relative">
+                            <Building className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none" />
                             <Input
-                              placeholder="e.g. Senior Frontend Engineer"
-                              value={manualTitle}
-                              onChange={(e) => setManualTitle(e.target.value)}
+                              placeholder="e.g. Stripe, Linear"
+                              value={company}
+                              onChange={(e) => setCompany(e.target.value)}
                               required
-                              className="text-xs h-9 rounded-xl"
+                              disabled={submitting}
+                              className="pl-8.5 text-xs h-9 rounded-xl border-border/60"
                             />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium">Stage</Label>
-                            <select
-                              value={manualStage}
-                              onChange={(e) => setManualStage(e.target.value as JobStage)}
-                              className="w-full text-xs h-9 px-2.5 rounded-xl bg-background border border-border/70 text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20"
-                            >
-                              {(Object.keys(STAGE_CONFIGS) as JobStage[]).map((st) => (
-                                <option key={st} value={st}>
-                                  {STAGE_CONFIGS[st].label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium">Location (Optional)</Label>
-                            <div className="relative">
-                              <MapPin className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                              <Input
-                                placeholder="Remote, SF, NY"
-                                value={manualLocation}
-                                onChange={(e) => setManualLocation(e.target.value)}
-                                className="pl-8 text-xs h-9 rounded-xl"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-medium">Salary (Optional)</Label>
-                            <div className="relative">
-                              <DollarSign className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                              <Input
-                                placeholder="$150k - $180k"
-                                value={manualSalary}
-                                onChange={(e) => setManualSalary(e.target.value)}
-                                className="pl-8 text-xs h-9 rounded-xl"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
                         <div className="space-y-1.5">
-                          <Label className="text-xs font-medium">Job URL (Optional)</Label>
-                          <Input
-                            type="url"
-                            placeholder="https://..."
-                            value={manualUrl}
-                            onChange={(e) => setManualUrl(e.target.value)}
-                            className="text-xs h-9 rounded-xl"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-medium">
-                            Job Description Text (Optional)
+                          <Label className="text-xs font-medium text-foreground/90">
+                            Job Title <span className="text-destructive">*</span>
                           </Label>
-                          <Textarea
-                            placeholder="Paste requirements, responsibilities, or raw description to enable 1-click tailoring later..."
-                            value={manualDescription}
-                            onChange={(e) => setManualDescription(e.target.value)}
-                            className="min-h-[100px] text-xs resize-none rounded-xl"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-medium">Notes & Contacts (Optional)</Label>
-                          <Textarea
-                            placeholder="Referral name, recruiter contact, interview reminders..."
-                            value={manualNotes}
-                            onChange={(e) => setManualNotes(e.target.value)}
-                            className="min-h-[60px] text-xs resize-none rounded-xl"
+                          <Input
+                            placeholder="e.g. Senior Frontend Engineer"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                            disabled={submitting}
+                            className="text-xs h-9 rounded-xl border-border/60"
                           />
                         </div>
                       </div>
 
-                      {/* Footer */}
-                      <div className="flex justify-end gap-2 items-center px-6 py-3 border-t border-border/60 bg-background/80 backdrop-blur-sm shrink-0">
+                      {/* Location & Salary in a compact grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-medium text-foreground/80">Location (Optional)</Label>
+                          <div className="relative">
+                            <Location className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none" />
+                            <Input
+                              placeholder="Remote, SF, New York"
+                              value={location}
+                              onChange={(e) => setLocation(e.target.value)}
+                              disabled={submitting}
+                              className="pl-8.5 text-xs h-9 rounded-xl border-border/60"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-medium text-foreground/80">Salary (Optional)</Label>
+                          <div className="relative">
+                            <DollarSign className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none" />
+                            <Input
+                              placeholder="$150k - $180k"
+                              value={salary}
+                              onChange={(e) => setSalary(e.target.value)}
+                              disabled={submitting}
+                              className="pl-8.5 text-xs h-9 rounded-xl border-border/60"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Toggle for Additional Details (JD, Company Website, Notes) */}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setShowOptionalFields(!showOptionalFields)}
+                          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1 font-medium select-none"
+                        >
+                          <ChevronDown
+                            className={cn('size-3.5 transition-transform duration-200', showOptionalFields && 'rotate-180')}
+                          />
+                          <span>
+                            {showOptionalFields
+                              ? 'Hide job description & notes'
+                              : 'Add job description text & notes'}
+                          </span>
+                          {(description.trim() || companyUrl.trim() || notes.trim()) && !showOptionalFields && (
+                            <span className="size-1.5 rounded-full bg-primary shrink-0" />
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Collapsible Additional Details */}
+                      <AnimatePresence initial={false}>
+                        {showOptionalFields && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.18, ease: 'easeOut' }}
+                            className="space-y-3.5 overflow-hidden pt-1"
+                          >
+                            {/* Job Description Textarea */}
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-xs font-medium text-foreground/80">
+                                  Job Description Text
+                                </Label>
+                                <button
+                                  type="button"
+                                  onClick={handlePasteDescriptionFromClipboard}
+                                  disabled={submitting}
+                                  className="text-[11px] text-primary hover:text-primary/80 flex items-center gap-1 font-medium cursor-pointer"
+                                >
+                                  <Clipboard className="size-3" />
+                                  <span>Paste</span>
+                                </button>
+                              </div>
+                              <Textarea
+                                placeholder="Paste or review the requirements and role responsibilities..."
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                disabled={submitting}
+                                className="min-h-[100px] text-xs resize-y rounded-xl leading-relaxed font-sans placeholder:text-muted-foreground/50 border-border/60 p-3"
+                              />
+                            </div>
+
+                            {/* Company Website */}
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-foreground/80">Company Website</Label>
+                              <Input
+                                type="url"
+                                placeholder="https://company.com"
+                                value={companyUrl}
+                                onChange={(e) => setCompanyUrl(e.target.value)}
+                                disabled={submitting}
+                                className="text-xs h-9 rounded-xl border-border/60"
+                              />
+                            </div>
+
+                            {/* Notes / Recruiter Contact */}
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-foreground/80">Notes & Contacts</Label>
+                              <Textarea
+                                placeholder="Referral name, recruiter email, interview reminders..."
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                disabled={submitting}
+                                className="min-h-[55px] text-xs resize-y rounded-xl border-border/60 p-3 leading-relaxed"
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Tailor Resume with AI Switch */}
+                      <div
+                        onClick={() => {
+                          if (masterResumeId && !submitting) {
+                            setAutoTailor(!autoTailor);
+                          }
+                        }}
+                        className={cn(
+                          'group flex items-center justify-between p-2.5 rounded-xl border transition-all duration-150 select-none',
+                          !masterResumeId
+                            ? 'border-border/40 bg-muted/10 opacity-60 cursor-not-allowed'
+                            : autoTailor
+                              ? 'border-border/70 bg-muted/20 hover:bg-muted/25 cursor-pointer'
+                              : 'border-border/40 bg-transparent hover:bg-muted/10 cursor-pointer'
+                        )}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div
+                            className={cn(
+                              'size-7 rounded-lg flex items-center justify-center shrink-0 border transition-colors',
+                              autoTailor && masterResumeId
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                                : 'bg-muted/40 text-muted-foreground border-border/40 group-hover:text-foreground'
+                            )}
+                          >
+                            <SparklesDuo className="size-3.5" />
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-foreground leading-tight">
+                              Tailor Resume with AI
+                            </p>
+                            <p className="text-[11px] text-muted-foreground/75 leading-tight mt-0.5 truncate">
+                              {masterResumeId
+                                ? 'Creates a tailored resume version for this role'
+                                : 'Requires master resume'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <Switch
+                          checked={autoTailor && !!masterResumeId}
+                          onCheckedChange={(checked) => masterResumeId && setAutoTailor(checked)}
+                          disabled={submitting || !masterResumeId}
+                          className="shrink-0 data-[state=checked]:bg-emerald-500 scale-90"
+                        />
+                      </div>
+
+                      {/* Submitting Progress Indicator */}
+                      {submitting && (
+                        <div className="p-3 rounded-xl border border-border/60 bg-muted/20 space-y-2 animate-in fade-in duration-150">
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="size-3.5 animate-spin text-primary" />
+                            <span className="text-xs font-medium text-foreground">
+                              {submitPhase === 'saving' && 'Saving application...'}
+                              {submitPhase === 'tailoring' && 'Tailoring resume version with AI...'}
+                              {submitPhase === 'idle' && 'Processing...'}
+                            </span>
+                          </div>
+                          <div className="w-full bg-muted/50 h-1 rounded-full overflow-hidden">
+                            <div
+                              className="bg-primary h-full transition-all duration-500"
+                              style={{
+                                width: submitPhase === 'saving' ? '50%' : '95%',
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer with Stage Selector on the left */}
+                    <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-3 border-t border-border/50 bg-background/90 backdrop-blur-sm shrink-0">
+                      {/* Left: Stage Selector in Footer */}
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Select
+                          value={stage}
+                          onValueChange={(val) => setStage(val as JobStage)}
+                          disabled={submitting}
+                        >
+                          <SelectTrigger className="h-8 px-2.5 rounded-lg border-border/60 bg-muted/25 hover:bg-muted/40 text-xs font-medium gap-1.5 focus-visible:ring-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[stage]?.dotClass || 'bg-slate-400')} />
+                              <SelectValue placeholder="Stage" />
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent position="popper" className="z-[110]">
+                            {(Object.keys(STAGE_CONFIGS) as JobStage[]).map((st) => (
+                              <SelectItem key={st} value={st} className="text-xs cursor-pointer">
+                                <div className="flex items-center gap-2">
+                                  <span className={cn('size-2 rounded-full shrink-0', STAGE_CONFIGS[st].dotClass)} />
+                                  <span>{STAGE_CONFIGS[st].label}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Right: Actions */}
+                      <div className="flex items-center gap-2 shrink-0">
                         <Button
                           type="button"
                           variant="ghost"
+                          size="sm"
                           onClick={handleClose}
-                          disabled={manualSubmitting}
-                          className="text-xs text-muted-foreground"
+                          disabled={submitting || extracting}
+                          className="text-xs text-muted-foreground hover:text-foreground h-8 px-3"
                         >
                           Cancel
                         </Button>
                         <ColoredButton
                           type="submit"
-                          disabled={!manualCompany.trim() || !manualTitle.trim() || manualSubmitting}
-                          className="text-xs font-medium px-4"
+                          disabled={!company.trim() || !title.trim() || submitting || extracting}
+                          className="text-xs font-medium px-4 h-8 rounded-lg"
                           color="emerald"
                         >
-                          {manualSubmitting ? 'Saving...' : 'Track Application'}
+                          {submitting ? (
+                            <>
+                              <Loader2 className="size-3 animate-spin mr-1.5" />
+                              <span>Processing...</span>
+                            </>
+                          ) : autoTailor && masterResumeId ? (
+                            <>Create & Tailor</>
+                          ) : (
+                            <>Track Application</>
+                          )}
                         </ColoredButton>
                       </div>
-                    </form>
-                  )}
+                    </div>
+                  </form>
                 </motion.div>
               </motion.div>
             )}

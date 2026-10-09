@@ -6,6 +6,7 @@ import { api } from '../../../convex/_generated/api';
 import { Loader2, ArrowUp, RotateCcw, X } from 'lucide-react';
 import { TrashDuo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import { Id } from '../../../convex/_generated/dataModel';
 import Markdown from 'react-markdown';
 import {
@@ -479,7 +480,6 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
   }
 
   async function handleDeleteMessage(messageId: Id<'chatHistory'>) {
-    if (!confirm('Are you sure you want to delete this message?')) return;
     try {
       await deleteMessage({ messageId });
     } catch (e) {
@@ -488,7 +488,6 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
   }
 
   async function handleUndo(messageId: Id<'chatHistory'>) {
-    if (!confirm('Are you sure you want to undo the changes made by this message?')) return;
     try {
       await undoEdits({ messageId });
     } catch (e) {
@@ -597,26 +596,46 @@ export default function ChatPanel({ versionId }: { versionId: Id<'resumeVersions
                           </BubbleContent>
                         </Bubble>
 
-                        <div className="flex items-center gap-0.5 opacity-0 group-hover/message:opacity-100 transition-opacity duration-150 shrink-0">
+                        <div className="flex items-center gap-0.5 opacity-0 group-hover/message:opacity-100 has-data-[state=open]:opacity-100 transition-opacity duration-150 shrink-0">
                           {msg.role === 'assistant' && msg.undoSnapshot && (
+                            <DeleteConfirmPopover
+                              title="Undo AI changes?"
+                              description="Revert the resume edits made by this response back to the previous version?"
+                              confirmText="Undo"
+                              onConfirm={() => handleUndo(msg._id)}
+                              icon={<RotateCcw className="size-3.5" />}
+                              side="top"
+                              align="end"
+                              compact
+                            >
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted data-[state=open]:bg-muted data-[state=open]:text-foreground p-0 cursor-pointer"
+                                title="Undo edits made by this response"
+                              >
+                                <RotateCcw className="h-3.5 w-3.5" />
+                              </Button>
+                            </DeleteConfirmPopover>
+                          )}
+                          <DeleteConfirmPopover
+                            title="Delete message?"
+                            description="This message will be permanently removed from chat history."
+                            confirmText="Delete"
+                            onConfirm={() => handleDeleteMessage(msg._id)}
+                            side="top"
+                            align="end"
+                            compact
+                          >
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted p-0"
-                              onClick={() => handleUndo(msg._id)}
-                              title="Undo edits made by this response"
+                              className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10 data-[state=open]:text-destructive data-[state=open]:bg-destructive/10 cursor-pointer"
+                              title="Delete message"
                             >
-                              <RotateCcw className="h-3.5 w-3.5" />
+                              <TrashDuo className="h-3 w-3" />
                             </Button>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                            onClick={() => deleteMessage({ messageId: msg._id })}
-                          >
-                            <TrashDuo className="h-3 w-3" />
-                          </Button>
+                          </DeleteConfirmPopover>
                         </div>
                       </div>
                     </MessageContent>

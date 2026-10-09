@@ -12,13 +12,13 @@ export default function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <section className="mx-auto max-w-6xl px-6 pt-36 sm:pt-44 md:pt-48 pb-20 flex flex-col items-start text-left relative z-10">
+    <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-28 sm:pt-44 md:pt-48 pb-16 sm:pb-20 flex flex-col items-start text-left relative z-10">
       {/* Upright Roman Headline (Left-aligned) */}
       <motion.h1
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-        className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.08] max-w-3xl text-left"
+        className="text-3xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1] sm:leading-[1.08] max-w-3xl text-left"
       >
         Optimize once.
         <br />

@@ -7,33 +7,29 @@ import { api } from '../../convex/_generated/api';
 import { Id, Doc } from '../../convex/_generated/dataModel';
 import Link from 'next/link';
 import ResumeUploader from './ResumeUploader';
-import { TrashDuo } from '@/components/icons';
-import { AddCircle, File as DuoFile, CheckCircle as DuoCheckCircle } from '@duo-icons/react';
 import {
-  Search,
+  TrashDuo,
+  SearchDuo,
+  ExternalLinkDuo,
+  LinkDuo,
+  AddCircle,
   Plus,
-  ArrowUpRight,
+  File as DuoFile,
+  CheckCircle as DuoCheckCircle,
+} from '@/components/icons';
+import {
   X,
-  Link2,
   Check,
 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import AddJobDescriptionDialog from './AddJobDescriptionDialog';
 import StageBadge from './tracker/StageBadge';
 import { TrackedJobApplication } from './tracker/types';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import ColoredButton from './custom/colored-button';
-import DitheredSphere from './custom/dithered-sphere';
+import JobAvatar from './tracker/JobAvatar';
+import AgentRulesDialog from './resume/AgentRulesDialog';
 import { cn } from 'cn';
 interface Props {
   userId: Id<'users'>;
@@ -50,8 +46,6 @@ export default function ResumeVersionList({ userId }: Props) {
   const createJobApplication = useMutation(api.jobTracker.createJobApplication);
 
   const [search, setSearch] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ id: Id<'resumeVersions'>; name: string } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [trackingId, setTrackingId] = useState<string | null>(null);
 
@@ -118,20 +112,6 @@ export default function ResumeVersionList({ userId }: Props) {
     return tailoredVersions.filter((v) => (v.name ?? '').toLowerCase().includes(q));
   }, [tailoredVersions, search]);
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-    try {
-      await deleteVersion({ versionId: deleteTarget.id });
-      toast.success(`"${deleteTarget.name}" deleted`);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete resume');
-    } finally {
-      setIsDeleting(false);
-      setDeleteTarget(null);
-    }
-  };
 
 
 
@@ -177,6 +157,7 @@ export default function ResumeVersionList({ userId }: Props) {
 
             {/* Alternative Pathway: ColoredButton with AddCircle */}
             <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+              <AgentRulesDialog userId={userId} />
               <Link href="/resume/create">
                 <ColoredButton
                   type="button"
@@ -237,10 +218,10 @@ export default function ResumeVersionList({ userId }: Props) {
         <section className="group relative rounded-[30px] bg-linear-to-b from-card/90 to-card/40 dark:from-card/40 dark:to-card/10 p-5 sm:p-6 transition-all duration-200 shadow-xs overflow-hidden outline-2 outline-white dark:outline-black">
           {/* <VelocityStreakPreview className="absolute inset-0 opacity-45 pointer-events-none" /> */}
           <div className={cn("absolute inset-0 blur-2xl")}>
-          <span className='size-100 rounded-full bg-violet-200/50 dark:bg-violet-400/20 inline-flex absolute -left-5 -translate-y-1/2'></span>
-          <span className='size-100 rounded-full bg-emerald-200/50 dark:bg-emerald-400/10 inline-flex absolute -right-5 -translate-y-1/3'></span>
+            <span className='size-100 rounded-full bg-violet-200/50 dark:bg-violet-400/20 inline-flex absolute -left-5 -translate-y-1/2'></span>
+            <span className='size-100 rounded-full bg-emerald-200/50 dark:bg-emerald-400/10 inline-flex absolute -right-5 -translate-y-1/3'></span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
             <div className="flex items-start gap-4">
               <div className="space-y-2">
@@ -276,7 +257,8 @@ export default function ResumeVersionList({ userId }: Props) {
             </div>
 
             {/* Action CTA with Emil Kowalski Micro-interactions */}
-            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0 flex-wrap">
+              <AgentRulesDialog userId={userId} />
               <Link href={`/resume/${master._id}`}>
                 <ColoredButton color="amber" className="px-5 rounded-full active:scale-[0.97]" size="lg">
                   <span>Edit Base Profile</span>
@@ -291,24 +273,15 @@ export default function ResumeVersionList({ userId }: Props) {
       <section className="space-y-3.5">
         {/* Section Header & Search Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-          <div className="flex items-center gap-2.5">
-            <h3 className="text-sm font-semibold tracking-tight text-foreground">
-              Tailored Resumes
-            </h3>
-            <Link
-              href="/tracker"
-              prefetch={true}
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 transition-colors border border-border/40"
-            >
-              <span>Track in Pipeline</span>
-              <ArrowUpRight className="size-3" />
-            </Link>
-          </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">
+            Tailored Resumes
+          </h3>
+
+          <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
             {/* Search Input */}
-            <div className="relative flex-1 sm:w-64">
-              <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <div className="relative flex-1 min-w-[180px] sm:w-64">
+              <SearchDuo className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search versions..."
@@ -407,9 +380,16 @@ export default function ResumeVersionList({ userId }: Props) {
                     tabIndex={0}
                     className="group relative flex items-center justify-between gap-4 px-4 sm:px-5 py-2.5 hover:bg-muted/35 active:bg-muted/50 transition-colors duration-150 cursor-pointer outline-none focus-visible:bg-muted/40 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-foreground/20"
                   >
-                    {/* Role Name & Dithered Sphere & Tracking Status */}
+                    {/* Role Name & Job Favicon / Dithered Sphere & Tracking Status */}
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <DitheredSphere index={index} seed={item._id} size={32} />
+                      <JobAvatar
+                        company={linkedJob?.company}
+                        companyUrl={linkedJob?.companyUrl}
+                        jobUrl={linkedJob?.jobUrl}
+                        seed={item._id}
+                        index={index}
+                        size={32}
+                      />
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -469,25 +449,40 @@ export default function ResumeVersionList({ userId }: Props) {
                           {copiedId === item._id ? (
                             <Check className="size-4 text-emerald-500 animate-in fade-in duration-200" />
                           ) : (
-                            <Link2 className="size-4" />
+                            <LinkDuo className="size-4" />
                           )}
                           <span className="sr-only">Copy resume link</span>
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDeleteTarget({
-                              id: item._id,
-                              name: item.name || 'Untitled Version',
-                            })
+                        <DeleteConfirmPopover
+                          title="Delete resume version?"
+                          description={
+                            <>
+                              Are you sure you want to delete <strong className="text-foreground">{item.name || 'Untitled Version'}</strong>? This action cannot be undone. Your Master Resume remains untouched.
+                            </>
                           }
-                          title="Delete version"
-                          className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:scale-[0.93] transition-all duration-150 cursor-pointer"
+                          confirmText="Delete Version"
+                          onConfirm={async () => {
+                            try {
+                              await deleteVersion({ versionId: item._id });
+                              toast.success(`"${item.name || 'Untitled Version'}" deleted`);
+                            } catch (err) {
+                              console.error(err);
+                              toast.error('Failed to delete resume');
+                            }
+                          }}
+                          side="top"
+                          align="end"
                         >
-                          <TrashDuo className="size-4" />
-                          <span className="sr-only">Delete Version</span>
-                        </button>
+                          <button
+                            type="button"
+                            title="Delete version"
+                            className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 data-[state=open]:text-destructive data-[state=open]:bg-destructive/10 active:scale-[0.93] transition-all duration-150 cursor-pointer"
+                          >
+                            <TrashDuo className="size-4" />
+                            <span className="sr-only">Delete Version</span>
+                          </button>
+                        </DeleteConfirmPopover>
                       </div>
                     </div>
                   </div>
@@ -518,30 +513,6 @@ export default function ResumeVersionList({ userId }: Props) {
           )}
         </div>
       </section>
-
-      {/* Accessible Custom Delete Confirmation Alert */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this resume version?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <strong className="text-foreground">{deleteTarget?.name}</strong>? This action cannot be undone. Your Master Resume remains untouched.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting} className="active:scale-[0.98]">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-[0.98]"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Version'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

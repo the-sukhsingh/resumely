@@ -30,16 +30,16 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-gray-50/50">
-      <Card className="w-90">
+    <div className="flex min-h-screen w-full items-center justify-center p-4 bg-background">
+      <Card className="w-full max-w-sm rounded-2xl border-border/70 shadow-lg bg-card/80 backdrop-blur-md">
         <CardHeader className="text-center">
-          <CardTitle>Welcome to Resumely</CardTitle>
-          <CardDescription>Sign in to access your resumes</CardDescription>
+          <CardTitle className="text-xl font-semibold tracking-tight">Welcome to Resumely</CardTitle>
+          <CardDescription className="text-xs">Sign in to access your resumes</CardDescription>
         </CardHeader>
         <CardContent>
           <Button
             variant="default"
-            className="w-full h-12"
+            className="w-full h-11 rounded-xl text-sm font-medium"
             onClick={() => signIn("google")}
           >
             Continue with Google

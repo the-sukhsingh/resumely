@@ -275,8 +275,19 @@ export const rewriteBullets = action({
 });
 
 const resumeParserSchema = z.object({
+  isValidResume: z
+    .boolean()
+    .describe(
+      "Set to TRUE if the text represents a genuine candidate resume, CV, or professional career profile. Set to FALSE if the text is an unrelated document (e.g., utility bill, invoice, receipt, cooking recipe, legal agreement, scientific paper, book, essay, or casual message)."
+    ),
+  rejectionReason: z
+    .string()
+    .optional()
+    .describe(
+      "If isValidResume is false, provide a polite and clear explanation of why this document cannot be parsed as a resume (e.g., 'The uploaded file appears to be an invoice or financial statement rather than a resume. Please upload a document detailing your professional work experience, education, and skills.')."
+    ),
   personalInfo: z.object({
-    name: z.string(),
+    name: z.string().default(""),
     email: z.string().optional().nullable(),
     phone: z.string().optional().nullable(),
     location: z.string().optional().nullable(),
@@ -295,7 +306,7 @@ const resumeParserSchema = z.object({
       endDate: z.string().optional().nullable(),
       bullets: z.array(z.string()),
     })
-  ),
+  ).optional().default([]),
   education: z.array(
     z.object({
       id: z.string(),
@@ -307,13 +318,13 @@ const resumeParserSchema = z.object({
       endDate: z.string().optional().nullable(),
       gpa: z.string().optional().nullable(),
     })
-  ),
+  ).optional().default([]),
   skills: z.array(
     z.object({
       category: z.string(),
       items: z.array(z.string()),
     })
-  ),
+  ).optional().default([]),
   projects: z.array(
     z.object({
       id: z.string(),
@@ -323,7 +334,7 @@ const resumeParserSchema = z.object({
       link: z.string().optional().nullable(),
       bullets: z.array(z.string()),
     })
-  ),
+  ).optional().default([]),
   certifications: z.array(
     z.object({
       id: z.string(),
@@ -348,27 +359,61 @@ export const parseResumeText = action({
     userId: v.id("users"),
   },
   handler: async (ctx, args): Promise<unknown> => {
+    if (!args.text || args.text.trim().length < 40) {
+      throw new Error(
+        "The uploaded document does not contain enough text to be recognized as a resume. Please upload a clear PDF resume."
+      );
+    }
+
     const { object: parsedResume } = await generateObject({
       model: defaultModel,
       schema: resumeParserSchema,
-      prompt: `You are an expert resume parser. Extract the structured information from the following resume text:\n\n${args.text}`,
+      prompt: `You are an expert resume parser and document validator for Resumely.
+First, determine whether this text represents a genuine candidate resume, CV, or professional career profile.
+If it is NOT a resume (such as an invoice, receipt, legal contract, tax document, scientific paper, recipe, or random text), set isValidResume to false and provide a polite, specific rejectionReason explaining why.
+If it IS a resume, set isValidResume to true and extract the structured information accurately from the resume text:
+
+${args.text}`,
     });
+
+    if (!parsedResume.isValidResume) {
+      throw new Error(
+        parsedResume.rejectionReason ||
+          "The uploaded file does not appear to be a valid resume or CV. Please upload a document detailing your professional work experience, education, and skills."
+      );
+    }
+
+    const hasExperience = parsedResume.experience && parsedResume.experience.length > 0;
+    const hasEducation = parsedResume.education && parsedResume.education.length > 0;
+    const hasSkills = parsedResume.skills && parsedResume.skills.length > 0;
+    const candidateName = parsedResume.personalInfo?.name?.trim();
+
+    if (!candidateName && !hasExperience && !hasEducation && !hasSkills) {
+      throw new Error(
+        "Could not detect standard resume sections (name, work experience, education, or skills) in this file. Please upload a standard PDF resume."
+      );
+    }
 
     if (!parsedResume.certifications) parsedResume.certifications = [];
     if (!parsedResume.achievements) parsedResume.achievements = [];
-    
+
     // ensure boolean for 'current' since schema expects it but tool might miss it
-    const experienceWithCurrent = parsedResume.experience ? parsedResume.experience.map((exp: any) => ({
-      ...exp,
-      current: exp.endDate === null || String(exp.endDate).toLowerCase().includes("present")
-    })) : [];
+    const experienceWithCurrent = parsedResume.experience
+      ? parsedResume.experience.map((exp: any) => ({
+          ...exp,
+          current: exp.endDate === null || String(exp.endDate).toLowerCase().includes("present"),
+        }))
+      : [];
+
+    const { isValidResume: _valid, rejectionReason: _reason, ...cleanResume } = parsedResume;
 
     await ctx.runMutation(api.masterResumes.createMasterResume, {
       userId: args.userId,
-      ...parsedResume,
+      ...cleanResume,
       experience: experienceWithCurrent,
     });
 
-    return parsedResume;
+    return cleanResume;
   },
 });
+

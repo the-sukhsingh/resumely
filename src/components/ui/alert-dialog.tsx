@@ -47,6 +47,7 @@ function AlertDialogOverlay({
 function AlertDialogContent({
   className,
   size = "default",
+  children,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Content> & {
   size?: "default" | "sm"
@@ -58,11 +59,24 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
-          "group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "group/alert-dialog-content fixed z-50 grid w-full gap-4 bg-popover text-popover-foreground shadow-2xl duration-200 outline-none",
+          // Mobile: bottom drawer layout
+          "inset-x-0 bottom-0 max-h-[92dvh] rounded-t-3xl rounded-b-none border-t border-border/70 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]",
+          "data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-bottom data-closed:animate-out data-closed:fade-out-0 data-closed:slide-out-to-bottom",
+          // Desktop: centered modal layout
+          "sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl sm:border sm:border-border/70 sm:p-5 sm:pb-5",
+          "data-[size=default]:sm:max-w-sm data-[size=sm]:sm:max-w-xs",
+          "sm:data-open:zoom-in-95 sm:data-open:slide-in-from-bottom-0 sm:data-closed:zoom-out-95 sm:data-closed:slide-out-to-bottom-0",
           className
         )}
         {...props}
-      />
+      >
+        {/* Mobile Pull Handle for bottom drawer */}
+        <div className="w-full flex sm:hidden items-center justify-center -mt-1 -mb-1 shrink-0 pointer-events-none">
+          <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
+        </div>
+        {children}
+      </AlertDialogPrimitive.Content>
     </AlertDialogPortal>
   )
 }
@@ -91,7 +105,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
+        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-none sm:rounded-b-xl border-t bg-muted/50 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
         className
       )}
       {...props}

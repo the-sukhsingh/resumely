@@ -14,11 +14,15 @@ import { usePathname } from "next/navigation";
 import ColoredButton from "./custom/colored-button";
 import AnimatedSwitcher from "./custom/animated-switcher";
 import WorkspaceWarmer from "./workspace/WorkspaceWarmer";
+import UserProfilePopover from "./navbar/UserProfilePopover";
+import BuyCreditsDialog from "./navbar/BuyCreditsDialog";
 
 const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
     const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [buyCreditsOpen, setBuyCreditsOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,7 +51,7 @@ const Navbar = () => {
                     ? "bg-background/80 backdrop-blur-md border-b border-border/40 shadow-xs" 
                     : "bg-transparent border-b border-transparent"
         )}>
-            <div className="max-w-5xl mx-auto px-6">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6">
                 {/* Skip link for keyboard users */}
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 bg-background px-4 py-2 rounded-xl border border-border transition-all">Skip to content</a>
 
@@ -63,7 +67,7 @@ const Navbar = () => {
                             {user && <WorkspaceWarmer userId={user._id} />}
                             <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
                                 <AnimatedSwitcher
-                                    value={pathname.startsWith("/tracker") ? "/tracker" : "/resume"}
+                                    value={pathname.startsWith("/tracker") ? "/tracker" : pathname.startsWith("/resume") ? "/resume" : "/" }
                                     layoutId="navbar-tab-indicator"
                                     items={links.map((link) => ({
                                         value: link.href,
@@ -77,12 +81,16 @@ const Navbar = () => {
                     )}
 
                     {/* Right side: auth / mobile menu */}
-                    <div className="flex items-center gap-4">
-                        {/* Mobile Menu */}
-                        <div className="md:hidden">
-                            <Popover>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Mobile Controls */}
+                        <div className="flex md:hidden items-center gap-2">
+                            <ModeToggle />
+                            {isAuthenticated && user && (
+                                <UserProfilePopover user={user} />
+                            )}
+                            <Popover open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="rounded-full">
+                                    <Button variant="ghost" size="icon" className="rounded-full h-9 w-9" aria-label="Open navigation menu">
                                         <Menu className="h-5 w-5" />
                                     </Button>
                                 </PopoverTrigger>
@@ -99,6 +107,7 @@ const Navbar = () => {
                                                                 key={link.href}
                                                                 href={link.href}
                                                                 prefetch={true}
+                                                                onClick={() => setMobileMenuOpen(false)}
                                                                 className={cn(
                                                                     "flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors font-medium text-sm",
                                                                     isActive
@@ -114,9 +123,12 @@ const Navbar = () => {
                                                 </div>
 
                                                 <div className="pt-4 border-t border-border/50">
-                                                    <div className="flex items-center gap-4 mb-6 px-3">
+                                                    <div className="flex items-center gap-4 mb-4 px-3">
                                                         <Avatar className="h-10 w-10 rounded-full border border-border">
                                                             <AvatarImage src={user?.picture} />
+                                                            <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                                                                {user?.name?.charAt(0).toUpperCase() || "U"}
+                                                            </AvatarFallback>
                                                         </Avatar>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="text-sm font-semibold truncate">{user?.name}</div>
@@ -124,15 +136,30 @@ const Navbar = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center justify-between p-4 mb-4 mx-1 rounded-2xl bg-muted/30 border border-border/50">
+                                                    <div className="flex items-center justify-between p-3.5 mb-3 mx-1 rounded-2xl bg-muted/30 border border-border/50">
                                                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Credits</span>
                                                         <span className="text-sm font-semibold">{user?.credits ?? 0}</span>
                                                     </div>
 
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setMobileMenuOpen(false);
+                                                            setBuyCreditsOpen(true);
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors font-medium text-sm mb-1 cursor-pointer"
+                                                    >
+                                                        <CreditCard className="size-4 shrink-0 text-amber-500" />
+                                                        <span>Buy Credits</span>
+                                                    </button>
+
                                                     <Button
                                                         variant="ghost"
-                                                        className="w-full rounded-2xl gap-2 justify-start h-12 px-4 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                                        onClick={() => signOut()}
+                                                        className="w-full rounded-2xl gap-2 justify-start h-11 px-4 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                                        onClick={() => {
+                                                            setMobileMenuOpen(false);
+                                                            signOut();
+                                                        }}
                                                     >
                                                         <LogOut className="h-4 w-4" />
                                                         Sign Out
@@ -140,7 +167,10 @@ const Navbar = () => {
                                                 </div>
                                             </>
                                         ) : (
-                                            <Button variant="neo" className="w-full rounded-full h-12 text-sm font-semibold" onClick={() => signIn("google")}>
+                                            <Button variant="neo" className="w-full rounded-full h-12 text-sm font-semibold" onClick={() => {
+                                                setMobileMenuOpen(false);
+                                                signIn("google");
+                                            }}>
                                                 Get Started
                                             </Button>
                                         )}
@@ -154,50 +184,7 @@ const Navbar = () => {
                             {isLoading ? (
                                 <div className="w-9 h-9 rounded-full bg-muted animate-pulse" />
                             ) : isAuthenticated && user ? (
-                                <div className="flex items-center gap-3">
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all">
-                                                <Avatar className="h-8 w-8 border border-border rounded-full">
-                                                    <AvatarImage src={user.picture || undefined} />
-                                                    <AvatarFallback className="bg-primary/5 text-primary font-bold">
-                                                        {user.name?.charAt(0).toUpperCase() || "U"}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-64 p-0 mt-2 rounded-xl border-border/50 shadow-none bg-background/95 backdrop-blur-xl overflow-hidden gap-0" align="end">
-                                            <div className="px-2.5 py-3 border-b border-border/50 bg-muted/10">
-                                                <p className="text-sm font-semibold leading-none mb-1.5">{user.name}</p>
-                                                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-
-                                                <div className="mt-5 flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 shadow-sm">
-                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Credits</span>
-                                                    <span className="text-sm font-semibold">{user.credits ?? 0}</span>
-                                                </div>
-                                            </div>
-                                            <div className=" space-y-1">
-                                                <Link href="/" className="block w-full">
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="w-full justify-start gap-3 rounded-b-xl rounded-t-none h-11 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                                    >
-                                                        <CreditCard className="h-4 w-4" />
-                                                        Buy Credits
-                                                    </Button>
-                                                </Link>
-                                                <Button
-                                                    variant="ghost"
-                                                    className="w-full justify-start gap-3 rounded-xl h-11 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                                    onClick={() => signOut()}
-                                                >
-                                                    <LogOut className="h-4 w-4" />
-                                                    Sign Out
-                                                </Button>
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
+                                <UserProfilePopover user={user} />
                             ) : (
                                 <ColoredButton className='rounded-full h-8 px-4' color='blue' onClick={() => signIn("google")}>
                                     Get Started
@@ -211,6 +198,7 @@ const Navbar = () => {
                     </div>
                 </div>
             </div>
+            <BuyCreditsDialog open={buyCreditsOpen} onOpenChange={setBuyCreditsOpen} />
         </nav>
     );
 };

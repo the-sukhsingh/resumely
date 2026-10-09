@@ -7,13 +7,11 @@ import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import {
-  ExternalLink,
   ArrowRight,
-  FileText,
   Loader2,
   Check,
-  Link2,
 } from 'lucide-react';
+import { ExternalLinkDuo, File as DuoFile, LinkDuo } from '@/components/icons';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -182,7 +180,7 @@ export default function JobCard({
             onClick={(e) => e.stopPropagation()}
             className="text-muted-foreground/50 hover:text-foreground transition-colors shrink-0 p-0.5"
           >
-            <ExternalLink className="size-3" />
+            <ExternalLinkDuo className="size-3.5" />
           </a>
         )}
       </div>
@@ -205,7 +203,7 @@ export default function JobCard({
               className="flex items-center gap-1.5 min-w-0 flex-1 cursor-pointer"
               title="Open tailored resume"
             >
-              <FileText className="size-3.5 text-primary shrink-0" />
+              <DuoFile className="size-3.5 text-primary shrink-0" />
               <span className="text-[11px] font-medium text-foreground truncate">
                 {application.resumeVersion.name}
               </span>
@@ -226,7 +224,7 @@ export default function JobCard({
                 {copiedLink ? (
                   <Check className="size-3 text-emerald-500" />
                 ) : (
-                  <Link2 className="size-3" />
+                  <LinkDuo className="size-3.5" />
                 )}
               </button>
               <button
