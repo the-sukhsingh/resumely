@@ -7,8 +7,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Check, Loader2, Zap, Shield, ArrowRight } from 'lucide-react';
-import ColoredButton from '@/components/custom/colored-button';
+import { Button } from '@/components/ui/button';
+import { Loader2, ShieldCheck, ArrowRight, Zap, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -34,20 +34,20 @@ const CREDIT_PLANS: CreditPlan[] = [
   {
     id: 'starter',
     name: 'Starter',
-    tag: 'Casual Job Hunt',
+    tag: 'Occasional',
     price: '₹99',
     credits: 100,
     rate: '₹0.99 / credit',
     bullets: [
       '10 targeted resume tailors',
       '100 AI copilot chat messages',
-      'Instant ATS-compliant PDF',
+      'Instant ATS-clean PDF download',
     ],
   },
   {
     id: 'active',
     name: 'Active Seeker',
-    tag: 'Most Popular',
+    tag: 'Popular',
     price: '₹299',
     credits: 400,
     rate: '₹0.75 / credit',
@@ -70,7 +70,7 @@ const CREDIT_PLANS: CreditPlan[] = [
     bullets: [
       '100 targeted resume tailors',
       'Multiple career tracks',
-      'Priority ATS parser throughput',
+      'Priority parser throughput',
     ],
   },
 ];
@@ -112,62 +112,67 @@ export default function BuyCreditsDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl p-0 overflow-hidden bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border/70 rounded-3xl shadow-2xl">
-        {/* Header with subtle ambient glow */}
-        <div className="relative p-6 pb-4 border-b border-border/50 bg-linear-to-b from-primary/5 via-muted/10 to-transparent">
+      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden bg-background/95 dark:bg-card/95 backdrop-blur-xl border border-border/70 rounded-3xl shadow-2xl">
+        {/* Header Section */}
+        <div className="p-6 sm:p-7 pb-5 border-b border-border/50 text-left">
           <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            <span className="text-amber-500 inline-flex items-center">
+            <span className="text-foreground inline-flex items-center">
               <Zap className="size-3" />
             </span>
             <span>Billing</span>
             <span className="text-border">/</span>
-            <span>Top Up</span>
+            <span>Credit Balance</span>
           </div>
 
-          <DialogTitle className="text-xl font-semibold tracking-tight text-foreground mt-1">
+          <DialogTitle className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground mt-2">
             Purchase Non-Expiring Credits
           </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground mt-1 leading-relaxed">
+          <DialogDescription className="text-xs sm:text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-xl">
             No recurring monthly subscriptions. Buy credits once, use them at your own pace, and keep your unused balance forever.
           </DialogDescription>
         </div>
 
         {/* Plan Cards Grid */}
-        <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="p-5 sm:p-7 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-3.5">
           {CREDIT_PLANS.map((plan) => {
             const isLoading = loadingPlan === plan.id;
             return (
               <div
                 key={plan.id}
                 className={cn(
-                  'relative flex flex-col justify-between p-4 rounded-2xl border transition-all duration-150',
+                  'relative flex flex-col justify-between p-4 sm:p-4.5 rounded-2xl border transition-all duration-200 group text-left',
                   plan.popular
-                    ? 'border-amber-500/50 bg-amber-500/[0.04] shadow-xs ring-1 ring-amber-500/20'
-                    : 'border-border/60 bg-card/60 hover:bg-muted/30 hover:border-border'
+                    ? 'border-foreground/30 bg-muted/40 dark:bg-muted/20 shadow-xs ring-1 ring-foreground/15'
+                    : 'border-border/70 bg-card/50 hover:border-foreground/20 hover:bg-muted/20'
                 )}
               >
-                {/* Popular / Savings Badge */}
+                {/* Highlight Badge */}
                 {plan.highlight && (
-                  <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-500 text-black shadow-xs">
+                  <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-tight bg-foreground text-background shadow-xs">
                     {plan.highlight}
                   </span>
                 )}
 
                 <div>
-                  <div className="flex items-center justify-between gap-1">
+                  {/* Tier Subheader */}
+                  <div className="flex items-center justify-between gap-1 mb-2">
                     <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                       {plan.name}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground/70">
+                      {plan.tag}
                     </span>
                   </div>
 
                   {/* Price & Credits Count */}
-                  <div className="mt-2 mb-1">
+                  <div className="space-y-0.5 mb-3.5">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-bold font-mono tracking-tight text-foreground">
+                      <span className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-foreground tabular-nums">
                         {plan.price}
                       </span>
+                      <span className="text-[11px] font-mono text-muted-foreground">one-time</span>
                     </div>
-                    <div className="text-xs font-semibold text-foreground/90 mt-0.5">
+                    <div className="text-xs font-medium text-foreground/90">
                       {plan.credits.toLocaleString()} Credits
                     </div>
                     <span className="text-[10px] font-mono text-muted-foreground block">
@@ -176,25 +181,30 @@ export default function BuyCreditsDialog({ open, onOpenChange }: Props) {
                   </div>
 
                   {/* Feature bullets */}
-                  <div className="mt-3.5 pt-3 border-t border-border/40 space-y-2">
+                  <div className="pt-3 border-t border-border/40 space-y-2">
                     {plan.bullets.map((bullet, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground leading-tight">
-                        <Check className="size-3 text-emerald-500 shrink-0 mt-0.5" />
-                        <span>{bullet}</span>
+                      <div key={i} className="flex items-start gap-2 text-[11px] text-muted-foreground leading-snug">
+                        <span className="size-1 rounded-full bg-foreground/40 mt-1.5 shrink-0" />
+                        <span className="text-foreground/80">{bullet}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Purchase Button */}
-                <div className="pt-4 mt-auto">
-                  <ColoredButton
+                <div className="pt-4 sm:pt-5 mt-auto">
+                  <Button
                     type="button"
-                    color={plan.popular ? 'amber' : 'neutral'}
+                    variant={plan.popular ? 'default' : 'outline'}
                     size="sm"
                     disabled={Boolean(loadingPlan)}
                     onClick={() => handleCheckout(plan.id)}
-                    className="w-full text-xs font-medium rounded-xl cursor-pointer"
+                    className={cn(
+                      'w-full h-8.5 rounded-xl text-xs font-mono font-medium tracking-wide uppercase transition-all duration-150 cursor-pointer active:scale-[0.98]',
+                      plan.popular
+                        ? 'bg-foreground text-background hover:bg-foreground/90 shadow-2xs'
+                        : 'border-border/70 hover:border-foreground/30 hover:bg-muted/40 text-foreground'
+                    )}
                   >
                     {isLoading ? (
                       <>
@@ -202,28 +212,28 @@ export default function BuyCreditsDialog({ open, onOpenChange }: Props) {
                         <span>Processing...</span>
                       </>
                     ) : (
-                      <>
+                      <div className="flex items-center justify-center gap-1.5 w-full">
                         <span>Select</span>
-                        <ArrowRight className="size-3 ml-1" />
-                      </>
+                        <ArrowRight className="size-3 transition-transform duration-150 group-hover:translate-x-0.5" />
+                      </div>
                     )}
-                  </ColoredButton>
+                  </Button>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Footer info strip */}
-        <div className="px-6 py-3 bg-muted/20 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground font-mono">
+        {/* Footer Info Strip */}
+        <div className="px-6 sm:px-7 py-3 bg-muted/20 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground font-mono">
           <div className="flex items-center gap-2">
-            <Shield className="size-3 text-emerald-500" />
-            <span>256-bit encrypted secure checkout via DodoPayments</span>
+            <ShieldCheck className="size-3.5 text-muted-foreground shrink-0" />
+            <span>256-bit encrypted checkout via DodoPayments</span>
           </div>
           <Link
             href="/#pricing"
             onClick={() => onOpenChange(false)}
-            className="text-foreground underline underline-offset-4 hover:opacity-80 transition-opacity"
+            className="text-foreground underline underline-offset-4 hover:opacity-70 transition-opacity"
           >
             Full pricing details
           </Link>
@@ -232,3 +242,4 @@ export default function BuyCreditsDialog({ open, onOpenChange }: Props) {
     </Dialog>
   );
 }
+
