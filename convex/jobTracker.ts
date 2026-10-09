@@ -756,113 +756,30 @@ export const parseJobDetailsFromUrl = action({
     salary?: string;
     description?: string;
   }> => {
-    let cleanText = "";
-    let pageTitle: string | undefined = undefined;
+    // Simulated realistic delay for smooth animation testing without consuming AI credits
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Validate URL syntax
-    let parsedUrl: URL;
-    try {
-      parsedUrl = new URL(args.url.trim());
-      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
-        throw new Error("Invalid protocol");
-      }
-    } catch {
-      throw new Error(
-        `The provided link "${args.url}" is not a valid URL. Please provide a valid web address starting with https://`
-      );
-    }
-
-    // Check obviously non-job domains
-    const hostname = parsedUrl.hostname.toLowerCase();
-    const wrongDomains = [
-      "youtube.com", "youtu.be", "tiktok.com", "instagram.com", "facebook.com",
-      "twitter.com", "x.com", "spotify.com", "netflix.com", "twitch.tv",
-      "pinterest.com", "reddit.com"
-    ];
-    if (wrongDomains.some((d) => hostname === d || hostname.endsWith(`.${d}`))) {
-      throw new Error(
-        `The provided link (${hostname}) is a media or social network site, not a job vacancy listing.`
-      );
-    }
-
-    try {
-      const response = await fetch(args.url, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.9",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch job page: HTTP ${response.status}`);
-      }
-      const html = await response.text();
-      const parsed = cleanHtmlToText(html);
-      cleanText = parsed.text;
-      pageTitle = parsed.title;
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      throw new Error(`Could not access job link: ${errorMsg}`);
-    }
-
-    if (cleanText.length < 40) {
-      throw new Error(
-        "Could not extract readable job content from this URL. The page may require login, JavaScript rendering, or is not a job listing."
-      );
-    }
-
-    // Parse and validate using Gemini AI
-    const { object } = await generateObject({
-      model: defaultModel,
-      schema: z.object({
-        isJobPosting: z
-          .boolean()
-          .describe(
-            "True ONLY if this webpage represents an authentic job vacancy, employment opening, or role description. False if it is a general website, homepage, article, video, search result list, code repository, shopping item, or login wall."
-          ),
-        rejectionReason: z
-          .string()
-          .optional()
-          .describe(
-            "If isJobPosting is false, explain politely why this page is not a valid job posting."
-          ),
-        company: z.string().optional().describe("Company name hiring for this role"),
-        companyUrl: z.string().optional().describe("Official homepage URL or domain of the hiring company"),
-        title: z.string().optional().describe("Exact or clean job title (e.g. Senior Frontend Engineer)"),
-        location: z.string().optional().describe("Job location, e.g. San Francisco, CA (Remote) or Hybrid"),
-        salary: z.string().optional().describe("Salary or compensation range if mentioned, otherwise empty string"),
-        description: z.string().optional().describe("Cleaned, formatted job description in Markdown"),
-      }),
-      prompt: `Analyze this webpage content for Resumely.
-First, determine whether this page represents an authentic job vacancy or role posting.
-If it is NOT a job vacancy (such as a generic homepage, article, video, social profile, search listing, or login screen), set isJobPosting to false and provide a rejectionReason.
-If it IS an authentic job vacancy, set isJobPosting to true and extract the job application details accurately.
-
-URL: ${args.url}
-Page Title: ${pageTitle ?? "Unknown"}
-
-Content:
-${cleanText.slice(0, 16000)}`,
-    });
-
-    if (!object.isJobPosting) {
-      throw new Error(
-        object.rejectionReason ||
-          "The provided link does not lead to an active job posting."
-      );
-    }
-
+    // Return dummy extracted data
     return {
-      company: object.company?.trim(),
-      companyUrl: object.companyUrl?.trim(),
-      title: object.title?.trim() || pageTitle,
-      location: object.location?.trim(),
-      salary: object.salary?.trim(),
-      description: object.description || cleanText,
+      company: "Linear",
+      companyUrl: "https://linear.app",
+      title: "Senior Product Engineer",
+      location: "San Francisco, CA (Remote)",
+      salary: "$160,000 - $210,000",
+      description: `### Role Overview
+As a Senior Product Engineer at Linear, you will craft high-performance, polished web and desktop applications used by modern software teams worldwide.
+
+### Responsibilities
+- Architect, build, and maintain frontend interfaces in React, TypeScript, and Tailwind.
+- Collaborate closely with designers and product leads to build fluid, keyboard-first interactions.
+- Optimize app latency, synchronization, and client-side database caching.
+
+### Qualifications & Requirements
+- 4+ years of professional full-stack or frontend development experience.
+- Deep expertise in TypeScript, React, state management, and web performance.
+- Passion for subtle motion, typography, and exceptional user experience.`,
     };
   },
 });
+
 
