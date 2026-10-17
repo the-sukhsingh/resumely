@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useQuery } from 'convex/react';
@@ -316,32 +317,50 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
         {/* Action Buttons: Provider Toggle, Copy Link & Download */}
         <div className="flex items-center gap-2 shrink-0">
           {/* PDF Provider Switcher */}
-          <div className="flex items-center bg-muted/60 dark:bg-muted/30 p-0.5 rounded-lg border border-border/50 text-2xs shrink-0" title="Change PDF provider">
+          <div
+            className="inline-flex items-center p-0.5 rounded-full bg-muted/40 dark:bg-muted/20 border border-border/40 backdrop-blur-xs relative shrink-0"
+            title="Change PDF provider"
+            role="tablist"
+          >
             <button
               type="button"
               onClick={() => setSelectedTheme('classic')}
               className={cn(
-                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
+                "relative px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors cursor-pointer select-none z-10 active:scale-95",
                 selectedTheme === 'classic'
-                  ? "bg-background text-foreground shadow-2xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               )}
               title="Classic react-pdf"
             >
-              Classic
+              {selectedTheme === 'classic' && (
+                <motion.span
+                  layoutId="public-pdf-theme-pill"
+                  className="absolute inset-0 bg-background rounded-full shadow-2xs border border-border/30 -z-10"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                />
+              )}
+              <span>Classic</span>
             </button>
             <button
               type="button"
               onClick={() => setSelectedTheme('latex')}
               className={cn(
-                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
+                "relative px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors cursor-pointer select-none z-10 active:scale-95",
                 selectedTheme === 'latex'
-                  ? "bg-background text-foreground shadow-2xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               )}
               title="LaTeX KaTeX"
             >
-              LaTeX
+              {selectedTheme === 'latex' && (
+                <motion.span
+                  layoutId="public-pdf-theme-pill"
+                  className="absolute inset-0 bg-background rounded-full shadow-2xs border border-border/30 -z-10"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                />
+              )}
+              <span>LaTeX</span>
             </button>
           </div>
 

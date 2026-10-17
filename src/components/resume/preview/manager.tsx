@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react'
+import { motion } from 'motion/react';
 import { Button } from '../../ui/button';
 import { ChevronDownIcon, Check } from 'lucide-react';
 import { LinkDuo, ExternalLinkDuo, Briefcase } from '@/components/icons';
@@ -127,33 +128,54 @@ const Manager: React.FC<ManagerProps> = ({
                 </Tabs>
 
                 {activeView === 'resume' && onThemeChange && (
-                    <div className="flex items-center bg-muted/60 dark:bg-muted/30 p-0.5 rounded-lg border border-border/50 text-2xs shrink-0" title="Change PDF provider">
-                        <button
-                            type="button"
-                            onClick={() => onThemeChange('classic')}
-                            className={cn(
-                                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
-                                (theme || 'classic') === 'classic'
-                                    ? "bg-background text-foreground shadow-2xs font-semibold"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/40"
-                            )}
-                            title="Classic react-pdf"
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="h-3.5 w-px bg-border/50 shrink-0" />
+                        <div
+                            className="inline-flex items-center p-0.5 rounded-full bg-muted/40 dark:bg-muted/20 border border-border/40 backdrop-blur-xs relative"
+                            title="Change PDF provider"
+                            role="tablist"
                         >
-                            <span>Classic</span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onThemeChange('latex')}
-                            className={cn(
-                                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
-                                theme === 'latex'
-                                    ? "bg-background text-foreground shadow-2xs font-semibold"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/40"
-                            )}
-                            title="LaTeX KaTeX"
-                        >
-                            <span>LaTeX</span>
-                        </button>
+                            <button
+                                type="button"
+                                onClick={() => onThemeChange('classic')}
+                                className={cn(
+                                    "relative px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors cursor-pointer select-none z-10 active:scale-95",
+                                    (theme || 'classic') === 'classic'
+                                        ? "text-foreground font-semibold"
+                                        : "text-muted-foreground hover:text-foreground"
+                                )}
+                                title="Classic react-pdf"
+                            >
+                                {(theme || 'classic') === 'classic' && (
+                                    <motion.span
+                                        layoutId="resume-pdf-theme-pill"
+                                        className="absolute inset-0 bg-background rounded-full shadow-2xs border border-border/30 -z-10"
+                                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                                    />
+                                )}
+                                <span>Classic</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => onThemeChange('latex')}
+                                className={cn(
+                                    "relative px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors cursor-pointer select-none z-10 active:scale-95",
+                                    theme === 'latex'
+                                        ? "text-foreground font-semibold"
+                                        : "text-muted-foreground hover:text-foreground"
+                                )}
+                                title="LaTeX KaTeX"
+                            >
+                                {theme === 'latex' && (
+                                    <motion.span
+                                        layoutId="resume-pdf-theme-pill"
+                                        className="absolute inset-0 bg-background rounded-full shadow-2xs border border-border/30 -z-10"
+                                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                                    />
+                                )}
+                                <span>LaTeX</span>
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
