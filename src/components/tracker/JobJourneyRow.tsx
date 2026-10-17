@@ -9,6 +9,7 @@ import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
 import JourneyPath, { JOURNEY_MILESTONES } from './JourneyPath';
+import { getCurveY } from './journeyCurve';
 import JobAvatar from './JobAvatar';
 import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import {
@@ -62,13 +63,19 @@ export default function JobJourneyRow({
   const [replayCount, setReplayCount] = useState(0);
   const [dragHoverStage, setDragHoverStage] = useState<JobStage | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [trackDims, setTrackDims] = useState<{ width: number; height: number }>({
+    width: 600,
+    height: 110,
+  });
 
   const trackContainerRef = useRef<HTMLDivElement>(null);
 
-  // Milestone matching
+  // Active milestone and target coordinates on the curve
   const currentMilestone =
     JOURNEY_MILESTONES.find((m) => m.id === application.stage) || JOURNEY_MILESTONES[0];
   const targetPercent = currentMilestone.percent;
+  const currentTargetX = trackDims.width * (targetPercent / 100);
+  const currentTargetY = getCurveY(currentTargetX, trackDims.width, trackDims.height);
 
   // Handle stage change with optimistic feedback
   const handleStageChange = async (newStage: JobStage) => {
@@ -196,7 +203,7 @@ export default function JobJourneyRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.35,
@@ -220,7 +227,7 @@ export default function JobJourneyRow({
       />
 
       <div className="flex flex-col lg:flex-row items-stretch min-w-0">
-        {/* ─── LEFT SIDE: Job Details ─── */}
+        {/* ─── LEFT SIDE: Clean Job Details ─── */}
         <div
           onClick={() => onSelect(application)}
           className="lg:w-80 p-4 sm:p-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer select-none shrink-0"
@@ -427,16 +434,16 @@ export default function JobJourneyRow({
           </div>
         </div>
 
-        {/* ─── RIGHT SIDE: Whole Row Width Journey Path & Pinpoint ─── */}
+        {/* ─── RIGHT SIDE: Whole Row Width Curved Journey Path & Pinpoint ─── */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center relative min-w-0">
           {/* Header Bar for the Journey */}
-          <div className="flex items-center justify-between mb-1.5 px-2">
+          <div className="flex items-center justify-between mb-1 px-2">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
                 Application Journey
               </span>
               <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
-                • Drag pinpoint beacon to update stage
+                • Drag beacon along the curve to advance
               </span>
             </div>
 
@@ -452,12 +459,12 @@ export default function JobJourneyRow({
             </div>
           </div>
 
-          {/* Track Canvas Container */}
+          {/* Track Canvas Container with Curved Path */}
           <div
             ref={trackContainerRef}
-            className="relative w-full py-2 select-none flex items-center"
+            className="relative w-full py-2 select-none flex items-center min-h-[115px]"
           >
-            {/* The Wobbling & Drawing Path Component */}
+            {/* The Non-Straight Wobbling & Drawing Path Component */}
             <JourneyPath
               currentStage={application.stage}
               onSelectStage={handleStageChange}
@@ -465,9 +472,10 @@ export default function JobJourneyRow({
               seed={application._id}
               rowIndex={index}
               replayTrigger={replayCount}
+              onDimensionsChange={setTrackDims}
             />
 
-            {/* ─── Draggable Pinpoint Marker ─── */}
+            {/* ─── Draggable Pinpoint Marker (Rests directly on the curve) ─── */}
             {!isSpecialTerminal && (
               <motion.div
                 drag="x"
@@ -479,6 +487,7 @@ export default function JobJourneyRow({
                 onDragEnd={handleDragEnd}
                 animate={{
                   left: `${targetPercent}%`,
+                  top: `${currentTargetY}px`,
                   x: 0,
                 }}
                 transition={{
@@ -488,13 +497,12 @@ export default function JobJourneyRow({
                 }}
                 style={{
                   position: 'absolute',
-                  top: '50%',
-                  marginTop: -28, // vertically centers pinpoint with line
-                  marginLeft: -16, // horizontally centers pinpoint on milestone
+                  marginTop: -22, // Centers beacon vertically over the curve
+                  marginLeft: -16, // Centers beacon horizontally
                 }}
                 className={cn(
                   'z-30 cursor-grab active:cursor-grabbing flex flex-col items-center select-none',
-                  isDragging && 'scale-110 z-40'
+                  isDragging && 'scale-115 z-40'
                 )}
               >
                 {/* Floating Stage Chip above Pin */}
@@ -522,7 +530,7 @@ export default function JobJourneyRow({
                   className="relative size-8 rounded-full flex items-center justify-center text-white shadow-lg transition-transform"
                   style={{
                     backgroundColor: currentMilestone.color,
-                    boxShadow: `0 0 18px ${currentMilestone.glowColor}, 0 2px 10px rgba(0,0,0,0.3)`,
+                    boxShadow: `0 0 20px ${currentMilestone.glowColor}, 0 2px 10px rgba(0,0,0,0.35)`,
                   }}
                 >
                   <span
@@ -532,7 +540,7 @@ export default function JobJourneyRow({
                   <PinIcon size={14} className="relative z-10 stroke-[2.5]" />
                 </div>
 
-                {/* Pointer Triangle pointing directly at the SVG path */}
+                {/* Pointer Triangle pointing directly down at the SVG curve */}
                 <div
                   className="w-0 h-0 border-x-4 border-x-transparent border-t-5 -mt-0.5"
                   style={{ borderTopColor: currentMilestone.color }}

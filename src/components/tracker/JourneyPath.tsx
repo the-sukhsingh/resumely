@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useId, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useId } from 'react';
 import { JobStage } from './types';
 import { cn } from '@/lib/utils';
 import { Bookmark, Send, MessageSquare, Trophy, AlertCircle, Archive } from 'lucide-react';
+import { MILESTONE_ANCHORS, getCurveY, getCurvedBaselineD } from './journeyCurve';
 
 export interface MilestoneDef {
   id: JobStage;
@@ -13,6 +14,7 @@ export interface MilestoneDef {
   glowColor: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   percent: number; // 0 to 100
+  yPercent: number; // vertical height %
 }
 
 export const JOURNEY_MILESTONES: MilestoneDef[] = [
@@ -23,7 +25,8 @@ export const JOURNEY_MILESTONES: MilestoneDef[] = [
     color: '#94a3b8', // slate-400
     glowColor: 'rgba(148, 163, 184, 0.45)',
     icon: Bookmark,
-    percent: 10,
+    percent: MILESTONE_ANCHORS[0].percent,
+    yPercent: MILESTONE_ANCHORS[0].yPercent,
   },
   {
     id: 'applied',
@@ -32,7 +35,8 @@ export const JOURNEY_MILESTONES: MilestoneDef[] = [
     color: '#3b82f6', // blue-500
     glowColor: 'rgba(59, 130, 246, 0.5)',
     icon: Send,
-    percent: 38,
+    percent: MILESTONE_ANCHORS[1].percent,
+    yPercent: MILESTONE_ANCHORS[1].yPercent,
   },
   {
     id: 'interviewing',
@@ -41,7 +45,8 @@ export const JOURNEY_MILESTONES: MilestoneDef[] = [
     color: '#f59e0b', // amber-500
     glowColor: 'rgba(245, 158, 11, 0.5)',
     icon: MessageSquare,
-    percent: 68,
+    percent: MILESTONE_ANCHORS[2].percent,
+    yPercent: MILESTONE_ANCHORS[2].yPercent,
   },
   {
     id: 'offered',
@@ -50,7 +55,8 @@ export const JOURNEY_MILESTONES: MilestoneDef[] = [
     color: '#10b981', // emerald-500
     glowColor: 'rgba(16, 185, 129, 0.55)',
     icon: Trophy,
-    percent: 94,
+    percent: MILESTONE_ANCHORS[3].percent,
+    yPercent: MILESTONE_ANCHORS[3].yPercent,
   },
 ];
 
@@ -62,6 +68,7 @@ interface JourneyPathProps {
   rowIndex?: number;
   replayTrigger?: number;
   className?: string;
+  onDimensionsChange?: (dims: { width: number; height: number }) => void;
 }
 
 export default function JourneyPath({
@@ -72,18 +79,18 @@ export default function JourneyPath({
   rowIndex = 0,
   replayTrigger = 0,
   className,
+  onDimensionsChange,
 }: JourneyPathProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
     width: 600,
-    height: 84,
+    height: 110,
   });
   const [pathData, setPathData] = useState<string>('');
   const [drawProgress, setDrawProgress] = useState<number>(0);
   const [isDrawn, setIsDrawn] = useState<boolean>(false);
   const gradientId = useId().replace(/:/g, '');
 
-  // Numeric seed derived from string for unique per-job wobble frequencies
   const numSeed = useRef(
     Array.from(seed).reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0) % 1000
   ).current;
@@ -95,37 +102,30 @@ export default function JourneyPath({
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0) {
-          setDimensions({ width, height: height > 0 ? height : 84 });
+          const dims = { width, height: height > 60 ? height : 110 };
+          setDimensions(dims);
+          onDimensionsChange?.(dims);
         }
       }
     });
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [onDimensionsChange]);
 
-  // Compute baseline path (smooth, settled line when drawing finishes completely)
-  const computeBaselinePath = useCallback((w: number, h: number) => {
-    const midY = h / 2;
-    // Straight, clean line across the row
-    return `M 0 ${midY} L ${w} ${midY}`;
-  }, []);
-
-  // Dynamic Wobble Draw Animation
+  // Dynamic Wobble Draw Animation on the Non-Straight Curve
   useEffect(() => {
     let animFrame: number;
     let timeoutId: NodeJS.Timeout;
 
-    // Stagger start slightly per row index
-    const startDelay = Math.min(rowIndex * 90, 360);
-    const duration = 1600; // ms for the path to draw across
+    const startDelay = Math.min(rowIndex * 80, 320);
+    const duration = 1500; // ms for the path to draw across
     setIsDrawn(false);
     setDrawProgress(0);
 
     timeoutId = setTimeout(() => {
       const startTime = performance.now();
       const w = dimensions.width || 600;
-      const h = dimensions.height || 84;
-      const midY = h / 2;
+      const h = dimensions.height || 110;
 
       const animate = (currentTime: number) => {
         const elapsed = currentTime - startTime;
@@ -133,23 +133,23 @@ export default function JourneyPath({
         setDrawProgress(progress);
 
         if (progress >= 1) {
-          // Drawing complete: snap into the clean, smooth baseline path!
+          // Drawing complete: lock permanently into the silky smooth non-straight curve!
           // Wobble stops completely!
-          setPathData(computeBaselinePath(w, h));
+          setPathData(getCurvedBaselineD(w, h));
           setIsDrawn(true);
           return;
         }
 
-        // Ease-out progress curve for the advancing head of the line
-        const easedProgress = 1 - Math.pow(1 - progress, 2.5);
-        const currentEndX = Math.max(12, w * easedProgress);
+        // Ease-out progress for line advancement
+        const easedProgress = 1 - Math.pow(1 - progress, 2.4);
+        const currentEndX = Math.max(16, w * easedProgress);
 
-        // Amplitude of the random wobble: starts high (~22px), decays to 0 at progress = 1
-        const decay = Math.pow(1 - progress, 1.25);
-        const maxAmp = 22 * decay;
+        // Wobble amplitude decays smoothly to 0 as progress approaches 1
+        const decay = Math.pow(1 - progress, 1.3);
+        const maxAmp = 20 * decay;
 
-        // Sample points along the currently drawn line
-        const sampleCount = 44;
+        // Sample points along the currently drawn length on the curve
+        const sampleCount = 48;
         const points: { x: number; y: number }[] = [];
         const timeSec = elapsed / 1000;
 
@@ -157,29 +157,32 @@ export default function JourneyPath({
           const stepFraction = i / sampleCount;
           const x = stepFraction * currentEndX;
 
-          // Spatial envelope: tip and trailing wave undulate dynamically
+          // Base height on the non-straight curve
+          const baseY = getCurveY(x, w, h);
+
+          // Spatial wave envelope: tip and trailing wave undulate dynamically
           const envelope = Math.sin(stepFraction * Math.PI);
 
           // Multi-frequency harmonic wave with organic fluctuations
           const wave1 = Math.sin(x * 0.04 + timeSec * 14 + numSeed * 0.05);
-          const wave2 = Math.cos(x * 0.08 - timeSec * 22 + numSeed * 0.1) * 0.45;
-          const wave3 = Math.sin(x * 0.16 + timeSec * 32) * 0.25;
+          const wave2 = Math.cos(x * 0.08 - timeSec * 20 + numSeed * 0.1) * 0.45;
+          const wave3 = Math.sin(x * 0.16 + timeSec * 28) * 0.2;
 
           const wobbleY = (wave1 + wave2 + wave3) * maxAmp * envelope;
-          points.push({ x, y: midY + wobbleY });
+          points.push({ x, y: baseY + wobbleY });
         }
 
-        // Construct smooth curve through points
-        let d = `M ${points[0].x} ${points[0].y}`;
+        // Build smooth SVG curve through points
+        let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
         for (let i = 1; i < points.length; i++) {
           const prev = points[i - 1];
           const curr = points[i];
           const midX = (prev.x + curr.x) / 2;
           const midYCoord = (prev.y + curr.y) / 2;
-          d += ` Q ${prev.x} ${prev.y}, ${midX} ${midYCoord}`;
+          d += ` Q ${prev.x.toFixed(1)} ${prev.y.toFixed(1)}, ${midX.toFixed(1)} ${midYCoord.toFixed(1)}`;
         }
         const last = points[points.length - 1];
-        d += ` L ${last.x} ${last.y}`;
+        d += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
 
         setPathData(d);
         animFrame = requestAnimationFrame(animate);
@@ -192,7 +195,7 @@ export default function JourneyPath({
       clearTimeout(timeoutId);
       cancelAnimationFrame(animFrame);
     };
-  }, [dimensions.width, dimensions.height, replayTrigger, rowIndex, computeBaselinePath, numSeed]);
+  }, [dimensions.width, dimensions.height, replayTrigger, rowIndex, numSeed]);
 
   const currentMilestoneIndex = JOURNEY_MILESTONES.findIndex((m) => m.id === currentStage);
   const isRejectedOrArchived = currentStage === 'rejected' || currentStage === 'archived';
@@ -200,24 +203,24 @@ export default function JourneyPath({
   return (
     <div
       ref={containerRef}
-      className={cn('relative w-full h-20 select-none flex items-center', className)}
+      className={cn('relative w-full h-28 select-none flex items-center', className)}
     >
-      {/* SVG Canvas for the Journey Track with Multi-Color Gradient */}
+      {/* SVG Canvas for the Non-Straight Journey Track */}
       <svg
         className="absolute inset-0 w-full h-full overflow-visible pointer-events-none"
         width={dimensions.width}
         height={dimensions.height}
       >
         <defs>
-          {/* Distinct Multi-Stop Color Gradient across the Journey */}
+          {/* Multi-Stop Color Gradient across the Journey */}
           <linearGradient id={`journey-gradient-${gradientId}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#94a3b8" />
-            <stop offset="24%" stopColor="#94a3b8" />
-            <stop offset="25%" stopColor="#3b82f6" />
-            <stop offset="54%" stopColor="#3b82f6" />
-            <stop offset="55%" stopColor="#f59e0b" />
-            <stop offset="84%" stopColor="#f59e0b" />
-            <stop offset="85%" stopColor="#10b981" />
+            <stop offset="20%" stopColor="#94a3b8" />
+            <stop offset="28%" stopColor="#3b82f6" />
+            <stop offset="52%" stopColor="#3b82f6" />
+            <stop offset="58%" stopColor="#f59e0b" />
+            <stop offset="82%" stopColor="#f59e0b" />
+            <stop offset="88%" stopColor="#10b981" />
             <stop offset="100%" stopColor="#059669" />
           </linearGradient>
 
@@ -230,7 +233,7 @@ export default function JourneyPath({
 
           {/* Ambient Glow Filter */}
           <filter id={`journey-glow-${gradientId}`} x="-20%" y="-50%" width="140%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -238,22 +241,20 @@ export default function JourneyPath({
           </filter>
         </defs>
 
-        {/* Subtle background track guide line across full row */}
-        <line
-          x1={0}
-          y1={dimensions.height / 2}
-          x2={dimensions.width}
-          y2={dimensions.height / 2}
+        {/* Ambient background curved guide track (soft, continuous, no ugly dots) */}
+        <path
+          d={getCurvedBaselineD(dimensions.width, dimensions.height)}
+          fill="none"
           stroke="currentColor"
-          strokeOpacity={0.07}
-          strokeWidth={3}
-          strokeDasharray="4 4"
+          strokeOpacity={0.06}
+          strokeWidth={4}
+          strokeLinecap="round"
         />
 
         {/* Dynamic Wobbling & Drawing Path */}
         {pathData && (
           <>
-            {/* Ambient Neon Glow */}
+            {/* Ambient Neon Glow underneath */}
             <path
               d={pathData}
               fill="none"
@@ -262,10 +263,10 @@ export default function JourneyPath({
                   ? `url(#journey-gradient-rejected-${gradientId})`
                   : `url(#journey-gradient-${gradientId})`
               }
-              strokeWidth={6}
+              strokeWidth={7}
               strokeLinecap="round"
               strokeLinejoin="round"
-              opacity={0.3}
+              opacity={0.35}
               filter={`url(#journey-glow-${gradientId})`}
             />
 
@@ -278,7 +279,7 @@ export default function JourneyPath({
                   ? `url(#journey-gradient-rejected-${gradientId})`
                   : `url(#journey-gradient-${gradientId})`
               }
-              strokeWidth={3}
+              strokeWidth={3.5}
               strokeLinecap="round"
               strokeLinejoin="round"
               className="transition-all duration-300"
@@ -290,69 +291,70 @@ export default function JourneyPath({
         {!isDrawn && pathData && (
           <circle
             cx={dimensions.width * drawProgress}
-            cy={dimensions.height / 2}
+            cy={getCurveY(dimensions.width * drawProgress, dimensions.width, dimensions.height)}
             r={5}
             fill="#ffffff"
             className="animate-ping"
-            opacity={0.8}
+            opacity={0.85}
           />
         )}
       </svg>
 
-      {/* Milestone Checkpoints along the path */}
-      <div className="absolute inset-0 w-full h-full flex items-center pointer-events-auto">
+      {/* Milestone Checkpoint Nodes resting on the curve */}
+      <div className="absolute inset-0 w-full h-full pointer-events-auto">
         {JOURNEY_MILESTONES.map((milestone, idx) => {
           const isPassed = currentMilestoneIndex >= idx && !isRejectedOrArchived;
           const isCurrent = currentStage === milestone.id;
           const isHovered = hoveredStage === milestone.id;
           const Icon = milestone.icon;
 
+          // Exact position on the non-straight curve
+          const xPos = dimensions.width * (milestone.percent / 100);
+          const yPos = getCurveY(xPos, dimensions.width, dimensions.height);
+
           return (
             <div
               key={milestone.id}
-              style={{ left: `${milestone.percent}%` }}
-              className="absolute -translate-x-1/2 flex flex-col items-center group cursor-pointer z-10"
+              style={{
+                left: `${milestone.percent}%`,
+                top: `${yPos}px`,
+              }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer"
               onClick={() => onSelectStage(milestone.id)}
             >
-              {/* Checkpoint Node Bubble */}
+              {/* Checkpoint Target Node (clean, no duplicate button when pinpoint is here) */}
               <button
                 type="button"
                 title={`Advance to ${milestone.label}`}
                 className={cn(
-                  'relative size-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer outline-none active:scale-[0.93]',
+                  'relative rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer outline-none active:scale-[0.93]',
                   isCurrent
-                    ? 'ring-4 shadow-md scale-110 z-20'
+                    ? 'size-9 border-2 border-dashed opacity-40 z-10' // Subtle docking ring for the active pinpoint
                     : isPassed
-                    ? 'bg-card/95 border border-border/80 text-foreground hover:scale-105'
-                    : 'bg-muted/40 border border-border/40 text-muted-foreground/60 hover:text-foreground hover:bg-muted/80',
-                  isHovered && 'scale-120 ring-2'
+                    ? 'size-7 bg-card/90 border border-border/70 text-foreground hover:scale-110 shadow-2xs z-10'
+                    : 'size-6.5 bg-muted/40 border border-border/40 text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 z-0',
+                  isHovered && 'scale-125 ring-2 ring-primary/40'
                 )}
                 style={{
-                  backgroundColor: isCurrent ? milestone.color : undefined,
-                  color: isCurrent ? '#ffffff' : undefined,
-                  boxShadow: isCurrent ? `0 0 16px ${milestone.glowColor}` : undefined,
+                  borderColor: isCurrent ? milestone.color : undefined,
                 }}
               >
-                {/* Pulse ring for active milestone */}
-                {isCurrent && (
-                  <span
-                    className="absolute inset-0 rounded-full animate-ping opacity-35"
-                    style={{ backgroundColor: milestone.color }}
-                  />
+                {/* Only render icon inside milestone if it's NOT the active stage (avoids duplicate overlap!) */}
+                {!isCurrent && (
+                  <Icon size={isPassed ? 12 : 11} className="relative z-10" />
                 )}
-                <Icon size={isCurrent ? 14 : 12} className="relative z-10" />
               </button>
 
-              {/* Milestone Label Underneath */}
-              <div className="mt-1.5 flex flex-col items-center pointer-events-none">
+              {/* Milestone Label Underneath with generous vertical breathing room */}
+              <div className="absolute top-6.5 flex flex-col items-center pointer-events-none whitespace-nowrap">
                 <span
                   className={cn(
-                    'text-[10px] font-mono tracking-tight transition-colors duration-150 whitespace-nowrap',
+                    'text-[10px] font-mono tracking-tight transition-colors duration-150',
                     isCurrent
-                      ? 'font-bold text-foreground scale-105'
+                      ? 'font-bold text-foreground opacity-90'
                       : isPassed
-                      ? 'font-medium text-foreground/80'
-                      : 'text-muted-foreground/60 group-hover:text-muted-foreground'
+                      ? 'font-medium text-foreground/75'
+                      : 'text-muted-foreground/50 group-hover:text-muted-foreground'
                   )}
                 >
                   {milestone.shortLabel}
@@ -365,8 +367,11 @@ export default function JourneyPath({
         {/* Terminal state pill if Rejected or Archived */}
         {isRejectedOrArchived && (
           <div
-            style={{ left: '96%' }}
-            className="absolute -translate-x-1/2 flex flex-col items-center z-20"
+            style={{
+              left: '96%',
+              top: `${getCurveY(dimensions.width * 0.96, dimensions.width, dimensions.height)}px`,
+            }}
+            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20"
           >
             <div
               className={cn(
@@ -383,7 +388,7 @@ export default function JourneyPath({
                 <Archive size={13} />
               )}
             </div>
-            <span className="text-[10px] font-mono font-bold mt-1.5 text-rose-500 capitalize">
+            <span className="text-[10px] font-mono font-bold mt-2 text-rose-500 capitalize">
               {currentStage}
             </span>
           </div>
