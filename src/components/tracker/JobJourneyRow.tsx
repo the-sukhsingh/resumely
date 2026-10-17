@@ -201,7 +201,7 @@ export default function JobJourneyRow({
   const PinIcon = currentMilestone.icon;
 
   return (
-    <div className="group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border">
+    <div className="group relative rounded-2xl sm:rounded-3xl border transition-colors duration-200 shadow-2xs overflow-hidden bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border">
       <div className="flex flex-col lg:flex-row items-stretch min-w-0">
         {/* ─── LEFT SIDE: Clean Job Details ─── */}
         <div
@@ -430,6 +430,7 @@ export default function JobJourneyRow({
 
             {/* ─── Draggable Pinpoint Marker (Tip touches curve with 100% precision) ─── */}
             <motion.div
+              initial={false}
               drag="x"
               dragConstraints={trackContainerRef}
               dragElastic={0.04}

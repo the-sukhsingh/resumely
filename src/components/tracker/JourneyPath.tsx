@@ -75,52 +75,29 @@ interface JourneyPathProps {
   onSelectStage: (stage: JobStage) => void;
   hoveredStage?: JobStage | null;
   className?: string;
-  onDimensionsChange?: (dims: { width: number; height: number }) => void;
 }
+
+const CURVE_VIEWBOX_WIDTH = 1000;
+const CURVE_VIEWBOX_HEIGHT = 96;
+const BASELINE_CURVE_D = getCurvedBaselineD(CURVE_VIEWBOX_WIDTH, CURVE_VIEWBOX_HEIGHT);
 
 export default function JourneyPath({
   currentStage,
   onSelectStage,
   hoveredStage,
   className,
-  onDimensionsChange,
 }: JourneyPathProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
-    width: 600,
-    height: 96,
-  });
   const gradientId = useId().replace(/:/g, '');
-
-  // Measure container dimensions responsively
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        if (width > 0) {
-          const dims = { width, height: height > 0 ? height : 96 };
-          setDimensions(dims);
-          onDimensionsChange?.(dims);
-        }
-      }
-    });
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, [onDimensionsChange]);
-
-  const pathD = getCurvedBaselineD(dimensions.width, dimensions.height);
 
   return (
     <div
-      ref={containerRef}
       className={cn('absolute inset-0 w-full h-full select-none pointer-events-none', className)}
     >
       {/* SVG Canvas for the Clean, Minimal Curved Path */}
       <svg
         className="absolute inset-0 w-full h-full overflow-visible pointer-events-none"
-        width={dimensions.width}
-        height={dimensions.height}
+        viewBox={`0 0 ${CURVE_VIEWBOX_WIDTH} ${CURVE_VIEWBOX_HEIGHT}`}
+        preserveAspectRatio="none"
       >
         <defs>
           {/* Crisp, Vibrant 5-Stage Multi-Stop Gradient */}
@@ -139,29 +116,26 @@ export default function JourneyPath({
         </defs>
 
         {/* Ambient Subtle Track Line */}
-        {pathD && (
-          <path
-            d={pathD}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity={0.06}
-            strokeWidth={4}
-            strokeLinecap="round"
-          />
-        )}
+        <path
+          d={BASELINE_CURVE_D}
+          fill="none"
+          stroke="currentColor"
+          strokeOpacity={0.06}
+          strokeWidth={4}
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+        />
 
         {/* Main Clean, Crisp Curved Journey Path */}
-        {pathD && (
-          <path
-            d={pathD}
-            fill="none"
-            stroke={`url(#clean-gradient-${gradientId})`}
-            strokeWidth={2.75}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="transition-all duration-300"
-          />
-        )}
+        <path
+          d={BASELINE_CURVE_D}
+          fill="none"
+          stroke={`url(#clean-gradient-${gradientId})`}
+          strokeWidth={2.75}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
       </svg>
 
       {/* Milestone Checkpoint Nodes along the curve */}
@@ -173,9 +147,8 @@ export default function JourneyPath({
             (currentStage === 'archived' && milestone.id === 'rejected');
           const isHovered = hoveredStage === milestone.id;
 
-          // Exact position on the non-straight curve
-          const xPos = dimensions.width * (milestone.percent / 100);
-          const yPos = getCurveY(xPos, dimensions.width, dimensions.height);
+          // Deterministic y position in pixels matching 96px container height
+          const yPos = CURVE_VIEWBOX_HEIGHT * (milestone.yPercent / 100);
 
           // If this milestone is active, the draggable beacon docks right here!
           if (isCurrent) {
@@ -212,7 +185,7 @@ export default function JourneyPath({
                 type="button"
                 title={`Advance to ${milestone.label}`}
                 className={cn(
-                  'rounded-full flex items-center justify-center transition-all duration-200 cursor-grab active:cursor-grabbing outline-none active:scale-[0.9]',
+                  'rounded-full flex items-center justify-center transition-transform duration-150 cursor-grab active:cursor-grabbing outline-none active:scale-[0.9]',
                   'size-3.5 bg-card border-2 shadow-2xs hover:scale-135',
                   isHovered && 'scale-135 ring-2 ring-primary/40'
                 )}

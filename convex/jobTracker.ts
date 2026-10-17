@@ -61,6 +61,24 @@ export const getJobApplications = query({
           }
         }
 
+        // Fallback: If resumeVersionId is not explicitly linked, check if a resume version was created for this job's description
+        if (!resumeVersion && app.jobDescriptionId) {
+          const res = await ctx.db
+            .query("resumeVersions")
+            .withIndex("by_job_description", (q) =>
+              q.eq("jobDescriptionId", app.jobDescriptionId!)
+            )
+            .first();
+          if (res) {
+            resumeVersion = {
+              _id: res._id,
+              name: res.name,
+              matchScore: res.matchScore,
+              updatedAt: res.updatedAt || res._creationTime,
+            };
+          }
+        }
+
         let jobDescription: {
           _id: Id<"jobDescriptions">;
           description?: string;
@@ -104,6 +122,14 @@ export const getJobApplicationById = query({
     let resumeVersion: Doc<"resumeVersions"> | null = null;
     if (app.resumeVersionId) {
       resumeVersion = await ctx.db.get(app.resumeVersionId);
+    }
+    if (!resumeVersion && app.jobDescriptionId) {
+      resumeVersion = await ctx.db
+        .query("resumeVersions")
+        .withIndex("by_job_description", (q) =>
+          q.eq("jobDescriptionId", app.jobDescriptionId!)
+        )
+        .first();
     }
 
     let jobDescription: Doc<"jobDescriptions"> | null = null;
