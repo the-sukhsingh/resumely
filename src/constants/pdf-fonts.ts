@@ -332,20 +332,40 @@ export const normalizeFontFamily = (font?: string | null): SupportedResumeFont =
 };
 
 let fontsRegistered = false;
+
+const resolveFontList = (fonts: PdfFont[]): PdfFont[] => {
+  if (typeof window === 'undefined' && typeof process !== 'undefined' && process.cwd) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const path = require('path');
+      return fonts.map((f) => ({
+        ...f,
+        src: typeof f.src === 'string' && f.src.startsWith('/')
+          ? path.resolve(process.cwd(), 'public', f.src.slice(1))
+          : f.src,
+      }));
+    } catch {
+      return fonts;
+    }
+  }
+  return fonts;
+};
+
 export const registerResumeFonts = (FontModule: { register: (config: { family: string; fonts: PdfFont[] }) => void }) => {
   if (fontsRegistered) return;
   try {
-    FontModule.register({ family: "Times New Roman", fonts: TIMES_NEW_ROMAN_FONT });
-    FontModule.register({ family: "Inter", fonts: INTER_FONT });
-    FontModule.register({ family: "Roboto", fonts: ROBOTO_FONT });
-    FontModule.register({ family: "Merriweather", fonts: MERRIWEATHER_FONT });
-    FontModule.register({ family: "Lato", fonts: LATO_FONT });
-    FontModule.register({ family: "Source Serif 4", fonts: SOURCE_SERIF_4_FONT });
+    FontModule.register({ family: "Times New Roman", fonts: resolveFontList(TIMES_NEW_ROMAN_FONT) });
+    FontModule.register({ family: "Inter", fonts: resolveFontList(INTER_FONT) });
+    FontModule.register({ family: "Roboto", fonts: resolveFontList(ROBOTO_FONT) });
+    FontModule.register({ family: "Merriweather", fonts: resolveFontList(MERRIWEATHER_FONT) });
+    FontModule.register({ family: "Lato", fonts: resolveFontList(LATO_FONT) });
+    FontModule.register({ family: "Source Serif 4", fonts: resolveFontList(SOURCE_SERIF_4_FONT) });
     fontsRegistered = true;
   } catch (e) {
     console.warn("Failed to register some resume fonts:", e);
   }
 };
+
 
 // Geist Mono fonts
 export const GEIST_MONO_FONT: PdfFont[] = [

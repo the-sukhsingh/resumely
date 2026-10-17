@@ -17,6 +17,10 @@ export const createPdfBlob = async ({ resumeData, type, theme }: CreatePdfBlobPr
   return blob;
 };
 
-const getPdfTemplate = (_template?: ResumeTemplate | string) => {
+const getPdfTemplate = (template?: ResumeTemplate | string) => {
+  if (template && template in variantRegistry) {
+    return variantRegistry[template as keyof typeof variantRegistry].component;
+  }
   return variantRegistry.classic.component;
 };
+
