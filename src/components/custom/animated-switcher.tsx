@@ -82,7 +82,6 @@ export default function AnimatedSwitcher<T extends string = string>({
       )}
       role="tablist"
     >
-      {/* Single pill rendered once at the container level — animates via measured coords */}
       {pillStyle && (
         <motion.span
           className="absolute bg-background rounded-full shadow-2xs pointer-events-none"
