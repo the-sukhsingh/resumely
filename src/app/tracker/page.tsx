@@ -32,7 +32,7 @@ export default function JobTrackerPage() {
   );
 
   const [search, setSearch] = useState('');
-  const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
+  const [viewMode, setViewMode] = useState<'board' | 'list'>('list');
   const [stageFilter, setStageFilter] = useState('all');
   const [selectedApplication, setSelectedApplication] = useState<TrackedJobApplication | null>(null);
 
