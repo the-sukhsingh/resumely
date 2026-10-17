@@ -7,12 +7,12 @@ export interface MilestoneAnchor {
 }
 
 // 4 distinct milestone elevations along the journey
-// Saved (relaxed mid-low), Applied (ascent), Interviewing (focus mid), Offer (triumphant summit!)
+// Gentle, organic flow: Saved -> Applied (ascent) -> Interviewing (calm) -> Offer (summit)
 export const MILESTONE_ANCHORS: MilestoneAnchor[] = [
-  { id: 'saved', percent: 12, yPercent: 68 },
+  { id: 'saved', percent: 10, yPercent: 62 },
   { id: 'applied', percent: 38, yPercent: 44 },
-  { id: 'interviewing', percent: 66, yPercent: 58 },
-  { id: 'offered', percent: 92, yPercent: 28 },
+  { id: 'interviewing', percent: 68, yPercent: 54 },
+  { id: 'offered', percent: 92, yPercent: 30 },
 ];
 
 /**

@@ -24,7 +24,6 @@ import {
   Sparkles,
   Loader2,
   Check,
-  RotateCcw,
   MoreHorizontal,
   AlertCircle,
   Archive,
@@ -60,12 +59,11 @@ export default function JobJourneyRow({
 
   const [isTailoring, setIsTailoring] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [replayCount, setReplayCount] = useState(0);
   const [dragHoverStage, setDragHoverStage] = useState<JobStage | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [trackDims, setTrackDims] = useState<{ width: number; height: number }>({
     width: 600,
-    height: 110,
+    height: 96,
   });
 
   const trackContainerRef = useRef<HTMLDivElement>(null);
@@ -146,12 +144,6 @@ export default function JobJourneyRow({
     }
   };
 
-  // Replay wobble draw animation
-  const handleReplayWobble = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setReplayCount((c) => c + 1);
-  };
-
   // Calculate nearest milestone while dragging
   const handleDrag = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: { point: { x: number } }) => {
@@ -203,11 +195,11 @@ export default function JobJourneyRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.35,
-        delay: Math.min(index * 0.05, 0.4),
+        duration: 0.3,
+        delay: Math.min(index * 0.04, 0.35),
         ease: [0.23, 1, 0.32, 1], // Emil Kowalski custom ease-out
       }}
       className={cn(
@@ -216,18 +208,8 @@ export default function JobJourneyRow({
         isSpecialTerminal && 'opacity-90 dark:opacity-80'
       )}
     >
-      {/* Ambient background glow according to stage */}
-      <div
-        className="pointer-events-none absolute -right-10 -top-10 size-48 rounded-full blur-3xl opacity-15 dark:opacity-20 transition-all duration-500"
-        style={{
-          backgroundColor: isSpecialTerminal
-            ? '#f43f5e'
-            : currentMilestone.color,
-        }}
-      />
-
       <div className="flex flex-col lg:flex-row items-stretch min-w-0">
-        {/* ─── LEFT SIDE: Clean Job Details ─── */}
+        {/* ─── LEFT SIDE: Job Details ─── */}
         <div
           onClick={() => onSelect(application)}
           className="lg:w-80 p-4 sm:p-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer select-none shrink-0"
@@ -239,7 +221,7 @@ export default function JobJourneyRow({
                   company={application.company}
                   companyUrl={application.companyUrl}
                   jobUrl={application.jobUrl}
-                  size={40}
+                  size={38}
                   index={index}
                 />
                 <div className="min-w-0">
@@ -434,53 +416,39 @@ export default function JobJourneyRow({
           </div>
         </div>
 
-        {/* ─── RIGHT SIDE: Whole Row Width Curved Journey Path & Pinpoint ─── */}
+        {/* ─── RIGHT SIDE: Clean, Minimal Curved Path & Pinpoint ─── */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center relative min-w-0">
-          {/* Header Bar for the Journey */}
-          <div className="flex items-center justify-between mb-1 px-2">
+          {/* Subtle Header */}
+          <div className="flex items-center justify-between mb-0.5 px-2">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
+              <span className="text-[10px] font-mono text-muted-foreground/80 uppercase tracking-wider">
                 Application Journey
               </span>
-              <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
-                • Drag beacon along the curve to advance
+              <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">
+                • Drag beacon along curve to advance
               </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleReplayWobble}
-                title="Replay journey line animation"
-                className="size-6 rounded-md flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer active:scale-[0.94]"
-              >
-                <RotateCcw size={12} />
-              </button>
             </div>
           </div>
 
-          {/* Track Canvas Container with Curved Path */}
+          {/* Track Canvas Container */}
           <div
             ref={trackContainerRef}
-            className="relative w-full py-2 select-none flex items-center min-h-[115px]"
+            className="relative w-full py-1 select-none flex items-center min-h-[100px]"
           >
-            {/* The Non-Straight Wobbling & Drawing Path Component */}
+            {/* The Clean, Minimal Curved Path Component */}
             <JourneyPath
               currentStage={application.stage}
               onSelectStage={handleStageChange}
               hoveredStage={dragHoverStage}
-              seed={application._id}
-              rowIndex={index}
-              replayTrigger={replayCount}
               onDimensionsChange={setTrackDims}
             />
 
-            {/* ─── Draggable Pinpoint Marker (Rests directly on the curve) ─── */}
+            {/* ─── Draggable Pinpoint Marker ─── */}
             {!isSpecialTerminal && (
               <motion.div
                 drag="x"
                 dragConstraints={trackContainerRef}
-                dragElastic={0.05}
+                dragElastic={0.04}
                 dragMomentum={false}
                 onDragStart={() => setIsDragging(true)}
                 onDrag={handleDrag}
@@ -497,8 +465,8 @@ export default function JobJourneyRow({
                 }}
                 style={{
                   position: 'absolute',
-                  marginTop: -22, // Centers beacon vertically over the curve
-                  marginLeft: -16, // Centers beacon horizontally
+                  marginTop: -20, // Perfectly aligns beacon over curve
+                  marginLeft: -14, // Centers beacon horizontally
                 }}
                 className={cn(
                   'z-30 cursor-grab active:cursor-grabbing flex flex-col items-center select-none',
@@ -510,14 +478,14 @@ export default function JobJourneyRow({
                   initial={false}
                   animate={{
                     y: isDragging ? -8 : -3,
-                    scale: isDragging ? 1.06 : 1,
+                    scale: isDragging ? 1.05 : 1,
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   className={cn(
-                    'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-md border whitespace-nowrap pointer-events-none transition-colors mb-1',
+                    'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap pointer-events-none transition-colors mb-1',
                     isDragging
-                      ? 'bg-foreground text-background border-foreground shadow-lg'
-                      : 'bg-card/95 backdrop-blur-md text-foreground border-border/80'
+                      ? 'bg-foreground text-background border-foreground shadow-md'
+                      : 'bg-card text-foreground border-border/80'
                   )}
                 >
                   {isDragging && dragHoverStage
@@ -527,22 +495,18 @@ export default function JobJourneyRow({
 
                 {/* Pinpoint Beacon Orb */}
                 <div
-                  className="relative size-8 rounded-full flex items-center justify-center text-white shadow-lg transition-transform"
+                  className="relative size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform"
                   style={{
                     backgroundColor: currentMilestone.color,
-                    boxShadow: `0 0 20px ${currentMilestone.glowColor}, 0 2px 10px rgba(0,0,0,0.35)`,
+                    boxShadow: `0 0 14px ${currentMilestone.glowColor}, 0 2px 6px rgba(0,0,0,0.25)`,
                   }}
                 >
-                  <span
-                    className="absolute inset-0 rounded-full animate-ping opacity-30"
-                    style={{ backgroundColor: currentMilestone.color }}
-                  />
-                  <PinIcon size={14} className="relative z-10 stroke-[2.5]" />
+                  <PinIcon size={13} className="relative z-10 stroke-[2.5]" />
                 </div>
 
-                {/* Pointer Triangle pointing directly down at the SVG curve */}
+                {/* Pointer Cone pointing directly down at the SVG curve */}
                 <div
-                  className="w-0 h-0 border-x-4 border-x-transparent border-t-5 -mt-0.5"
+                  className="w-0 h-0 border-x-[3.5px] border-x-transparent border-t-4 -mt-0.5"
                   style={{ borderTopColor: currentMilestone.color }}
                 />
               </motion.div>
