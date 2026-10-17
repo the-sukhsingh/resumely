@@ -175,66 +175,32 @@ const LatexPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
           </View>
         )}
 
-        {/* ─── Education (Often prioritized in LaTeX CVs) ─── */}
-        {education && education.length > 0 && (
-          <View className="mb-2">
-            <SectionHeading font={activeFont}>Education</SectionHeading>
-            {education.map((edu) => (
-              <ViewR key={edu.id} wrap={false} style={tw("mb-1.5")}>
-                <ViewR style={tw("flex-row justify-between items-baseline")}>
-                  <TextR style={[tw("text-xs font-bold text-black"), { fontFamily: activeFont }]}>
-                    <LatexText font={activeFont}>{edu.institution}</LatexText>
-                    {nonEmpty(edu.location) && (
-                      <TextR style={tw("font-normal text-neutral-700")}> · {edu.location}</TextR>
-                    )}
-                  </TextR>
-                  <TextR style={[tw("text-[9px] text-black font-normal"), { fontFamily: activeFont }]}>
-                    {edu.startDate ?? ''}{edu.startDate && edu.endDate ? ' – ' : ''}{edu.endDate ?? ''}
-                  </TextR>
-                </ViewR>
-                <ViewR style={tw("flex-row justify-between items-baseline mt-0.5")}>
-                  <TextR style={[tw("text-[9px] italic text-neutral-900"), { fontFamily: activeFont }]}>
-                    <LatexText font={activeFont}>
-                      {edu.degree}{nonEmpty(edu.field) ? `, ${edu.field}` : ''}
-                    </LatexText>
-                  </TextR>
-                  {nonEmpty(edu.gpa) && (
-                    <TextR style={[tw("text-[9px] text-neutral-800"), { fontFamily: activeFont }]}>
-                      GPA: {edu.gpa}
-                    </TextR>
-                  )}
-                </ViewR>
-              </ViewR>
-            ))}
-          </View>
-        )}
-
         {/* ─── Work Experience ─── */}
         {experience && experience.length > 0 && (
           <View className="mb-2">
-            <SectionHeading font={activeFont}>Experience</SectionHeading>
+            <SectionHeading font={activeFont}>Work Experience</SectionHeading>
             {experience.map((exp) => (
               <ViewR key={exp.id} style={tw("mb-2")}>
-                {/* Row 1: Role/Position on left, Date on right */}
+                {/* Row 1: Company on left (bold), Date on right (matching Classic) */}
                 <ViewR style={tw("flex-row justify-between items-baseline mb-0.5")}>
                   <TextR style={[tw("text-xs font-bold text-black"), { fontFamily: activeFont }]}>
-                    <LatexText font={activeFont}>{exp.position}</LatexText>
+                    <LatexText font={activeFont}>{exp.company}</LatexText>
+                    {nonEmpty(exp.location) && (
+                      <TextR style={[tw("font-normal text-neutral-700"), { fontFamily: activeFont }]}>
+                        {" "}· {exp.location}
+                      </TextR>
+                    )}
                   </TextR>
-                  <TextR style={[tw("text-[9px] text-black font-normal"), { fontFamily: activeFont }]}>
+                  <TextR style={[tw("text-[9px] text-black font-semibold"), { fontFamily: activeFont }]}>
                     {exp.startDate} – {exp.current ? 'Present' : (exp.endDate ?? '')}
                   </TextR>
                 </ViewR>
 
-                {/* Row 2: Company on left (italic), Location on right */}
-                <ViewR style={tw("flex-row justify-between items-baseline mb-1")}>
+                {/* Row 2: Position on left (italic) */}
+                <ViewR style={tw("mb-1")}>
                   <TextR style={[tw("text-[9px] italic text-neutral-800"), { fontFamily: activeFont }]}>
-                    <LatexText font={activeFont}>{exp.company}</LatexText>
+                    <LatexText font={activeFont}>{exp.position}</LatexText>
                   </TextR>
-                  {nonEmpty(exp.location) && (
-                    <TextR style={[tw("text-[9px] text-neutral-700 italic"), { fontFamily: activeFont }]}>
-                      {exp.location}
-                    </TextR>
-                  )}
                 </ViewR>
 
                 {/* Bullets with LaTeX parsing */}
@@ -297,10 +263,10 @@ const LatexPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
           </View>
         )}
 
-        {/* ─── Technical Skills (Classic LaTeX Format: \textbf{Category}: list) ─── */}
+        {/* ─── Skills ─── */}
         {skills && skills.length > 0 && (
           <View className="mb-2">
-            <SectionHeading font={activeFont}>Technical Skills</SectionHeading>
+            <SectionHeading font={activeFont}>Skills</SectionHeading>
             <ViewR style={tw("flex-col gap-0.5")}>
               {skills.map((group, i) => {
                 const items = filterStrings(group.items);
@@ -317,6 +283,40 @@ const LatexPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
                 );
               })}
             </ViewR>
+          </View>
+        )}
+
+        {/* ─── Education (Moved after Skills to match Classic) ─── */}
+        {education && education.length > 0 && (
+          <View className="mb-2">
+            <SectionHeading font={activeFont}>Education</SectionHeading>
+            {education.map((edu) => (
+              <ViewR key={edu.id} wrap={false} style={tw("mb-1.5")}>
+                <ViewR style={tw("flex-row justify-between items-baseline")}>
+                  <TextR style={[tw("text-xs font-bold text-black"), { fontFamily: activeFont }]}>
+                    <LatexText font={activeFont}>{edu.institution}</LatexText>
+                    {nonEmpty(edu.location) && (
+                      <TextR style={tw("font-normal text-neutral-700")}> · {edu.location}</TextR>
+                    )}
+                  </TextR>
+                  <TextR style={[tw("text-[9px] text-black font-semibold"), { fontFamily: activeFont }]}>
+                    {edu.startDate ?? ''}{edu.startDate && edu.endDate ? ' – ' : ''}{edu.endDate ?? ''}
+                  </TextR>
+                </ViewR>
+                <ViewR style={tw("flex-row justify-between items-baseline mt-0.5")}>
+                  <TextR style={[tw("text-[9px] text-neutral-900"), { fontFamily: activeFont }]}>
+                    <LatexText font={activeFont}>
+                      {edu.degree}{nonEmpty(edu.field) ? ` · ${edu.field}` : ''}
+                    </LatexText>
+                  </TextR>
+                  {nonEmpty(edu.gpa) && (
+                    <TextR style={[tw("text-[9px] text-neutral-800"), { fontFamily: activeFont }]}>
+                      GPA: {edu.gpa}
+                    </TextR>
+                  )}
+                </ViewR>
+              </ViewR>
+            ))}
           </View>
         )}
 
@@ -354,7 +354,7 @@ const LatexPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
         {/* ─── Achievements ─── */}
         {achievements && achievements.length > 0 && (
           <View className="mb-2">
-            <SectionHeading font={activeFont}>Honors & Awards</SectionHeading>
+            <SectionHeading font={activeFont}>Achievements</SectionHeading>
             {achievements.map((ach) => (
               <ViewR key={ach.id} wrap={false} style={tw("mb-1 pl-2.5")}>
                 <ViewR style={tw("flex-row items-baseline")}>
