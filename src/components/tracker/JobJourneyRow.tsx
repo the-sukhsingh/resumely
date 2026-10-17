@@ -66,13 +66,21 @@ export default function JobJourneyRow({
 
   const trackContainerRef = useRef<HTMLDivElement>(null);
 
+  const [optimisticStage, setOptimisticStage] = useState<JobStage | null>(null);
+
+  // Clear optimistic stage when prop syncs from server
+  React.useEffect(() => {
+    setOptimisticStage(null);
+  }, [application.stage]);
+
   // Active milestone and target coordinates on the curve
   // Map 'archived' to the terminal milestone
+  const activeStage = optimisticStage ?? application.stage;
   const currentMilestone =
     JOURNEY_MILESTONES.find(
       (m) =>
-        m.id === application.stage ||
-        (application.stage === 'archived' && m.id === 'rejected')
+        m.id === activeStage ||
+        (activeStage === 'archived' && m.id === 'rejected')
     ) || JOURNEY_MILESTONES[0];
 
   const targetPercent = currentMilestone.percent;
@@ -85,7 +93,8 @@ export default function JobJourneyRow({
 
   // Handle stage change with optimistic feedback
   const handleStageChange = async (newStage: JobStage) => {
-    if (newStage === application.stage) return;
+    if (newStage === activeStage) return;
+    setOptimisticStage(newStage);
     try {
       await updateStage({
         applicationId: application._id,
@@ -95,6 +104,7 @@ export default function JobJourneyRow({
       toast.success(`${application.company}: Moved to "${stageName}"`);
     } catch (err) {
       console.error(err);
+      setOptimisticStage(null);
       toast.error('Failed to change stage');
     }
   };
@@ -177,6 +187,7 @@ export default function JobJourneyRow({
   const handleDragEnd = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: { point: { x: number } }) => {
       setIsDragging(false);
+      setDragHoverStage(null);
       if (!trackContainerRef.current) return;
       const rect = trackContainerRef.current.getBoundingClientRect();
       const relativeX = info.point.x - rect.left;
@@ -191,11 +202,10 @@ export default function JobJourneyRow({
           closest = m;
         }
       }
-      setDragHoverStage(null);
       handleStageChange(closest.id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [application.stage, application._id, updateStage]
+    [activeStage, application._id, updateStage]
   );
 
   const PinIcon = currentMilestone.icon;
@@ -423,7 +433,7 @@ export default function JobJourneyRow({
           >
             {/* The Clean, Minimal Curved Path Component */}
             <JourneyPath
-              currentStage={application.stage}
+              currentStage={activeStage}
               onSelectStage={handleStageChange}
               hoveredStage={dragHoverStage}
             />
@@ -432,7 +442,6 @@ export default function JobJourneyRow({
             <motion.div
               initial={false}
               drag="x"
-              dragConstraints={trackContainerRef}
               dragElastic={0.04}
               dragMomentum={false}
               onDragStart={() => setIsDragging(true)}
