@@ -15,6 +15,7 @@ import { PaymentStatusDialog } from '@/components/resume/PaymentStatusDialog';
 import Feedback from '@/components/custom/feedback';
 import ColoredButton from '@/components/custom/colored-button';
 import { Plus } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 
 export default function JobTrackerPage() {
   const { user } = useAuth();
@@ -159,26 +160,46 @@ export default function JobTrackerPage() {
               masterResumeId={masterResume?._id}
             />
 
-            {viewMode === 'board' ? (
-              <JobKanbanBoard
-                applications={filteredApplications}
-                onSelectApplication={(app) => setSelectedApplication(app)}
-                userId={user._id}
-                masterResumeId={masterResume?._id}
-              />
-            ) : (
-              <JobListView
-                applications={filteredApplications}
-                totalApplicationsCount={applications.length}
-                onSelectApplication={(app) => setSelectedApplication(app)}
-                masterResumeId={masterResume?._id}
-                userId={user._id}
-                stageFilter={stageFilter}
-                onResetStageFilter={() => setStageFilter('all')}
-                search={search}
-                onClearSearch={() => setSearch('')}
-              />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {viewMode === 'board' ? (
+                <motion.div
+                  key="board-view"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                  className="w-full origin-center"
+                >
+                  <JobKanbanBoard
+                    applications={filteredApplications}
+                    onSelectApplication={(app) => setSelectedApplication(app)}
+                    userId={user._id}
+                    masterResumeId={masterResume?._id}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="list-view"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                  className="w-full origin-center"
+                >
+                  <JobListView
+                    applications={filteredApplications}
+                    totalApplicationsCount={applications.length}
+                    onSelectApplication={(app) => setSelectedApplication(app)}
+                    masterResumeId={masterResume?._id}
+                    userId={user._id}
+                    stageFilter={stageFilter}
+                    onResetStageFilter={() => setStageFilter('all')}
+                    search={search}
+                    onClearSearch={() => setSearch('')}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </>
         )}
 

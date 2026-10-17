@@ -200,11 +200,11 @@ export default function JobJourneyRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
-        duration: 0.3,
-        delay: Math.min(index * 0.04, 0.35),
+        duration: 0.25,
+        delay: Math.min(index * 0.03, 0.2),
         ease: [0.23, 1, 0.32, 1], // Emil Kowalski custom ease-out
       }}
       className="group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border"
@@ -476,8 +476,8 @@ export default function JobJourneyRow({
                 (0, 0) is the bottom center tip of the downward pointer cone!
                 It touches the curve with exact mathematical precision.
               */}
-              <div className="-translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none pb-0.5">
-                {/* Floating Stage Chip above Pin */}
+              <div className="-translate-x-1/2 -translate-y-full flex flex-col items-center cursor-grab active:cursor-grabbing pb-0.5">
+                {/* Floating Stage Chip above Pin (directly draggable!) */}
                 <motion.div
                   initial={false}
                   animate={{
@@ -486,10 +486,10 @@ export default function JobJourneyRow({
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   className={cn(
-                    'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap transition-colors mb-1',
+                    'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap transition-colors mb-1 cursor-grab active:cursor-grabbing select-none',
                     isDragging
                       ? 'bg-foreground text-background border-foreground shadow-md'
-                      : 'bg-card text-foreground border-border/80'
+                      : 'bg-card text-foreground border-border/80 hover:bg-muted/80'
                   )}
                 >
                   {isDragging && dragHoverStage
@@ -500,7 +500,7 @@ export default function JobJourneyRow({
                 {/* Pinpoint Beacon Orb */}
                 <div
                   className={cn(
-                    'size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform',
+                    'size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform cursor-grab active:cursor-grabbing',
                     isDragging && 'scale-110'
                   )}
                   style={{
