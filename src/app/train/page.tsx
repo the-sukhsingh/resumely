@@ -16,9 +16,12 @@ import {
   Eye,
   RefreshCw,
   Edit,
-  Type
+  Type,
+  LayoutTemplate
 } from 'lucide-react';
 import { SUPPORTED_RESUME_FONTS } from '@/constants/pdf-fonts';
+import { variantRegistry } from '@/components/resume/preview/variants/registry';
+
 
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
 
@@ -44,9 +47,10 @@ const MOCK_RESUME: ResumeData = {
       endDate: "Present",
       current: true,
       bullets: [
-        "Architected and built a microservices-based analytics platform handling over 10M requests daily, reducing latency by 35%.",
-        "Mentored a team of 4 junior developers and established modern CI/CD pipelines using GitHub Actions and AWS."
+        "Architected and built a microservices-based analytics platform handling over 10M requests daily, reducing latency by 35% with $O(N \\log N)$ streaming algorithms.",
+        "Mentored a team of 4 junior developers and established modern CI/CD pipelines using \\textbf{GitHub Actions} and \\textbf{AWS}."
       ]
+
     },
     {
       id: "exp-2",
@@ -121,7 +125,7 @@ const Page = () => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [selectedTemplate] = useState<ResumeTemplate>('classic');
+  const [selectedTemplate, setSelectedTemplate] = useState<ResumeTemplate>('classic');
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
   const [isUsingMock, setIsUsingMock] = useState(false);
@@ -288,24 +292,46 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Center: Font Selector */}
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/60 rounded-lg border border-border/20 shrink-0">
-            <Type className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-2xs font-semibold text-muted-foreground">Font:</span>
-            <select
-              value={resumeData?.settings?.font || 'Times New Roman'}
-              onChange={(e) => handleFontChange(e.target.value)}
-              className="bg-transparent text-foreground text-2xs font-semibold py-0.5 pr-1 border-0 focus:ring-0 outline-hidden cursor-pointer"
-              style={{ fontFamily: resumeData?.settings?.font || 'Times New Roman' }}
-              aria-label="Select resume font"
-            >
-              {SUPPORTED_RESUME_FONTS.map((f) => (
-                <option key={f.value} value={f.value} className="bg-popover text-popover-foreground" style={{ fontFamily: f.value }}>
-                  {f.label}{f.value === 'Times New Roman' ? ' (Default)' : ''}
-                </option>
-              ))}
-            </select>
+          {/* Center: Template & Font Selectors */}
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            {/* Template Selector */}
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/60 rounded-lg border border-border/20 shrink-0">
+              <LayoutTemplate className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-2xs font-semibold text-muted-foreground">Template:</span>
+              <select
+                value={selectedTemplate}
+                onChange={(e) => setSelectedTemplate(e.target.value as ResumeTemplate)}
+                className="bg-transparent text-foreground text-2xs font-semibold py-0.5 pr-1 border-0 focus:ring-0 outline-hidden cursor-pointer"
+                aria-label="Select resume template"
+              >
+                {Object.entries(variantRegistry).map(([key, val]) => (
+                  <option key={key} value={key} className="bg-popover text-popover-foreground">
+                    {val.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Font Selector */}
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/60 rounded-lg border border-border/20 shrink-0">
+              <Type className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-2xs font-semibold text-muted-foreground">Font:</span>
+              <select
+                value={resumeData?.settings?.font || 'Times New Roman'}
+                onChange={(e) => handleFontChange(e.target.value)}
+                className="bg-transparent text-foreground text-2xs font-semibold py-0.5 pr-1 border-0 focus:ring-0 outline-hidden cursor-pointer"
+                style={{ fontFamily: resumeData?.settings?.font || 'Times New Roman' }}
+                aria-label="Select resume font"
+              >
+                {SUPPORTED_RESUME_FONTS.map((f) => (
+                  <option key={f.value} value={f.value} className="bg-popover text-popover-foreground" style={{ fontFamily: f.value }}>
+                    {f.label}{f.value === 'Times New Roman' ? ' (Default)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
 
           {/* Right Actions: Downloads */}
           <div className="flex items-center gap-1.5 w-full sm:w-auto justify-end">
