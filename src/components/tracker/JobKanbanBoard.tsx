@@ -1,16 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TrackedJobApplication, JobStage } from './types';
-import JobCard from './JobCard';
+import { TrackedJobApplication, JobStage, STAGE_CONFIGS } from './types';
+import JobJourneyRow from './JobJourneyRow';
 import { Id } from '../../../convex/_generated/dataModel';
 import AddTrackedJobDialog from './AddTrackedJobDialog';
 import { AddCircle } from '@/components/icons';
+import { Sparkles, MapPin, Compass, Trophy, Send, Bookmark, MessageSquare, Plus } from 'lucide-react';
+import ColoredButton from '@/components/custom/colored-button';
 import { cn } from '@/lib/utils';
-import { useMutation } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
-import { toast } from 'sonner';
-import { AnimatePresence } from 'motion/react';
 
 interface Props {
   applications: TrackedJobApplication[];
@@ -19,221 +17,116 @@ interface Props {
   masterResumeId?: Id<'resumeVersions'>;
 }
 
-interface ColumnDef {
-  id: string;
-  label: string;
-  stages: JobStage[];
-  colorDot: string;
-  defaultStage: JobStage;
-}
-
-const KANBAN_COLUMNS: ColumnDef[] = [
-  {
-    id: 'saved',
-    label: 'Saved for later',
-    stages: ['saved'],
-    colorDot: 'bg-slate-400',
-    defaultStage: 'saved',
-  },
-  {
-    id: 'applied',
-    label: 'Applied',
-    stages: ['applied'],
-    colorDot: 'bg-blue-500',
-    defaultStage: 'applied',
-  },
-  {
-    id: 'interviewing',
-    label: 'Interviewing',
-    stages: ['interviewing'],
-    colorDot: 'bg-amber-500',
-    defaultStage: 'interviewing',
-  },
-  {
-    id: 'offered',
-    label: 'Offer',
-    stages: ['offered'],
-    colorDot: 'bg-emerald-500',
-    defaultStage: 'offered',
-  },
-  {
-    id: 'closed',
-    label: 'Rejected / Archived',
-    stages: ['rejected', 'archived'],
-    colorDot: 'bg-neutral-400',
-    defaultStage: 'rejected',
-  },
-];
-
 export default function JobKanbanBoard({
   applications,
   onSelectApplication,
   userId,
   masterResumeId,
 }: Props) {
-  const updateStage = useMutation(api.jobTracker.updateJobApplicationStage);
-
-  const [draggedAppId, setDraggedAppId] = useState<string | null>(null);
-  const [dragOverColId, setDragOverColId] = useState<string | null>(null);
-
-  const handleDragOver = (e: React.DragEvent, colId: string) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (dragOverColId !== colId) {
-      setDragOverColId(colId);
-    }
-  };
-
-  const handleDragLeave = (e: React.DragEvent, colId: string) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      if (dragOverColId === colId) {
-        setDragOverColId(null);
-      }
-    }
-  };
-
-  const handleDrop = async (e: React.DragEvent, col: ColumnDef) => {
-    e.preventDefault();
-    setDragOverColId(null);
-    setDraggedAppId(null);
-
-    const appId = e.dataTransfer.getData('text/plain') as Id<'jobApplications'>;
-    if (!appId) return;
-
-    const app = applications.find((a) => a._id === appId);
-    if (!app) return;
-
-    if (col.stages.includes(app.stage)) return;
-
-    try {
-      await updateStage({
-        applicationId: appId,
-        stage: col.defaultStage,
-      });
-      toast.success(`Moved to "${col.label}"`);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to move job');
-    }
-  };
+  // Metric counts
+  const savedCount = applications.filter((a) => a.stage === 'saved').length;
+  const appliedCount = applications.filter((a) => a.stage === 'applied').length;
+  const interviewCount = applications.filter((a) => a.stage === 'interviewing').length;
+  const offerCount = applications.filter((a) => a.stage === 'offered').length;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 items-start w-full">
-      {KANBAN_COLUMNS.map((col) => {
-        const colApps = applications.filter((app) => col.stages.includes(app.stage));
-        const isOver = dragOverColId === col.id;
-        const isDraggedHere =
-          draggedAppId &&
-          !col.stages.includes(
-            applications.find((a) => a._id === draggedAppId)?.stage || 'saved'
-          );
-
-        return (
-          <div
-            key={col.id}
-            onDragOver={(e) => handleDragOver(e, col.id)}
-            onDragLeave={(e) => handleDragLeave(e, col.id)}
-            onDrop={(e) => handleDrop(e, col)}
-            className={cn(
-              'min-w-0 flex flex-col rounded-2xl bg-card/40 dark:bg-neutral-900/40 border border-border/50 overflow-hidden shadow-2xs transition-colors duration-150 ',
-              isOver && 'border-primary/40 bg-accent/8 ring-1 ring-primary/30'
-            )}
-          >
-            {/* Clean Column Header */}
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border/40 bg-muted/20">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className={cn('size-2 rounded-full shrink-0', col.colorDot)} />
-                <h3 className="font-semibold text-xs text-foreground tracking-tight truncate">
-                  {col.label}
-                </h3>
-                <span className="font-mono text-[10px] text-muted-foreground px-1.5 py-0.2 rounded-full bg-muted/70 border border-border/40 shrink-0">
-                  {colApps.length}
-                </span>
-              </div>
-
-              {/* Quick Add Button */}
-              <AddTrackedJobDialog
-                userId={userId}
-                masterResumeId={masterResumeId}
-                initialStage={col.defaultStage}
-                trigger={
-                  <button
-                    type="button"
-                    title={`Add job to ${col.label}`}
-                    className="size-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
-                  >
-                    <AddCircle className="size-3.5" />
-                  </button>
-                }
-              />
-            </div>
-
-            {/* Column Cards Container */}
-            <div className="p-2 space-y-2.5 min-h-[140px] max-h-[calc(100vh-270px)] overflow-y-auto scrollbar-thin">
-              {colApps.length === 0 ? (
-                /* Quiet, clean empty state */
-                <div
-                  className={cn(
-                    'h-24 rounded-xl border border-dashed flex flex-col items-center justify-center p-2.5 text-center transition-colors',
-                    isOver
-                      ? 'border-primary/50 bg-primary/[0.04] text-primary'
-                      : 'border-border/40 hover:border-border/70 bg-muted/[0.03]'
-                  )}
-                >
-                  {isOver ? (
-                    <span className="text-xs font-medium text-primary">Drop here</span>
-                  ) : (
-                    <>
-                      <p className="text-[11px] text-muted-foreground/70 font-medium">No roles</p>
-                      <AddTrackedJobDialog
-                        userId={userId}
-                        masterResumeId={masterResumeId}
-                        initialStage={col.defaultStage}
-                        trigger={
-                          <button
-                            type="button"
-                            className="text-[10px] text-primary/80 hover:text-primary hover:underline mt-1 font-medium cursor-pointer inline-flex items-center gap-1"
-                          >
-                            <AddCircle className="size-3" />
-                            <span>Add job</span>
-                          </button>
-                        }
-                      />
-                    </>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <AnimatePresence initial={false}>
-                    {colApps.map((app, idx) => (
-                      <JobCard
-                        key={app._id}
-                        application={app}
-                        index={idx}
-                        onSelect={onSelectApplication}
-                        masterResumeId={masterResumeId}
-                        onDragStart={(id) => setDraggedAppId(id)}
-                        onDragEnd={() => {
-                          setDraggedAppId(null);
-                          setDragOverColId(null);
-                        }}
-                        isDragging={draggedAppId === app._id}
-                      />
-                    ))}
-                  </AnimatePresence>
-
-                  {/* Drop zone indicator when dragging over an active column */}
-                  {isOver && isDraggedHere && (
-                    <div className="h-10 rounded-xl border border-dashed border-primary/50 bg-primary/[0.04] flex items-center justify-center text-xs text-primary font-medium animate-pulse">
-                      Drop here
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+    <div className="w-full space-y-4">
+      {/* ─── Journey Pipeline Summary & Legend Bar ─── */}
+      <div className="rounded-2xl border border-border/50 bg-card/40 dark:bg-card/15 backdrop-blur-md px-4 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-2xs">
+        {/* Left: Journey Overview Info */}
+        <div className="flex items-center gap-3">
+          <div className="size-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Compass className="size-4" />
           </div>
-        );
-      })}
+          <div>
+            <h3 className="text-xs font-semibold text-foreground tracking-tight flex items-center gap-2">
+              <span>Interactive Pipeline Journey</span>
+              <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-muted/80 text-muted-foreground border border-border/40">
+                {applications.length} {applications.length === 1 ? 'Role' : 'Roles'}
+              </span>
+            </h3>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Drag the glowing pinpoint along the path to advance stages, or click any checkpoint
+            </p>
+          </div>
+        </div>
+
+        {/* Right: Milestone Legend Chips & Quick Add */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="hidden sm:flex items-center gap-2 mr-2">
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground px-2 py-0.5 rounded-md bg-muted/50 border border-border/40">
+              <span className="size-1.5 rounded-full bg-slate-400" />
+              <span>Saved ({savedCount})</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground px-2 py-0.5 rounded-md bg-muted/50 border border-border/40">
+              <span className="size-1.5 rounded-full bg-blue-500" />
+              <span>Applied ({appliedCount})</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground px-2 py-0.5 rounded-md bg-muted/50 border border-border/40">
+              <span className="size-1.5 rounded-full bg-amber-500" />
+              <span>Interviewing ({interviewCount})</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground px-2 py-0.5 rounded-md bg-muted/50 border border-border/40">
+              <span className="size-1.5 rounded-full bg-emerald-500" />
+              <span>Offer ({offerCount})</span>
+            </span>
+          </div>
+
+          <AddTrackedJobDialog
+            userId={userId}
+            masterResumeId={masterResumeId}
+            initialStage="saved"
+            trigger={
+              <button
+                type="button"
+                className="h-8 px-3 rounded-full text-xs font-medium border border-border/70 bg-card hover:bg-muted/60 text-foreground transition-all duration-150 inline-flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-[0.97]"
+              >
+                <Plus className="size-3.5" />
+                <span>Track Role</span>
+              </button>
+            }
+          />
+        </div>
+      </div>
+
+      {/* ─── Journey Rows Container ─── */}
+      {applications.length === 0 ? (
+        /* Empty State */
+        <div className="rounded-3xl border border-dashed border-border/60 bg-muted/[0.04] p-12 text-center flex flex-col items-center justify-center space-y-3">
+          <div className="size-12 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center text-muted-foreground">
+            <Compass className="size-6 text-muted-foreground/80" />
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-foreground">No job applications found</h4>
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+              Track a new job posting or adjust your search filters to view your application journeys.
+            </p>
+          </div>
+          <AddTrackedJobDialog
+            userId={userId}
+            masterResumeId={masterResumeId}
+            trigger={
+              <ColoredButton color="amber" size="default" className="rounded-full px-5 text-xs font-medium mt-2">
+                <Plus className="size-3.5 mr-1" />
+                <span>Track New Job</span>
+              </ColoredButton>
+            }
+          />
+        </div>
+      ) : (
+        /* Journey Full-Width Rows */
+        <div className="space-y-3.5">
+          {applications.map((app, index) => (
+            <JobJourneyRow
+              key={app._id}
+              application={app}
+              index={index}
+              onSelect={onSelectApplication}
+              masterResumeId={masterResumeId}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

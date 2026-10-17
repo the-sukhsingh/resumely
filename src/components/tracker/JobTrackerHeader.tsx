@@ -155,7 +155,7 @@ export default function JobTrackerHeader({
             onChange={onViewModeChange}
             items={[
               { value: 'list', label: 'List', icon: Menu, title: 'List Table view' },
-              { value: 'board', label: 'Board', icon: Dashboard, title: 'Kanban Board view' },
+              { value: 'board', label: 'Journey', icon: Dashboard, title: 'Interactive Journey view' },
             ]}
           />
         </div>
