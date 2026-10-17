@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
 import { TrackedJobApplication } from './types';
 import JobJourneyRow from './JobJourneyRow';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -24,12 +23,7 @@ export default function JobKanbanBoard({
 }: Props) {
   if (applications.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-        className="rounded-3xl border border-dashed border-border/60 bg-muted/[0.03] p-12 text-center flex flex-col items-center justify-center space-y-3"
-      >
+      <div className="rounded-3xl border border-dashed border-border/60 bg-muted/[0.03] p-12 text-center flex flex-col items-center justify-center space-y-3">
         <div className="size-12 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center text-muted-foreground">
           <Compass className="size-6 text-muted-foreground/80" />
         </div>
@@ -49,17 +43,12 @@ export default function JobKanbanBoard({
             </ColoredButton>
           }
         />
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-      className="w-full space-y-3.5 origin-center"
-    >
+    <div className="w-full space-y-3.5">
       {applications.map((app, index) => (
         <JobJourneyRow
           key={app._id}
@@ -69,6 +58,6 @@ export default function JobKanbanBoard({
           masterResumeId={masterResumeId}
         />
       ))}
-    </motion.div>
+    </div>
   );
 }

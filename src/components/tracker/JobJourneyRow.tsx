@@ -39,6 +39,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
+const TRACK_HEIGHT = 96;
+
 interface Props {
   application: TrackedJobApplication;
   index: number;
@@ -61,15 +63,11 @@ export default function JobJourneyRow({
   const [copiedLink, setCopiedLink] = useState(false);
   const [dragHoverStage, setDragHoverStage] = useState<JobStage | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [trackDims, setTrackDims] = useState<{ width: number; height: number }>({
-    width: 600,
-    height: 96,
-  });
 
   const trackContainerRef = useRef<HTMLDivElement>(null);
 
   // Active milestone and target coordinates on the curve
-  // Map 'archived' to the terminal 'rejected' / closed milestone
+  // Map 'archived' to the terminal milestone
   const currentMilestone =
     JOURNEY_MILESTONES.find(
       (m) =>
@@ -78,8 +76,12 @@ export default function JobJourneyRow({
     ) || JOURNEY_MILESTONES[0];
 
   const targetPercent = currentMilestone.percent;
-  const currentTargetX = trackDims.width * (targetPercent / 100);
-  const currentTargetY = getCurveY(currentTargetX, trackDims.width, trackDims.height);
+  // Constant, deterministic vertical coordinate on the curve — zero jitter!
+  const currentTargetY = TRACK_HEIGHT * (currentMilestone.yPercent / 100);
+
+  // Check if a tailored or attached resume exists for this job
+  const hasAttachedResume = Boolean(application.resumeVersionId || application.resumeVersion);
+  const effectiveResumeId = application.resumeVersionId || application.resumeVersion?._id;
 
   // Handle stage change with optimistic feedback
   const handleStageChange = async (newStage: JobStage) => {
@@ -125,9 +127,9 @@ export default function JobJourneyRow({
   // Copy Public Resume link
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!application.resumeVersionId) return;
+    if (!effectiveResumeId) return;
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = `${origin}/r/${application.resumeVersionId}`;
+    const url = `${origin}/r/${effectiveResumeId}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopiedLink(true);
@@ -199,18 +201,9 @@ export default function JobJourneyRow({
   const PinIcon = currentMilestone.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        duration: 0.25,
-        delay: Math.min(index * 0.03, 0.2),
-        ease: [0.23, 1, 0.32, 1], // Emil Kowalski custom ease-out
-      }}
-      className="group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border"
-    >
+    <div className="group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border">
       <div className="flex flex-col lg:flex-row items-stretch min-w-0">
-        {/* ─── LEFT SIDE: Job Details ─── */}
+        {/* ─── LEFT SIDE: Clean Job Details ─── */}
         <div
           onClick={() => onSelect(application)}
           className="lg:w-80 p-4 sm:p-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer select-none shrink-0"
@@ -275,7 +268,7 @@ export default function JobJourneyRow({
                     <span>View full details</span>
                   </DropdownMenuItem>
 
-                  {application.resumeVersionId && (
+                  {effectiveResumeId && (
                     <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
                       <LinkDuo size={13} className="mr-2" />
                       <span>{copiedLink ? 'Link Copied!' : 'Copy resume link'}</span>
@@ -349,7 +342,7 @@ export default function JobJourneyRow({
               </DropdownMenu>
             </div>
 
-            {/* Chips: Location, Salary & Match Score */}
+            {/* Chips: Location, Salary & Resume Status */}
             <div className="flex items-center gap-1.5 flex-wrap mt-3">
               {application.location && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono bg-muted/60 text-muted-foreground border border-border/40">
@@ -365,16 +358,20 @@ export default function JobJourneyRow({
                 </span>
               )}
 
-              {/* ATS Match Score or Tailor Button */}
-              {application.resumeVersion?.matchScore != null ? (
+              {/* Resume Attached Badge OR Tailor Resume Button */}
+              {hasAttachedResume ? (
                 <Link
-                  href={`/resume/${application.resumeVersionId}`}
+                  href={`/resume/${effectiveResumeId}`}
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 transition-colors"
                   title="View tailored resume"
                 >
                   <Sparkles size={9} />
-                  <span>{application.resumeVersion.matchScore}% Match</span>
+                  <span>
+                    {application.resumeVersion?.matchScore != null
+                      ? `${application.resumeVersion.matchScore}% Match`
+                      : application.resumeVersion?.name || 'Resume Attached'}
+                  </span>
                 </Link>
               ) : (
                 <button
@@ -419,19 +416,7 @@ export default function JobJourneyRow({
 
         {/* ─── RIGHT SIDE: Clean, Minimal Curved Path & Draggable Beacon ─── */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center relative min-w-0">
-          {/* Subtle Header */}
-          <div className="flex items-center justify-between mb-2 px-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-muted-foreground/80 uppercase tracking-wider">
-                Application Journey
-              </span>
-              <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">
-                • Drag beacon along curve to any milestone
-              </span>
-            </div>
-          </div>
-
-          {/* Track Canvas Container (Exact 96px height matching JourneyPath) */}
+          {/* Track Canvas Container (Exact 96px height matching JourneyPath, no header clutter!) */}
           <div
             ref={trackContainerRef}
             className="relative w-full h-24 select-none"
@@ -441,10 +426,9 @@ export default function JobJourneyRow({
               currentStage={application.stage}
               onSelectStage={handleStageChange}
               hoveredStage={dragHoverStage}
-              onDimensionsChange={setTrackDims}
             />
 
-            {/* ─── Draggable Pinpoint Marker (Tip touches curve with 100% precision across ALL stages) ─── */}
+            {/* ─── Draggable Pinpoint Marker (Tip touches curve with 100% precision) ─── */}
             <motion.div
               drag="x"
               dragConstraints={trackContainerRef}
@@ -521,6 +505,6 @@ export default function JobJourneyRow({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
