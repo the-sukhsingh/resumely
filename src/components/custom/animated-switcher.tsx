@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useId } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -30,14 +30,35 @@ export default function AnimatedSwitcher<T extends string = string>({
   items,
   value,
   onChange,
-  layoutId,
   className,
   itemClassName,
   size = 'default',
   fullWidth = false,
 }: AnimatedSwitcherProps<T>) {
-  const generatedId = useId();
-  const activeLayoutId = layoutId || `switcher-pill-${generatedId}`;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const [pillStyle, setPillStyle] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const activeEl = itemRefs.current.get(value);
+    const containerEl = containerRef.current;
+    if (!activeEl || !containerEl) return;
+
+    const containerRect = containerEl.getBoundingClientRect();
+    const activeRect = activeEl.getBoundingClientRect();
+
+    setPillStyle({
+      left: activeRect.left - containerRect.left,
+      top: activeRect.top - containerRect.top,
+      width: activeRect.width,
+      height: activeRect.height,
+    });
+  }, [value]);
 
   const sizeClasses = {
     sm: 'px-2.5 py-1 text-[11px] gap-1',
@@ -52,20 +73,40 @@ export default function AnimatedSwitcher<T extends string = string>({
   }[size];
 
   return (
-    <motion.div
+    <div
+      ref={containerRef}
       className={cn(
-        'inline-flex items-center p-0.5 bg-muted/40 rounded-full border border-border/50 backdrop-blur-md',
+        'inline-flex items-center p-0.5 bg-muted/40 rounded-full border border-border/50 backdrop-blur-md relative',
         fullWidth && 'w-full flex',
         className
       )}
       role="tablist"
     >
+      {/* Single pill rendered once at the container level — animates via measured coords */}
+      {pillStyle && (
+        <motion.span
+          className="absolute bg-background rounded-full shadow-2xs pointer-events-none"
+          initial={false}
+          animate={{
+            left: pillStyle.left,
+            top: pillStyle.top,
+            width: pillStyle.width,
+            height: pillStyle.height,
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 450,
+            damping: 35,
+          }}
+        />
+      )}
+
       {items.map((item) => {
         const isActive = value === item.value;
         const Icon = item.icon;
 
         const sharedClassName = cn(
-          'flex items-center rounded-full font-medium transition-colors relative cursor-pointer select-none',
+          'flex items-center rounded-full font-medium transition-colors relative cursor-pointer select-none z-10',
           sizeClasses,
           fullWidth ? 'flex-1 justify-center' : 'justify-center',
           isActive
@@ -76,30 +117,23 @@ export default function AnimatedSwitcher<T extends string = string>({
         );
 
         const content = (
-          <>
-            {isActive && (
-              <motion.span
-                layoutId={activeLayoutId}
-                transition={{
-                  type: 'spring',
-                  stiffness: 450,
-                  damping: 35,
-                }}
-                className="absolute inset-0 bg-background rounded-full shadow-2xs"
-              />
-            )}
-            <span className="flex items-center justify-center gap-1.5 relative z-10 min-w-0">
-              {Icon && <Icon size={iconSizes} className="shrink-0" />}
-              <span className="truncate">{item.label}</span>
-              {item.badge}
-            </span>
-          </>
+          <span className="flex items-center justify-center gap-1.5 min-w-0">
+            {Icon && <Icon size={iconSizes} className="shrink-0" />}
+            <span className="truncate">{item.label}</span>
+            {item.badge}
+          </span>
         );
+
+        const setRef = (el: HTMLElement | null) => {
+          if (el) itemRefs.current.set(item.value, el);
+          else itemRefs.current.delete(item.value);
+        };
 
         if (item.href) {
           return (
             <Link
               key={item.value}
+              ref={setRef as React.Ref<HTMLAnchorElement>}
               href={item.href}
               prefetch={true}
               title={item.title}
@@ -115,6 +149,7 @@ export default function AnimatedSwitcher<T extends string = string>({
         return (
           <button
             key={item.value}
+            ref={setRef as React.Ref<HTMLButtonElement>}
             type="button"
             title={item.title}
             role="tab"
@@ -127,6 +162,6 @@ export default function AnimatedSwitcher<T extends string = string>({
           </button>
         );
       })}
-    </motion.div>
+    </div>
   );
 }
