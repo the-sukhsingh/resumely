@@ -376,7 +376,6 @@ export default function JobJourneyRow({
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 transition-colors"
                   title="View tailored resume"
                 >
-                  <Sparkles size={9} />
                   <span>
                     {application.resumeVersion?.matchScore != null
                       ? `${application.resumeVersion.matchScore}% Match`
@@ -391,10 +390,8 @@ export default function JobJourneyRow({
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors cursor-pointer active:scale-[0.97]"
                   title="Tailor resume for this role"
                 >
-                  {isTailoring ? (
+                  {isTailoring && (
                     <Loader2 size={9} className="animate-spin" />
-                  ) : (
-                    <Sparkles size={9} />
                   )}
                   <span>Tailor Resume</span>
                 </button>

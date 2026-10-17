@@ -106,18 +106,6 @@ export default function JobTrackerPage() {
               </div>
             </div>
 
-            {/* Stage metric chips skeleton */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="p-3.5 rounded-2xl border border-border/50 bg-card/30 flex items-center gap-3">
-                  <Skeleton className="size-8 rounded-xl shrink-0" />
-                  <div className="space-y-1.5 flex-1 min-w-0">
-                    <Skeleton className="h-3 w-16 rounded-md" />
-                    <Skeleton className="h-4 w-8 rounded-md" />
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* Journey rows skeleton */}
             <div className="space-y-3.5">
