@@ -84,7 +84,7 @@ export default function JobTrackerPage() {
       {/* Ambient background */}
       <div className="pointer-events-none fixed inset-0 noise opacity-50 bg-primary/5 dark:opacity-30" />
 
-      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24 space-y-7">
+      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24 space-y-4">
         <Feedback />
 
         {/* Loading skeleton */}
