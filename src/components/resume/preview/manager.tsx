@@ -22,6 +22,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import ColoredButton from '@/components/custom/colored-button';
+import AnimatedSwitcher from '@/components/custom/animated-switcher';
 import { cn } from 'cn';
 import { ResumeTemplate } from '@/types/resume';
 
@@ -127,33 +128,19 @@ const Manager: React.FC<ManagerProps> = ({
                 </Tabs>
 
                 {activeView === 'resume' && onThemeChange && (
-                    <div className="flex items-center bg-muted/60 dark:bg-muted/30 p-0.5 rounded-lg border border-border/50 text-2xs shrink-0" title="Change PDF provider">
-                        <button
-                            type="button"
-                            onClick={() => onThemeChange('classic')}
-                            className={cn(
-                                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
-                                (theme || 'classic') === 'classic'
-                                    ? "bg-background text-foreground shadow-2xs font-semibold"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/40"
-                            )}
-                            title="Classic react-pdf"
-                        >
-                            <span>Classic</span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onThemeChange('latex')}
-                            className={cn(
-                                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
-                                theme === 'latex'
-                                    ? "bg-background text-foreground shadow-2xs font-semibold"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/40"
-                            )}
-                            title="LaTeX KaTeX"
-                        >
-                            <span>LaTeX</span>
-                        </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="h-3.5 w-px bg-border/40 shrink-0" />
+                        <AnimatedSwitcher
+                            size="sm"
+                            value={(theme || 'classic') as string}
+                            onChange={(val) => onThemeChange(val as ResumeTemplate)}
+                            items={[
+                                { value: 'classic', label: 'Classic' },
+                                { value: 'latex', label: 'LaTeX' },
+                            ]}
+                            className="bg-muted/40 border-border/40"
+                            itemClassName="py-0.5 px-2.5 text-[11px]"
+                        />
                     </div>
                 )}
             </div>
