@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export interface SwitcherItem<T extends string = string> {
@@ -47,17 +47,27 @@ export default function AnimatedSwitcher<T extends string = string>({
   useEffect(() => {
     const activeEl = itemRefs.current.get(value);
     const containerEl = containerRef.current;
-    if (!activeEl || !containerEl) return;
+    if (!activeEl || !containerEl) {
+      setPillStyle(null);
+      return;
+    }
 
-    const containerRect = containerEl.getBoundingClientRect();
-    const activeRect = activeEl.getBoundingClientRect();
+    const updatePill = () => {
+      const containerRect = containerEl.getBoundingClientRect();
+      const activeRect = activeEl.getBoundingClientRect();
 
-    setPillStyle({
-      left: activeRect.left - containerRect.left,
-      top: activeRect.top - containerRect.top,
-      width: activeRect.width,
-      height: activeRect.height,
-    });
+      setPillStyle({
+        left: activeRect.left - containerRect.left,
+        top: activeRect.top - containerRect.top,
+        width: activeRect.width,
+        height: activeRect.height,
+      });
+    };
+
+    updatePill();
+
+    window.addEventListener('resize', updatePill);
+    return () => window.removeEventListener('resize', updatePill);
   }, [value]);
 
   const sizeClasses = {
@@ -82,23 +92,27 @@ export default function AnimatedSwitcher<T extends string = string>({
       )}
       role="tablist"
     >
-      {pillStyle && (
-        <motion.span
-          className="absolute bg-background rounded-full shadow-2xs pointer-events-none"
-          initial={false}
-          animate={{
-            left: pillStyle.left,
-            top: pillStyle.top,
-            width: pillStyle.width,
-            height: pillStyle.height,
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 450,
-            damping: 35,
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {pillStyle && (
+          <motion.span
+            className="absolute bg-background rounded-full shadow-2xs pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              left: pillStyle.left,
+              top: pillStyle.top,
+              width: pillStyle.width,
+              height: pillStyle.height,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              type: 'spring',
+              stiffness: 450,
+              damping: 35,
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {items.map((item) => {
         const isActive = value === item.value;
