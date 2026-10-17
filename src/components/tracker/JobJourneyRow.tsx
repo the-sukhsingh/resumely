@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { useMutation, useAction } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -13,7 +13,6 @@ import JobAvatar from './JobAvatar';
 import { DeleteConfirmPopover } from '@/components/ui/delete-confirm-popover';
 import {
   ExternalLinkDuo,
-  File as DuoFile,
   LinkDuo,
   TrashDuo,
 } from '@/components/icons';
@@ -26,10 +25,8 @@ import {
   Check,
   RotateCcw,
   MoreHorizontal,
-  ArrowRight,
   AlertCircle,
   Archive,
-  ChevronDown,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -156,7 +153,6 @@ export default function JobJourneyRow({
       const relativeX = info.point.x - rect.left;
       const currentPercent = Math.max(0, Math.min(100, (relativeX / rect.width) * 100));
 
-      // Find closest milestone
       let closest = JOURNEY_MILESTONES[0];
       let minDiff = 100;
       for (const m of JOURNEY_MILESTONES) {
@@ -200,16 +196,16 @@ export default function JobJourneyRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.35,
-        delay: Math.min(index * 0.04, 0.4),
+        delay: Math.min(index * 0.05, 0.4),
         ease: [0.23, 1, 0.32, 1], // Emil Kowalski custom ease-out
       }}
       className={cn(
         'group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden',
-        'bg-card/60 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border',
+        'bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border',
         isSpecialTerminal && 'opacity-90 dark:opacity-80'
       )}
     >
@@ -224,12 +220,11 @@ export default function JobJourneyRow({
       />
 
       <div className="flex flex-col lg:flex-row items-stretch min-w-0">
-        {/* ─── LEFT SIDE: Job Identity & Metadata ─── */}
+        {/* ─── LEFT SIDE: Job Details ─── */}
         <div
           onClick={() => onSelect(application)}
           className="lg:w-80 p-4 sm:p-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer select-none shrink-0"
         >
-          {/* Company & Actions Row */}
           <div>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
@@ -237,7 +232,7 @@ export default function JobJourneyRow({
                   company={application.company}
                   companyUrl={application.companyUrl}
                   jobUrl={application.jobUrl}
-                  size={38}
+                  size={40}
                   index={index}
                 />
                 <div className="min-w-0">
@@ -264,7 +259,7 @@ export default function JobJourneyRow({
                 </div>
               </div>
 
-              {/* Overflow Actions Dropdown */}
+              {/* Action Dropdown Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -300,7 +295,7 @@ export default function JobJourneyRow({
                   <DropdownMenuSeparator />
 
                   <div className="px-2 py-1 text-[10px] font-mono uppercase text-muted-foreground">
-                    Change Stage
+                    Move Stage
                   </div>
                   {JOURNEY_MILESTONES.map((m) => (
                     <DropdownMenuItem
@@ -332,7 +327,7 @@ export default function JobJourneyRow({
                     )}
                   >
                     <AlertCircle size={13} className="mr-2" />
-                    <span>Mark as Rejected</span>
+                    <span>Mark as Declined</span>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem
@@ -340,7 +335,7 @@ export default function JobJourneyRow({
                     className="cursor-pointer text-neutral-500"
                   >
                     <Archive size={13} className="mr-2" />
-                    <span>Archive application</span>
+                    <span>Archive role</span>
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
@@ -380,7 +375,7 @@ export default function JobJourneyRow({
                 </span>
               )}
 
-              {/* Match Score Badge or Tailor Button */}
+              {/* ATS Match Score or Tailor Button */}
               {application.resumeVersion?.matchScore != null ? (
                 <Link
                   href={`/resume/${application.resumeVersionId}`}
@@ -397,7 +392,7 @@ export default function JobJourneyRow({
                   onClick={handleTailorClick}
                   disabled={isTailoring}
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors cursor-pointer active:scale-[0.97]"
-                  title="Generate tailored resume"
+                  title="Tailor resume for this role"
                 >
                   {isTailoring ? (
                     <Loader2 size={9} className="animate-spin" />
@@ -432,36 +427,35 @@ export default function JobJourneyRow({
           </div>
         </div>
 
-        {/* ─── RIGHT SIDE: The Journey Path & Interactive Pinpoint ─── */}
+        {/* ─── RIGHT SIDE: Whole Row Width Journey Path & Pinpoint ─── */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center relative min-w-0">
-          {/* Journey Header with Replay & Instruction */}
+          {/* Header Bar for the Journey */}
           <div className="flex items-center justify-between mb-1.5 px-2">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
                 Application Journey
               </span>
               <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">
-                • Drag the pinpoint or click a checkpoint to advance
+                • Drag pinpoint beacon to update stage
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Replay Wobble Draw Button */}
               <button
                 type="button"
                 onClick={handleReplayWobble}
                 title="Replay journey line animation"
-                className="size-6 rounded-md flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+                className="size-6 rounded-md flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer active:scale-[0.94]"
               >
                 <RotateCcw size={12} />
               </button>
             </div>
           </div>
 
-          {/* Interactive Journey Canvas Track */}
+          {/* Track Canvas Container */}
           <div
             ref={trackContainerRef}
-            className="relative w-full py-4 select-none flex items-center"
+            className="relative w-full py-2 select-none flex items-center"
           >
             {/* The Wobbling & Drawing Path Component */}
             <JourneyPath
@@ -469,6 +463,7 @@ export default function JobJourneyRow({
               onSelectStage={handleStageChange}
               hoveredStage={dragHoverStage}
               seed={application._id}
+              rowIndex={index}
               replayTrigger={replayCount}
             />
 
@@ -477,7 +472,7 @@ export default function JobJourneyRow({
               <motion.div
                 drag="x"
                 dragConstraints={trackContainerRef}
-                dragElastic={0.06}
+                dragElastic={0.05}
                 dragMomentum={false}
                 onDragStart={() => setIsDragging(true)}
                 onDrag={handleDrag}
@@ -494,19 +489,20 @@ export default function JobJourneyRow({
                 style={{
                   position: 'absolute',
                   top: '50%',
-                  transform: 'translate(-50%, -50%)',
+                  marginTop: -28, // vertically centers pinpoint with line
+                  marginLeft: -16, // horizontally centers pinpoint on milestone
                 }}
                 className={cn(
-                  'z-30 cursor-grab active:cursor-grabbing flex flex-col items-center group/pin select-none',
+                  'z-30 cursor-grab active:cursor-grabbing flex flex-col items-center select-none',
                   isDragging && 'scale-110 z-40'
                 )}
               >
-                {/* Floating Tooltip / Stage Indicator above Pin */}
+                {/* Floating Stage Chip above Pin */}
                 <motion.div
                   initial={false}
                   animate={{
-                    y: isDragging ? -10 : -4,
-                    scale: isDragging ? 1.05 : 1,
+                    y: isDragging ? -8 : -3,
+                    scale: isDragging ? 1.06 : 1,
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   className={cn(
@@ -521,23 +517,22 @@ export default function JobJourneyRow({
                     : currentMilestone.shortLabel}
                 </motion.div>
 
-                {/* Pinpoint Core Beacon */}
+                {/* Pinpoint Beacon Orb */}
                 <div
-                  className="relative size-7 rounded-full flex items-center justify-center text-white shadow-lg transition-transform"
+                  className="relative size-8 rounded-full flex items-center justify-center text-white shadow-lg transition-transform"
                   style={{
                     backgroundColor: currentMilestone.color,
-                    boxShadow: `0 0 16px ${currentMilestone.glowColor}, 0 2px 8px rgba(0,0,0,0.25)`,
+                    boxShadow: `0 0 18px ${currentMilestone.glowColor}, 0 2px 10px rgba(0,0,0,0.3)`,
                   }}
                 >
-                  {/* Subtle inner pulse ring */}
                   <span
-                    className="absolute inset-0 rounded-full animate-ping opacity-25"
+                    className="absolute inset-0 rounded-full animate-ping opacity-30"
                     style={{ backgroundColor: currentMilestone.color }}
                   />
-                  <PinIcon size={13} className="relative z-10 stroke-[2.5]" />
+                  <PinIcon size={14} className="relative z-10 stroke-[2.5]" />
                 </div>
 
-                {/* Downward Pointer Triangle */}
+                {/* Pointer Triangle pointing directly at the SVG path */}
                 <div
                   className="w-0 h-0 border-x-4 border-x-transparent border-t-5 -mt-0.5"
                   style={{ borderTopColor: currentMilestone.color }}
