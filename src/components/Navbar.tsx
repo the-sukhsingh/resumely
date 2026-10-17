@@ -72,7 +72,7 @@ const Navbar = () => {
                                     items={links.map((link) => ({
                                         value: link.href,
                                         label: link.label,
-                                        icon: link.icon,
+                                        // icon: link.icon,
                                         href: link.href,
                                     }))}
                                 />
