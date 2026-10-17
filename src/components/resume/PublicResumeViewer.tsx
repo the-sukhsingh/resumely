@@ -5,7 +5,9 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { ResumeData } from '@/types/resume';
+import { ResumeData, ResumeTemplate } from '@/types/resume';
+import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 import ColoredButton from '@/components/custom/colored-button';
 import {
@@ -57,6 +59,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState<ResumeTemplate>('classic');
 
   const typedResume = resume as unknown as ResumeData & {
     _id: string;
@@ -78,7 +81,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
 
     (async () => {
       try {
-        const blob = await createPdfBlob({ resumeData: typedResume, theme: 'classic' });
+        const blob = await createPdfBlob({ resumeData: typedResume, theme: selectedTheme });
         if (!active) return;
         createdUrl = createBlobUrl({ blob });
         setPdfUrl(createdUrl);
@@ -100,7 +103,8 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
         revokeBlobUrl({ url: createdUrl });
       }
     };
-  }, [resume]);
+  }, [resume, selectedTheme]);
+
 
   const handleCopyLink = async () => {
     try {
@@ -119,7 +123,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
   const handleDownloadPdf = async () => {
     setIsDownloading(true);
     try {
-      const blob = await createPdfBlob({ resumeData: typedResume, theme: 'classic' });
+      const blob = await createPdfBlob({ resumeData: typedResume, theme: selectedTheme });
       const url = createBlobUrl({ blob });
       const link = document.createElement('a');
       link.href = url;
@@ -139,7 +143,8 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
   const handleDownloadImage = async () => {
     setIsDownloadingImage(true);
     try {
-      const pdfBlob = await createPdfBlob({ resumeData: typedResume, theme: 'classic' });
+      const pdfBlob = await createPdfBlob({ resumeData: typedResume, theme: selectedTheme });
+
       // Create one image per page of pdf 
       const imageBlobs = await createPdfToImages({ pdfBlob, scale: 3 });
       const safeName = candidateName.replace(/\s+/g, '_');
@@ -308,8 +313,38 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
           </h1>
         </div>
 
-        {/* Action Buttons: Copy Link & Download (No Edit Resume button) */}
+        {/* Action Buttons: Provider Toggle, Copy Link & Download */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* PDF Provider Switcher */}
+          <div className="flex items-center bg-muted/60 dark:bg-muted/30 p-0.5 rounded-lg border border-border/50 text-2xs shrink-0" title="Change PDF provider">
+            <button
+              type="button"
+              onClick={() => setSelectedTheme('classic')}
+              className={cn(
+                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
+                selectedTheme === 'classic'
+                  ? "bg-background text-foreground shadow-2xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+              )}
+              title="Classic react-pdf"
+            >
+              Classic
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedTheme('latex')}
+              className={cn(
+                "px-2 py-0.5 rounded-md font-medium transition-all duration-150 cursor-pointer flex items-center gap-1",
+                selectedTheme === 'latex'
+                  ? "bg-background text-foreground shadow-2xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+              )}
+              title="LaTeX KaTeX"
+            >
+              LaTeX
+            </button>
+          </div>
+
           {/* Copy Link Button */}
           <ColoredButton
             type="button"
@@ -318,6 +353,7 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
             className="h-8 px-2.5 rounded-lg "
             color="neutral"
           >
+
             {copied ? (
               <>
                 <Check className="size-3.5 text-emerald-500 animate-in fade-in" />
@@ -405,7 +441,8 @@ export default function PublicResumeViewer({ resumeId }: PublicResumeViewerProps
         ) : (
           /* Fallback using custom preview logic */
           <div className="w-full h-full overflow-y-auto py-8 flex justify-center">
-            <ResumePreview resumeData={typedResume} theme="classic" />
+            <ResumePreview resumeData={typedResume} theme={selectedTheme} />
+
           </div>
         )}
       </main>

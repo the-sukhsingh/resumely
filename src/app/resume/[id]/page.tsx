@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import { EditorForm } from '@/components/resume/editor/EditorForm';
-import { ResumeData, ResumeSettings } from '@/types/resume';
+import { ResumeData, ResumeSettings, ResumeTemplate } from '@/types/resume';
+
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SettingsPanel, { DEFAULT_SETTINGS } from '@/components/resume/SettingsPanel';
 import debounce from 'lodash/debounce';
@@ -100,9 +101,24 @@ function ResumeEditorContent({
   const isEditingRef = useRef(false);
   const editingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState<ResumeTemplate>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('resumely_preferred_template');
+      if (saved === 'latex' || saved === 'classic') return saved;
+    }
+    return 'classic';
+  });
+
+  const handleThemeChange = (newTheme: ResumeTemplate) => {
+    setSelectedTheme(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('resumely_preferred_template', newTheme);
+    }
+  };
   const [settings, setSettings] = useState<ResumeSettings>(
     (resume as ResumeData & { settings?: ResumeSettings }).settings ?? DEFAULT_SETTINGS
   );
+
   const updateResumeVersion = useMutation(api.resumeVersions.updateResumeVersion);
 
   const debouncedPreviewUpdate = useMemo(
@@ -174,7 +190,7 @@ function ResumeEditorContent({
 
 
   const handleDownloadPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: selectedTheme });
     const newUrl = createBlobUrl({ blob });
     const link = document.createElement('a');
     link.href = newUrl;
@@ -186,7 +202,7 @@ function ResumeEditorContent({
   const handleDownloadImage = async () => {
     setIsDownloading(true);
     try {
-      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
+      const pdfBlob = await createPdfBlob({ resumeData: previewDraft, theme: selectedTheme });
       const imageBlobs = await createPdfToImages({ pdfBlob, scale: 3 });
       const safeName = (previewDraft.personalInfo.name || 'resume').replace(/\s+/g, '_');
 
@@ -212,10 +228,11 @@ function ResumeEditorContent({
   };
 
   const handleViewPdf = async () => {
-    const blob = await createPdfBlob({ resumeData: previewDraft, theme: "classic" });
+    const blob = await createPdfBlob({ resumeData: previewDraft, theme: selectedTheme });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
   };
+
 
   const handleCopyCoverLetter = () => {
     navigator.clipboard.writeText(previewDraft.coverLetter || '');
@@ -234,13 +251,27 @@ function ResumeEditorContent({
           >
             <ResizablePanel minSize="32%" className='flex flex-col rounded-xl relative bg-background'>
               <div className='h-10 bg-background flex justify-between px-1' >
-                <Manager resumeId={resumeId} resumeName={previewDraft.name} handleViewPdf={handleViewPdf} isDownloading={isDownloading} onDownloadPdf={handleDownloadPdf} onDownloadImage={handleDownloadImage} activeView={activeView} setActiveView={setActiveView} handleCopyCoverLetter={handleCopyCoverLetter} isMaster={resume.isMasterResume} />
+                <Manager
+                  resumeId={resumeId}
+                  resumeName={previewDraft.name}
+                  handleViewPdf={handleViewPdf}
+                  isDownloading={isDownloading}
+                  onDownloadPdf={handleDownloadPdf}
+                  onDownloadImage={handleDownloadImage}
+                  activeView={activeView}
+                  setActiveView={setActiveView}
+                  handleCopyCoverLetter={handleCopyCoverLetter}
+                  isMaster={resume.isMasterResume}
+                  theme={selectedTheme}
+                  onThemeChange={handleThemeChange}
+                />
               </div>
               {activeView === 'resume' ? (
-                <ResumePreview resumeData={previewDraft} theme="classic" />
+                <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
               ) : (
                 <CoverLetterPreview resumeData={previewDraft} />
               )}
+
             </ResizablePanel>
 
             <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>
@@ -335,15 +366,18 @@ function ResumeEditorContent({
                   setActiveView={setActiveView}
                   handleCopyCoverLetter={handleCopyCoverLetter}
                   isMaster={resume.isMasterResume}
+                  theme={selectedTheme}
+                  onThemeChange={handleThemeChange}
                 />
               </div>
               <div className="flex-1 overflow-hidden">
                 {activeView === 'resume' ? (
-                  <ResumePreview resumeData={previewDraft} theme="classic" />
+                  <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
                 ) : (
                   <CoverLetterPreview resumeData={previewDraft} />
                 )}
               </div>
+
             </div>
 
             <div className={cn("h-full", mobileTab === 'editor' ? 'block' : 'hidden')}>

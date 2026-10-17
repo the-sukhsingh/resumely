@@ -12,7 +12,8 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 import { EditorForm } from '@/components/resume/editor/EditorForm';
-import { ResumeData, ResumeSettings } from '@/types/resume';
+import { ResumeData, ResumeSettings, ResumeTemplate } from '@/types/resume';
+
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SettingsPanel, { DEFAULT_SETTINGS } from '@/components/resume/SettingsPanel';
 import debounce from 'lodash/debounce';
@@ -112,6 +113,21 @@ export default function ResumeCreatePage() {
   const [activeView, setActiveView] = useState<'resume' | 'cover-letter'>('resume');
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState<ResumeTemplate>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('resumely_preferred_template');
+      if (saved === 'latex' || saved === 'classic') return saved;
+    }
+    return 'classic';
+  });
+
+  const handleThemeChange = (newTheme: ResumeTemplate) => {
+    setSelectedTheme(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('resumely_preferred_template', newTheme);
+    }
+  };
+
 
   const createNewResume = useMutation(api.resumeVersions.createNewResume);
 
@@ -207,7 +223,7 @@ export default function ResumeCreatePage() {
     if (!previewDraft) return;
     const blob = await createPdfBlob({ 
       resumeData: previewDraft, 
-      theme: "classic" 
+      theme: selectedTheme 
     });
     const newUrl = createBlobUrl({ blob });
     const link = document.createElement('a');
@@ -224,7 +240,7 @@ export default function ResumeCreatePage() {
     try {
       const pdfBlob = await createPdfBlob({ 
       resumeData: previewDraft, 
-      theme: "classic" 
+      theme: selectedTheme 
     });
       const imageBlobs = await createPdfToImages({ pdfBlob, scale: 3 });
       const safeName = (previewDraft.personalInfo.name || 'resume').replace(/\s+/g, '_');
@@ -253,11 +269,12 @@ export default function ResumeCreatePage() {
     if (!previewDraft) return;
     const blob = await createPdfBlob({ 
       resumeData: previewDraft, 
-      theme: "classic" 
+      theme: selectedTheme 
     });
     const url = createBlobUrl({ blob });
     window.open(url, '_blank');
   };
+
 
   const handleCopyCoverLetter = () => {
     if (!previewDraft) return;
@@ -307,9 +324,12 @@ export default function ResumeCreatePage() {
                 isCreateMode={true}
                 onSave={handleSave}
                 isSaving={isSaving}
+                theme={selectedTheme}
+                onThemeChange={handleThemeChange}
               />
             </div>
-            <ResumePreview resumeData={previewDraft} theme="classic" />
+            <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
+
           </ResizablePanel>
 
           <ResizablePanel minSize="30%" defaultSize="35%" className='nobar relative pt-10 rounded-xl bg-background'>
@@ -422,11 +442,14 @@ export default function ResumeCreatePage() {
                 isCreateMode={true}
                 onSave={handleSave}
                 isSaving={isSaving}
+                theme={selectedTheme}
+                onThemeChange={handleThemeChange}
               />
             </div>
             <div className="flex-1 overflow-hidden">
-              <ResumePreview resumeData={previewDraft} theme="classic" />
+              <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
             </div>
+
           </div>
 
           <div className={cn("h-full", mobileTab === 'editor' ? 'block' : 'hidden')}>
