@@ -16,6 +16,7 @@ import Feedback from '@/components/custom/feedback';
 import ColoredButton from '@/components/custom/colored-button';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function JobTrackerPage() {
   const { user } = useAuth();
@@ -88,16 +89,79 @@ export default function JobTrackerPage() {
 
         {/* Loading skeleton */}
         {applications === undefined ? (
-          <div className="w-full space-y-6 animate-pulse">
-            <div className="h-28 rounded-2xl bg-muted/40 border border-border/50" />
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <div className="h-16 rounded-xl bg-muted/30" />
-              <div className="h-16 rounded-xl bg-muted/30" />
-              <div className="h-16 rounded-xl bg-muted/30" />
-              <div className="h-16 rounded-xl bg-muted/30" />
-              <div className="h-16 rounded-xl bg-muted/30" />
+          <div className="w-full space-y-6">
+            {/* Header skeleton */}
+            <div className="p-4 sm:p-5 rounded-3xl border border-border/60 bg-card/40 backdrop-blur-xl flex flex-col md:flex-row gap-4 items-stretch justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <Skeleton className="h-6 w-36 rounded-lg" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-3.5 w-64 rounded-md" />
+              </div>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <Skeleton className="h-9 w-44 rounded-xl" />
+                <Skeleton className="h-9 w-28 rounded-xl" />
+                <Skeleton className="h-9 w-28 rounded-xl" />
+              </div>
             </div>
-            <div className="h-80 rounded-2xl bg-muted/20 border border-border/40" />
+
+            {/* Stage metric chips skeleton */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="p-3.5 rounded-2xl border border-border/50 bg-card/30 flex items-center gap-3">
+                  <Skeleton className="size-8 rounded-xl shrink-0" />
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    <Skeleton className="h-3 w-16 rounded-md" />
+                    <Skeleton className="h-4 w-8 rounded-md" />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Journey rows skeleton */}
+            <div className="space-y-3.5">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-3xl border border-border/60 bg-card/40 backdrop-blur-xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch gap-6 overflow-hidden"
+                >
+                  {/* Left Side: Job Details */}
+                  <div className="lg:w-80 flex flex-col justify-between gap-4 shrink-0 lg:border-r border-border/40 lg:pr-6">
+                    <div className="flex items-start gap-3">
+                      <Skeleton className="size-10 rounded-2xl shrink-0" />
+                      <div className="space-y-2 flex-1 min-w-0">
+                        <Skeleton className="h-4 w-32 rounded-md" />
+                        <Skeleton className="h-3.5 w-24 rounded-md" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Skeleton className="h-5 w-20 rounded-md" />
+                      <Skeleton className="h-5 w-16 rounded-md" />
+                    </div>
+                  </div>
+
+                  {/* Right Side: Journey Track */}
+                  <div className="flex-1 flex flex-col justify-center relative min-h-[96px] py-2">
+                    <div className="relative w-full h-12 flex items-center justify-between px-6">
+                      <Skeleton className="absolute left-6 right-6 h-1 rounded-full" />
+                      <Skeleton className="size-4 rounded-full relative z-10" />
+                      <Skeleton className="size-4 rounded-full relative z-10" />
+                      <Skeleton className="size-4 rounded-full relative z-10" />
+                      <Skeleton className="size-4 rounded-full relative z-10" />
+                      <Skeleton className="size-4 rounded-full relative z-10" />
+                    </div>
+                    <div className="flex items-center justify-between px-4 pt-1">
+                      <Skeleton className="h-3 w-10 rounded-md" />
+                      <Skeleton className="h-3 w-12 rounded-md" />
+                      <Skeleton className="h-3 w-16 rounded-md" />
+                      <Skeleton className="h-3 w-10 rounded-md" />
+                      <Skeleton className="h-3 w-12 rounded-md" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : applications.length === 0 ? (
           /* Zero tracked jobs state */
@@ -160,14 +224,14 @@ export default function JobTrackerPage() {
               masterResumeId={masterResume?._id}
             />
 
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="popLayout" initial={false}>
               {viewMode === 'board' ? (
                 <motion.div
                   key="board-view"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.33, ease: [0.23, 1, 0.32, 1] }}
                   className="w-full origin-center"
                 >
                   <JobKanbanBoard
@@ -180,10 +244,10 @@ export default function JobTrackerPage() {
               ) : (
                 <motion.div
                   key="list-view"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.33, ease: [0.23, 1, 0.32, 1] }}
                   className="w-full origin-center"
                 >
                   <JobListView
