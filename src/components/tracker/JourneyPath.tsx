@@ -89,7 +89,7 @@ export default function JourneyPath({
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0) {
-          const dims = { width, height: height > 50 ? height : 96 };
+          const dims = { width, height: height > 0 ? height : 96 };
           setDimensions(dims);
           onDimensionsChange?.(dims);
         }
@@ -106,7 +106,7 @@ export default function JourneyPath({
   return (
     <div
       ref={containerRef}
-      className={cn('relative w-full h-24 select-none flex items-center', className)}
+      className={cn('absolute inset-0 w-full h-full select-none pointer-events-none', className)}
     >
       {/* SVG Canvas for the Clean, Minimal Curved Path */}
       <svg
@@ -118,9 +118,9 @@ export default function JourneyPath({
           {/* Crisp, Vibrant Multi-Stage Gradient */}
           <linearGradient id={`clean-gradient-${gradientId}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#94a3b8" />
-            <stop offset="20%" stopColor="#94a3b8" />
+            <stop offset="18%" stopColor="#94a3b8" />
             <stop offset="28%" stopColor="#3b82f6" />
-            <stop offset="54%" stopColor="#3b82f6" />
+            <stop offset="52%" stopColor="#3b82f6" />
             <stop offset="60%" stopColor="#f59e0b" />
             <stop offset="82%" stopColor="#f59e0b" />
             <stop offset="88%" stopColor="#10b981" />
@@ -141,7 +141,7 @@ export default function JourneyPath({
             d={pathD}
             fill="none"
             stroke="currentColor"
-            strokeOpacity={0.07}
+            strokeOpacity={0.06}
             strokeWidth={4}
             strokeLinecap="round"
           />
@@ -167,15 +167,34 @@ export default function JourneyPath({
 
       {/* Milestone Checkpoint Nodes along the curve */}
       <div className="absolute inset-0 w-full h-full pointer-events-auto">
-        {JOURNEY_MILESTONES.map((milestone, idx) => {
-          const isPassed = currentMilestoneIndex >= idx && !isRejectedOrArchived;
+        {JOURNEY_MILESTONES.map((milestone) => {
           const isCurrent = currentStage === milestone.id;
           const isHovered = hoveredStage === milestone.id;
-          const Icon = milestone.icon;
 
           // Exact position on the non-straight curve
           const xPos = dimensions.width * (milestone.percent / 100);
           const yPos = getCurveY(xPos, dimensions.width, dimensions.height);
+
+          // If this milestone is current, the draggable pinpoint beacon handles it!
+          // We DO NOT render duplicate text or duplicate circles underneath.
+          if (isCurrent) {
+            return (
+              <div
+                key={milestone.id}
+                style={{
+                  left: `${milestone.percent}%`,
+                  top: `${yPos}px`,
+                }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              >
+                {/* Subtle, soft ground anchor dot */}
+                <span
+                  className="size-1.5 rounded-full block opacity-60"
+                  style={{ backgroundColor: milestone.color }}
+                />
+              </div>
+            );
+          }
 
           return (
             <div
@@ -187,41 +206,28 @@ export default function JourneyPath({
               className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer"
               onClick={() => onSelectStage(milestone.id)}
             >
-              {/* Checkpoint Target Node */}
+              {/* Minimalist Checkpoint Dot on the Curve */}
               <button
                 type="button"
                 title={`Advance to ${milestone.label}`}
                 className={cn(
-                  'relative rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer outline-none active:scale-[0.93]',
-                  isCurrent
-                    ? 'size-7 border border-dashed border-primary/30 bg-primary/5 opacity-50 z-10' // Clean docking target halo for active beacon
-                    : isPassed
-                    ? 'size-6.5 bg-card/95 border border-border/80 text-foreground hover:scale-110 shadow-2xs z-10'
-                    : 'size-6 bg-muted/50 border border-border/40 text-muted-foreground/60 hover:text-foreground hover:bg-muted/80 z-0',
-                  isHovered && 'scale-120 ring-2 ring-primary/40'
+                  'rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer outline-none active:scale-[0.9]',
+                  'size-3.5 bg-card border-2 shadow-2xs hover:scale-135',
+                  isHovered && 'scale-135 ring-2 ring-primary/40'
                 )}
                 style={{
-                  borderColor: isCurrent ? milestone.color : undefined,
+                  borderColor: milestone.color,
                 }}
               >
-                {/* Only render icon inside milestone if it's NOT the active stage (avoids duplicate overlap) */}
-                {!isCurrent && (
-                  <Icon size={isPassed ? 11 : 10} className="relative z-10" />
-                )}
+                <span
+                  className="size-1.5 rounded-full block"
+                  style={{ backgroundColor: milestone.color }}
+                />
               </button>
 
-              {/* Milestone Label Underneath with generous clearance */}
-              <div className="absolute top-7 flex flex-col items-center pointer-events-none whitespace-nowrap">
-                <span
-                  className={cn(
-                    'text-[10px] font-mono tracking-tight transition-colors duration-150',
-                    isCurrent
-                      ? 'font-bold text-foreground opacity-90'
-                      : isPassed
-                      ? 'font-medium text-foreground/75'
-                      : 'text-muted-foreground/50 group-hover:text-muted-foreground'
-                  )}
-                >
+              {/* Milestone Label Underneath (positioned well below the curve to prevent ANY overlap) */}
+              <div className="absolute top-4 flex flex-col items-center pointer-events-none whitespace-nowrap">
+                <span className="text-[10px] font-mono tracking-tight text-muted-foreground/60 group-hover:text-foreground transition-colors duration-150">
                   {milestone.shortLabel}
                 </span>
               </div>
@@ -240,7 +246,7 @@ export default function JourneyPath({
           >
             <div
               className={cn(
-                'size-7 rounded-full flex items-center justify-center border shadow-xs',
+                'size-6 rounded-full flex items-center justify-center border shadow-xs',
                 currentStage === 'rejected'
                   ? 'bg-rose-500 text-white border-rose-600 shadow-rose-500/25'
                   : 'bg-neutral-600 text-white border-neutral-700'
@@ -248,9 +254,9 @@ export default function JourneyPath({
               title={currentStage === 'rejected' ? 'Application Declined' : 'Archived'}
             >
               {currentStage === 'rejected' ? (
-                <AlertCircle size={12} />
+                <AlertCircle size={11} />
               ) : (
-                <Archive size={12} />
+                <Archive size={11} />
               )}
             </div>
             <span className="text-[10px] font-mono font-bold mt-2 text-rose-500 capitalize">

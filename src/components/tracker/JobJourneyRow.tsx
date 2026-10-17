@@ -419,7 +419,7 @@ export default function JobJourneyRow({
         {/* ─── RIGHT SIDE: Clean, Minimal Curved Path & Pinpoint ─── */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center relative min-w-0">
           {/* Subtle Header */}
-          <div className="flex items-center justify-between mb-0.5 px-2">
+          <div className="flex items-center justify-between mb-2 px-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono text-muted-foreground/80 uppercase tracking-wider">
                 Application Journey
@@ -430,10 +430,10 @@ export default function JobJourneyRow({
             </div>
           </div>
 
-          {/* Track Canvas Container */}
+          {/* Track Canvas Container (Exact 96px height matching JourneyPath) */}
           <div
             ref={trackContainerRef}
-            className="relative w-full py-1 select-none flex items-center min-h-[100px]"
+            className="relative w-full h-24 select-none"
           >
             {/* The Clean, Minimal Curved Path Component */}
             <JourneyPath
@@ -443,7 +443,7 @@ export default function JobJourneyRow({
               onDimensionsChange={setTrackDims}
             />
 
-            {/* ─── Draggable Pinpoint Marker ─── */}
+            {/* ─── Draggable Pinpoint Marker (Tip touches curve with 100% precision) ─── */}
             {!isSpecialTerminal && (
               <motion.div
                 drag="x"
@@ -465,50 +465,58 @@ export default function JobJourneyRow({
                 }}
                 style={{
                   position: 'absolute',
-                  marginTop: -20, // Perfectly aligns beacon over curve
-                  marginLeft: -14, // Centers beacon horizontally
                 }}
                 className={cn(
-                  'z-30 cursor-grab active:cursor-grabbing flex flex-col items-center select-none',
-                  isDragging && 'scale-115 z-40'
+                  'z-30 cursor-grab active:cursor-grabbing select-none',
+                  isDragging && 'z-40'
                 )}
               >
-                {/* Floating Stage Chip above Pin */}
-                <motion.div
-                  initial={false}
-                  animate={{
-                    y: isDragging ? -8 : -3,
-                    scale: isDragging ? 1.05 : 1,
-                  }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  className={cn(
-                    'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap pointer-events-none transition-colors mb-1',
-                    isDragging
-                      ? 'bg-foreground text-background border-foreground shadow-md'
-                      : 'bg-card text-foreground border-border/80'
-                  )}
-                >
-                  {isDragging && dragHoverStage
-                    ? `Drop on ${STAGE_CONFIGS[dragHoverStage]?.shortLabel}`
-                    : currentMilestone.shortLabel}
-                </motion.div>
+                {/* 
+                  Inner container shifted by -50% horizontal and -100% vertical:
+                  (0, 0) is the bottom center tip of the downward pointer cone!
+                  It touches the curve with exact mathematical precision.
+                */}
+                <div className="-translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none pb-0.5">
+                  {/* Floating Stage Chip above Pin */}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      y: isDragging ? -4 : 0,
+                      scale: isDragging ? 1.05 : 1,
+                    }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    className={cn(
+                      'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap transition-colors mb-1',
+                      isDragging
+                        ? 'bg-foreground text-background border-foreground shadow-md'
+                        : 'bg-card text-foreground border-border/80'
+                    )}
+                  >
+                    {isDragging && dragHoverStage
+                      ? `Drop on ${STAGE_CONFIGS[dragHoverStage]?.shortLabel}`
+                      : currentMilestone.shortLabel}
+                  </motion.div>
 
-                {/* Pinpoint Beacon Orb */}
-                <div
-                  className="relative size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform"
-                  style={{
-                    backgroundColor: currentMilestone.color,
-                    boxShadow: `0 0 14px ${currentMilestone.glowColor}, 0 2px 6px rgba(0,0,0,0.25)`,
-                  }}
-                >
-                  <PinIcon size={13} className="relative z-10 stroke-[2.5]" />
+                  {/* Pinpoint Beacon Orb */}
+                  <div
+                    className={cn(
+                      'size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform',
+                      isDragging && 'scale-110'
+                    )}
+                    style={{
+                      backgroundColor: currentMilestone.color,
+                      boxShadow: `0 0 14px ${currentMilestone.glowColor}, 0 2px 6px rgba(0,0,0,0.25)`,
+                    }}
+                  >
+                    <PinIcon size={13} className="relative z-10 stroke-[2.5]" />
+                  </div>
+
+                  {/* Pointer Cone pointing directly down at the SVG curve */}
+                  <div
+                    className="w-0 h-0 border-x-[3.5px] border-x-transparent border-t-[5px] -mt-0.5"
+                    style={{ borderTopColor: currentMilestone.color }}
+                  />
                 </div>
-
-                {/* Pointer Cone pointing directly down at the SVG curve */}
-                <div
-                  className="w-0 h-0 border-x-[3.5px] border-x-transparent border-t-4 -mt-0.5"
-                  style={{ borderTopColor: currentMilestone.color }}
-                />
               </motion.div>
             )}
           </div>
