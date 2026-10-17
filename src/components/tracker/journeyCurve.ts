@@ -6,13 +6,14 @@ export interface MilestoneAnchor {
   yPercent: number; // vertical position in % (0 = top, 100 = bottom)
 }
 
-// 4 distinct milestone elevations along the journey
-// Gentle, organic flow: Saved -> Applied (ascent) -> Interviewing (calm) -> Offer (summit)
+// 5 well-spaced milestones along the journey:
+// Saved -> Applied -> Interviewing -> Offer (summit) -> Rejected / Closed
 export const MILESTONE_ANCHORS: MilestoneAnchor[] = [
-  { id: 'saved', percent: 10, yPercent: 62 },
-  { id: 'applied', percent: 38, yPercent: 44 },
-  { id: 'interviewing', percent: 68, yPercent: 54 },
-  { id: 'offered', percent: 92, yPercent: 30 },
+  { id: 'saved', percent: 10, yPercent: 60 },
+  { id: 'applied', percent: 32, yPercent: 44 },
+  { id: 'interviewing', percent: 54, yPercent: 52 },
+  { id: 'offered', percent: 76, yPercent: 30 },
+  { id: 'rejected', percent: 94, yPercent: 62 },
 ];
 
 /**
@@ -57,7 +58,7 @@ export function getCurveY(x: number, width: number, height: number): number {
 /**
  * Generates smooth SVG path string (d attribute) for the curved baseline
  */
-export function getCurvedBaselineD(width: number, height: number, sampleCount = 60): string {
+export function getCurvedBaselineD(width: number, height: number, sampleCount = 70): string {
   if (width <= 0) return '';
   const points: { x: number; y: number }[] = [];
 

@@ -69,8 +69,14 @@ export default function JobJourneyRow({
   const trackContainerRef = useRef<HTMLDivElement>(null);
 
   // Active milestone and target coordinates on the curve
+  // Map 'archived' to the terminal 'rejected' / closed milestone
   const currentMilestone =
-    JOURNEY_MILESTONES.find((m) => m.id === application.stage) || JOURNEY_MILESTONES[0];
+    JOURNEY_MILESTONES.find(
+      (m) =>
+        m.id === application.stage ||
+        (application.stage === 'archived' && m.id === 'rejected')
+    ) || JOURNEY_MILESTONES[0];
+
   const targetPercent = currentMilestone.percent;
   const currentTargetX = trackDims.width * (targetPercent / 100);
   const currentTargetY = getCurveY(currentTargetX, trackDims.width, trackDims.height);
@@ -191,7 +197,6 @@ export default function JobJourneyRow({
   );
 
   const PinIcon = currentMilestone.icon;
-  const isSpecialTerminal = application.stage === 'rejected' || application.stage === 'archived';
 
   return (
     <motion.div
@@ -202,11 +207,7 @@ export default function JobJourneyRow({
         delay: Math.min(index * 0.04, 0.35),
         ease: [0.23, 1, 0.32, 1], // Emil Kowalski custom ease-out
       }}
-      className={cn(
-        'group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden',
-        'bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border',
-        isSpecialTerminal && 'opacity-90 dark:opacity-80'
-      )}
+      className="group relative rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-2xs overflow-hidden bg-card/70 dark:bg-card/25 backdrop-blur-xl border-border/70 hover:border-border"
     >
       <div className="flex flex-col lg:flex-row items-stretch min-w-0">
         {/* ─── LEFT SIDE: Job Details ─── */}
@@ -416,7 +417,7 @@ export default function JobJourneyRow({
           </div>
         </div>
 
-        {/* ─── RIGHT SIDE: Clean, Minimal Curved Path & Pinpoint ─── */}
+        {/* ─── RIGHT SIDE: Clean, Minimal Curved Path & Draggable Beacon ─── */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center relative min-w-0">
           {/* Subtle Header */}
           <div className="flex items-center justify-between mb-2 px-1">
@@ -425,7 +426,7 @@ export default function JobJourneyRow({
                 Application Journey
               </span>
               <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">
-                • Drag beacon along curve to advance
+                • Drag beacon along curve to any milestone
               </span>
             </div>
           </div>
@@ -443,82 +444,80 @@ export default function JobJourneyRow({
               onDimensionsChange={setTrackDims}
             />
 
-            {/* ─── Draggable Pinpoint Marker (Tip touches curve with 100% precision) ─── */}
-            {!isSpecialTerminal && (
-              <motion.div
-                drag="x"
-                dragConstraints={trackContainerRef}
-                dragElastic={0.04}
-                dragMomentum={false}
-                onDragStart={() => setIsDragging(true)}
-                onDrag={handleDrag}
-                onDragEnd={handleDragEnd}
-                animate={{
-                  left: `${targetPercent}%`,
-                  top: `${currentTargetY}px`,
-                  x: 0,
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 450,
-                  damping: 35,
-                }}
-                style={{
-                  position: 'absolute',
-                }}
-                className={cn(
-                  'z-30 cursor-grab active:cursor-grabbing select-none',
-                  isDragging && 'z-40'
-                )}
-              >
-                {/* 
-                  Inner container shifted by -50% horizontal and -100% vertical:
-                  (0, 0) is the bottom center tip of the downward pointer cone!
-                  It touches the curve with exact mathematical precision.
-                */}
-                <div className="-translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none pb-0.5">
-                  {/* Floating Stage Chip above Pin */}
-                  <motion.div
-                    initial={false}
-                    animate={{
-                      y: isDragging ? -4 : 0,
-                      scale: isDragging ? 1.05 : 1,
-                    }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    className={cn(
-                      'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap transition-colors mb-1',
-                      isDragging
-                        ? 'bg-foreground text-background border-foreground shadow-md'
-                        : 'bg-card text-foreground border-border/80'
-                    )}
-                  >
-                    {isDragging && dragHoverStage
-                      ? `Drop on ${STAGE_CONFIGS[dragHoverStage]?.shortLabel}`
-                      : currentMilestone.shortLabel}
-                  </motion.div>
+            {/* ─── Draggable Pinpoint Marker (Tip touches curve with 100% precision across ALL stages) ─── */}
+            <motion.div
+              drag="x"
+              dragConstraints={trackContainerRef}
+              dragElastic={0.04}
+              dragMomentum={false}
+              onDragStart={() => setIsDragging(true)}
+              onDrag={handleDrag}
+              onDragEnd={handleDragEnd}
+              animate={{
+                left: `${targetPercent}%`,
+                top: `${currentTargetY}px`,
+                x: 0,
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 450,
+                damping: 35,
+              }}
+              style={{
+                position: 'absolute',
+              }}
+              className={cn(
+                'z-30 cursor-grab active:cursor-grabbing select-none',
+                isDragging && 'z-40'
+              )}
+            >
+              {/* 
+                Inner container shifted by -50% horizontal and -100% vertical:
+                (0, 0) is the bottom center tip of the downward pointer cone!
+                It touches the curve with exact mathematical precision.
+              */}
+              <div className="-translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none pb-0.5">
+                {/* Floating Stage Chip above Pin */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    y: isDragging ? -4 : 0,
+                    scale: isDragging ? 1.05 : 1,
+                  }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  className={cn(
+                    'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-tight shadow-sm border whitespace-nowrap transition-colors mb-1',
+                    isDragging
+                      ? 'bg-foreground text-background border-foreground shadow-md'
+                      : 'bg-card text-foreground border-border/80'
+                  )}
+                >
+                  {isDragging && dragHoverStage
+                    ? `Drop on ${STAGE_CONFIGS[dragHoverStage]?.shortLabel || dragHoverStage}`
+                    : currentMilestone.shortLabel}
+                </motion.div>
 
-                  {/* Pinpoint Beacon Orb */}
-                  <div
-                    className={cn(
-                      'size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform',
-                      isDragging && 'scale-110'
-                    )}
-                    style={{
-                      backgroundColor: currentMilestone.color,
-                      boxShadow: `0 0 14px ${currentMilestone.glowColor}, 0 2px 6px rgba(0,0,0,0.25)`,
-                    }}
-                  >
-                    <PinIcon size={13} className="relative z-10 stroke-[2.5]" />
-                  </div>
-
-                  {/* Pointer Cone pointing directly down at the SVG curve */}
-                  <div
-                    className="w-0 h-0 border-x-[3.5px] border-x-transparent border-t-[5px] -mt-0.5"
-                    style={{ borderTopColor: currentMilestone.color }}
-                  />
+                {/* Pinpoint Beacon Orb */}
+                <div
+                  className={cn(
+                    'size-7 rounded-full flex items-center justify-center text-white shadow-md transition-transform',
+                    isDragging && 'scale-110'
+                  )}
+                  style={{
+                    backgroundColor: currentMilestone.color,
+                    boxShadow: `0 0 14px ${currentMilestone.glowColor}, 0 2px 6px rgba(0,0,0,0.25)`,
+                  }}
+                >
+                  <PinIcon size={13} className="relative z-10 stroke-[2.5]" />
                 </div>
-              </motion.div>
-            )}
+
+                {/* Pointer Cone pointing directly down at the SVG curve */}
+                <div
+                  className="w-0 h-0 border-x-[3.5px] border-x-transparent border-t-[5px] -mt-0.5"
+                  style={{ borderTopColor: currentMilestone.color }}
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
