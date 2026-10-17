@@ -376,11 +376,7 @@ export default function JobJourneyRow({
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 transition-colors"
                   title="View tailored resume"
                 >
-                  <span>
-                    {application.resumeVersion?.matchScore != null
-                      ? `${application.resumeVersion.matchScore}% Match`
-                      : application.resumeVersion?.name || 'Resume Attached'}
-                  </span>
+                  Resume Attached
                 </Link>
               ) : (
                 <button
