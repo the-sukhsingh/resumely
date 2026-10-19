@@ -3,8 +3,8 @@ import React from 'react';
 import { ResumeData } from '@/types/resume';
 import { Document, Page, Text as TextR, View as ViewR, Font, Link } from "@react-pdf/renderer";
 import { createTw } from "react-pdf-tailwind";
-import { cn } from "@/lib/utils";
-import { registerResumeFonts, normalizeFontFamily } from '@/constants/pdf-fonts';
+import { registerResumeFonts } from '@/constants/pdf-fonts';
+import { computeResumeStyles } from '@/lib/pdf/style-utils';
 
 registerResumeFonts(Font);
 
@@ -31,54 +31,15 @@ const getDisplayUrl = (url?: string | null) => {
     return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
 };
 
-// ─── Primitives ───────────────────────────────────────────────────────────────
-
-const View = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <ViewR style={tw(cn("flex flex-col gap-1", className))}>{children}</ViewR>
-);
-
-const Text = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <TextR style={tw(cn("text-sm text-black", className))}>{children}</TextR>
-);
-
-const LinkR = ({ children, src, className }: { children: React.ReactNode; src: string; className?: string }) => (
-    <Link src={src} style={[tw(cn("text-xs text-black", className)), { textDecoration: "none" }]}>
-        {children}
-    </Link>
-);
-
-const Heading = ({ children, className, font }: { children: React.ReactNode; className?: string; font: string }) => (
-    <TextR style={[tw(cn("text-lg font-bold", className)), {
-        lineHeight: 1.2,
-        fontFamily: font
-    }]}>{children}</TextR>
-);
-
-const SectionHeading = ({ children, font }: { children: React.ReactNode; font: string }) => (
-    <TextR style={[tw("text-sm font-bold uppercase tracking-wide mb-1 text-neutral-900 border-b"), {
-        lineHeight: 1.1,
-        fontFamily: font
-    }]}>
-        {children}
-    </TextR>
-);
-
-const Bullet = ({ text }: { text: string }) => (
-    <ViewR style={tw("flex-row mb-0.5")}>
-        <Text className="text-xs font-normal mr-1.5">•</Text>
-        <Text className="text-xs font-normal leading-relaxed text-neutral-800 flex-1">{text}</Text>
-    </ViewR>
-);
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
-    const activeFont = normalizeFontFamily(data?.settings?.font);
+    const s = computeResumeStyles(data?.settings);
 
     if (!data) {
         return (
             <Document>
-                <Page size="A4" style={[tw("text-sm bg-white"), { fontFamily: activeFont }]}>
+                <Page size={s.paperSize} style={[tw("text-sm bg-white"), { fontFamily: s.activeFont }]}>
                     <ViewR style={tw("flex-1 justify-center items-center")}>
                         <TextR>Loading...</TextR>
                     </ViewR>
@@ -100,197 +61,362 @@ const ClassicPdf: React.FC<{ data: ResumeData }> = ({ data }) => {
             creator={p.name || "Unknown"}
             producer="Resumely"
         >
-            <Page size="A4" style={[tw("text-sm text-black bg-white px-8 py-5"), { fontFamily: activeFont }]}>
-
+            <Page
+                size={s.paperSize}
+                style={{
+                    backgroundColor: '#ffffff',
+                    fontFamily: s.activeFont,
+                    paddingHorizontal: s.activeMargin,
+                    paddingVertical: s.activeMargin * 0.8,
+                    color: '#0f172a',
+                }}
+            >
                 {/* Header */}
-                <View className="text-center mb-3">
-                    <Heading font={activeFont} className="text-3xl font-bold tracking-tight uppercase">{p.name || "Your Name"}</Heading>
-                    <View>
-                        <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center mt-1")}>
-                            {nonEmpty(p.phone) && <Text className="text-2xs">{p.phone}</Text>}
-                            {nonEmpty(p.location) && (
-                                <>
-                                    {nonEmpty(p.phone) && <Text className="text-2xs text-neutral-400">·</Text>}
-                                    <Text className="text-2xs">{p.location}</Text>
-                                </>
-                            )}
-                        </ViewR>
-                        <ViewR style={tw("flex-row gap-2 flex-wrap items-center justify-center mt-0.5")}>
-                            {formattedWebsite && (
-                                <LinkR src={formattedWebsite} className="text-2xs">{getDisplayUrl(p.website)}</LinkR>
-                            )}
-                            {nonEmpty(p.email) && (
-                                <>
-                                    {formattedWebsite && <Text className="text-2xs text-neutral-400">·</Text>}
-                                    <LinkR src={`mailto:${p.email}`} className="text-2xs">{p.email}</LinkR>
-                                </>
-                            )}
-                            {formattedLinkedin && (
-                                <>
-                                    {(formattedWebsite || nonEmpty(p.email)) && <Text className="text-2xs text-neutral-400">·</Text>}
-                                    <LinkR src={formattedLinkedin} className="text-2xs">{getDisplayUrl(p.linkedin)}</LinkR>
-                                </>
-                            )}
-                            {formattedGithub && (
-                                <>
-                                    {(formattedWebsite || nonEmpty(p.email) || formattedLinkedin) && <Text className="text-2xs text-neutral-400">·</Text>}
-                                    <LinkR src={formattedGithub} className="text-2xs">{getDisplayUrl(p.github)}</LinkR>
-                                </>
-                            )}
-                        </ViewR>
-                    </View>
-                </View>
+                <ViewR style={{ textAlign: 'center', marginBottom: s.sectionSpacing * 0.9 }}>
+                    <TextR
+                        style={{
+                            fontSize: s.fontSizeName,
+                            fontFamily: s.activeFont,
+                            fontWeight: 'bold',
+                            textTransform: s.headingTextTransform,
+                            letterSpacing: -0.5,
+                            lineHeight: 1.15,
+                            color: '#0f172a',
+                        }}
+                    >
+                        {p.name || "Your Name"}
+                    </TextR>
+
+                    <ViewR style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', marginTop: 4 }}>
+                        {nonEmpty(p.phone) && (
+                            <TextR style={{ fontSize: s.fontSizeMeta, color: '#475569' }}>{p.phone}</TextR>
+                        )}
+                        {nonEmpty(p.location) && (
+                            <>
+                                {nonEmpty(p.phone) && <TextR style={{ fontSize: s.fontSizeMeta, color: '#94a3b8' }}>·</TextR>}
+                                <TextR style={{ fontSize: s.fontSizeMeta, color: '#475569' }}>{p.location}</TextR>
+                            </>
+                        )}
+                    </ViewR>
+
+                    <ViewR style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+                        {formattedWebsite && (
+                            <Link src={formattedWebsite} style={{ fontSize: s.fontSizeMeta, color: '#334155', textDecoration: 'none' }}>
+                                {getDisplayUrl(p.website)}
+                            </Link>
+                        )}
+                        {nonEmpty(p.email) && (
+                            <>
+                                {formattedWebsite && <TextR style={{ fontSize: s.fontSizeMeta, color: '#94a3b8' }}>·</TextR>}
+                                <Link src={`mailto:${p.email}`} style={{ fontSize: s.fontSizeMeta, color: '#334155', textDecoration: 'none' }}>
+                                    {p.email}
+                                </Link>
+                            </>
+                        )}
+                        {formattedLinkedin && (
+                            <>
+                                {(formattedWebsite || nonEmpty(p.email)) && <TextR style={{ fontSize: s.fontSizeMeta, color: '#94a3b8' }}>·</TextR>}
+                                <Link src={formattedLinkedin} style={{ fontSize: s.fontSizeMeta, color: '#334155', textDecoration: 'none' }}>
+                                    {getDisplayUrl(p.linkedin)}
+                                </Link>
+                            </>
+                        )}
+                        {formattedGithub && (
+                            <>
+                                {(formattedWebsite || nonEmpty(p.email) || formattedLinkedin) && <TextR style={{ fontSize: s.fontSizeMeta, color: '#94a3b8' }}>·</TextR>}
+                                <Link src={formattedGithub} style={{ fontSize: s.fontSizeMeta, color: '#334155', textDecoration: 'none' }}>
+                                    {getDisplayUrl(p.github)}
+                                </Link>
+                            </>
+                        )}
+                    </ViewR>
+                </ViewR>
 
                 {/* Summary */}
                 {nonEmpty(summary) && (
-                    <View className="mb-3">
-                        <SectionHeading font={activeFont}>Summary</SectionHeading>
-                        <Text className="text-xs leading-relaxed text-neutral-800">{summary}</Text>
-                    </View>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Summary
+                        </TextR>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeBody,
+                                lineHeight: s.lineHeight,
+                                color: '#1e293b',
+                            }}
+                        >
+                            {summary}
+                        </TextR>
+                    </ViewR>
                 )}
 
                 {/* Experience */}
                 {experience.length > 0 && (
-                    <View className="mb-4">
-                        <SectionHeading font={activeFont}>Work Experience</SectionHeading>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Work Experience
+                        </TextR>
                         {experience.map((exp) => (
-                            <ViewR key={exp.id} style={tw("mb-3")}>
-                                <ViewR style={tw("flex-row justify-between items-start mb-0.5")}>
-                                    <Text className="text-sm font-bold">{exp.company}{nonEmpty(exp.location) ? ` · ${exp.location}` : ''}</Text>
-                                    <Text className="text-xs font-bold">
+                            <ViewR key={exp.id} style={{ marginBottom: s.sectionSpacing * 0.75 }}>
+                                <ViewR style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 1 }}>
+                                    <TextR style={{ fontSize: s.fontSizeSubheading, fontWeight: 'bold', color: '#0f172a' }}>
+                                        {exp.company}{nonEmpty(exp.location) ? ` · ${exp.location}` : ''}
+                                    </TextR>
+                                    <TextR style={{ fontSize: s.fontSizeSmall, fontWeight: 'bold', color: '#334155' }}>
                                         {exp.startDate} – {exp.current ? 'Present' : (exp.endDate ?? '')}
-                                    </Text>
+                                    </TextR>
                                 </ViewR>
-                                <Text className="text-xs italic text-neutral-700 mb-1">{exp.position}</Text>
+                                <TextR style={{ fontSize: s.fontSizeSmall, fontStyle: 'italic', color: '#475569', marginBottom: 3 }}>
+                                    {exp.position}
+                                </TextR>
                                 {filterStrings(exp.bullets).length > 0 && (
-                                    <ViewR style={tw("pl-3")}>
-                                        {filterStrings(exp.bullets).map((line, i) => <Bullet key={i} text={line} />)}
+                                    <ViewR style={{ paddingLeft: 8 }}>
+                                        {filterStrings(exp.bullets).map((line, i) => (
+                                            <ViewR key={i} style={{ flexDirection: 'row', marginBottom: s.paragraphSpacing }}>
+                                                <TextR style={{ fontSize: s.fontSizeSmall, color: s.accentColor, marginRight: 5, lineHeight: s.lineHeight }}>•</TextR>
+                                                <TextR style={{ fontSize: s.fontSizeBody, lineHeight: s.lineHeight, color: '#1e293b', flex: 1 }}>
+                                                    {line}
+                                                </TextR>
+                                            </ViewR>
+                                        ))}
                                     </ViewR>
                                 )}
                             </ViewR>
                         ))}
-                    </View>
+                    </ViewR>
                 )}
 
                 {/* Projects */}
                 {projects.length > 0 && (
-                    <View className="mb-2">
-                        <SectionHeading font={activeFont}>Projects</SectionHeading>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Projects
+                        </TextR>
                         {projects.map((proj) => {
                             const formattedProjLink = formatUrl(proj.link);
                             return (
-                                <ViewR key={proj.id} style={tw("mb-2")}>
-                                    <ViewR style={tw("flex-row justify-between items-center mb-0.5")}>
-                                        <ViewR style={tw("flex-row items-start gap-2")}>
-                                            <Text className="text-sm font-bold">{proj.name}</Text>
+                                <ViewR key={proj.id} style={{ marginBottom: s.sectionSpacing * 0.6 }}>
+                                    <ViewR style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                                        <ViewR style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                            <TextR style={{ fontSize: s.fontSizeSubheading, fontWeight: 'bold', color: '#0f172a' }}>
+                                                {proj.name}
+                                            </TextR>
                                             {formattedProjLink && (
-                                                <LinkR src={formattedProjLink} className="text-xs text-neutral-600">
+                                                <Link src={formattedProjLink} style={{ fontSize: s.fontSizeSmall, color: '#475569', textDecoration: 'none' }}>
                                                     {getDisplayUrl(proj.link)}
-                                                </LinkR>
+                                                </Link>
                                             )}
                                         </ViewR>
                                         {filterStrings(proj.technologies).length > 0 && (
-                                            <Text className="text-2xs text-neutral-600">
+                                            <TextR style={{ fontSize: s.fontSizeMeta, color: '#64748b' }}>
                                                 {filterStrings(proj.technologies).join(' • ')}
-                                            </Text>
+                                            </TextR>
                                         )}
                                     </ViewR>
                                     {nonEmpty(proj.description) && (
-                                        <Text className="text-xs leading-relaxed text-neutral-800 mb-0.5">{proj.description}</Text>
+                                        <TextR style={{ fontSize: s.fontSizeBody, lineHeight: s.lineHeight, color: '#1e293b', marginBottom: 2 }}>
+                                            {proj.description}
+                                        </TextR>
                                     )}
                                     {filterStrings(proj.bullets).length > 0 && (
-                                        <ViewR style={tw("pl-3")}>
-                                            {filterStrings(proj.bullets).map((line, i) => <Bullet key={i} text={line} />)}
+                                        <ViewR style={{ paddingLeft: 8 }}>
+                                            {filterStrings(proj.bullets).map((line, i) => (
+                                                <ViewR key={i} style={{ flexDirection: 'row', marginBottom: s.paragraphSpacing }}>
+                                                    <TextR style={{ fontSize: s.fontSizeSmall, color: s.accentColor, marginRight: 5, lineHeight: s.lineHeight }}>•</TextR>
+                                                    <TextR style={{ fontSize: s.fontSizeBody, lineHeight: s.lineHeight, color: '#1e293b', flex: 1 }}>
+                                                        {line}
+                                                    </TextR>
+                                                </ViewR>
+                                            ))}
                                         </ViewR>
                                     )}
                                 </ViewR>
                             );
                         })}
-                    </View>
+                    </ViewR>
                 )}
 
                 {/* Skills */}
                 {skills.length > 0 && (
-                    <View className="mb-3">
-                        <SectionHeading font={activeFont}>Skills</SectionHeading>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Skills
+                        </TextR>
                         {skills.map((group, i) => (
                             filterStrings(group.items).length > 0 && (
-                                <Text key={i} className="text-xs leading-relaxed text-neutral-800">
-                                    <TextR style={tw("font-bold")}>{group.category}: </TextR>
+                                <TextR key={i} style={{ fontSize: s.fontSizeBody, lineHeight: s.lineHeight, color: '#1e293b', marginBottom: 2 }}>
+                                    <TextR style={{ fontWeight: 'bold', color: '#0f172a' }}>{group.category}: </TextR>
                                     {filterStrings(group.items).join(' • ')}
-                                </Text>
+                                </TextR>
                             )
                         ))}
-                    </View>
+                    </ViewR>
                 )}
 
-                {/* Education · Certifications · Achievements */}
+                {/* Education */}
                 {education.length > 0 && (
-                    <View className="mb-3">
-                        <SectionHeading font={activeFont}>Education</SectionHeading>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Education
+                        </TextR>
                         {education.map((edu) => (
-                            <ViewR key={edu.id} wrap={false} style={tw("mb-2.5")}>
-                                <ViewR style={tw("flex-row justify-between")}>
-                                    <Text className="font-bold text-neutral-900 leading-tight">
+                            <ViewR key={edu.id} wrap={false} style={{ marginBottom: s.sectionSpacing * 0.5 }}>
+                                <ViewR style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <TextR style={{ fontSize: s.fontSizeSubheading, fontWeight: 'bold', color: '#0f172a' }}>
                                         {edu.institution}
                                         {nonEmpty(edu.location) ? ` · ${edu.location}` : ''}
-                                    </Text>
-                                    <Text className="text-2xs text-neutral-800 mt-0.5">
+                                    </TextR>
+                                    <TextR style={{ fontSize: s.fontSizeSmall, color: '#475569' }}>
                                         {edu.startDate ?? ''}{edu.startDate && edu.endDate ? ' – ' : ''}{edu.endDate ?? ''}
-                                    </Text>
+                                    </TextR>
                                 </ViewR>
-                                <Text className="text-sm text-neutral-800 mt-0.5">
+                                <TextR style={{ fontSize: s.fontSizeSmall, color: '#334155', marginTop: 1 }}>
                                     {edu.degree}{nonEmpty(edu.field) ? ` · ${edu.field}` : ''}{nonEmpty(edu.gpa) ? ` | GPA: ${edu.gpa}` : ''}
-                                </Text>
+                                </TextR>
                             </ViewR>
                         ))}
-                    </View>
+                    </ViewR>
                 )}
 
+                {/* Certifications */}
                 {certifications && certifications.length > 0 && (
-                    <View className="mb-3">
-                        <SectionHeading font={activeFont}>Certifications</SectionHeading>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Certifications
+                        </TextR>
                         {certifications.map((cert) => {
                             const formattedCertLink = formatUrl(cert.link);
                             return (
-                                <ViewR key={cert.id} wrap={false} style={tw("mb-2.5")}>
-                                    <ViewR style={tw("flex-row justify-between")}>
+                                <ViewR key={cert.id} wrap={false} style={{ marginBottom: s.sectionSpacing * 0.5 }}>
+                                    <ViewR style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         {formattedCertLink ? (
-                                            <LinkR src={formattedCertLink} className="text-sm font-bold text-neutral-900 leading-tight">{cert.name}</LinkR>
+                                            <Link src={formattedCertLink} style={{ fontSize: s.fontSizeSubheading, fontWeight: 'bold', color: '#0f172a', textDecoration: 'none' }}>
+                                                {cert.name}
+                                            </Link>
                                         ) : (
-                                            <Text className="font-bold text-neutral-900 leading-tight">{cert.name}</Text>
+                                            <TextR style={{ fontSize: s.fontSizeSubheading, fontWeight: 'bold', color: '#0f172a' }}>
+                                                {cert.name}
+                                            </TextR>
                                         )}
-                                        <Text className="text-2xs text-neutral-800 mt-0.5">
+                                        <TextR style={{ fontSize: s.fontSizeSmall, color: '#475569' }}>
                                             {cert.date ?? ''}
-                                        </Text>
+                                        </TextR>
                                     </ViewR>
                                     {nonEmpty(cert.issuer) && (
-                                        <Text className="text-sm text-neutral-800 mt-0.5">
+                                        <TextR style={{ fontSize: s.fontSizeSmall, color: '#334155', marginTop: 1 }}>
                                             {cert.issuer}
-                                        </Text>
+                                        </TextR>
                                     )}
                                 </ViewR>
                             );
                         })}
-                    </View>
+                    </ViewR>
                 )}
 
+                {/* Achievements */}
                 {achievements && achievements.length > 0 && (
-                    <View className="mb-3">
-                        <SectionHeading font={activeFont}>Achievements</SectionHeading>
+                    <ViewR style={{ marginBottom: s.sectionSpacing }}>
+                        <TextR
+                            style={{
+                                fontSize: s.fontSizeTitle,
+                                fontWeight: 'bold',
+                                textTransform: s.headingTextTransform,
+                                color: s.accentColor,
+                                borderBottomWidth: s.showUnderline ? 1 : 0,
+                                borderBottomColor: s.accentColor,
+                                paddingBottom: 2,
+                                marginBottom: s.paragraphSpacing + 3,
+                                letterSpacing: 0.5,
+                            }}
+                        >
+                            Achievements
+                        </TextR>
                         {achievements.map((ach) => (
-                            <ViewR key={ach.id} wrap={false} style={tw("mb-2.5")}>
-                                <ViewR style={tw("flex-row justify-between")}>
-                                    <Text className="font-bold text-neutral-900 leading-tight">{ach.title}</Text>
-                                </ViewR>
+                            <ViewR key={ach.id} wrap={false} style={{ marginBottom: s.sectionSpacing * 0.5 }}>
+                                <TextR style={{ fontSize: s.fontSizeSubheading, fontWeight: 'bold', color: '#0f172a' }}>
+                                    {ach.title}
+                                </TextR>
                                 {nonEmpty(ach.description) && (
-                                    <Text className="text-sm text-neutral-800 mt-0.5">{ach.description}</Text>
+                                    <TextR style={{ fontSize: s.fontSizeBody, lineHeight: s.lineHeight, color: '#1e293b', marginTop: 1 }}>
+                                        {ach.description}
+                                    </TextR>
                                 )}
                             </ViewR>
                         ))}
-                    </View>
+                    </ViewR>
                 )}
-
             </Page>
         </Document>
     );
