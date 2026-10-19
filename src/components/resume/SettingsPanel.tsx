@@ -50,11 +50,11 @@ export default function SettingsPanel({
   onChange,
 }: SettingsPanelProps) {
   const [openSections, setOpenSections] = useState({
-    font: true,
-    typography: true,
-    spacing: true,
-    layout: true,
-    colors: true,
+    font: false,
+    typography: false,
+    spacing: false,
+    layout: false,
+    colors: false,
   });
 
   const toggleSection = (key: keyof typeof openSections) => {
