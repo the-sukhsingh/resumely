@@ -16,7 +16,6 @@ import { ResumeData, ResumeSettings, ResumeTemplate } from '@/types/resume';
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SettingsPanel, { DEFAULT_SETTINGS } from '@/components/resume/SettingsPanel';
-import ResumeToolbar from '@/components/resume/ResumeToolbar';
 import debounce from 'lodash/debounce';
 import dynamic from 'next/dynamic';
 import { Clipboard, Message2, Settings } from '@duo-icons/react';
@@ -329,12 +328,7 @@ export default function ResumeCreatePage() {
                 onThemeChange={handleThemeChange}
               />
             </div>
-            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-              <ResumeToolbar settings={settings} onChange={handleSettingsChange} />
-              <div className="flex-1 min-h-0 overflow-hidden">
-                <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
-              </div>
-            </div>
+            <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
 
           </ResizablePanel>
 
@@ -452,11 +446,8 @@ export default function ResumeCreatePage() {
                 onThemeChange={handleThemeChange}
               />
             </div>
-            <div className="flex-1 overflow-hidden flex flex-col">
-              <ResumeToolbar settings={settings} onChange={handleSettingsChange} />
-              <div className="flex-1 overflow-hidden">
-                <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
-              </div>
+            <div className="flex-1 overflow-hidden">
+              <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
             </div>
 
           </div>

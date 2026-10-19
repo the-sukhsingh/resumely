@@ -18,15 +18,17 @@ export interface ComputedResumeStyles {
   fontSizeSubheading: number;
   fontSizeBody: number;
   fontSizeSmall: number;
+  fontSizeLink: number;
   fontSizeMeta: number;
 }
 
 export function computeResumeStyles(settings?: ResumeSettings): ComputedResumeStyles {
   const activeFont = normalizeFontFamily(settings?.font);
   
+  // Base font size in pt (default 10pt for clear readability)
   const baseFontSize = settings?.fontSize && settings.fontSize >= 6 && settings.fontSize <= 16
     ? settings.fontSize
-    : 9.5;
+    : 10.0;
   
   const lineHeight = settings?.lineHeight && settings.lineHeight >= 0.8 && settings.lineHeight <= 2.5
     ? settings.lineHeight
@@ -72,11 +74,12 @@ export function computeResumeStyles(settings?: ResumeSettings): ComputedResumeSt
     accentColor,
     showUnderline,
     headingTextTransform,
-    fontSizeName: Math.round(baseFontSize * 2.1 * 10) / 10,
-    fontSizeTitle: Math.round(baseFontSize * 1.2 * 10) / 10,
-    fontSizeSubheading: Math.round(baseFontSize * 1.05 * 10) / 10,
+    fontSizeName: Math.round(baseFontSize * 2.2 * 10) / 10,
+    fontSizeTitle: Math.round(baseFontSize * 1.25 * 10) / 10,
+    fontSizeSubheading: Math.round(baseFontSize * 1.12 * 10) / 10,
     fontSizeBody: baseFontSize,
-    fontSizeSmall: Math.round(baseFontSize * 0.9 * 10) / 10,
-    fontSizeMeta: Math.round(baseFontSize * 0.82 * 10) / 10,
+    fontSizeSmall: Math.round(baseFontSize * 0.95 * 10) / 10,
+    fontSizeLink: Math.round(baseFontSize * 0.95 * 10) / 10,
+    fontSizeMeta: Math.round(baseFontSize * 0.9 * 10) / 10,
   };
 }
