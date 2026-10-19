@@ -216,10 +216,10 @@ export default function JobTrackerPage() {
               {viewMode === 'board' ? (
                 <motion.div
                   key="board-view"
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.33, ease: [0.23, 1, 0.32, 1] }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
                   className="w-full origin-center"
                 >
                   <JobKanbanBoard
@@ -232,10 +232,10 @@ export default function JobTrackerPage() {
               ) : (
                 <motion.div
                   key="list-view"
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.33, ease: [0.23, 1, 0.32, 1] }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
                   className="w-full origin-center"
                 >
                   <JobListView
