@@ -97,6 +97,16 @@ const resumeContentSchema = {
 const resumeSettingsSchema = {
   font: v.string(),
   layout: v.union(v.literal("one-column"), v.literal("two-column")),
+  fontSize: v.optional(v.number()),
+  lineHeight: v.optional(v.number()),
+  sectionSpacing: v.optional(v.number()),
+  paragraphSpacing: v.optional(v.number()),
+  pageMargin: v.optional(v.union(v.literal("compact"), v.literal("normal"), v.literal("relaxed"), v.number())),
+  paperSize: v.optional(v.union(v.literal("letter"), v.literal("a4"), v.literal("LETTER"), v.literal("A4"))),
+  primaryColor: v.optional(v.string()),
+  accentColor: v.optional(v.string()),
+  headingStyle: v.optional(v.string()),
+  showUnderline: v.optional(v.boolean()),
 };
 
 // ─── Internal Mutations ───────────────────────────────────────────────────────

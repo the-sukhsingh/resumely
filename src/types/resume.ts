@@ -85,4 +85,14 @@ export type ResumeData = {
 export type ResumeSettings = {
   font: string;
   layout: 'one-column' | 'two-column';
-}
+  fontSize?: number;
+  lineHeight?: number;
+  sectionSpacing?: number;
+  paragraphSpacing?: number;
+  pageMargin?: 'compact' | 'normal' | 'relaxed' | number;
+  paperSize?: 'letter' | 'a4' | 'LETTER' | 'A4';
+  primaryColor?: string;
+  accentColor?: string;
+  headingStyle?: string;
+  showUnderline?: boolean;
+};
