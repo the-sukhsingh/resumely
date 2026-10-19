@@ -19,6 +19,7 @@ import { ResumeData, ResumeSettings, ResumeTemplate } from '@/types/resume';
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SettingsPanel, { DEFAULT_SETTINGS } from '@/components/resume/SettingsPanel';
+import ResumeToolbar from '@/components/resume/ResumeToolbar';
 import debounce from 'lodash/debounce';
 import dynamic from 'next/dynamic';
 const ResumePreview = dynamic(() => import('@/components/resume/preview/resume-preview'), { ssr: false });
@@ -267,7 +268,12 @@ function ResumeEditorContent({
                 />
               </div>
               {activeView === 'resume' ? (
-                <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                  <ResumeToolbar settings={settings} onChange={handleSettingsChange} />
+                  <div className="flex-1 min-h-0 overflow-hidden">
+                    <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
+                  </div>
+                </div>
               ) : (
                 <CoverLetterPreview resumeData={previewDraft} />
               )}
@@ -370,9 +376,14 @@ function ResumeEditorContent({
                   onThemeChange={handleThemeChange}
                 />
               </div>
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden flex flex-col">
                 {activeView === 'resume' ? (
-                  <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
+                  <>
+                    <ResumeToolbar settings={settings} onChange={handleSettingsChange} />
+                    <div className="flex-1 overflow-hidden">
+                      <ResumePreview resumeData={previewDraft} theme={selectedTheme} />
+                    </div>
+                  </>
                 ) : (
                   <CoverLetterPreview resumeData={previewDraft} />
                 )}

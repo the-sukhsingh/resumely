@@ -93,6 +93,6 @@ export type ResumeSettings = {
   paperSize?: 'letter' | 'a4' | 'LETTER' | 'A4';
   primaryColor?: string;
   accentColor?: string;
-  headingStyle?: 'uppercase' | 'capitalize' | 'standard';
+  headingStyle?: string;
   showUnderline?: boolean;
 };
