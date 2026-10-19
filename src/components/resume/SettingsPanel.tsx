@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { SUPPORTED_RESUME_FONTS } from '@/constants/pdf-fonts';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import AnimatedSwitcher from '@/components/custom/animated-switcher';
 
 export const DEFAULT_SETTINGS: ResumeSettings = {
   font: 'Times New Roman',
@@ -115,6 +116,19 @@ export default function SettingsPanel({
   const showUnderline = settings.showUnderline !== false;
   const headingStyle = settings.headingStyle || DEFAULT_SETTINGS.headingStyle || 'uppercase';
 
+  // Find closest section spacing key for AnimatedSwitcher
+  const activeSpacingValue =
+    currentSectionSpacing <= 1.15 ? '1.0' :
+    currentSectionSpacing <= 1.55 ? '1.4' :
+    currentSectionSpacing <= 1.95 ? '1.8' : '2.2';
+
+  // Find closest line height key for AnimatedSwitcher
+  const activeLineHeightValue =
+    Math.abs(currentLineHeight - 1.15) <= 0.05 ? '1.15' :
+    Math.abs(currentLineHeight - 1.25) <= 0.05 ? '1.25' :
+    Math.abs(currentLineHeight - 1.35) <= 0.05 ? '1.35' :
+    Math.abs(currentLineHeight - 1.50) <= 0.05 ? '1.50' : '1.75';
+
   return (
     <div className="h-full overflow-y-auto nobar overscroll-none bg-background pb-20 mask-b-from-90%">
       {/* Clean Minimal Header Actions */}
@@ -184,7 +198,7 @@ export default function SettingsPanel({
           sectionKey="typography"
         >
           <div className="space-y-3.5 pt-1 pb-2">
-            {/* Font Size Stepper */}
+            {/* Font Size Stepper with AnimatedSwitcher */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs text-muted-foreground">Font Size</span>
@@ -192,7 +206,7 @@ export default function SettingsPanel({
                   {currentFontSize.toFixed(1)} pt
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Button
                   type="button"
                   variant="outline"
@@ -204,22 +218,21 @@ export default function SettingsPanel({
                   <Minus className="size-3" />
                 </Button>
 
-                <div className="flex-1 grid grid-cols-6 gap-1">
-                  {[8.5, 9.0, 9.5, 10.0, 10.5, 11.0].map((sz) => (
-                    <button
-                      key={sz}
-                      type="button"
-                      onClick={() => update({ fontSize: sz })}
-                      className={cn(
-                        "text-[11px] py-1 rounded text-center transition-colors cursor-pointer",
-                        Math.abs(currentFontSize - sz) < 0.2
-                          ? "bg-primary text-primary-foreground font-medium"
-                          : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {sz}
-                    </button>
-                  ))}
+                <div className="flex-1 min-w-0">
+                  <AnimatedSwitcher
+                    size="sm"
+                    fullWidth
+                    value={currentFontSize.toFixed(1)}
+                    onChange={(val) => update({ fontSize: parseFloat(val) })}
+                    items={[
+                      { value: '8.5', label: '8.5' },
+                      { value: '9.0', label: '9.0' },
+                      { value: '9.5', label: '9.5' },
+                      { value: '10.0', label: '10' },
+                      { value: '10.5', label: '10.5' },
+                      { value: '11.0', label: '11' },
+                    ]}
+                  />
                 </div>
 
                 <Button
@@ -235,7 +248,7 @@ export default function SettingsPanel({
               </div>
             </div>
 
-            {/* Line Height */}
+            {/* Line Height with AnimatedSwitcher */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs text-muted-foreground">Line Spacing</span>
@@ -243,23 +256,19 @@ export default function SettingsPanel({
                   {currentLineHeight.toFixed(2)}x
                 </span>
               </div>
-              <div className="grid grid-cols-5 gap-1">
-                {[1.15, 1.25, 1.35, 1.5, 1.75].map((lh) => (
-                  <button
-                    key={lh}
-                    type="button"
-                    onClick={() => update({ lineHeight: lh })}
-                    className={cn(
-                      "text-[11px] py-1 rounded text-center transition-colors cursor-pointer",
-                      Math.abs(currentLineHeight - lh) < 0.05
-                        ? "bg-primary text-primary-foreground font-medium"
-                        : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {lh}
-                  </button>
-                ))}
-              </div>
+              <AnimatedSwitcher
+                size="sm"
+                fullWidth
+                value={activeLineHeightValue}
+                onChange={(val) => update({ lineHeight: parseFloat(val) })}
+                items={[
+                  { value: '1.15', label: '1.15' },
+                  { value: '1.25', label: '1.25' },
+                  { value: '1.35', label: '1.35' },
+                  { value: '1.50', label: '1.50' },
+                  { value: '1.75', label: '1.75' },
+                ]}
+              />
             </div>
           </div>
         </CollapsibleSection>
@@ -272,7 +281,7 @@ export default function SettingsPanel({
           sectionKey="spacing"
         >
           <div className="space-y-3.5 pt-1 pb-2">
-            {/* Section Spacing */}
+            {/* Section Spacing with AnimatedSwitcher */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs text-muted-foreground">Section Spacing</span>
@@ -280,31 +289,21 @@ export default function SettingsPanel({
                   {currentSectionSpacing.toFixed(1)}x
                 </span>
               </div>
-              <div className="grid grid-cols-4 gap-1">
-                {[
-                  { label: 'Compact', val: 1.0 },
-                  { label: 'Normal', val: 1.4 },
-                  { label: 'Relaxed', val: 1.8 },
-                  { label: 'Spacious', val: 2.2 },
-                ].map((s) => (
-                  <button
-                    key={s.label}
-                    type="button"
-                    onClick={() => update({ sectionSpacing: s.val })}
-                    className={cn(
-                      "text-[11px] py-1 rounded text-center transition-colors cursor-pointer",
-                      Math.abs(currentSectionSpacing - s.val) < 0.15
-                        ? "bg-primary text-primary-foreground font-medium"
-                        : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
+              <AnimatedSwitcher
+                size="sm"
+                fullWidth
+                value={activeSpacingValue}
+                onChange={(val) => update({ sectionSpacing: parseFloat(val) })}
+                items={[
+                  { value: '1.0', label: 'Compact' },
+                  { value: '1.4', label: 'Normal' },
+                  { value: '1.8', label: 'Relaxed' },
+                  { value: '2.2', label: 'Spacious' },
+                ]}
+              />
             </div>
 
-            {/* Page Margins */}
+            {/* Page Margins with AnimatedSwitcher */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs text-muted-foreground">Page Margins</span>
@@ -312,55 +311,32 @@ export default function SettingsPanel({
                   {currentMargin}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-1">
-                {[
-                  { label: 'Compact', value: 'compact' },
-                  { label: 'Normal', value: 'normal' },
-                  { label: 'Relaxed', value: 'relaxed' },
-                ].map((m) => (
-                  <button
-                    key={m.value}
-                    type="button"
-                    onClick={() => update({ pageMargin: m.value as 'compact' | 'normal' | 'relaxed' })}
-                    className={cn(
-                      "text-center py-1 rounded text-xs transition-colors cursor-pointer",
-                      currentMargin === m.value
-                        ? "bg-primary text-primary-foreground font-medium"
-                        : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
+              <AnimatedSwitcher
+                size="sm"
+                fullWidth
+                value={currentMargin}
+                onChange={(val) => update({ pageMargin: val as 'compact' | 'normal' | 'relaxed' })}
+                items={[
+                  { value: 'compact', label: 'Compact' },
+                  { value: 'normal', label: 'Normal' },
+                  { value: 'relaxed', label: 'Relaxed' },
+                ]}
+              />
             </div>
 
-            {/* Paper Size */}
+            {/* Paper Size with AnimatedSwitcher */}
             <div>
               <span className="text-xs text-muted-foreground block mb-1.5">Paper Format</span>
-              <div className="grid grid-cols-2 gap-1">
-                {[
-                  { label: 'Letter (US)', value: 'letter' },
-                  { label: 'A4 (International)', value: 'a4' },
-                ].map((p) => {
-                  const isSelected = currentPaper === p.value;
-                  return (
-                    <button
-                      key={p.value}
-                      type="button"
-                      onClick={() => update({ paperSize: p.value as 'letter' | 'a4' })}
-                      className={cn(
-                        "text-center py-1 rounded text-xs transition-colors cursor-pointer",
-                        isSelected
-                          ? "bg-primary text-primary-foreground font-medium"
-                          : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {p.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <AnimatedSwitcher
+                size="sm"
+                fullWidth
+                value={currentPaper}
+                onChange={(val) => update({ paperSize: val as 'letter' | 'a4' })}
+                items={[
+                  { value: 'letter', label: 'Letter (US)' },
+                  { value: 'a4', label: 'A4 (International)' },
+                ]}
+              />
             </div>
           </div>
         </CollapsibleSection>
@@ -373,49 +349,36 @@ export default function SettingsPanel({
           sectionKey="layout"
         >
           <div className="space-y-3 pt-1 pb-2">
-            {/* Heading Underline */}
+            {/* Heading Underline with AnimatedSwitcher */}
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs text-foreground font-medium block">Section Divider</span>
                 <span className="text-[11px] text-muted-foreground">Line below section titles</span>
               </div>
-              <button
-                type="button"
-                onClick={() => update({ showUnderline: !showUnderline })}
-                className={cn(
-                  "h-7 px-2.5 rounded-md text-xs font-medium border transition-colors cursor-pointer",
-                  showUnderline
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border/60 bg-background text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {showUnderline ? 'Visible' : 'Hidden'}
-              </button>
+              <AnimatedSwitcher
+                size="sm"
+                value={showUnderline ? 'visible' : 'hidden'}
+                onChange={(val) => update({ showUnderline: val === 'visible' })}
+                items={[
+                  { value: 'visible', label: 'Visible' },
+                  { value: 'hidden', label: 'Hidden' },
+                ]}
+              />
             </div>
 
-            {/* Heading Capitalization */}
+            {/* Heading Capitalization with AnimatedSwitcher */}
             <div>
               <span className="text-xs text-muted-foreground block mb-1.5">Heading Case</span>
-              <div className="grid grid-cols-2 gap-1">
-                {[
-                  { label: 'UPPERCASE', value: 'uppercase' },
-                  { label: 'Capitalize', value: 'capitalize' },
-                ].map((hc) => (
-                  <button
-                    key={hc.value}
-                    type="button"
-                    onClick={() => update({ headingStyle: hc.value as 'uppercase' | 'capitalize' })}
-                    className={cn(
-                      "text-center py-1 rounded text-xs transition-colors cursor-pointer",
-                      headingStyle === hc.value
-                        ? "bg-primary text-primary-foreground font-medium"
-                        : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {hc.label}
-                  </button>
-                ))}
-              </div>
+              <AnimatedSwitcher
+                size="sm"
+                fullWidth
+                value={headingStyle}
+                onChange={(val) => update({ headingStyle: val as 'uppercase' | 'capitalize' })}
+                items={[
+                  { value: 'uppercase', label: 'UPPERCASE' },
+                  { value: 'capitalize', label: 'Capitalize' },
+                ]}
+              />
             </div>
           </div>
         </CollapsibleSection>
