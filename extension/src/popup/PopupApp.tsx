@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   FileText,
   ChevronDown,
@@ -45,7 +45,11 @@ export function PopupApp() {
   const [activeDomain, setActiveDomain] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Active Job State
+  // Resume Dropdown State
+  const [resumeDropdownOpen, setResumeDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Active Job State (Null when not viewing a job posting - no dummy JD shown)
   const [job, setJob] = useState<{
     title: string;
     company: string;
@@ -54,22 +58,8 @@ export function PopupApp() {
     source?: string;
     jobUrl?: string;
     description: string;
-  }>({
-    title: "Senior Frontend Engineer",
-    company: "Linear",
-    location: "San Francisco, CA (or Remote)",
-    salary: "$170,000 - $220,000",
-    source: "Career Portal",
-    jobUrl: "https://linear.app/careers",
-    description: `
-      Linear is looking for a Senior Frontend Engineer proficient in React, Next.js, TypeScript, Tailwind CSS, GraphQL, and real-time state synchronization.
-      Requirements:
-      • 5+ years building high-craft web applications with React and TypeScript.
-      • Strong expertise in Next.js App Router, performance profiling, and accessible component architecture.
-      • Experience with GraphQL APIs, WebSockets, and optimistic client-side UI updates.
-      • Deep empathy for user experience, animation polish, and tactile interactions.
-    `,
-  });
+  } | null>(null);
+  const [isDetectingJob, setIsDetectingJob] = useState(true);
 
   const [selectedStage, setSelectedStage] = useState<"saved" | "applied" | "interviewing">("saved");
   const [jobNotes, setJobNotes] = useState("");
@@ -82,10 +72,11 @@ export function PopupApp() {
     return resumes.find((r) => (r._id || r.id) === activeResumeId) || resumes[0] || DEFAULT_DEMO_RESUME;
   }, [resumes, activeResumeId]);
 
-  // Computed ATS Match
-  const analysis: MatchAnalysis = useMemo(() => {
+  // Computed ATS Match (Computed strictly when a real job description is present)
+  const analysis: MatchAnalysis | null = useMemo(() => {
+    if (!job || !job.description) return null;
     return ResumelyMatcher.analyzeMatch(job.description, activeResume);
-  }, [job.description, activeResume]);
+  }, [job, activeResume]);
 
   function showToast(msg: string) {
     setToastMessage(msg);
@@ -141,6 +132,7 @@ export function PopupApp() {
 
       // Inspect active tab
       if (typeof chrome !== "undefined" && chrome.tabs?.query) {
+        setIsDetectingJob(true);
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           const tab = tabs[0];
           if (tab?.url && tab.url.startsWith("http")) {
@@ -151,25 +143,77 @@ export function PopupApp() {
           }
           if (tab?.id) {
             chrome.tabs.sendMessage(tab.id, { action: "EXTRACT_JOB_DETAILS" }, (response) => {
-              if (response?.data?.title || response?.data?.description) {
+              setIsDetectingJob(false);
+              if (response?.data && (response.data.title || response.data.description)) {
                 setJob(response.data);
+              } else {
+                setJob(null);
               }
             });
+          } else {
+            setIsDetectingJob(false);
           }
         });
+      } else {
+        setIsDetectingJob(false);
       }
     }
 
     loadData();
   }, []);
 
+  // Handle Click-Away for Custom Resume Dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setResumeDropdownOpen(false);
+      }
+    }
+    if (resumeDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [resumeDropdownOpen]);
+
+  // Re-scan active tab
+  function handleScanActiveTab() {
+    showToast("Re-scanning active page...");
+    setIsDetectingJob(true);
+    if (typeof chrome !== "undefined" && chrome.tabs?.query) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+        if (tab?.id) {
+          chrome.tabs.sendMessage(tab.id, { action: "EXTRACT_JOB_DETAILS" }, (res) => {
+            setIsDetectingJob(false);
+            if (res?.data && (res.data.title || res.data.description)) {
+              setJob(res.data);
+              showToast(`Detected: ${res.data.title || "Job opening"}`);
+            } else {
+              setJob(null);
+              showToast("No job posting detected on this tab");
+            }
+          });
+        } else {
+          setIsDetectingJob(false);
+        }
+      });
+    } else {
+      setIsDetectingJob(false);
+    }
+  }
+
   // Update pitch content when job or resume changes
   useEffect(() => {
-    setPitchContent(ResumelyMatcher.generateTailoredPitch(job, activeResume));
+    if (job) {
+      setPitchContent(ResumelyMatcher.generateTailoredPitch(job, activeResume));
+    } else {
+      setPitchContent("");
+    }
   }, [job, activeResume]);
 
   // Save Job Handler
   async function handleSaveJob() {
+    if (!job) return;
     setIsSaving(true);
     const root = settings?.appUrl || "http://localhost:3000";
 
@@ -278,30 +322,76 @@ export function PopupApp() {
             re.
           </a>
 
-          {/* Active Resume Selector Chip */}
-          <div
-            className="relative flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-100/80 hover:bg-zinc-200/60 hover:border-zinc-300 px-2.5 py-1 text-[11px] text-zinc-700 transition-all max-w-[165px]"
-            title="Active Resume Version"
-          >
-            <FileText className="size-3 text-zinc-500 shrink-0" />
-            <select
-              value={activeResumeId}
-              onChange={(e) => {
-                const id = e.target.value;
-                setActiveResumeId(id);
-                ResumelyStorage.setActiveResumeId(id);
-                const found = resumes.find((r) => (r._id || r.id) === id);
-                if (found) showToast(`Selected: ${found.name || "Resume"}`);
-              }}
-              className="w-full cursor-pointer appearance-none bg-transparent pr-3 text-[11px] font-medium text-zinc-800 outline-none truncate"
+          {/* Custom Resume Version Selector Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setResumeDropdownOpen((v) => !v)}
+              className="flex items-center gap-1.5 rounded-full border border-zinc-200/90 bg-white hover:bg-zinc-50 hover:border-zinc-300 px-2.5 py-1 text-[11px] text-zinc-800 transition-all cursor-pointer shadow-2xs max-w-[170px]"
+              title="Select Active Resume Version"
             >
-              {resumes.map((r) => (
-                <option key={r._id || r.id} value={r._id || r.id} className="bg-white text-zinc-900">
-                  {r.name || "Resume"} {r.isMasterResume ? "[Master]" : ""}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-2 size-2.5 text-zinc-400" />
+              <FileText className="size-3 text-zinc-500 shrink-0" />
+              <span className="truncate font-medium text-zinc-900 text-[11px]">
+                {activeResume.name || "Resume"}
+              </span>
+              <ChevronDown
+                className={`size-2.5 text-zinc-400 shrink-0 transition-transform duration-150 ${
+                  resumeDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {/* Floating Dropdown Menu (Crafted Light Theme Popover) */}
+            {resumeDropdownOpen && (
+              <div className="absolute top-full left-0 mt-1.5 w-64 rounded-2xl border border-zinc-200 bg-white p-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-zinc-100 mb-1">
+                  <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+                    Resume Versions
+                  </span>
+                  <span className="text-[10px] font-semibold text-zinc-500 bg-zinc-100 rounded-full px-1.5 py-0.2">
+                    {resumes.length}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto">
+                  {resumes.map((r) => {
+                    const id = r._id || r.id;
+                    const isSelected = id === activeResumeId;
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => {
+                          setActiveResumeId(id);
+                          ResumelyStorage.setActiveResumeId(id);
+                          showToast(`Selected: ${r.name || "Resume"}`);
+                          setResumeDropdownOpen(false);
+                        }}
+                        className={`flex items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-zinc-100/90 text-zinc-950 font-semibold"
+                            : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 font-medium"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <FileText
+                            className={`size-3.5 shrink-0 ${
+                              isSelected ? "text-zinc-950" : "text-zinc-400"
+                            }`}
+                          />
+                          <div className="truncate text-[11px] leading-tight">
+                            <span>{r.name || "Resume"}</span>
+                            {r.isMasterResume && (
+                              <span className="ml-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700">
+                                Master
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {isSelected && <Check className="size-3.5 text-zinc-950 shrink-0 stroke-[2.5]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -388,222 +478,277 @@ export function PopupApp() {
         {/* TAB 1: MATCH */}
         {activeTab === "match" && (
           <>
-            {/* Job Header Card */}
-            <section className="flex flex-col gap-2.5 rounded-2xl border border-zinc-200/80 bg-white p-3.5 shadow-xs">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="rounded-full border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600">
-                      {job.source || "Detected"}
-                    </span>
-                    {job.salary && (
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                        {job.salary}
-                      </span>
-                    )}
-                  </div>
-                  <h1 className="text-[15px] font-bold tracking-tight text-zinc-950 truncate mb-0.5">
-                    {job.title}
-                  </h1>
-                  <div className="flex items-center gap-1.5 text-[12px] text-zinc-600 truncate">
-                    <span className="font-semibold text-zinc-800">{job.company}</span>
-                    <span className="text-zinc-400">•</span>
-                    <span>{job.location}</span>
-                  </div>
+            {isDetectingJob ? (
+              /* Scanning State */
+              <section className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-zinc-200/80 bg-white p-8 text-center shadow-xs">
+                <div className="size-10 flex items-center justify-center rounded-2xl bg-zinc-100 text-zinc-700 border border-zinc-200/70">
+                  <RefreshCw className="size-4.5 animate-spin text-zinc-600" />
                 </div>
-
-                <button
-                  onClick={() => {
-                    showToast("Re-scanning active page...");
-                    if (typeof chrome !== "undefined" && chrome.tabs?.query) {
-                      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                        if (tabs[0]?.id) {
-                          chrome.tabs.sendMessage(tabs[0].id, { action: "EXTRACT_JOB_DETAILS" }, (res) => {
-                            if (res?.data) setJob(res.data);
-                          });
-                        }
-                      });
-                    }
-                  }}
-                  className="size-7 flex items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 active:scale-92 transition-all shrink-0 cursor-pointer shadow-2xs"
-                  title="Re-scan page"
-                >
-                  <RefreshCw className="size-3.5" />
-                </button>
-              </div>
-
-              {/* ATS Fit Radial Gauge */}
-              <div className="flex items-center gap-3.5 rounded-xl border border-zinc-200/70 bg-zinc-50/80 p-3">
-                <div className="relative size-16 shrink-0">
-                  <svg className="size-full -rotate-90" viewBox="0 0 68 68">
-                    <circle cx="34" cy="34" r="28" strokeWidth="4.5" className="fill-none stroke-zinc-200" />
-                    <circle
-                      cx="34"
-                      cy="34"
-                      r="28"
-                      strokeWidth="4.5"
-                      strokeDasharray={176}
-                      strokeDashoffset={176 - (analysis.score / 100) * 176}
-                      strokeLinecap="round"
-                      className={`fill-none transition-all duration-700 ease-out ${
-                        analysis.score >= 80
-                          ? "stroke-emerald-600"
-                          : analysis.score >= 60
-                          ? "stroke-amber-500"
-                          : "stroke-rose-500"
-                      }`}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[18px] font-bold text-zinc-950 tracking-tight">{analysis.score}</span>
-                    <span className="text-[10px] text-zinc-500 font-medium mt-1">%</span>
-                  </div>
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <span
-                    className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mb-1 ${
-                      analysis.score >= 80
-                        ? "bg-emerald-100 text-emerald-800 border border-emerald-300/60"
-                        : analysis.score >= 60
-                        ? "bg-amber-100 text-amber-800 border border-amber-300/60"
-                        : "bg-rose-100 text-rose-800 border border-rose-300/60"
-                    }`}
-                  >
-                    {analysis.score >= 80 ? "🎯 Strong ATS Fit" : analysis.score >= 60 ? "⚡ Solid Match" : "⚠️ Tailoring Recommended"}
-                  </span>
-                  <p className="text-[11px] text-zinc-600 leading-snug line-clamp-2">
-                    {analysis.recommendations[0] || "Comparing extracted requirements against your active resume skills."}
+                <div className="max-w-[260px]">
+                  <h3 className="text-[13px] font-bold text-zinc-900">Scanning Page...</h3>
+                  <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">
+                    Checking {activeDomain || "active tab"} for job posting details & requirements.
                   </p>
                 </div>
-              </div>
-
-              {/* Skills Chips Breakdown */}
-              <div className="flex flex-col gap-2 pt-0.5 text-[11px]">
-                <div>
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-zinc-700 font-medium">Matched Skills</span>
-                    <span className="bg-emerald-100 text-emerald-800 rounded-full px-1.5 text-[9px] font-semibold">
-                      {analysis.matchedSkills.length}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
-                    {analysis.matchedSkills.length > 0 ? (
-                      analysis.matchedSkills.map((s) => (
-                        <span key={s} className="rounded-md border border-emerald-200/80 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
-                          {s}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-zinc-400 italic text-[10px]">No exact matches found</span>
-                    )}
-                  </div>
+              </section>
+            ) : !job ? (
+              /* Empty State (Zero Dummy JD shown) */
+              <section className="flex flex-col items-center justify-center gap-3.5 rounded-2xl border border-zinc-200/80 bg-white p-6 text-center shadow-xs">
+                <div className="size-11 flex items-center justify-center rounded-2xl bg-zinc-100 text-zinc-600 border border-zinc-200/70">
+                  <Target className="size-5 text-zinc-500" />
+                </div>
+                <div className="max-w-[270px]">
+                  <h2 className="text-[14px] font-bold text-zinc-900 tracking-tight">No Job Posting Detected</h2>
+                  <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">
+                    Open a job post on LinkedIn, Indeed, Greenhouse, Lever, or a career site to calculate live ATS match score, keyword gaps, and tailored pitch.
+                  </p>
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-zinc-700 font-medium">Missing Keywords</span>
-                    <span className="bg-rose-100 text-rose-800 rounded-full px-1.5 text-[9px] font-semibold">
-                      {analysis.missingSkills.length}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
-                    {analysis.missingSkills.length > 0 ? (
-                      analysis.missingSkills.map((s) => (
-                        <span key={s} className="rounded-md border border-rose-200/80 bg-rose-50 px-2 py-0.5 text-[10px] font-medium text-rose-800">
-                          {s}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-zinc-400 italic text-[10px]">None detected</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Action Card: Save to Kanban */}
-            <section className="flex flex-col gap-2.5 rounded-2xl border border-zinc-200/80 bg-white p-3.5 shadow-xs">
-              <div className="flex rounded-xl border border-zinc-200 bg-zinc-100 p-0.5 gap-0.5">
-                {(["saved", "applied", "interviewing"] as const).map((stage) => (
+                <div className="flex items-center gap-2 pt-1 w-full max-w-[260px]">
                   <button
-                    key={stage}
-                    onClick={() => setSelectedStage(stage)}
-                    className={`flex-1 rounded-lg py-1.5 text-[11px] font-medium capitalize transition-all active:scale-97 cursor-pointer ${
-                      selectedStage === stage
-                        ? stage === "saved"
-                          ? "bg-white text-blue-700 shadow-2xs font-semibold"
-                          : stage === "applied"
-                          ? "bg-white text-amber-700 shadow-2xs font-semibold"
-                          : "bg-white text-purple-700 shadow-2xs font-semibold"
-                        : "text-zinc-500 hover:text-zinc-900"
+                    onClick={handleScanActiveTab}
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 py-2 text-[11px] font-semibold text-zinc-800 transition-all cursor-pointer shadow-2xs"
+                  >
+                    <RefreshCw className="size-3 text-zinc-500" />
+                    <span>Re-scan Tab</span>
+                  </button>
+                  <a
+                    href={`${settings?.appUrl || "http://localhost:3000"}/tracker`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 py-2 text-[11px] font-semibold text-white transition-all cursor-pointer shadow-xs"
+                  >
+                    <Kanban className="size-3 text-white" />
+                    <span>Open Tracker</span>
+                  </a>
+                </div>
+              </section>
+            ) : (
+              /* Detected Job Header Card */
+              <>
+                <section className="flex flex-col gap-2.5 rounded-2xl border border-zinc-200/80 bg-white p-3.5 shadow-xs">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="rounded-full border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600">
+                          {job.source || "Detected"}
+                        </span>
+                        {job.salary && (
+                          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                            {job.salary}
+                          </span>
+                        )}
+                      </div>
+                      <h1 className="text-[15px] font-bold tracking-tight text-zinc-950 truncate mb-0.5">
+                        {job.title}
+                      </h1>
+                      <div className="flex items-center gap-1.5 text-[12px] text-zinc-600 truncate">
+                        <span className="font-semibold text-zinc-800">{job.company}</span>
+                        {job.location && (
+                          <>
+                            <span className="text-zinc-400">•</span>
+                            <span>{job.location}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleScanActiveTab}
+                      className="size-7 flex items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 active:scale-92 transition-all shrink-0 cursor-pointer shadow-2xs"
+                      title="Re-scan page"
+                    >
+                      <RefreshCw className="size-3.5" />
+                    </button>
+                  </div>
+
+                  {/* ATS Fit Radial Gauge */}
+                  {analysis && (
+                    <div className="flex items-center gap-3.5 rounded-xl border border-zinc-200/70 bg-zinc-50/80 p-3">
+                      <div className="relative size-16 shrink-0">
+                        <svg className="size-full -rotate-90" viewBox="0 0 68 68">
+                          <circle cx="34" cy="34" r="28" strokeWidth="4.5" className="fill-none stroke-zinc-200" />
+                          <circle
+                            cx="34"
+                            cy="34"
+                            r="28"
+                            strokeWidth="4.5"
+                            strokeDasharray={176}
+                            strokeDashoffset={176 - (analysis.score / 100) * 176}
+                            strokeLinecap="round"
+                            className={`fill-none transition-all duration-700 ease-out ${
+                              analysis.score >= 80
+                                ? "stroke-emerald-600"
+                                : analysis.score >= 60
+                                ? "stroke-amber-500"
+                                : "stroke-rose-500"
+                            }`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-[18px] font-bold text-zinc-950 tracking-tight">{analysis.score}</span>
+                          <span className="text-[10px] text-zinc-500 font-medium mt-1">%</span>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mb-1 ${
+                            analysis.score >= 80
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300/60"
+                              : analysis.score >= 60
+                              ? "bg-amber-100 text-amber-800 border border-amber-300/60"
+                              : "bg-rose-100 text-rose-800 border border-rose-300/60"
+                          }`}
+                        >
+                          {analysis.score >= 80
+                            ? "🎯 Strong ATS Fit"
+                            : analysis.score >= 60
+                            ? "⚡ Solid Match"
+                            : "⚠️ Tailoring Recommended"}
+                        </span>
+                        <p className="text-[11px] text-zinc-600 leading-snug line-clamp-2">
+                          {analysis.recommendations[0] ||
+                            "Comparing extracted requirements against your active resume skills."}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Skills Chips Breakdown */}
+                  {analysis && (
+                    <div className="flex flex-col gap-2 pt-0.5 text-[11px]">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <span className="text-zinc-700 font-medium">Matched Skills</span>
+                          <span className="bg-emerald-100 text-emerald-800 rounded-full px-1.5 text-[9px] font-semibold">
+                            {analysis.matchedSkills.length}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+                          {analysis.matchedSkills.length > 0 ? (
+                            analysis.matchedSkills.map((s) => (
+                              <span
+                                key={s}
+                                className="rounded-md border border-emerald-200/80 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-800"
+                              >
+                                {s}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-zinc-400 italic text-[10px]">No exact matches found</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <span className="text-zinc-700 font-medium">Missing Keywords</span>
+                          <span className="bg-rose-100 text-rose-800 rounded-full px-1.5 text-[9px] font-semibold">
+                            {analysis.missingSkills.length}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+                          {analysis.missingSkills.length > 0 ? (
+                            analysis.missingSkills.map((s) => (
+                              <span
+                                key={s}
+                                className="rounded-md border border-rose-200/80 bg-rose-50 px-2 py-0.5 text-[10px] font-medium text-rose-800"
+                              >
+                                {s}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-zinc-400 italic text-[10px]">None detected</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </section>
+
+                {/* Action Card: Save to Kanban */}
+                <section className="flex flex-col gap-2.5 rounded-2xl border border-zinc-200/80 bg-white p-3.5 shadow-xs">
+                  <div className="flex rounded-xl border border-zinc-200 bg-zinc-100 p-0.5 gap-0.5">
+                    {(["saved", "applied", "interviewing"] as const).map((stage) => (
+                      <button
+                        key={stage}
+                        onClick={() => setSelectedStage(stage)}
+                        className={`flex-1 rounded-lg py-1.5 text-[11px] font-medium capitalize transition-all active:scale-97 cursor-pointer ${
+                          selectedStage === stage
+                            ? stage === "saved"
+                              ? "bg-white text-blue-700 shadow-2xs font-semibold"
+                              : stage === "applied"
+                              ? "bg-white text-amber-700 shadow-2xs font-semibold"
+                              : "bg-white text-purple-700 shadow-2xs font-semibold"
+                            : "text-zinc-500 hover:text-zinc-900"
+                        }`}
+                      >
+                        {stage === "saved" ? "Wishlist" : stage}
+                      </button>
+                    ))}
+                  </div>
+
+                  <input
+                    type="text"
+                    value={jobNotes}
+                    onChange={(e) => setJobNotes(e.target.value)}
+                    placeholder="Add optional note (e.g. Referral by Alex)"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/80 px-3 py-2 text-[12px] text-zinc-900 placeholder-zinc-400 outline-none focus:bg-white focus:border-zinc-400 transition-colors"
+                  />
+
+                  {/* Tactile Pure Black Button (Resumely Website Style) */}
+                  <button
+                    onClick={handleSaveJob}
+                    disabled={isSaving}
+                    className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-[12px] font-semibold cursor-pointer active:scale-97 transition-all shadow-xs ${
+                      isSavedSuccess ? "bg-emerald-600 text-white" : "bg-zinc-950 text-white hover:bg-zinc-800"
                     }`}
                   >
-                    {stage === "saved" ? "Wishlist" : stage}
+                    {isSavedSuccess ? (
+                      <>
+                        <Check className="size-4 stroke-[3]" />
+                        <span>Saved to Job Tracker!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark className="size-4 fill-current" />
+                        <span>{isSaving ? "Saving..." : "Save to Job Tracker"}</span>
+                      </>
+                    )}
                   </button>
-                ))}
-              </div>
 
-              <input
-                type="text"
-                value={jobNotes}
-                onChange={(e) => setJobNotes(e.target.value)}
-                placeholder="Add optional note (e.g. Referral by Alex)"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50/80 px-3 py-2 text-[12px] text-zinc-900 placeholder-zinc-400 outline-none focus:bg-white focus:border-zinc-400 transition-colors"
-              />
-
-              {/* Tactile Pure Black Button (Resumely Website Style) */}
-              <button
-                onClick={handleSaveJob}
-                disabled={isSaving}
-                className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-[12px] font-semibold cursor-pointer active:scale-97 transition-all shadow-xs ${
-                  isSavedSuccess
-                    ? "bg-emerald-600 text-white"
-                    : "bg-zinc-950 text-white hover:bg-zinc-800"
-                }`}
-              >
-                {isSavedSuccess ? (
-                  <>
-                    <Check className="size-4 stroke-[3]" />
-                    <span>Saved to Job Tracker!</span>
-                  </>
-                ) : (
-                  <>
-                    <Bookmark className="size-4 fill-current" />
-                    <span>{isSaving ? "Saving..." : "Save to Job Tracker"}</span>
-                  </>
-                )}
-              </button>
-
-              <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500 pt-0.5">
-                <a
-                  href={`${settings?.appUrl || "http://localhost:3000"}/tracker`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-zinc-900 font-medium transition-colors"
-                >
-                  Open Kanban ↗
-                </a>
-                <span>•</span>
-                <a
-                  href={`${settings?.appUrl || "http://localhost:3000"}/resume/create?title=${encodeURIComponent(
-                    job.title
-                  )}&company=${encodeURIComponent(job.company)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-zinc-900 font-medium transition-colors"
-                >
-                  Tailor with AI ↗
-                </a>
-                <span>•</span>
-                <button
-                  onClick={() => setPitchModalOpen(true)}
-                  className="hover:text-zinc-900 font-medium transition-colors cursor-pointer"
-                >
-                  Elevator Pitch
-                </button>
-              </div>
-            </section>
+                  <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500 pt-0.5">
+                    <a
+                      href={`${settings?.appUrl || "http://localhost:3000"}/tracker`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:text-zinc-900 font-medium transition-colors"
+                    >
+                      Open Kanban ↗
+                    </a>
+                    <span>•</span>
+                    <a
+                      href={`${settings?.appUrl || "http://localhost:3000"}/resume/create?title=${encodeURIComponent(
+                        job.title
+                      )}&company=${encodeURIComponent(job.company)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:text-zinc-900 font-medium transition-colors"
+                    >
+                      Tailor with AI ↗
+                    </a>
+                    <span>•</span>
+                    <button
+                      onClick={() => setPitchModalOpen(true)}
+                      className="hover:text-zinc-900 font-medium transition-colors cursor-pointer"
+                    >
+                      Elevator Pitch
+                    </button>
+                  </div>
+                </section>
+              </>
+            )}
           </>
         )}
 
