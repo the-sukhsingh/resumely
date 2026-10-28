@@ -199,7 +199,7 @@ export const ResumelyStorage = {
   async getActiveResumeId(): Promise<string> {
     if (typeof chrome !== "undefined" && chrome.storage?.local) {
       const data = await chrome.storage.local.get(["activeResumeId"]);
-      if (data.activeResumeId) return data.activeResumeId;
+      if (data.activeResumeId) return String(data.activeResumeId);
     }
     return localStorage.getItem("resumely_active_resume_id") || "demo_master";
   },
@@ -274,3 +274,4 @@ export const ResumelyStorage = {
     return isBlocked;
   },
 };
+

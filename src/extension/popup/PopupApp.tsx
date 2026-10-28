@@ -952,3 +952,4 @@ export function PopupApp() {
     </div>
   );
 }
+
