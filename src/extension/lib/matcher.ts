@@ -132,3 +132,4 @@ export const ResumelyMatcher = {
     return `Dear ${company} Hiring Team,\n\nI am writing to express my strong enthusiasm for the ${title} position at ${company}. With a track record of architecting scalable applications and delivering customer-obsessed features, I am confident in my ability to immediately contribute to your engineering objectives.\n\nThroughout my career, I have focused on high-craft engineering, reliable system architecture, and shipping robust code that moves core business metrics. I admire ${company}'s commitment to quality and would love the opportunity to bring my background to your upcoming initiatives.\n\nThank you for your consideration, and I look forward to speaking soon.\n\nWarm regards,\n${name}`;
   },
 };
+
