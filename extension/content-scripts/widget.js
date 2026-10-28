@@ -1,5 +1,5 @@
-// Resumely Floating In-Page Widget
-// Injects a floating assistant pill with Shadow DOM isolation
+// Resumely Floating In-Page Assistant Widget
+// Injects a floating assistant pill with Shadow DOM isolation - Active strictly on job sites by default
 
 (function () {
   if (window.__resumely_widget_loaded) return;
@@ -16,6 +16,74 @@
     return;
   }
 
+  const KNOWN_JOB_DOMAINS = [
+    "linkedin.com",
+    "indeed.com",
+    "greenhouse.io",
+    "lever.co",
+    "wellfound.com",
+    "angel.co",
+    "glassdoor.com",
+    "ziprecruiter.com",
+    "myworkdayjobs.com",
+    "workday.com",
+    "smartrecruiters.com",
+    "ashbyhq.com",
+    "bamboohr.com",
+    "jobvite.com",
+    "workable.com",
+    "joinhandshake.com",
+    "dice.com",
+    "remoteok.com",
+    "remoteok.io",
+    "weworkremotely.com",
+    "simplyhired.com",
+    "workatastartup.com",
+    "ripplematch.com",
+    "otta.com",
+    "levels.fyi",
+    "monster.com",
+    "careerbuilder.com",
+  ];
+
+  function isJobWebsite() {
+    const hostname = window.location.hostname.toLowerCase();
+    const pathname = window.location.pathname.toLowerCase();
+    const href = window.location.href.toLowerCase();
+
+    // 1. Check known job boards
+    if (KNOWN_JOB_DOMAINS.some((d) => hostname.includes(d))) {
+      // For linkedin, make sure user is on jobs
+      if (hostname.includes("linkedin.com") && !pathname.includes("/jobs")) {
+        return false;
+      }
+      return true;
+    }
+
+    // 2. Check local mock test pages
+    if (href.includes("sample-job-greenhouse.html") || href.includes("sample-job-linkedin.html")) {
+      return true;
+    }
+
+    // 3. Check career URL path patterns on any company website
+    const careerPathPattern = /\/(careers|career|jobs|job|openings|apply|positions|work-with-us|join-us|vacancies)(\/|$)/i;
+    if (careerPathPattern.test(pathname)) {
+      return true;
+    }
+
+    // 4. Check if Schema.org JobPosting is present in DOM
+    try {
+      const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+      for (const s of scripts) {
+        if ((s.textContent || "").includes("JobPosting")) {
+          return true;
+        }
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
   class ResumelyFloatingWidget {
     constructor() {
       this.host = null;
@@ -23,25 +91,54 @@
       this.jobData = null;
       this.analysis = null;
       this.isExpanded = false;
+      this.settings = null;
       this.init();
     }
 
     async init() {
-      // Check user settings
-      let showWidget = true;
+      // 1. Fetch user settings
+      this.settings = {
+        showFloatingWidget: true,
+        widgetActivationMode: "job_sites_only", // Default: only on job sites
+        whitelistedDomains: [],
+        blacklistedDomains: [],
+      };
+
       if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
         const data = await new Promise((r) => chrome.storage.local.get(["settings"], r));
-        if (data && data.settings && data.settings.showFloatingWidget === false) {
-          showWidget = false;
+        if (data && data.settings) {
+          this.settings = { ...this.settings, ...data.settings };
         }
       }
 
-      if (!showWidget) return;
+      const hostname = window.location.hostname.toLowerCase();
+
+      // Check disabled state
+      if (this.settings.showFloatingWidget === false || this.settings.widgetActivationMode === "disabled") {
+        return;
+      }
+
+      // Check user-configured domain blacklist
+      if (Array.isArray(this.settings.blacklistedDomains) && this.settings.blacklistedDomains.includes(hostname)) {
+        return;
+      }
+
+      // If whitelisted, allow directly
+      const isWhitelisted =
+        Array.isArray(this.settings.whitelistedDomains) && this.settings.whitelistedDomains.includes(hostname);
+
+      // Default mode: "job_sites_only"
+      if (!isWhitelisted && this.settings.widgetActivationMode !== "all_sites") {
+        if (!isJobWebsite()) {
+          // NOT a job website -> Do not show floating widget!
+          return;
+        }
+      }
 
       // Allow DOM to settle before scraping
       setTimeout(() => {
         this.inspectPage();
-      }, 1200);
+      }, 1000);
     }
 
     inspectPage() {
@@ -78,9 +175,9 @@
           bottom: 24px;
           right: 24px;
           z-index: 2147483647;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", sans-serif;
           font-size: 13px;
-          color: #f8fafc;
+          color: #f4f4f5;
         }
 
         .resumely-pill {
@@ -291,6 +388,10 @@
           }
 
           <div class="status-msg" id="widget-status"></div>
+
+          <div style="display:flex; justify-content:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:6px; margin-top:2px;">
+            <button id="btn-block-site" style="background:none; border:none; color:#71717a; font-size:10px; cursor:pointer; padding:2px;">Don't show on this site</button>
+          </div>
         </div>
 
         <div class="resumely-pill" id="widget-pill">
@@ -313,6 +414,7 @@
       const btnSave = this.shadow.getElementById("btn-save-job");
       const btnAutofill = this.shadow.getElementById("btn-autofill");
       const statusEl = this.shadow.getElementById("widget-status");
+      const btnBlockSite = this.shadow.getElementById("btn-block-site");
 
       pill.addEventListener("click", () => {
         this.isExpanded = !this.isExpanded;
@@ -324,6 +426,24 @@
         this.isExpanded = false;
         card.classList.remove("open");
       });
+
+      if (btnBlockSite) {
+        btnBlockSite.addEventListener("click", async () => {
+          const hostname = window.location.hostname.toLowerCase();
+          if (window.ResumelyStorage) {
+            await window.ResumelyStorage.toggleDomainBlacklist(hostname);
+          } else if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+            const data = await new Promise((r) => chrome.storage.local.get(["settings"], r));
+            const settings = data?.settings || {};
+            const list = new Set(settings.blacklistedDomains || []);
+            list.add(hostname);
+            await new Promise((r) =>
+              chrome.storage.local.set({ settings: { ...settings, blacklistedDomains: Array.from(list) } }, r)
+            );
+          }
+          if (this.host) this.host.remove();
+        });
+      }
 
       if (btnAutofill) {
         btnAutofill.addEventListener("click", async () => {
@@ -347,7 +467,6 @@
           btnSave.disabled = true;
           btnSave.textContent = "Saving...";
           try {
-            // Send save message to background worker
             if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
               chrome.runtime.sendMessage(
                 {
@@ -387,4 +506,3 @@
     new ResumelyFloatingWidget();
   }
 })();
-

@@ -141,6 +141,9 @@ const DEFAULT_SETTINGS = {
   useDemoMode: false, // will auto-fallback to demo if not connected
   autoDetectJobs: true,
   showFloatingWidget: true,
+  widgetActivationMode: "job_sites_only", // "job_sites_only" (default) | "all_sites" | "disabled"
+  whitelistedDomains: [], // domains where widget is forced ON
+  blacklistedDomains: [], // domains where widget is forced OFF
   autoFillHighlights: true,
   defaultStage: "saved", // "saved" | "applied" | "interviewing"
   lastSyncTime: null,
@@ -195,6 +198,38 @@ const ResumelyStorage = {
     const updated = { ...current, ...settings };
     await this.set({ settings: updated });
     return updated;
+  },
+
+  async toggleDomainBlacklist(domain) {
+    if (!domain) return false;
+    const settings = await this.getSettings();
+    const list = new Set(settings.blacklistedDomains || []);
+    let isBlocked = false;
+    if (list.has(domain)) {
+      list.delete(domain);
+      isBlocked = false;
+    } else {
+      list.add(domain);
+      isBlocked = true;
+    }
+    await this.saveSettings({ blacklistedDomains: Array.from(list) });
+    return isBlocked;
+  },
+
+  async toggleDomainWhitelist(domain) {
+    if (!domain) return false;
+    const settings = await this.getSettings();
+    const list = new Set(settings.whitelistedDomains || []);
+    let isAllowed = false;
+    if (list.has(domain)) {
+      list.delete(domain);
+      isAllowed = false;
+    } else {
+      list.add(domain);
+      isAllowed = true;
+    }
+    await this.saveSettings({ whitelistedDomains: Array.from(list) });
+    return isAllowed;
   },
 
   async getAuthenticatedUser() {
