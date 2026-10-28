@@ -253,12 +253,30 @@ export function PopupApp() {
     showToast("Removed from tracker");
   }
 
+  function broadcastSettingsUpdate(updatedSettings: ExtensionSettings) {
+    if (typeof chrome !== "undefined" && chrome.tabs?.query) {
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+          if (tab.id) {
+            try {
+              chrome.tabs.sendMessage(tab.id, {
+                action: "SETTINGS_UPDATED",
+                settings: updatedSettings,
+              });
+            } catch {}
+          }
+        });
+      });
+    }
+  }
+
   // Toggle Domain Block
   async function handleToggleDomain() {
     if (!activeDomain) return;
     const isBlocked = await ResumelyStorage.toggleDomainBlacklist(activeDomain);
     const updatedSettings = await ResumelyStorage.getSettings();
     setSettings(updatedSettings);
+    broadcastSettingsUpdate(updatedSettings);
     showToast(isBlocked ? `Excluded on ${activeDomain}` : `Allowed on ${activeDomain}`);
   }
 
@@ -866,12 +884,13 @@ export function PopupApp() {
                   showFloatingWidget: mode !== "disabled",
                 });
                 setSettings(updated);
+                broadcastSettingsUpdate(updated);
                 showToast(
                   mode === "job_sites_only"
                     ? "Active only on Job Boards & Career Sites"
                     : mode === "all_sites"
                     ? "Active on All Sites with job content"
-                    : "Floating widget disabled"
+                    : "Floating widget disabled everywhere"
                 );
               }}
               className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-[11px] font-medium text-zinc-800 outline-none cursor-pointer shadow-2xs"

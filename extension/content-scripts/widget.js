@@ -2,6 +2,17 @@
 // Redesigned with Emil Kowalski Craft Sensibility: Dynamic Island Pill, Tactile Feedback, Shadow DOM
 
 (function () {
+  // Prevent execution inside iframes to eliminate widget duplication and flashing
+  if (window.self !== window.top) {
+    return;
+  }
+
+  // Remove any stale instance host to prevent duplicates
+  const staleHost = document.getElementById("resumely-floating-host");
+  if (staleHost) {
+    staleHost.remove();
+  }
+
   if (window.__resumely_widget_loaded) return;
   window.__resumely_widget_loaded = true;
 
@@ -57,6 +68,10 @@
       if (hostname.includes("linkedin.com") && !pathname.includes("/jobs")) {
         return false;
       }
+      // Only treat Google Forms on docs.google.com as job/application pages, not documents/spreadsheets
+      if (hostname.includes("docs.google.com") && !pathname.includes("/forms")) {
+        return false;
+      }
       return true;
     }
 
@@ -94,6 +109,7 @@
       this.settings = null;
       this.activeResume = null;
       this.init();
+      this.listenForChanges();
     }
 
     async init() {
@@ -105,41 +121,113 @@
       };
 
       if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-        const data = await new Promise((r) => chrome.storage.local.get(["settings", "activeResume", "resumes"], r));
-        if (data && data.settings) {
-          this.settings = { ...this.settings, ...data.settings };
-        }
-        if (data && data.activeResume) {
-          this.activeResume = data.activeResume;
-        } else if (data && data.resumes && data.resumes.length > 0) {
-          this.activeResume = data.resumes[0];
-        }
+        try {
+          const data = await new Promise((r) => chrome.storage.local.get(["settings", "activeResume", "resumes"], r));
+          if (data && data.settings) {
+            this.settings = { ...this.settings, ...data.settings };
+          }
+          if (data && data.activeResume) {
+            this.activeResume = data.activeResume;
+          } else if (data && data.resumes && data.resumes.length > 0) {
+            this.activeResume = data.resumes[0];
+          }
+        } catch (e) {}
       }
 
-      const hostname = window.location.hostname.toLowerCase();
-
-      // Check disabled state
-      if (this.settings.showFloatingWidget === false || this.settings.widgetActivationMode === "disabled") {
+      if (!this.shouldDisplay()) {
+        this.destroy();
         return;
-      }
-
-      // Check user-configured domain blacklist
-      if (Array.isArray(this.settings.blacklistedDomains) && this.settings.blacklistedDomains.includes(hostname)) {
-        return;
-      }
-
-      const isWhitelisted =
-        Array.isArray(this.settings.whitelistedDomains) && this.settings.whitelistedDomains.includes(hostname);
-
-      if (!isWhitelisted && this.settings.widgetActivationMode !== "all_sites") {
-        if (!isJobWebsite()) {
-          return;
-        }
       }
 
       setTimeout(() => {
         this.inspectPage();
-      }, 800);
+      }, 500);
+    }
+
+    shouldDisplay() {
+      if (!this.settings) return false;
+
+      // 1. Explicitly disabled everywhere
+      if (this.settings.showFloatingWidget === false || this.settings.widgetActivationMode === "disabled") {
+        return false;
+      }
+
+      const hostname = window.location.hostname.toLowerCase();
+
+      // 2. User-configured domain blacklist
+      if (Array.isArray(this.settings.blacklistedDomains) && this.settings.blacklistedDomains.includes(hostname)) {
+        return false;
+      }
+
+      // 3. User-configured domain whitelist
+      const isWhitelisted =
+        Array.isArray(this.settings.whitelistedDomains) && this.settings.whitelistedDomains.includes(hostname);
+      if (isWhitelisted) {
+        return true;
+      }
+
+      // 4. All sites mode
+      if (this.settings.widgetActivationMode === "all_sites") {
+        return true;
+      }
+
+      // 5. Default: Job sites only
+      return isJobWebsite();
+    }
+
+    destroy() {
+      if (this.host) {
+        this.host.remove();
+        this.host = null;
+        this.shadow = null;
+        this.isExpanded = false;
+      }
+      const existing = document.getElementById("resumely-floating-host");
+      if (existing) {
+        existing.remove();
+      }
+    }
+
+    listenForChanges() {
+      // 1. Reactive storage updates (e.g. user changes widget mode or blacklist in popup)
+      if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.onChanged) {
+        chrome.storage.onChanged.addListener((changes, areaName) => {
+          if (areaName === "local") {
+            if (changes.settings && changes.settings.newValue) {
+              this.settings = { ...this.settings, ...changes.settings.newValue };
+              if (!this.shouldDisplay()) {
+                this.destroy();
+              } else if (!this.host) {
+                this.inspectPage();
+              }
+            }
+            if (changes.activeResume && changes.activeResume.newValue) {
+              this.activeResume = changes.activeResume.newValue;
+            }
+          }
+        });
+      }
+
+      // 2. Direct message updates for zero-latency teardown
+      if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+          if (request.action === "SETTINGS_UPDATED") {
+            if (request.settings) {
+              this.settings = { ...this.settings, ...request.settings };
+            }
+            if (!this.shouldDisplay()) {
+              this.destroy();
+              sendResponse({ status: "destroyed" });
+            } else {
+              if (!this.host) {
+                this.inspectPage();
+              }
+              sendResponse({ status: "active" });
+            }
+            return true;
+          }
+        });
+      }
     }
 
     inspectPage() {
@@ -171,6 +259,9 @@
 
     render(detectedFieldsCount = 0, atsScore = null) {
       if (this.host) return;
+      if (!this.shouldDisplay()) return;
+      if (!document.body) return;
+      if (document.getElementById("resumely-floating-host")) return;
 
       this.host = document.createElement("div");
       this.host.id = "resumely-floating-host";
@@ -186,8 +277,18 @@
           z-index: 2147483647;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", sans-serif;
           font-size: 13px;
-          color: #f4f4f5;
+          color: #09090b;
           user-select: none;
+          opacity: 0;
+          transform: translateY(8px);
+          animation: resumelyMount 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes resumelyMount {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         /* 1. Clean Minimal Floating Pill */
@@ -662,10 +763,16 @@
     }
   }
 
-  // Initialize
+  // Initialize singleton instance
+  function startWidget() {
+    if (!window.__resumely_floating_widget_instance) {
+      window.__resumely_floating_widget_instance = new ResumelyFloatingWidget();
+    }
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => new ResumelyFloatingWidget());
+    document.addEventListener("DOMContentLoaded", startWidget, { once: true });
   } else {
-    new ResumelyFloatingWidget();
+    startWidget();
   }
 })();
