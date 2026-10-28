@@ -468,104 +468,12 @@
 
       return { success: true, count: filledCount };
     },
-
-    // Intelligent Text/DOM Change Auto-Trigger
-    // Triggered whenever the text/structure on the website changes (e.g. multi-step forms, next page),
-    // but strictly NOT when typing inside input fields.
-    startPageChangeObserver() {
-      if (this.observerActive) return;
-      this.observerActive = true;
-
-      // Ensure profile is loaded from storage if not already cached
-      if (!this.cachedProfile && typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.get(["activeResume", "resumes"], (data) => {
-          if (data && data.activeResume) {
-            this.cachedProfile = data.activeResume;
-          } else if (data && data.resumes && data.resumes.length > 0) {
-            this.cachedProfile = data.resumes[0];
-          }
-        });
-      }
-
-      const observer = new MutationObserver((mutations) => {
-        let hasMeaningfulWebsiteChange = false;
-
-        for (const m of mutations) {
-          const target = m.target;
-
-          // 1. Skip if mutation happened inside user-editable elements (inputs, textareas, contenteditable)
-          if (target) {
-            if (target.nodeType === Node.ELEMENT_NODE) {
-              const el = target;
-              if (
-                el.tagName === "INPUT" ||
-                el.tagName === "TEXTAREA" ||
-                el.tagName === "SELECT" ||
-                el.isContentEditable ||
-                el.closest("input, textarea, select, [contenteditable='true']")
-              ) {
-                continue;
-              }
-            } else if (target.parentElement) {
-              const p = target.parentElement;
-              if (
-                p.tagName === "INPUT" ||
-                p.tagName === "TEXTAREA" ||
-                p.tagName === "SELECT" ||
-                p.isContentEditable ||
-                p.closest("input, textarea, select, [contenteditable='true']")
-              ) {
-                continue;
-              }
-            }
-          }
-
-          // 2. Check if new nodes were added or website text/headings changed
-          if (m.type === "childList" && m.addedNodes.length > 0) {
-            hasMeaningfulWebsiteChange = true;
-            break;
-          }
-          if (m.type === "characterData") {
-            hasMeaningfulWebsiteChange = true;
-            break;
-          }
-        }
-
-        if (hasMeaningfulWebsiteChange) {
-          clearTimeout(this.mutationDebounceTimer);
-          this.mutationDebounceTimer = setTimeout(() => {
-            this.handleDynamicPageChange();
-          }, 450); // 450ms debounce
-        }
-      });
-
-      observer.observe(document.body || document.documentElement, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-      });
-    },
-
-    // Handles dynamically loaded steps or question text mutations
-    handleDynamicPageChange() {
-      // Find detectable fields that are currently empty or not yet filled
-      const detected = this.detectFormFields();
-      const unfilled = detected.filter((d) => !d.element.value || d.element.getAttribute("data-resumely-filled") !== "true");
-
-      if (unfilled.length > 0 && this.cachedProfile) {
-        // Auto-fill newly appeared questions smoothly without noisy alert
-        this.autofill(this.cachedProfile, false);
-      }
-    },
   };
 
   // Expose engine globally on window
   window.__ResumelyAutofillEngine = AutofillEngine;
 
-  // Start observing website text/step changes automatically
-  AutofillEngine.startPageChangeObserver();
-
-  // Listen for extension messages
+  // Listen for extension messages (Manual trigger only - no automatic background filling)
   if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === "AUTOFILL_FORM") {
