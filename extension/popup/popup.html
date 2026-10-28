@@ -8,304 +8,331 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Top Bar Header -->
+    <!-- Top Bar Header (Aligned to Resumely Website) -->
     <header class="header">
       <div class="brand">
-        <div class="brand-icon">R</div>
-        <div class="brand-text">
-          <span class="brand-title">Resumely</span>
-          <span class="brand-subtitle">AI Job Assistant</span>
-        </div>
+        <span class="brand-logo-text">re.</span>
+        <div class="brand-badge" id="version-tag">Extension</div>
       </div>
-      <div class="header-actions">
-        <div class="status-indicator" id="connection-pill" title="Checking connection...">
-          <span class="status-dot"></span>
-          <span class="status-text" id="connection-label">Syncing...</span>
+
+      <div class="header-user-section">
+        <!-- Credits badge -->
+        <div class="credits-pill" id="header-credits" title="Resumely AI Credits">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span id="credits-count">--</span>
         </div>
-        <button class="icon-btn" id="btn-settings-toggle" title="Settings">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
+
+        <!-- User profile avatar / status -->
+        <div class="user-pill" id="header-user" title="Account Status">
+          <img class="user-avatar" id="user-avatar-img" src="" alt="Avatar" style="display: none;">
+          <div class="avatar-placeholder" id="user-avatar-fallback">R</div>
+          <span class="status-indicator-dot" id="auth-status-dot"></span>
+        </div>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="nav-tabs">
-      <button class="tab-btn active" data-tab="tab-matcher">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        Job & Match
+    <!-- Quick Auth Connect Banner (if unauthenticated) -->
+    <div class="auth-banner" id="auth-banner" style="display: none;">
+      <div class="auth-banner-content">
+        <div class="auth-banner-title">Connect your Resumely account</div>
+        <p class="auth-banner-sub">Sync your real master resume, tailored versions, and live Kanban tracker.</p>
+        <div class="auth-banner-actions">
+          <button class="btn-resumely-primary" id="btn-open-resumely-login">
+            Open Resumely to Sign In ↗
+          </button>
+          <div class="auth-inline-row">
+            <input type="email" class="input-dark" id="quick-email-input" placeholder="or enter account email (e.g. you@gmail.com)">
+            <button class="btn-dark-secondary" id="btn-quick-email-connect">Connect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Switcher (Matches Resumely AnimatedSwitcher) -->
+    <nav class="nav-switcher">
+      <button class="nav-tab-pill active" data-tab="tab-matcher">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span>Match & Clip</span>
       </button>
-      <button class="tab-btn" data-tab="tab-autofill">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Autofill & Copy
+      <button class="nav-tab-pill" data-tab="tab-autofill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>Autofill</span>
       </button>
-      <button class="tab-btn" data-tab="tab-pitch">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        AI Pitch
+      <button class="nav-tab-pill" data-tab="tab-saved-jobs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Tracker (<span id="saved-jobs-counter">0</span>)</span>
       </button>
-      <button class="tab-btn" data-tab="tab-settings">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-        Settings
+      <button class="nav-tab-pill" data-tab="tab-pitch">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Pitch</span>
+      </button>
+      <button class="nav-tab-pill" data-tab="tab-settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
       </button>
     </nav>
 
-    <!-- TAB 1: Job & Match Score -->
-    <main class="tab-content active" id="tab-matcher">
-      <!-- Active Job Card -->
-      <section class="card job-card">
-        <div class="card-row">
-          <div class="job-meta">
-            <span class="badge source-badge" id="job-source">Detected</span>
-            <h2 class="job-title" id="job-title">Scanning current page...</h2>
-            <div class="job-subtitle">
-              <span id="job-company">Looking for job posting</span>
-              <span class="dot-separator">•</span>
-              <span id="job-location">Auto-detect</span>
+    <!-- TAB 1: Match & Clip -->
+    <main class="tab-pane active" id="tab-matcher">
+      <!-- Active Resume Selector Bar -->
+      <div class="resume-selector-bar">
+        <label class="selector-label" for="select-resume">Active Resume Version:</label>
+        <select class="select-clean" id="select-resume">
+          <option value="loading">Loading real resumes from Resumely...</option>
+        </select>
+      </div>
+
+      <!-- Detected Job Card -->
+      <section class="card-outline">
+        <div class="card-header-row">
+          <div class="job-titles">
+            <span class="source-tag" id="job-source">Detected</span>
+            <h2 class="job-h2" id="job-title">Scanning current page...</h2>
+            <div class="job-meta-row">
+              <span class="company-text" id="job-company">Looking for job opening</span>
+              <span class="dot">•</span>
+              <span class="location-text" id="job-location">Auto-detect</span>
             </div>
           </div>
-          <button class="icon-btn-secondary" id="btn-refresh-job" title="Re-extract from page">
+          <button class="icon-refresh-btn" id="btn-refresh-job" title="Re-scan active page">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           </button>
         </div>
 
-        <!-- Match Score Ring / Bar -->
-        <div class="match-score-section">
-          <div class="score-circle-wrapper">
-            <svg class="score-circle" width="80" height="80" viewBox="0 0 80 80">
-              <circle class="score-bg" cx="40" cy="40" r="34" stroke-width="6"/>
-              <circle class="score-bar" id="score-ring" cx="40" cy="40" r="34" stroke-width="6"/>
+        <!-- ATS Score Gauge Section -->
+        <div class="ats-gauge-container">
+          <div class="gauge-ring-wrap">
+            <svg class="gauge-svg" width="84" height="84" viewBox="0 0 84 84">
+              <circle class="gauge-track" cx="42" cy="42" r="36" stroke-width="6"/>
+              <circle class="gauge-progress" id="score-ring" cx="42" cy="42" r="36" stroke-width="6"/>
             </svg>
-            <div class="score-number-wrapper">
-              <span class="score-number" id="match-score-val">--</span>
-              <span class="score-pct">%</span>
+            <div class="gauge-center-text">
+              <span class="gauge-number" id="match-score-val">--</span>
+              <span class="gauge-percent">%</span>
             </div>
           </div>
-          <div class="score-summary">
-            <div class="score-rating" id="score-rating-label">Analyzing Fit...</div>
-            <p class="score-explanation" id="score-desc">Checking candidate skills against requirements extracted from this role.</p>
+
+          <div class="gauge-insights">
+            <div class="gauge-rating" id="score-rating-label">Calculating Match...</div>
+            <p class="gauge-desc" id="score-desc">Comparing extracted JD requirements against your active resume skills.</p>
           </div>
         </div>
 
         <!-- Skills Breakdown -->
-        <div class="skills-breakdown">
-          <div class="skills-group">
-            <div class="skills-label matched-label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="skills-section">
+          <div class="skills-block">
+            <div class="skills-title matched-color">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
               Matched Skills (<span id="matched-count">0</span>)
             </div>
-            <div class="chips-container" id="matched-chips">
-              <span class="chip-placeholder">Extracting...</span>
+            <div class="chips-flex" id="matched-chips">
+              <span class="chip-muted">Scanning...</span>
             </div>
           </div>
 
-          <div class="skills-group">
-            <div class="skills-label missing-label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="skills-block">
+            <div class="skills-title missing-color">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               Missing Keywords (<span id="missing-count">0</span>)
             </div>
-            <div class="chips-container" id="missing-chips">
-              <span class="chip-placeholder">None detected</span>
+            <div class="chips-flex" id="missing-chips">
+              <span class="chip-muted">None detected</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Save to Resumely Action Box -->
-      <section class="card save-card">
-        <div class="form-group">
-          <label class="form-label">Application Stage in Resumely</label>
-          <div class="stage-toggle-group">
-            <button class="stage-btn active" data-stage="saved">Saved / Wishlist</button>
-            <button class="stage-btn" data-stage="applied">Applied</button>
-            <button class="stage-btn" data-stage="interviewing">Interviewing</button>
+      <!-- Save to Tracker Box -->
+      <section class="card-outline">
+        <div class="form-item">
+          <label class="form-label-sub">Kanban Stage in Resumely</label>
+          <div class="stage-pills-row">
+            <button class="stage-pill active" data-stage="saved">Wishlist</button>
+            <button class="stage-pill" data-stage="applied">Applied</button>
+            <button class="stage-pill" data-stage="interviewing">Interviewing</button>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="select-resume">Resume Version</label>
-          <select class="form-select" id="select-resume">
-            <option value="demo_master">Master Resume (Alex Morgan)</option>
-          </select>
+        <div class="form-item">
+          <input type="text" class="input-dark" id="job-notes" placeholder="Notes (e.g. Referral from Jane, recruiter call Friday)">
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="job-notes">Notes (optional)</label>
-          <input type="text" class="form-input" id="job-notes" placeholder="e.g. Applied via referral, hiring manager John">
-        </div>
-
-        <button class="primary-btn" id="btn-save-job">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <button class="btn-resumely-cta" id="btn-save-job">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           <span id="save-btn-text">Save to Resumely Tracker</span>
         </button>
 
-        <div class="quick-links">
-          <a href="#" id="link-open-tracker" class="subtle-link">Open Resumely Job Tracker ↗</a>
-          <span class="dot-separator">•</span>
-          <a href="#" id="link-tailor-in-app" class="subtle-link">Tailor Resume in Resumely ↗</a>
+        <div class="deep-links-footer">
+          <a href="#" id="link-open-tracker" target="_blank" class="link-footer">View in Resumely Tracker (Kanban) ↗</a>
+          <span class="dot">•</span>
+          <a href="#" id="link-tailor-in-app" target="_blank" class="link-footer">Tailor in Resumely ↗</a>
         </div>
       </section>
     </main>
 
-    <!-- TAB 2: Form Autofill & Quick Copy Hub -->
-    <main class="tab-content" id="tab-autofill">
-      <!-- One-click Autofill Hero -->
-      <section class="card hero-autofill-card">
-        <div class="autofill-hero-body">
-          <div class="autofill-info">
-            <h3 class="card-heading">Smart Form Autofill</h3>
-            <p class="card-caption" id="autofill-status-text">Detects application inputs (Greenhouse, Lever, etc.)</p>
+    <!-- TAB 2: Form Autofill & Quick Copy -->
+    <main class="tab-pane" id="tab-autofill">
+      <section class="card-outline hero-fill-card">
+        <div class="hero-fill-flex">
+          <div>
+            <h3 class="card-h3">Smart Form Autofill</h3>
+            <p class="card-sub" id="autofill-status-text">Detects Greenhouse, Lever, Workday & custom job applications.</p>
           </div>
-          <button class="action-btn-emerald" id="btn-trigger-autofill">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <button class="btn-emerald-fill" id="btn-trigger-autofill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             Autofill Page
           </button>
         </div>
       </section>
 
-      <!-- Quick Copy Cheat Sheet -->
-      <section class="card">
-        <h3 class="card-heading">Quick Copy Cheat Sheet</h3>
-        <p class="card-caption">Click any field to instantly copy it to your clipboard.</p>
+      <!-- Cheat Sheet List -->
+      <section class="card-outline">
+        <div class="cheat-sheet-header">
+          <h3 class="card-h3">Resume Cheat Sheet</h3>
+          <span class="badge-subtle">Click to Copy</span>
+        </div>
 
-        <!-- Personal Info Rows -->
-        <div class="copy-list">
-          <div class="copy-row" data-copy="fullName">
-            <span class="copy-label">Full Name</span>
-            <span class="copy-val" id="qc-name">Alex Morgan</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+        <div class="copy-rows-group">
+          <div class="copy-item-row" data-copy="fullName">
+            <span class="copy-tag">Full Name</span>
+            <span class="copy-value" id="qc-name">Candidate</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
 
-          <div class="copy-row" data-copy="email">
-            <span class="copy-label">Email</span>
-            <span class="copy-val" id="qc-email">alex.morgan@example.com</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="copy-item-row" data-copy="email">
+            <span class="copy-tag">Email</span>
+            <span class="copy-value" id="qc-email">--</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
 
-          <div class="copy-row" data-copy="phone">
-            <span class="copy-label">Phone</span>
-            <span class="copy-val" id="qc-phone">+1 (555) 349-8210</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="copy-item-row" data-copy="phone">
+            <span class="copy-tag">Phone</span>
+            <span class="copy-value" id="qc-phone">--</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
 
-          <div class="copy-row" data-copy="location">
-            <span class="copy-label">Location</span>
-            <span class="copy-val" id="qc-location">San Francisco, CA</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="copy-item-row" data-copy="location">
+            <span class="copy-tag">Location</span>
+            <span class="copy-value" id="qc-location">--</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
 
-          <div class="copy-row" data-copy="linkedin">
-            <span class="copy-label">LinkedIn</span>
-            <span class="copy-val" id="qc-linkedin">linkedin.com/in/alexmorgan-dev</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="copy-item-row" data-copy="linkedin">
+            <span class="copy-tag">LinkedIn</span>
+            <span class="copy-value" id="qc-linkedin">--</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
 
-          <div class="copy-row" data-copy="github">
-            <span class="copy-label">GitHub</span>
-            <span class="copy-val" id="qc-github">github.com/alexmorgan</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="copy-item-row" data-copy="github">
+            <span class="copy-tag">GitHub</span>
+            <span class="copy-value" id="qc-github">--</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
 
-          <div class="copy-row" data-copy="website">
-            <span class="copy-label">Portfolio</span>
-            <span class="copy-val" id="qc-website">alexmorgan.dev</span>
-            <button class="copy-btn" title="Copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="copy-item-row" data-copy="website">
+            <span class="copy-tag">Portfolio</span>
+            <span class="copy-value" id="qc-website">--</span>
+            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           </div>
         </div>
 
-        <!-- Summary & Bullet Points Snippet Hub -->
-        <div class="snippet-hub">
-          <div class="snippet-header">
-            <span class="snippet-title">Professional Summary</span>
-            <button class="btn-xs" id="btn-copy-summary">Copy Summary</button>
+        <!-- Summary box -->
+        <div class="summary-card-snippet">
+          <div class="summary-header">
+            <span class="summary-label">Summary Statement</span>
+            <button class="btn-micro" id="btn-copy-summary">Copy</button>
           </div>
-          <div class="snippet-box" id="qc-summary-text">
-            Senior Full Stack Software Engineer with 6+ years of experience designing and deploying scalable web applications...
-          </div>
+          <div class="summary-body-text" id="qc-summary-text">No summary loaded.</div>
         </div>
       </section>
     </main>
 
-    <!-- TAB 3: AI Elevator Pitch & Cover Letter Generator -->
-    <main class="tab-content" id="tab-pitch">
-      <section class="card">
-        <div class="card-row">
+    <!-- TAB 3: Saved Jobs in Resumely Tracker (Real Data) -->
+    <main class="tab-pane" id="tab-saved-jobs">
+      <section class="card-outline">
+        <div class="saved-jobs-top">
           <div>
-            <h3 class="card-heading">Tailored Elevator Pitch</h3>
-            <p class="card-caption">Custom cover note generated for this exact role.</p>
+            <h3 class="card-h3">Tracked Applications</h3>
+            <p class="card-sub">Saved locally and synced to your Resumely Convex Kanban.</p>
           </div>
-          <button class="btn-xs-primary" id="btn-generate-pitch">Regenerate</button>
+          <a href="#" id="link-header-tracker" target="_blank" class="btn-micro-primary">Open Kanban ↗</a>
         </div>
 
-        <div class="pitch-container">
-          <textarea class="pitch-textarea" id="pitch-text" rows="11" placeholder="Analyzing job description to generate elevator pitch..."></textarea>
+        <input type="text" class="input-dark" id="search-saved-jobs" placeholder="Filter by title, company, or stage...">
+
+        <div class="saved-jobs-list" id="saved-jobs-container">
+          <div class="empty-state">No saved applications yet. Clip jobs from the "Match & Clip" tab!</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- TAB 4: Tailored Elevator Pitch -->
+    <main class="tab-pane" id="tab-pitch">
+      <section class="card-outline">
+        <div class="card-header-row">
+          <div>
+            <h3 class="card-h3">Tailored Elevator Pitch</h3>
+            <p class="card-sub">Custom pitch highlighting your real skills for this role.</p>
+          </div>
+          <button class="btn-micro" id="btn-generate-pitch">Regenerate</button>
         </div>
 
-        <button class="secondary-btn" id="btn-copy-pitch">
+        <textarea class="pitch-box" id="pitch-text" rows="12" placeholder="Extracting job description to tailor elevator pitch..."></textarea>
+
+        <button class="btn-dark-secondary full-width" id="btn-copy-pitch">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           Copy Pitch to Clipboard
         </button>
       </section>
     </main>
 
-    <!-- TAB 4: Settings -->
-    <main class="tab-content" id="tab-settings">
-      <section class="card">
-        <h3 class="card-heading">Backend & Connection</h3>
-        <p class="card-caption">Connect the extension to your Resumely instance.</p>
+    <!-- TAB 5: Settings -->
+    <main class="tab-pane" id="tab-settings">
+      <section class="card-outline">
+        <h3 class="card-h3">Resumely Account</h3>
+        <p class="card-sub" id="settings-account-desc">Connecting to Resumely backend.</p>
 
-        <div class="form-group">
-          <label class="form-label" for="setting-app-url">Resumely Web App URL</label>
-          <input type="text" class="form-input" id="setting-app-url" value="http://localhost:3000">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="setting-user-email">Account Email</label>
-          <input type="email" class="form-input" id="setting-user-email" placeholder="you@example.com">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="setting-user-id">Convex User ID (optional)</label>
-          <input type="text" class="form-input" id="setting-user-id" placeholder="Auto-detected or paste Convex ID">
-        </div>
-
-        <div class="connection-status-box" id="settings-status-box">
-          <div class="conn-icon" id="conn-icon">⚡</div>
-          <div class="conn-info">
-            <div class="conn-title" id="conn-title">Testing Connection...</div>
-            <div class="conn-desc" id="conn-desc">Checking http://localhost:3000/api/extension/sync</div>
+        <div class="account-card" id="account-info-box">
+          <div class="account-details">
+            <span class="account-name" id="acc-name">Not Signed In</span>
+            <span class="account-email" id="acc-email">Connect below</span>
           </div>
+          <button class="btn-micro danger" id="btn-disconnect-account" style="display: none;">Sign Out</button>
         </div>
 
-        <button class="secondary-btn" id="btn-test-connection">
-          Test & Sync with Resumely
+        <div class="form-item">
+          <label class="form-label-sub" for="setting-app-url">Resumely Web App URL</label>
+          <input type="text" class="input-dark" id="setting-app-url" value="http://localhost:3000">
+        </div>
+
+        <div class="form-item">
+          <label class="form-label-sub" for="setting-user-email">Account Email</label>
+          <input type="email" class="input-dark" id="setting-user-email" placeholder="you@example.com">
+        </div>
+
+        <button class="btn-resumely-primary full-width" id="btn-test-connection">
+          Sync with Resumely
         </button>
       </section>
 
-      <section class="card">
-        <h3 class="card-heading">Extension Preferences</h3>
+      <section class="card-outline">
+        <h3 class="card-h3">Preferences</h3>
 
-        <div class="setting-toggle-row">
+        <div class="toggle-row">
           <div>
-            <div class="toggle-title">Show In-Page Floating Widget</div>
-            <div class="toggle-desc">Display the Resumely pill on job postings</div>
+            <div class="toggle-name">In-Page Floating Widget</div>
+            <div class="toggle-caption">Show Resumely pill on job postings</div>
           </div>
           <input type="checkbox" id="toggle-floating-widget" checked>
         </div>
 
-        <div class="setting-toggle-row">
-          <div>
-            <div class="toggle-title">Demo Profile Mode</div>
-            <div class="toggle-desc">Use preloaded Alex Morgan profile for testing</div>
-          </div>
-          <input type="checkbox" id="toggle-demo-mode">
-        </div>
-
-        <button class="subtle-btn danger-btn" id="btn-reset-demo">
-          Reset to Default Demo Profile
+        <button class="btn-dark-secondary full-width" id="btn-reset-demo">
+          Switch to Demo Profile Mode
         </button>
       </section>
     </main>
 
-    <!-- Notification Toast -->
+    <!-- Toast Feedback -->
     <div class="toast" id="popup-toast"></div>
   </div>
 
@@ -315,4 +342,3 @@
   <script src="popup.js"></script>
 </body>
 </html>
-
