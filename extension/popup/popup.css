@@ -905,6 +905,44 @@ body {
   font-size: 11px;
   color: var(--text-muted);
 }
+.domain-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.domain-info {
+  display: flex;
+  flex-direction: column;
+}
+.domain-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.domain-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+.select-mode {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  padding-right: 28px;
+}
+.select-mode option {
+  background: #18181b;
+  color: #fff;
+}
+
 .toggle-row {
   display: flex;
   align-items: center;

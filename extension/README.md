@@ -44,7 +44,16 @@ The Resumely Browser Extension bridges your web browsing experience with your Re
 5. **✍️ AI Elevator Pitch Generator:**
    - Generates a custom 3-paragraph pitch / cover letter snippet tailored specifically to the active job posting.
 
-6. **🌐 Real-Time Authentication Bridge & Client-Side Data Storage:**
+6. **🛡️ Smart Job-Site Filtering & User Preferences:**
+   - By default, the in-page floating widget only activates on recognized job boards (LinkedIn, Indeed, Greenhouse, Lever, Wellfound, Workday, etc.) and company career pages (`/careers`, `/jobs`).
+   - It will **not** appear on non-job websites like Google, YouTube, Reddit, or GitHub.
+   - You can customize your preferences in Settings:
+     - **Only on Job Boards & Career Sites (Default)**
+     - **On All Websites (when job content or form is detected)**
+     - **Disabled Everywhere (use extension popup only)**
+   - Includes 1-click **"Don't show on this site"** / **"Block Site"** domain-level exclusions right from the widget and Settings!
+
+7. **🌐 Real-Time Authentication Bridge & Client-Side Data Storage:**
    - Automatically detects your active NextAuth session whenever you open Resumely (`localhost:3000` or `resumely.tech`).
    - Supports 1-click email connection (e.g. entering your account email) to pull your real master resume, all tailored resume versions, and AI credits from Convex.
    - Saves all data on the user side in `chrome.storage.local` with an in-extension **Tracked Applications** viewer!
