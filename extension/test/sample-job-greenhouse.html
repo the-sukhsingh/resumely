@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Frontend Engineer - Linear (Greenhouse Job Application)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card: #12141c;
+      --border: #222533;
+      --text: #e1e4ea;
+      --text-muted: #8b92a5;
+      --primary: #5e6ad2;
+      --emerald: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+    }
+    .company-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .app-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin: 6px 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .location {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .salary-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .content h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 24px 0 10px;
+      color: #fff;
+    }
+    .content p { margin-bottom: 14px; color: #c4c9d6; }
+    .content ul { margin-left: 20px; margin-bottom: 16px; color: #c4c9d6; }
+    .content li { margin-bottom: 6px; }
+
+    /* Form Section */
+    .form-section {
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+    }
+    .form-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .req { color: #f43f5e; margin-left: 2px; }
+    input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+      width: 100%;
+      background: #0b0c12;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #fff;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.25);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .btn-submit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 24px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: filter 0.2s;
+    }
+    .btn-submit:hover { filter: brightness(1.1); }
+    .test-banner {
+      background: rgba(94, 106, 210, 0.12);
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+  </style>
+
+  <!-- Schema.org JobPosting for test validation -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "JobPosting",
+    "title": "Staff Frontend Engineer",
+    "description": "Linear is looking for a Staff Frontend Engineer proficient in React, Next.js, TypeScript, Tailwind CSS, GraphQL, and WebSockets to scale our client web architecture.",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": "Linear"
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "addressLocality": "San Francisco",
+        "addressRegion": "CA",
+        "addressCountry": "United States"
+      }
+    },
+    "baseSalary": {
+      "@type": "MonetaryAmount",
+      "value": {
+        "minValue": 180000,
+        "maxValue": 240000,
+        "unitText": "USD"
+      }
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="test-banner">
+      🧪 <strong>Resumely Manual Test Page:</strong> Use this page to test the Resumely Browser Extension.
+      Click the extension icon to see auto-detected job details, ATS match score against candidate Alex Morgan, and click <strong>"Autofill Page"</strong> to test form completion!
+    </div>
+
+    <!-- Header for Greenhouse Scraper -->
+    <header class="header" id="header">
+      <div class="company-name">Linear</div>
+      <h1 class="app-title">Staff Frontend Engineer</h1>
+      <div class="location">San Francisco, CA (or Remote US/EU)</div>
+      <div class="salary-badge">$180,000 — $240,000 • Equity • Full-time</div>
+    </header>
+
+    <!-- Job Description Body -->
+    <main class="content" id="content">
+      <h3>About Linear</h3>
+      <p>
+        Linear is built for high-performance software teams. We obsess over craft, speed, and keyboard-first developer workflows.
+        Our web application is renowned for its instant responsiveness, offline capabilities, and design excellence.
+      </p>
+
+      <h3>About the Role</h3>
+      <p>
+        As a Staff Frontend Engineer, you will set the technical direction for our web clients and design systems.
+        You will work across the stack with React, TypeScript, Next.js, and WebSockets to build lightning-fast collaborative experiences.
+      </p>
+
+      <h3>Responsibilities</h3>
+      <ul>
+        <li>Architect high-throughput, low-latency React and Next.js interfaces that feel instant to developers.</li>
+        <li>Collaborate with product and design to build accessible, WCAG AA compliant design systems in Tailwind CSS.</li>
+        <li>Lead technical design reviews for complex client-side synchronization and state management.</li>
+        <li>Optimize Web Vitals, memory consumption, and 60fps animations.</li>
+        <li>Mentor senior software engineers and champion software craftsmanship.</li>
+      </ul>
+
+      <h3>Requirements</h3>
+      <ul>
+        <li>6+ years of production experience in React, TypeScript, and modern JavaScript.</li>
+        <li>Deep familiarity with Next.js App Router, React Server Components, and client performance profiling.</li>
+        <li>Hands-on experience with GraphQL, REST APIs, and real-time WebSockets.</li>
+        <li>Knowledge of cloud deployment pipelines, Docker, CI/CD, and GitHub Actions.</li>
+        <li>Strong grasp of System Design, Unit Testing (Jest, Vitest), and web security best practices.</li>
+      </ul>
+    </main>
+
+    <!-- Greenhouse-style Application Form -->
+    <section class="form-section">
+      <h2 class="form-title">Apply for this Job</h2>
+      <form id="application_form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first_name">First Name<span class="req">*</span></label>
+            <input type="text" id="first_name" name="first_name" autocomplete="given-name" required>
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name<span class="req">*</span></label>
+            <input type="text" id="last_name" name="last_name" autocomplete="family-name" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email<span class="req">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone<span class="req">*</span></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location (City, State)<span class="req">*</span></label>
+          <input type="text" id="location" name="location" placeholder="e.g. San Francisco, CA">
+        </div>
+
+        <div class="form-group">
+          <label for="urls_linkedin">LinkedIn Profile URL<span class="req">*</span></label>
+          <input type="text" id="urls_linkedin" name="urls[LinkedIn]" placeholder="https://linkedin.com/in/username">
+        </div>
+
+        <div class="form-group">
+          <label for="urls_github">GitHub Profile URL</label>
+          <input type="text" id="urls_github" name="urls[GitHub]" placeholder="https://github.com/username">
+        </div>
+
+        <div class="form-group">
+          <label for="urls_portfolio">Portfolio or Personal Website</label>
+          <input type="text" id="urls_portfolio" name="urls[Portfolio]" placeholder="https://yourwebsite.com">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="current_company">Current Company</label>
+            <input type="text" id="current_company" name="current_company" placeholder="Current Employer">
+          </div>
+          <div class="form-group">
+            <label for="current_title">Current Job Title</label>
+            <input type="text" id="current_title" name="current_title" placeholder="e.g. Senior Software Engineer">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="comments">Cover Letter / Note to Hiring Team</label>
+          <textarea id="comments" name="comments" rows="5" placeholder="Share why you're a great fit for Linear..."></textarea>
+        </div>
+
+        <button type="button" class="btn-submit" onclick="alert('Form submission test. In a live application, this would submit your data!')">
+          Submit Application
+        </button>
+      </form>
+    </section>
+  </div>
+</body>
+</html>
+
