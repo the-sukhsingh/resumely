@@ -132,24 +132,16 @@ export function PopupApp() {
 
       // Inspect active tab
       if (typeof chrome !== "undefined" && chrome.tabs?.query) {
-        setIsDetectingJob(true);
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           const tab = tabs[0];
-          if (tab?.url && tab.url.startsWith("http")) {
+          if (tab?.url && (tab.url.startsWith("http") || tab.url.startsWith("file"))) {
             try {
               const host = new URL(tab.url).hostname.toLowerCase();
-              setActiveDomain(host);
+              setActiveDomain(host || "Local Page");
             } catch {}
           }
           if (tab?.id) {
-            chrome.tabs.sendMessage(tab.id, { action: "EXTRACT_JOB_DETAILS" }, (response) => {
-              setIsDetectingJob(false);
-              if (response?.data && (response.data.title || response.data.description)) {
-                setJob(response.data);
-              } else {
-                setJob(null);
-              }
-            });
+            fetchJobFromTab(tab.id);
           } else {
             setIsDetectingJob(false);
           }
@@ -161,6 +153,46 @@ export function PopupApp() {
 
     loadData();
   }, []);
+
+  // Fetch job details with dynamic content script injection fallback
+  function fetchJobFromTab(tabId: number, canRetry = true) {
+    setIsDetectingJob(true);
+    chrome.tabs.sendMessage(tabId, { action: "EXTRACT_JOB_DETAILS" }, (response) => {
+      if (chrome.runtime?.lastError || !response) {
+        if (canRetry && typeof chrome !== "undefined" && chrome.scripting?.executeScript) {
+          // Tab was open before extension reload: inject content scripts dynamically and retry
+          chrome.scripting
+            .executeScript({
+              target: { tabId },
+              files: [
+                "lib/storage.js",
+                "lib/matcher.js",
+                "content-scripts/detector.js",
+                "content-scripts/autofill.js",
+              ],
+            })
+            .then(() => {
+              setTimeout(() => fetchJobFromTab(tabId, false), 150);
+            })
+            .catch(() => {
+              setIsDetectingJob(false);
+              setJob(null);
+            });
+        } else {
+          setIsDetectingJob(false);
+          setJob(null);
+        }
+        return;
+      }
+
+      setIsDetectingJob(false);
+      if (response.data && (response.data.title || response.data.description)) {
+        setJob(response.data);
+      } else {
+        setJob(null);
+      }
+    });
+  }
 
   // Handle Click-Away for Custom Resume Dropdown
   useEffect(() => {
@@ -177,22 +209,12 @@ export function PopupApp() {
 
   // Re-scan active tab
   function handleScanActiveTab() {
-    showToast("Re-scanning active page...");
-    setIsDetectingJob(true);
+    showToast("Scanning page for job details...");
     if (typeof chrome !== "undefined" && chrome.tabs?.query) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tab = tabs[0];
         if (tab?.id) {
-          chrome.tabs.sendMessage(tab.id, { action: "EXTRACT_JOB_DETAILS" }, (res) => {
-            setIsDetectingJob(false);
-            if (res?.data && (res.data.title || res.data.description)) {
-              setJob(res.data);
-              showToast(`Detected: ${res.data.title || "Job opening"}`);
-            } else {
-              setJob(null);
-              showToast("No job posting detected on this tab");
-            }
-          });
+          fetchJobFromTab(tab.id, true);
         } else {
           setIsDetectingJob(false);
         }
