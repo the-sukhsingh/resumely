@@ -714,7 +714,7 @@
           }
 
           if (window.__ResumelyAutofillEngine && profile) {
-            const res = window.__ResumelyAutofillEngine.autofill(profile);
+            const res = window.__ResumelyAutofillEngine.autofill(profile, true);
             if (statusEl) {
               statusEl.textContent = `Autofilled ${res.count} fields!`;
               setTimeout(() => {

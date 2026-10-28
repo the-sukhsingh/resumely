@@ -3,6 +3,11 @@
 // Automatically triggers when website text/content changes (e.g. multi-step wizards)
 
 (function () {
+  // Prevent execution inside iframes to avoid duplicate triggers and toast flashing
+  if (window.self !== window.top) {
+    return;
+  }
+
   if (window.__resumely_autofill_loaded) return;
   window.__resumely_autofill_loaded = true;
 
@@ -372,34 +377,53 @@
       }, 2500);
     },
 
-    // Show temporary toast notification
+    // Show temporary toast notification (singleton, stable, non-flashing)
+    _toastTimer: null,
     showToast(message, isSuccess = true) {
-      const existing = document.getElementById("resumely-autofill-toast");
-      if (existing) existing.remove();
+      if (window.self !== window.top) return;
 
-      const toast = document.createElement("div");
+      let toast = document.getElementById("resumely-autofill-toast");
+      if (toast) {
+        // Reuse existing element without destroying and recreating DOM nodes
+        const span = toast.querySelector("span");
+        if (span) span.textContent = message;
+        toast.style.opacity = "1";
+        toast.style.transform = "translateY(0)";
+
+        if (this._toastTimer) clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(() => {
+          if (toast) {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateY(8px)";
+            setTimeout(() => toast.remove(), 250);
+          }
+        }, 2800);
+        return;
+      }
+
+      toast = document.createElement("div");
       toast.id = "resumely-autofill-toast";
       toast.style.cssText = `
         position: fixed;
         bottom: 24px;
         right: 24px;
         z-index: 2147483647;
-        background: rgba(9, 9, 11, 0.95);
+        background: #09090b;
         color: #f4f4f5;
-        border: 1px solid ${isSuccess ? "rgba(16, 185, 129, 0.35)" : "rgba(244, 63, 94, 0.35)"};
+        border: 1px solid ${isSuccess ? "rgba(16, 185, 129, 0.4)" : "rgba(244, 63, 94, 0.4)"};
         border-radius: 9999px;
         padding: 9px 16px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", sans-serif;
         font-size: 12px;
         font-weight: 500;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
         display: flex;
         align-items: center;
         gap: 8px;
         backdrop-filter: blur(12px);
-        transform: translateY(12px);
+        transform: translateY(8px);
         opacity: 0;
-        transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), opacity 200ms ease;
+        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease;
         pointer-events: none;
       `;
 
@@ -416,11 +440,12 @@
         toast.style.transform = "translateY(0)";
       });
 
-      setTimeout(() => {
+      if (this._toastTimer) clearTimeout(this._toastTimer);
+      this._toastTimer = setTimeout(() => {
         toast.style.opacity = "0";
         toast.style.transform = "translateY(8px)";
         setTimeout(() => toast.remove(), 250);
-      }, 2600);
+      }, 2800);
     },
 
     // Main autofill execution
@@ -480,7 +505,9 @@
         if (request.profileData) {
           AutofillEngine.cachedProfile = request.profileData;
         }
-        const result = AutofillEngine.autofill(request.profileData || AutofillEngine.cachedProfile);
+        // Popup and floating widget handle their own user feedback UI; suppress redundant in-page toast unless explicitly requested
+        const isSilent = request.silent !== false;
+        const result = AutofillEngine.autofill(request.profileData || AutofillEngine.cachedProfile, isSilent);
         sendResponse(result);
         return true;
       }

@@ -2,6 +2,11 @@
 // Extracts structured job posting information across major job boards and generic career sites
 
 (function () {
+  // Never execute inside iframes to prevent multiple listeners and extraction overhead
+  if (window.self !== window.top) {
+    return;
+  }
+
   if (window.__resumely_detector_loaded) return;
   window.__resumely_detector_loaded = true;
 
