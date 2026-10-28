@@ -154,25 +154,47 @@ export function PopupApp() {
     loadData();
   }, []);
 
-  // Fetch job details with dynamic content script injection fallback
+  // Fetch job details with dynamic content script injection and direct execution fallback
   function fetchJobFromTab(tabId: number, canRetry = true) {
     setIsDetectingJob(true);
+    if (typeof chrome === "undefined" || !chrome.tabs?.sendMessage) {
+      setIsDetectingJob(false);
+      return;
+    }
+
     chrome.tabs.sendMessage(tabId, { action: "EXTRACT_JOB_DETAILS" }, (response) => {
-      if (chrome.runtime?.lastError || !response) {
-        if (canRetry && typeof chrome !== "undefined" && chrome.scripting?.executeScript) {
-          // Tab was open before extension reload: inject content scripts dynamically and retry
+      if (chrome.runtime?.lastError || !response || !response.success) {
+        if (canRetry && chrome.scripting?.executeScript) {
+          // Tab was open before extension reload: inject detector and run extract directly
           chrome.scripting
             .executeScript({
               target: { tabId },
-              files: [
-                "lib/storage.js",
-                "lib/matcher.js",
-                "content-scripts/detector.js",
-                "content-scripts/autofill.js",
-              ],
+              files: ["content-scripts/detector.js"],
             })
             .then(() => {
-              setTimeout(() => fetchJobFromTab(tabId, false), 150);
+              return chrome.scripting.executeScript({
+                target: { tabId },
+                func: () => {
+                  try {
+                    // @ts-ignore
+                    if (window.__ResumelyJobDetector) {
+                      // @ts-ignore
+                      return window.__ResumelyJobDetector.extract();
+                    }
+                  } catch (e) {}
+                  return null;
+                },
+              });
+            })
+            .then((execResults) => {
+              setIsDetectingJob(false);
+              const data = execResults?.[0]?.result;
+              if (data && (data.title || data.description)) {
+                setJob(data);
+                showToast(`Detected: ${data.title || "Job opening"}`);
+              } else {
+                setJob(null);
+              }
             })
             .catch(() => {
               setIsDetectingJob(false);
