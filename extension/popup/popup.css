@@ -1,20 +1,20 @@
 /* ============================================================================
-   Resumely Extension — Clean, Minimal, High-Craft Dark Theme
-   Aligned with Resumely Web App (Next.js 16 + Tailwind zinc palette)
+   Resumely Extension — Ultra-Minimal, High-Craft Design System
+   Crafted following Emil Kowalski's Design Engineering Principles
    ============================================================================ */
 
 :root {
-  --bg-page: #09090b;          /* zinc-950 */
-  --bg-surface: #121215;       /* zinc-900 elevated */
-  --bg-surface-hover: #18181b; /* zinc-900 lighter */
+  --bg-page: #09090b;             /* zinc-950 */
+  --bg-surface: #121215;          /* zinc-900 elevated */
+  --bg-surface-hover: #18181b;    /* zinc-900 lighter */
   --bg-surface-subtle: #1c1c20;
   --bg-input: #121215;
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.16);
-  --border-focus: rgba(255, 255, 255, 0.28);
-  --text-primary: #f4f4f5;     /* zinc-100 */
-  --text-muted: #a1a1aa;       /* zinc-400 */
-  --text-dim: #71717a;         /* zinc-500 */
+  --border-focus: rgba(255, 255, 255, 0.3);
+  --text-primary: #f4f4f5;        /* zinc-100 */
+  --text-muted: #a1a1aa;          /* zinc-400 */
+  --text-dim: #71717a;            /* zinc-500 */
   --accent-white: #ffffff;
   --accent-emerald: #10b981;
   --accent-emerald-subtle: rgba(16, 185, 129, 0.12);
@@ -25,11 +25,14 @@
   --accent-purple: #a855f7;
   --accent-purple-subtle: rgba(168, 85, 247, 0.12);
   --accent-rose: #f43f5e;
+  --accent-rose-subtle: rgba(244, 63, 94, 0.12);
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-full: 9999px;
-  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-fast: 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 * {
@@ -40,11 +43,11 @@
 
 body {
   width: 380px;
-  min-height: 540px;
-  max-height: 580px;
+  min-height: 550px;
+  max-height: 585px;
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", sans-serif;
   font-size: 13px;
   line-height: 1.45;
   overflow-x: hidden;
@@ -69,12 +72,12 @@ body {
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 540px;
+  min-height: 550px;
   position: relative;
 }
 
 /* ============================================================================
-   1. Navbar Header
+   1. Clean Top Navbar
    ============================================================================ */
 .navbar {
   display: flex;
@@ -91,7 +94,9 @@ body {
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
 }
 
 .brand-logo {
@@ -101,67 +106,76 @@ body {
   letter-spacing: -0.06em;
   color: var(--accent-white);
   text-decoration: none;
+  line-height: 1;
   transition: opacity var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .brand-logo:hover {
   opacity: 0.85;
 }
 
-/* 3-Tab Segmented Switcher (Matches AnimatedSwitcher on Resumely) */
-.nav-switcher {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-subtle);
-  padding: 2px;
-  border-radius: var(--radius-md);
-  gap: 2px;
-}
-
-.nav-tab {
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: calc(var(--radius-md) - 2px);
-  cursor: pointer;
+/* Integrated Resume Chip */
+.resume-chip {
   display: flex;
   align-items: center;
   gap: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 3px 8px 3px 7px;
+  font-size: 11px;
+  color: var(--text-muted);
+  max-width: 170px;
+  position: relative;
   transition: all var(--transition-fast);
 }
 
-.nav-tab:hover {
+.resume-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-hover);
   color: var(--text-primary);
 }
 
-.nav-tab.active {
-  background: var(--bg-surface-hover);
-  color: var(--accent-white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+.icon-file {
+  color: var(--text-dim);
+  flex-shrink: 0;
 }
 
-.tab-badge {
-  font-size: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1px 5px;
-  border-radius: var(--radius-full);
-  font-weight: 600;
-  color: var(--text-muted);
+.select-resume-inline {
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  font-size: 11px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-right: 12px;
 }
 
-.nav-tab.active .tab-badge {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--accent-white);
+.select-resume-inline option {
+  background: #18181b;
+  color: #fff;
+}
+
+.icon-chevron {
+  position: absolute;
+  right: 6px;
+  pointer-events: none;
+  color: var(--text-dim);
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 /* Credits Badge */
@@ -179,15 +193,16 @@ body {
   letter-spacing: -0.01em;
 }
 
-.icon-bolt {
-  color: #fbbf24;
+.bolt {
+  font-size: 10px;
+  line-height: 1;
 }
 
 /* User Avatar Toggle */
 .avatar-btn {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 1px solid var(--border-subtle);
   background: var(--bg-surface-hover);
@@ -196,11 +211,15 @@ body {
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  transition: border-color var(--transition-fast);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
 
 .avatar-btn:hover {
   border-color: var(--border-hover);
+}
+
+.avatar-btn:active {
+  transform: scale(0.95);
 }
 
 .avatar-img {
@@ -211,7 +230,7 @@ body {
 }
 
 .avatar-fallback {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
 }
@@ -220,11 +239,11 @@ body {
   position: absolute;
   bottom: -1px;
   right: -1px;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent-emerald);
-  border: 2px solid var(--bg-page);
+  border: 1.5px solid var(--bg-page);
 }
 
 .status-dot.offline {
@@ -232,13 +251,74 @@ body {
 }
 
 /* ============================================================================
-   2. Auth Banner (Subtle & Dismissible/Connectable)
+   2. Segmented Pill Switcher
+   ============================================================================ */
+.nav-bar-container {
+  padding: 6px 14px 2px;
+  background: var(--bg-page);
+}
+
+.nav-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  gap: 3px;
+}
+
+.nav-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 8px;
+  border-radius: calc(var(--radius-md) - 3px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+}
+
+.nav-tab:active {
+  transform: scale(0.97);
+}
+
+.nav-tab.active {
+  background: var(--bg-surface-hover);
+  color: var(--accent-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.tab-badge {
+  font-size: 9px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1px 5px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.nav-tab.active .tab-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--accent-white);
+}
+
+/* ============================================================================
+   3. Auth Banner
    ============================================================================ */
 .connect-banner {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.06));
   border-bottom: 1px solid rgba(59, 130, 246, 0.18);
   padding: 10px 14px;
-  animation: slideDown 200ms ease;
 }
 
 .connect-banner-title {
@@ -266,55 +346,14 @@ body {
 }
 
 /* ============================================================================
-   3. Active Resume Strip
-   ============================================================================ */
-.resume-pill-strip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: 11px;
-}
-
-.strip-label {
-  color: var(--text-dim);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 10px;
-}
-
-.select-resume-bare {
-  flex: 1;
-  background: transparent;
-  color: var(--text-primary);
-  border: none;
-  font-size: 11px;
-  font-weight: 500;
-  outline: none;
-  cursor: pointer;
-  padding-right: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.select-resume-bare option {
-  background: #18181b;
-  color: #fff;
-}
-
-/* ============================================================================
-   4. Tab Views
+   4. Tab Views & Cards
    ============================================================================ */
 .tab-view {
   display: none;
-  padding: 12px 14px;
+  padding: 10px 14px 14px;
   flex: 1;
   overflow-y: auto;
-  gap: 12px;
+  gap: 10px;
 }
 
 .tab-view.active {
@@ -322,37 +361,34 @@ body {
   flex-direction: column;
 }
 
-/* ============================================================================
-   5. Cards (Resumely High-Craft Minimal Style)
-   ============================================================================ */
 .card-hero {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .card-action {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .card-flat {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* Job Header */
@@ -372,24 +408,23 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .pill-tag {
   font-size: 10px;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-muted);
   border: 1px solid var(--border-subtle);
-  text-transform: capitalize;
 }
 
 .pill-salary {
   font-size: 10px;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: var(--radius-full);
   background: var(--accent-emerald-subtle);
   color: #34d399;
@@ -397,7 +432,7 @@ body {
 }
 
 .job-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--accent-white);
   letter-spacing: -0.02em;
@@ -410,8 +445,8 @@ body {
 .job-company-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 5px;
+  font-size: 11px;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -433,13 +468,13 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   color: var(--text-muted);
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   flex-shrink: 0;
 }
 
@@ -449,23 +484,27 @@ body {
   border-color: var(--border-hover);
 }
 
+.btn-icon:active {
+  transform: scale(0.92);
+}
+
 /* ============================================================================
-   6. Match Score Gauge
+   5. ATS Match Score Gauge
    ============================================================================ */
 .match-score-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.25);
+  gap: 12px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
 .gauge-wrap {
   position: relative;
-  width: 76px;
-  height: 76px;
+  width: 68px;
+  height: 68px;
   flex-shrink: 0;
 }
 
@@ -481,10 +520,10 @@ body {
 .gauge-fill {
   fill: none;
   stroke: var(--accent-emerald);
-  stroke-dasharray: 201;
-  stroke-dashoffset: 201;
+  stroke-dasharray: 176;
+  stroke-dashoffset: 176;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
+  transition: stroke-dashoffset 600ms var(--ease-out), stroke 300ms ease;
 }
 
 .gauge-val-wrap {
@@ -497,17 +536,17 @@ body {
 }
 
 .gauge-score {
-  font-size: 21px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.04em;
   color: var(--accent-white);
 }
 
 .gauge-pct {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .match-info {
@@ -519,29 +558,29 @@ body {
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .match-badge.great {
   background: var(--accent-emerald-subtle);
   color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .match-badge.good {
   background: var(--accent-blue-subtle);
   color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .match-badge.fair {
   background: var(--accent-amber-subtle);
   color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .match-tip {
@@ -551,13 +590,12 @@ body {
 }
 
 /* ============================================================================
-   7. Skills Chips
+   6. Skills Chips (Subtle, Refined, Non-Shouting)
    ============================================================================ */
 .skills-block {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 11px;
 }
 
 .skills-row {
@@ -566,27 +604,40 @@ body {
   gap: 4px;
 }
 
-.skills-heading {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-dim);
+.skills-heading-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.skills-heading.matched {
+.skills-heading {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.skills-count-pill {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+}
+
+.skills-count-pill.green {
+  background: var(--accent-emerald-subtle);
   color: #34d399;
 }
 
-.skills-heading.missing {
-  color: #f87171;
+.skills-count-pill.rose {
+  background: var(--accent-rose-subtle);
+  color: #fb7185;
 }
 
 .chips-wrap {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  max-height: 72px;
+  max-height: 60px;
   overflow-y: auto;
 }
 
@@ -619,11 +670,11 @@ body {
 }
 
 /* ============================================================================
-   8. Action Panel & Buttons
+   7. Action Panel (Tactile Emil Kowalski Style)
    ============================================================================ */
 .stage-segmented-bar {
   display: flex;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-subtle);
   padding: 2px;
   border-radius: var(--radius-md);
@@ -645,6 +696,10 @@ body {
 
 .stage-seg:hover {
   color: var(--text-primary);
+}
+
+.stage-seg:active {
+  transform: scale(0.97);
 }
 
 .stage-seg.active {
@@ -669,7 +724,7 @@ body {
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 12px;
-  padding: 8px 10px;
+  padding: 7px 10px;
   outline: none;
   transition: border-color var(--transition-fast);
 }
@@ -682,12 +737,12 @@ body {
   color: var(--text-dim);
 }
 
-/* Tactile Solid White Primary Button */
+/* High-Craft Tactile Button */
 .btn-primary-white {
   background: var(--accent-white);
   color: #09090b;
   border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   padding: 9px 14px;
   border-radius: var(--radius-md);
@@ -696,16 +751,15 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
 .btn-primary-white:hover {
   background: #e4e4e7;
-  transform: translateY(-0.5px);
 }
 
 .btn-primary-white:active {
-  transform: translateY(0);
+  transform: scale(0.97);
 }
 
 .btn-primary-white.saved {
@@ -736,69 +790,8 @@ body {
   color: var(--text-primary);
 }
 
-/* Minimal Input */
-.input-minimal {
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 12px;
-  padding: 8px 10px;
-  outline: none;
-  width: 100%;
-  transition: border-color var(--transition-fast);
-}
-
-.input-minimal:focus {
-  border-color: var(--border-focus);
-}
-
-.input-minimal::placeholder {
-  color: var(--text-dim);
-}
-
-.btn-minimal {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 500;
-  padding: 7px 12px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-}
-
-.btn-minimal:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--border-hover);
-}
-
-.btn-minimal.full {
-  width: 100%;
-  text-align: center;
-}
-
-.btn-resumely-primary {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  transition: background var(--transition-fast);
-}
-
-.btn-resumely-primary:hover {
-  background: #1d4ed8;
-}
-
 /* ============================================================================
-   9. Tab 2: Autofill & Cheat Sheet
+   8. Tab 2: Autofill & Cheat Sheet
    ============================================================================ */
 .hero-autofill {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(59, 130, 246, 0.06));
@@ -813,7 +806,7 @@ body {
 }
 
 .section-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--accent-white);
   letter-spacing: -0.01em;
@@ -830,20 +823,24 @@ body {
   background: var(--accent-emerald);
   color: #fff;
   border: none;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 8px 12px;
+  padding: 7px 11px;
   border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   white-space: nowrap;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
 .btn-emerald:hover {
   background: #059669;
+}
+
+.btn-emerald:active {
+  transform: scale(0.97);
 }
 
 .section-header {
@@ -853,7 +850,7 @@ body {
 }
 
 .section-subheading {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--accent-white);
   text-transform: uppercase;
@@ -875,17 +872,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 10px;
+  padding: 6px 9px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .cheat-row:hover {
   background: var(--bg-surface-hover);
   border-color: var(--border-hover);
+}
+
+.cheat-row:active {
+  transform: scale(0.98);
 }
 
 .cheat-label {
@@ -897,13 +898,13 @@ body {
 }
 
 .cheat-val {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-primary);
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-right: 8px;
+  padding-right: 6px;
 }
 
 .copy-hint {
@@ -922,10 +923,10 @@ body {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 10px;
+  padding: 9px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .snippet-top {
@@ -949,7 +950,7 @@ body {
   color: var(--text-muted);
   font-size: 10px;
   font-weight: 500;
-  padding: 2px 7px;
+  padding: 2px 6px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -959,16 +960,20 @@ body {
   color: var(--accent-white);
 }
 
+.btn-copy-chip:active {
+  transform: scale(0.95);
+}
+
 .snippet-content {
   font-size: 11px;
   color: var(--text-muted);
   line-height: 1.4;
-  max-height: 80px;
+  max-height: 70px;
   overflow-y: auto;
 }
 
 /* ============================================================================
-   10. Tab 3: Job Tracker (Real Data)
+   9. Tab 3: Tracker
    ============================================================================ */
 .tracker-header {
   display: flex;
@@ -983,7 +988,7 @@ body {
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 500;
-  padding: 4px 8px;
+  padding: 3px 7px;
   text-decoration: none;
   transition: all var(--transition-fast);
 }
@@ -1000,7 +1005,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 340px;
+  max-height: 330px;
   overflow-y: auto;
 }
 
@@ -1008,7 +1013,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 11px;
+  padding: 8px 10px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -1023,6 +1028,7 @@ body {
 .tracker-item-left {
   flex: 1;
   min-width: 0;
+  cursor: pointer;
 }
 
 .tracker-item-title {
@@ -1035,7 +1041,7 @@ body {
 }
 
 .tracker-item-company {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   margin-top: 1px;
   white-space: nowrap;
@@ -1064,10 +1070,6 @@ body {
   background: var(--accent-purple-subtle);
   color: #d8b4fe;
 }
-.tracker-item-badge.offered {
-  background: var(--accent-emerald-subtle);
-  color: #6ee7b7;
-}
 
 .tracker-item-del {
   background: transparent;
@@ -1085,13 +1087,13 @@ body {
 
 .empty-placeholder {
   text-align: center;
-  padding: 30px 10px;
+  padding: 28px 10px;
   font-size: 11px;
   color: var(--text-dim);
 }
 
 /* ============================================================================
-   11. Slide-Over Drawer: Account & Settings
+   10. Slide-Over Drawer
    ============================================================================ */
 .drawer-overlay {
   position: fixed;
@@ -1114,13 +1116,13 @@ body {
   top: 0;
   right: -340px;
   bottom: 0;
-  width: 330px;
+  width: 320px;
   background: var(--bg-surface);
   border-left: 1px solid var(--border-subtle);
   z-index: 50;
   display: flex;
   flex-direction: column;
-  transition: right 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: right 240ms var(--ease-out);
   box-shadow: -8px 0 24px rgba(0, 0, 0, 0.5);
 }
 
@@ -1132,7 +1134,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -1146,7 +1148,7 @@ body {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 20px;
+  font-size: 19px;
   cursor: pointer;
   line-height: 1;
   padding: 0 4px;
@@ -1157,21 +1159,21 @@ body {
 }
 
 .drawer-body {
-  padding: 14px;
+  padding: 12px 14px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .drawer-card {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 12px;
+  padding: 11px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .card-caption-title {
@@ -1189,8 +1191,8 @@ body {
 }
 
 .account-avatar-wrap {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--bg-surface-hover);
   border: 1px solid var(--border-subtle);
@@ -1208,7 +1210,7 @@ body {
 }
 
 .account-avatar-fallback {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--accent-white);
 }
@@ -1219,7 +1221,7 @@ body {
 }
 
 .account-name-text {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--accent-white);
   white-space: nowrap;
@@ -1242,7 +1244,7 @@ body {
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 500;
-  padding: 5px 10px;
+  padding: 5px 9px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -1256,8 +1258,8 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   color: var(--text-primary);
-  font-size: 12px;
-  padding: 7px 10px;
+  font-size: 11px;
+  padding: 6px 9px;
   outline: none;
   cursor: pointer;
 }
@@ -1277,7 +1279,7 @@ body {
   justify-content: space-between;
   padding-top: 6px;
   border-top: 1px solid var(--border-subtle);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .domain-text {
@@ -1286,8 +1288,55 @@ body {
   color: var(--accent-white);
 }
 
+.input-minimal {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 7px 9px;
+  outline: none;
+  width: 100%;
+  transition: border-color var(--transition-fast);
+}
+
+.input-minimal:focus {
+  border-color: var(--border-focus);
+}
+
+.input-minimal::placeholder {
+  color: var(--text-dim);
+}
+
+.btn-minimal {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-minimal:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-hover);
+}
+
+.btn-minimal:active {
+  transform: scale(0.97);
+}
+
+.btn-minimal.full {
+  width: 100%;
+  text-align: center;
+}
+
 /* ============================================================================
-   12. Pitch Modal
+   11. Pitch Modal & Toast
    ============================================================================ */
 .modal-overlay {
   position: fixed;
@@ -1305,11 +1354,11 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 14px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
@@ -1329,7 +1378,7 @@ body {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 20px;
+  font-size: 19px;
   cursor: pointer;
   line-height: 1;
 }
@@ -1340,9 +1389,9 @@ body {
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
-  padding: 10px;
+  padding: 9px;
   outline: none;
   resize: vertical;
 }
@@ -1354,12 +1403,9 @@ body {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
-/* ============================================================================
-   13. Toast
-   ============================================================================ */
 .toast {
   position: fixed;
   bottom: 14px;
@@ -1375,16 +1421,11 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   pointer-events: none;
   opacity: 0;
-  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 200ms var(--ease-out);
   z-index: 100;
 }
 
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
 }
