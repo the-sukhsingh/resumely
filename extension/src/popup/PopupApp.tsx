@@ -253,37 +253,6 @@ export function PopupApp() {
     showToast("Removed from tracker");
   }
 
-  function broadcastSettingsUpdate(updatedSettings: ExtensionSettings) {
-    if (typeof chrome !== "undefined" && chrome.tabs?.query) {
-      chrome.tabs.query({}, (tabs) => {
-        tabs.forEach((tab) => {
-          if (tab.id) {
-            try {
-              chrome.tabs.sendMessage(tab.id, {
-                action: "SETTINGS_UPDATED",
-                settings: updatedSettings,
-              });
-            } catch {}
-          }
-        });
-      });
-    }
-  }
-
-  // Toggle Domain Block
-  async function handleToggleDomain() {
-    if (!activeDomain) return;
-    const isBlocked = await ResumelyStorage.toggleDomainBlacklist(activeDomain);
-    const updatedSettings = await ResumelyStorage.getSettings();
-    setSettings(updatedSettings);
-    broadcastSettingsUpdate(updatedSettings);
-    showToast(isBlocked ? `Excluded on ${activeDomain}` : `Allowed on ${activeDomain}`);
-  }
-
-  const isCurrentDomainBlocked = Boolean(
-    activeDomain && settings?.blacklistedDomains?.includes(activeDomain)
-  );
-
   const filteredJobs = savedJobs.filter(
     (j) =>
       !searchQuery ||
@@ -863,63 +832,19 @@ export function PopupApp() {
             </div>
           </div>
 
-          {/* Floating Assistant Widget Mode */}
-          <div className="flex flex-col gap-2 rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3.5">
-            <div className="flex items-center gap-1.5">
-              <Shield className="size-3.5 text-zinc-600" />
-              <span className="text-[11px] font-semibold text-zinc-800">
-                Floating Assistant Pill
+          {/* Active Website Context */}
+          {activeDomain && (
+            <div className="flex items-center justify-between rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 shadow-2xs">
+              <div>
+                <div className="text-[10px] text-zinc-400 font-medium">Active Website</div>
+                <div className="text-[12px] font-semibold text-zinc-900 truncate max-w-[200px]">{activeDomain}</div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+                <span className="size-1.5 rounded-full bg-emerald-500"></span>
+                Ready
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 leading-snug">
-              Choose where the quick-save pill appears while browsing.
-            </p>
-
-            <select
-              value={settings?.widgetActivationMode || "job_sites_only"}
-              onChange={async (e) => {
-                const mode = e.target.value as any;
-                const updated = await ResumelyStorage.saveSettings({
-                  widgetActivationMode: mode,
-                  showFloatingWidget: mode !== "disabled",
-                });
-                setSettings(updated);
-                broadcastSettingsUpdate(updated);
-                showToast(
-                  mode === "job_sites_only"
-                    ? "Active only on Job Boards & Career Sites"
-                    : mode === "all_sites"
-                    ? "Active on All Sites with job content"
-                    : "Floating widget disabled everywhere"
-                );
-              }}
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-[11px] font-medium text-zinc-800 outline-none cursor-pointer shadow-2xs"
-            >
-              <option value="job_sites_only">🎯 Only on Job Boards & Career Sites (Default)</option>
-              <option value="all_sites">🌐 On All Websites</option>
-              <option value="disabled">🚫 Disabled Everywhere (Popup only)</option>
-            </select>
-
-            {/* Current Site Control */}
-            {activeDomain && (
-              <div className="flex items-center justify-between border-t border-zinc-200/70 pt-2 mt-1">
-                <div>
-                  <div className="text-[10px] text-zinc-400 font-medium">Active Website:</div>
-                  <div className="text-[11px] font-semibold text-zinc-900 truncate max-w-[130px]">{activeDomain}</div>
-                </div>
-                <button
-                  onClick={handleToggleDomain}
-                  className={`rounded-lg border px-2.5 py-1 text-[10px] font-semibold transition-all cursor-pointer shadow-2xs ${
-                    isCurrentDomainBlocked
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                      : "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
-                  }`}
-                >
-                  {isCurrentDomainBlocked ? "Allow on this site" : "Block on this site"}
-                </button>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* Backend Connection */}
           <div className="flex flex-col gap-2 rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3.5">
