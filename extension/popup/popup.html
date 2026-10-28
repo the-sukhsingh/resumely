@@ -7,341 +7,313 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="app-container">
-    <!-- Top Bar Header (Aligned to Resumely Website) -->
-    <header class="header">
-      <div class="brand">
-        <span class="brand-logo-text">re.</span>
-        <div class="brand-badge" id="version-tag">Extension</div>
+  <div class="app">
+    <!-- Navbar Header (Matches Resumely Navbar) -->
+    <header class="navbar">
+      <div class="navbar-left">
+        <a href="#" class="brand-logo" id="btn-brand-home" title="Resumely">re.</a>
       </div>
 
-      <div class="header-user-section">
-        <!-- Credits badge -->
-        <div class="credits-pill" id="header-credits" title="Resumely AI Credits">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <!-- Segmented Tab Switcher (Matches AnimatedSwitcher) -->
+      <nav class="nav-switcher">
+        <button class="nav-tab active" data-tab="tab-match">Match</button>
+        <button class="nav-tab" data-tab="tab-autofill">Autofill</button>
+        <button class="nav-tab" data-tab="tab-tracker">
+          Tracker <span class="tab-badge" id="tracker-counter">0</span>
+        </button>
+      </nav>
+
+      <div class="navbar-right">
+        <!-- Credits Pill -->
+        <div class="credits-badge" id="header-credits" title="Available Credits">
+          <svg class="icon-bolt" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span id="credits-count">--</span>
         </div>
 
-        <!-- User profile avatar / status -->
-        <div class="user-pill" id="header-user" title="Account Status">
-          <img class="user-avatar" id="user-avatar-img" src="" alt="Avatar" style="display: none;">
-          <div class="avatar-placeholder" id="user-avatar-fallback">R</div>
-          <span class="status-indicator-dot" id="auth-status-dot"></span>
-        </div>
+        <!-- User Avatar / Menu Toggle -->
+        <button class="avatar-btn" id="btn-user-menu" title="Account & Settings">
+          <img class="avatar-img" id="user-avatar-img" src="" alt="User" style="display: none;">
+          <div class="avatar-fallback" id="user-avatar-fallback">R</div>
+          <span class="status-dot" id="auth-status-dot"></span>
+        </button>
       </div>
     </header>
 
-    <!-- Quick Auth Connect Banner (if unauthenticated) -->
-    <div class="auth-banner" id="auth-banner" style="display: none;">
-      <div class="auth-banner-content">
-        <div class="auth-banner-title">Connect your Resumely account</div>
-        <p class="auth-banner-sub">Sync your real master resume, tailored versions, and live Kanban tracker.</p>
-        <div class="auth-banner-actions">
-          <button class="btn-resumely-primary" id="btn-open-resumely-login">
-            Open Resumely to Sign In ↗
-          </button>
-          <div class="auth-inline-row">
-            <input type="email" class="input-dark" id="quick-email-input" placeholder="or enter account email (e.g. you@gmail.com)">
-            <button class="btn-dark-secondary" id="btn-quick-email-connect">Connect</button>
-          </div>
+    <!-- Quick Sign In Banner (Only shown if unauthenticated) -->
+    <div class="connect-banner" id="auth-banner" style="display: none;">
+      <div class="connect-banner-title">Connect your Resumely account</div>
+      <p class="connect-banner-desc">Sync your real master resume, tailored versions, and live Kanban.</p>
+      <div class="connect-actions">
+        <button class="btn-resumely-primary" id="btn-open-resumely-login">Sign in with Resumely ↗</button>
+        <div class="connect-inline-row">
+          <input type="email" class="input-minimal" id="quick-email-input" placeholder="or enter account email...">
+          <button class="btn-minimal" id="btn-quick-email-connect">Connect</button>
         </div>
       </div>
     </div>
 
-    <!-- Navigation Switcher (Matches Resumely AnimatedSwitcher) -->
-    <nav class="nav-switcher">
-      <button class="nav-tab-pill active" data-tab="tab-matcher">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        <span>Match & Clip</span>
-      </button>
-      <button class="nav-tab-pill" data-tab="tab-autofill">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        <span>Autofill</span>
-      </button>
-      <button class="nav-tab-pill" data-tab="tab-saved-jobs">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        <span>Tracker (<span id="saved-jobs-counter">0</span>)</span>
-      </button>
-      <button class="nav-tab-pill" data-tab="tab-pitch">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        <span>Pitch</span>
-      </button>
-      <button class="nav-tab-pill" data-tab="tab-settings">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Settings</span>
-      </button>
-    </nav>
+    <!-- Active Resume Selector Pill -->
+    <div class="resume-pill-strip">
+      <span class="strip-label">Version:</span>
+      <select class="select-resume-bare" id="select-resume">
+        <option value="loading">Loading resumes...</option>
+      </select>
+    </div>
 
-    <!-- TAB 1: Match & Clip -->
-    <main class="tab-pane active" id="tab-matcher">
-      <!-- Active Resume Selector Bar -->
-      <div class="resume-selector-bar">
-        <label class="selector-label" for="select-resume">Active Resume Version:</label>
-        <select class="select-clean" id="select-resume">
-          <option value="loading">Loading real resumes from Resumely...</option>
-        </select>
-      </div>
-
+    <!-- MAIN TAB 1: Match & Save -->
+    <main class="tab-view active" id="tab-match">
       <!-- Detected Job Card -->
-      <section class="card-outline">
-        <div class="card-header-row">
-          <div class="job-titles">
-            <span class="source-tag" id="job-source">Detected</span>
-            <h2 class="job-h2" id="job-title">Scanning current page...</h2>
-            <div class="job-meta-row">
-              <span class="company-text" id="job-company">Looking for job opening</span>
-              <span class="dot">•</span>
-              <span class="location-text" id="job-location">Auto-detect</span>
+      <section class="card-hero">
+        <div class="job-header">
+          <div class="job-meta">
+            <div class="job-tags-row">
+              <span class="pill-tag" id="job-source">Detected</span>
+              <span class="pill-salary" id="job-salary" style="display: none;"></span>
+            </div>
+            <h1 class="job-title" id="job-title">Scanning page...</h1>
+            <div class="job-company-row">
+              <span class="company-name" id="job-company">Looking for job opening</span>
+              <span class="sep">•</span>
+              <span class="company-loc" id="job-location">Auto-detect</span>
             </div>
           </div>
-          <button class="icon-refresh-btn" id="btn-refresh-job" title="Re-scan active page">
+          <button class="btn-icon" id="btn-refresh-job" title="Re-scan page">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           </button>
         </div>
 
-        <!-- ATS Score Gauge Section -->
-        <div class="ats-gauge-container">
-          <div class="gauge-ring-wrap">
-            <svg class="gauge-svg" width="84" height="84" viewBox="0 0 84 84">
-              <circle class="gauge-track" cx="42" cy="42" r="36" stroke-width="6"/>
-              <circle class="gauge-progress" id="score-ring" cx="42" cy="42" r="36" stroke-width="6"/>
+        <!-- ATS Score Gauge -->
+        <div class="match-score-row">
+          <div class="gauge-wrap">
+            <svg class="gauge-svg" width="76" height="76" viewBox="0 0 76 76">
+              <circle class="gauge-bg" cx="38" cy="38" r="32" stroke-width="5"/>
+              <circle class="gauge-fill" id="score-ring" cx="38" cy="38" r="32" stroke-width="5"/>
             </svg>
-            <div class="gauge-center-text">
-              <span class="gauge-number" id="match-score-val">--</span>
-              <span class="gauge-percent">%</span>
+            <div class="gauge-val-wrap">
+              <span class="gauge-score" id="match-score-val">--</span>
+              <span class="gauge-pct">%</span>
             </div>
           </div>
 
-          <div class="gauge-insights">
-            <div class="gauge-rating" id="score-rating-label">Calculating Match...</div>
-            <p class="gauge-desc" id="score-desc">Comparing extracted JD requirements against your active resume skills.</p>
+          <div class="match-info">
+            <div class="match-badge" id="score-rating-label">Calculating Fit...</div>
+            <p class="match-tip" id="score-desc">Comparing extracted requirements against your active resume skills.</p>
           </div>
         </div>
 
-        <!-- Skills Breakdown -->
-        <div class="skills-section">
-          <div class="skills-block">
-            <div class="skills-title matched-color">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-              Matched Skills (<span id="matched-count">0</span>)
-            </div>
-            <div class="chips-flex" id="matched-chips">
-              <span class="chip-muted">Scanning...</span>
+        <!-- Matched vs Missing Skills Chips -->
+        <div class="skills-block">
+          <div class="skills-row">
+            <span class="skills-heading matched">Matched (<span id="matched-count">0</span>)</span>
+            <div class="chips-wrap" id="matched-chips">
+              <span class="chip-empty">Scanning skills...</span>
             </div>
           </div>
 
-          <div class="skills-block">
-            <div class="skills-title missing-color">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Missing Keywords (<span id="missing-count">0</span>)
-            </div>
-            <div class="chips-flex" id="missing-chips">
-              <span class="chip-muted">None detected</span>
+          <div class="skills-row">
+            <span class="skills-heading missing">Missing (<span id="missing-count">0</span>)</span>
+            <div class="chips-wrap" id="missing-chips">
+              <span class="chip-empty">None detected</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Save to Tracker Box -->
-      <section class="card-outline">
-        <div class="form-item">
-          <label class="form-label-sub">Kanban Stage in Resumely</label>
-          <div class="stage-pills-row">
-            <button class="stage-pill active" data-stage="saved">Wishlist</button>
-            <button class="stage-pill" data-stage="applied">Applied</button>
-            <button class="stage-pill" data-stage="interviewing">Interviewing</button>
-          </div>
+      <!-- Action Panel: Stage & Save -->
+      <section class="card-action">
+        <div class="stage-segmented-bar">
+          <button class="stage-seg active" data-stage="saved">Wishlist</button>
+          <button class="stage-seg" data-stage="applied">Applied</button>
+          <button class="stage-seg" data-stage="interviewing">Interviewing</button>
         </div>
 
-        <div class="form-item">
-          <input type="text" class="input-dark" id="job-notes" placeholder="Notes (e.g. Referral from Jane, recruiter call Friday)">
-        </div>
+        <input type="text" class="input-note" id="job-notes" placeholder="Add optional note (e.g. Referral by Alex)">
 
-        <button class="btn-resumely-cta" id="btn-save-job">
+        <button class="btn-primary-white" id="btn-save-job">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          <span id="save-btn-text">Save to Resumely Tracker</span>
+          <span id="save-btn-text">Save to Job Tracker</span>
         </button>
 
-        <div class="deep-links-footer">
-          <a href="#" id="link-open-tracker" target="_blank" class="link-footer">View in Resumely Tracker (Kanban) ↗</a>
-          <span class="dot">•</span>
-          <a href="#" id="link-tailor-in-app" target="_blank" class="link-footer">Tailor in Resumely ↗</a>
+        <div class="sub-links-row">
+          <a href="#" id="link-open-tracker" target="_blank" class="sub-link">Open Kanban ↗</a>
+          <span class="sep">•</span>
+          <a href="#" id="link-tailor-in-app" target="_blank" class="sub-link">Tailor with AI ↗</a>
+          <span class="sep">•</span>
+          <a href="#" id="btn-open-pitch-modal" class="sub-link">Elevator Pitch</a>
         </div>
       </section>
     </main>
 
-    <!-- TAB 2: Form Autofill & Quick Copy -->
-    <main class="tab-pane" id="tab-autofill">
-      <section class="card-outline hero-fill-card">
-        <div class="hero-fill-flex">
+    <!-- MAIN TAB 2: Autofill & Cheat Sheet -->
+    <main class="tab-view" id="tab-autofill">
+      <section class="card-hero hero-autofill">
+        <div class="autofill-callout">
           <div>
-            <h3 class="card-h3">Smart Form Autofill</h3>
-            <p class="card-sub" id="autofill-status-text">Detects Greenhouse, Lever, Workday & custom job applications.</p>
+            <h2 class="section-title">Form Autofill</h2>
+            <p class="section-desc" id="autofill-status-text">Fills Greenhouse, Lever, Workday & custom portals instantly.</p>
           </div>
-          <button class="btn-emerald-fill" id="btn-trigger-autofill">
+          <button class="btn-emerald" id="btn-trigger-autofill">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             Autofill Page
           </button>
         </div>
       </section>
 
-      <!-- Cheat Sheet List -->
-      <section class="card-outline">
-        <div class="cheat-sheet-header">
-          <h3 class="card-h3">Resume Cheat Sheet</h3>
-          <span class="badge-subtle">Click to Copy</span>
+      <!-- Cheat Sheet Card -->
+      <section class="card-flat">
+        <div class="section-header">
+          <h3 class="section-subheading">Quick Copy</h3>
+          <span class="caption-muted">Click row to copy</span>
         </div>
 
-        <div class="copy-rows-group">
-          <div class="copy-item-row" data-copy="fullName">
-            <span class="copy-tag">Full Name</span>
-            <span class="copy-value" id="qc-name">Candidate</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+        <div class="cheat-sheet-list">
+          <div class="cheat-row" data-copy="fullName">
+            <span class="cheat-label">Name</span>
+            <span class="cheat-val" id="qc-name">Candidate</span>
+            <span class="copy-hint">Copy</span>
           </div>
 
-          <div class="copy-item-row" data-copy="email">
-            <span class="copy-tag">Email</span>
-            <span class="copy-value" id="qc-email">--</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="cheat-row" data-copy="email">
+            <span class="cheat-label">Email</span>
+            <span class="cheat-val" id="qc-email">--</span>
+            <span class="copy-hint">Copy</span>
           </div>
 
-          <div class="copy-item-row" data-copy="phone">
-            <span class="copy-tag">Phone</span>
-            <span class="copy-value" id="qc-phone">--</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="cheat-row" data-copy="phone">
+            <span class="cheat-label">Phone</span>
+            <span class="cheat-val" id="qc-phone">--</span>
+            <span class="copy-hint">Copy</span>
           </div>
 
-          <div class="copy-item-row" data-copy="location">
-            <span class="copy-tag">Location</span>
-            <span class="copy-value" id="qc-location">--</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="cheat-row" data-copy="location">
+            <span class="cheat-label">Location</span>
+            <span class="cheat-val" id="qc-location">--</span>
+            <span class="copy-hint">Copy</span>
           </div>
 
-          <div class="copy-item-row" data-copy="linkedin">
-            <span class="copy-tag">LinkedIn</span>
-            <span class="copy-value" id="qc-linkedin">--</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="cheat-row" data-copy="linkedin">
+            <span class="cheat-label">LinkedIn</span>
+            <span class="cheat-val" id="qc-linkedin">--</span>
+            <span class="copy-hint">Copy</span>
           </div>
 
-          <div class="copy-item-row" data-copy="github">
-            <span class="copy-tag">GitHub</span>
-            <span class="copy-value" id="qc-github">--</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="cheat-row" data-copy="github">
+            <span class="cheat-label">GitHub</span>
+            <span class="cheat-val" id="qc-github">--</span>
+            <span class="copy-hint">Copy</span>
           </div>
 
-          <div class="copy-item-row" data-copy="website">
-            <span class="copy-tag">Portfolio</span>
-            <span class="copy-value" id="qc-website">--</span>
-            <button class="copy-icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <div class="cheat-row" data-copy="website">
+            <span class="cheat-label">Portfolio</span>
+            <span class="cheat-val" id="qc-website">--</span>
+            <span class="copy-hint">Copy</span>
           </div>
         </div>
 
-        <!-- Summary box -->
-        <div class="summary-card-snippet">
-          <div class="summary-header">
-            <span class="summary-label">Summary Statement</span>
-            <button class="btn-micro" id="btn-copy-summary">Copy</button>
+        <!-- Summary Snippet -->
+        <div class="summary-snippet-box">
+          <div class="snippet-top">
+            <span class="snippet-tag">Professional Summary</span>
+            <button class="btn-copy-chip" id="btn-copy-summary">Copy Summary</button>
           </div>
-          <div class="summary-body-text" id="qc-summary-text">No summary loaded.</div>
+          <div class="snippet-content" id="qc-summary-text">No summary loaded.</div>
         </div>
       </section>
     </main>
 
-    <!-- TAB 3: Saved Jobs in Resumely Tracker (Real Data) -->
-    <main class="tab-pane" id="tab-saved-jobs">
-      <section class="card-outline">
-        <div class="saved-jobs-top">
+    <!-- MAIN TAB 3: Job Tracker (Real Data) -->
+    <main class="tab-view" id="tab-tracker">
+      <section class="card-flat">
+        <div class="tracker-header">
           <div>
-            <h3 class="card-h3">Tracked Applications</h3>
-            <p class="card-sub">Saved locally and synced to your Resumely Convex Kanban.</p>
+            <h2 class="section-title">Saved Applications</h2>
+            <p class="section-desc">Synced with your Resumely Convex Kanban.</p>
           </div>
-          <a href="#" id="link-header-tracker" target="_blank" class="btn-micro-primary">Open Kanban ↗</a>
+          <a href="#" id="link-header-tracker" target="_blank" class="btn-micro-white">Open Kanban ↗</a>
         </div>
 
-        <input type="text" class="input-dark" id="search-saved-jobs" placeholder="Filter by title, company, or stage...">
+        <input type="text" class="input-minimal search-input" id="search-saved-jobs" placeholder="Search saved jobs...">
 
-        <div class="saved-jobs-list" id="saved-jobs-container">
-          <div class="empty-state">No saved applications yet. Clip jobs from the "Match & Clip" tab!</div>
+        <div class="tracker-list" id="saved-jobs-container">
+          <div class="empty-placeholder">No saved jobs yet. Clip one from the Match tab!</div>
         </div>
       </section>
     </main>
 
-    <!-- TAB 4: Tailored Elevator Pitch -->
-    <main class="tab-pane" id="tab-pitch">
-      <section class="card-outline">
-        <div class="card-header-row">
-          <div>
-            <h3 class="card-h3">Tailored Elevator Pitch</h3>
-            <p class="card-sub">Custom pitch highlighting your real skills for this role.</p>
+    <!-- SLIDE-OVER DRAWER: Account & Preferences -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <aside class="drawer" id="settings-drawer">
+      <div class="drawer-header">
+        <h3 class="drawer-title">Account & Preferences</h3>
+        <button class="btn-close-drawer" id="btn-close-drawer">×</button>
+      </div>
+
+      <div class="drawer-body">
+        <!-- Account Card -->
+        <div class="drawer-card">
+          <div class="account-profile">
+            <div class="account-avatar-wrap">
+              <img class="account-avatar-img" id="drawer-avatar-img" src="" alt="Avatar" style="display: none;">
+              <div class="account-avatar-fallback" id="drawer-avatar-fallback">R</div>
+            </div>
+            <div class="account-text">
+              <div class="account-name-text" id="acc-name">Not Signed In</div>
+              <div class="account-email-text" id="acc-email">Connect with Resumely</div>
+            </div>
           </div>
-          <button class="btn-micro" id="btn-generate-pitch">Regenerate</button>
+          <button class="btn-danger-minimal" id="btn-disconnect-account" style="display: none;">Sign Out</button>
         </div>
 
-        <textarea class="pitch-box" id="pitch-text" rows="12" placeholder="Extracting job description to tailor elevator pitch..."></textarea>
+        <!-- In-Page Widget Preferences -->
+        <div class="drawer-card">
+          <div class="card-caption-title">Assistant Floating Widget</div>
+          <p class="caption-muted">Choose where the floating pill appears on web pages.</p>
 
-        <button class="btn-dark-secondary full-width" id="btn-copy-pitch">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy Pitch to Clipboard
-        </button>
-      </section>
-    </main>
-
-    <!-- TAB 5: Settings -->
-    <main class="tab-pane" id="tab-settings">
-      <section class="card-outline">
-        <h3 class="card-h3">Resumely Account</h3>
-        <p class="card-sub" id="settings-account-desc">Connecting to Resumely backend.</p>
-
-        <div class="account-card" id="account-info-box">
-          <div class="account-details">
-            <span class="account-name" id="acc-name">Not Signed In</span>
-            <span class="account-email" id="acc-email">Connect below</span>
-          </div>
-          <button class="btn-micro danger" id="btn-disconnect-account" style="display: none;">Sign Out</button>
-        </div>
-
-        <div class="form-item">
-          <label class="form-label-sub" for="setting-app-url">Resumely Web App URL</label>
-          <input type="text" class="input-dark" id="setting-app-url" value="http://localhost:3000">
-        </div>
-
-        <div class="form-item">
-          <label class="form-label-sub" for="setting-user-email">Account Email</label>
-          <input type="email" class="input-dark" id="setting-user-email" placeholder="you@example.com">
-        </div>
-
-        <button class="btn-resumely-primary full-width" id="btn-test-connection">
-          Sync with Resumely
-        </button>
-      </section>
-
-      <section class="card-outline">
-        <h3 class="card-h3">Assistant & In-Page Widget</h3>
-
-        <div class="form-item">
-          <label class="form-label-sub" for="select-widget-mode">Where should the floating widget appear?</label>
-          <select class="input-dark select-mode" id="select-widget-mode">
+          <select class="select-bare full" id="select-widget-mode">
             <option value="job_sites_only">🎯 Only on Job Boards & Career Sites (Default)</option>
-            <option value="all_sites">🌐 On All Websites (when job/form is detected)</option>
+            <option value="all_sites">🌐 On All Websites</option>
             <option value="disabled">🚫 Disabled Everywhere (Popup only)</option>
           </select>
-        </div>
 
-        <div class="domain-control-row" id="domain-control-box">
-          <div class="domain-info">
-            <span class="domain-label">Current Site</span>
-            <span class="domain-name" id="current-tab-domain">Detecting...</span>
+          <!-- Current Site Control -->
+          <div class="domain-strip">
+            <div>
+              <div class="caption-muted">Active Site:</div>
+              <div class="domain-text" id="current-tab-domain">Detecting...</div>
+            </div>
+            <button class="btn-minimal" id="btn-toggle-current-domain">Block Domain</button>
           </div>
-          <button class="btn-micro" id="btn-toggle-current-domain">Block Site</button>
         </div>
 
-        <button class="btn-dark-secondary full-width" id="btn-reset-demo">
-          Switch to Demo Profile Mode
-        </button>
-      </section>
-    </main>
+        <!-- Backend URL Connection -->
+        <div class="drawer-card">
+          <div class="card-caption-title">Resumely Server</div>
+          <input type="text" class="input-minimal" id="setting-app-url" value="http://localhost:3000">
+          <input type="email" class="input-minimal" id="setting-user-email" placeholder="Account email (e.g. you@gmail.com)">
+          <button class="btn-primary-white full" id="btn-test-connection">Sync with Resumely</button>
+        </div>
 
-    <!-- Toast Feedback -->
+        <!-- Demo Profile Fallback -->
+        <button class="btn-minimal full" id="btn-reset-demo">Switch to Demo Profile Mode</button>
+      </div>
+    </aside>
+
+    <!-- MODAL: Elevator Pitch -->
+    <div class="modal-overlay" id="pitch-modal" style="display: none;">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 class="modal-title">Tailored Elevator Pitch</h3>
+          <button class="btn-close-modal" id="btn-close-pitch">×</button>
+        </div>
+        <textarea class="pitch-textarea" id="pitch-text" rows="10" placeholder="Generating pitch..."></textarea>
+        <div class="modal-actions">
+          <button class="btn-minimal" id="btn-generate-pitch">Regenerate</button>
+          <button class="btn-primary-white" id="btn-copy-pitch">Copy Pitch</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
     <div class="toast" id="popup-toast"></div>
   </div>
 
