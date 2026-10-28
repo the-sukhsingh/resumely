@@ -1,5 +1,5 @@
 // Resumely Floating In-Page Assistant Widget
-// Injects a floating assistant pill with Shadow DOM isolation - Active strictly on job sites by default
+// Redesigned with Emil Kowalski Craft Sensibility: Dynamic Island Pill, Tactile Feedback, Shadow DOM
 
 (function () {
   if (window.__resumely_widget_loaded) return;
@@ -44,6 +44,7 @@
     "levels.fyi",
     "monster.com",
     "careerbuilder.com",
+    "docs.google.com", // Google Forms often used for hiring
   ];
 
   function isJobWebsite() {
@@ -53,7 +54,6 @@
 
     // 1. Check known job boards
     if (KNOWN_JOB_DOMAINS.some((d) => hostname.includes(d))) {
-      // For linkedin, make sure user is on jobs
       if (hostname.includes("linkedin.com") && !pathname.includes("/jobs")) {
         return false;
       }
@@ -65,7 +65,7 @@
       return true;
     }
 
-    // 3. Check career URL path patterns on any company website
+    // 3. Check career URL path patterns
     const careerPathPattern = /\/(careers|career|jobs|job|openings|apply|positions|work-with-us|join-us|vacancies)(\/|$)/i;
     if (careerPathPattern.test(pathname)) {
       return true;
@@ -92,22 +92,27 @@
       this.analysis = null;
       this.isExpanded = false;
       this.settings = null;
+      this.activeResume = null;
       this.init();
     }
 
     async init() {
-      // 1. Fetch user settings
       this.settings = {
         showFloatingWidget: true,
-        widgetActivationMode: "job_sites_only", // Default: only on job sites
+        widgetActivationMode: "job_sites_only",
         whitelistedDomains: [],
         blacklistedDomains: [],
       };
 
       if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-        const data = await new Promise((r) => chrome.storage.local.get(["settings"], r));
+        const data = await new Promise((r) => chrome.storage.local.get(["settings", "activeResume", "resumes"], r));
         if (data && data.settings) {
           this.settings = { ...this.settings, ...data.settings };
+        }
+        if (data && data.activeResume) {
+          this.activeResume = data.activeResume;
+        } else if (data && data.resumes && data.resumes.length > 0) {
+          this.activeResume = data.resumes[0];
         }
       }
 
@@ -123,22 +128,18 @@
         return;
       }
 
-      // If whitelisted, allow directly
       const isWhitelisted =
         Array.isArray(this.settings.whitelistedDomains) && this.settings.whitelistedDomains.includes(hostname);
 
-      // Default mode: "job_sites_only"
       if (!isWhitelisted && this.settings.widgetActivationMode !== "all_sites") {
         if (!isJobWebsite()) {
-          // NOT a job website -> Do not show floating widget!
           return;
         }
       }
 
-      // Allow DOM to settle before scraping
       setTimeout(() => {
         this.inspectPage();
-      }, 1000);
+      }, 800);
     }
 
     inspectPage() {
@@ -150,17 +151,25 @@
         ? window.__ResumelyAutofillEngine.detectFormFields()
         : [];
 
-      // If neither job description nor application fields are found, don't show widget
       const hasJobContent =
         this.jobData && (this.jobData.title || (this.jobData.description && this.jobData.description.length > 100));
       const hasForm = formFields.length > 0;
 
       if (!hasJobContent && !hasForm) return;
 
-      this.render(formFields.length);
+      // Calculate ATS Match if matcher and resume available
+      let atsScore = null;
+      if (this.jobData?.description && this.activeResume && window.ResumelyMatcher) {
+        try {
+          const match = window.ResumelyMatcher.analyzeMatch(this.jobData.description, this.activeResume);
+          atsScore = match.score;
+        } catch (e) {}
+      }
+
+      this.render(formFields.length, atsScore);
     }
 
-    render(detectedFieldsCount = 0) {
+    render(detectedFieldsCount = 0, atsScore = null) {
       if (this.host) return;
 
       this.host = document.createElement("div");
@@ -172,94 +181,132 @@
         :host {
           all: initial;
           position: fixed;
-          bottom: 24px;
-          right: 24px;
+          bottom: 22px;
+          right: 22px;
           z-index: 2147483647;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", sans-serif;
           font-size: 13px;
           color: #f4f4f5;
+          user-select: none;
         }
 
+        /* 1. Frosted Dynamic Island Capsule Pill */
         .resumely-pill {
-          background: #09090b;
+          background: rgba(12, 12, 15, 0.92);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 9999px;
-          padding: 7px 12px;
+          padding: 6px 14px 6px 10px;
           display: flex;
           align-items: center;
           gap: 8px;
           cursor: pointer;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-          transition: all 0.2s ease;
-          user-select: none;
+          box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+                      border-color 160ms ease,
+                      box-shadow 160ms ease;
         }
 
         .resumely-pill:hover {
           transform: translateY(-2px);
-          border-color: rgba(255, 255, 255, 0.25);
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+          border-color: rgba(255, 255, 255, 0.22);
+          box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .resumely-pill:active {
+          transform: scale(0.97);
+        }
+
+        .brand-icon-wrap {
+          display: flex;
+          align-items: center;
+          gap: 4px;
         }
 
         .logo-mark {
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-          font-weight: 700;
-          font-size: 15px;
-          letter-spacing: -0.05em;
-          color: #fff;
+          font-weight: 800;
+          font-size: 14px;
+          letter-spacing: -0.06em;
+          color: #ffffff;
         }
 
-        .pill-text {
-          font-weight: 600;
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+        }
+
+        .pill-label {
+          font-weight: 500;
           font-size: 12px;
-          color: #f4f4f5;
+          color: #e4e4e7;
+          display: flex;
+          align-items: center;
+          gap: 6px;
         }
 
-        .badge {
+        .pill-badge {
           background: rgba(16, 185, 129, 0.12);
           color: #34d399;
           border: 1px solid rgba(16, 185, 129, 0.25);
-          border-radius: 12px;
+          border-radius: 9999px;
           padding: 1px 7px;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 600;
+          letter-spacing: -0.01em;
         }
 
+        .pill-badge.score {
+          background: rgba(59, 130, 246, 0.12);
+          color: #60a5fa;
+          border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        /* 2. Expanded Glass Card */
         .resumely-card {
           position: absolute;
-          bottom: 46px;
+          bottom: 48px;
           right: 0;
-          width: 310px;
-          background: #121215;
+          width: 320px;
+          background: rgba(12, 12, 15, 0.96);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
           border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 14px;
+          border-radius: 16px;
           padding: 14px;
-          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
-          display: none;
+          box-shadow: 0 24px 50px -6px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+          display: flex;
           flex-direction: column;
-          gap: 10px;
-          animation: slideUp 0.2s ease;
+          gap: 12px;
+          transform-origin: bottom right;
+          opacity: 0;
+          transform: scale(0.95);
+          pointer-events: none;
+          transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1),
+                      opacity 180ms ease;
         }
 
         .resumely-card.open {
-          display: flex;
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
+          opacity: 1;
+          transform: scale(1);
+          pointer-events: auto;
         }
 
         .card-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
           padding-bottom: 8px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .card-title {
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 600;
           color: #f4f4f5;
           display: flex;
           align-items: center;
@@ -267,13 +314,15 @@
         }
 
         .close-btn {
-          background: none;
+          background: transparent;
           border: none;
-          color: #71717a;
+          color: #a1a1aa;
           cursor: pointer;
-          font-size: 16px;
+          font-size: 18px;
+          line-height: 1;
           padding: 2px 6px;
-          border-radius: 4px;
+          border-radius: 6px;
+          transition: all 150ms ease;
         }
 
         .close-btn:hover {
@@ -281,17 +330,28 @@
           background: rgba(255, 255, 255, 0.08);
         }
 
+        /* Job Snippet */
         .job-snippet {
           background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 8px;
-          padding: 9px;
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          border-radius: 10px;
+          padding: 10px 12px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .job-details {
+          flex: 1;
+          min-width: 0;
         }
 
         .job-title {
           font-weight: 600;
           color: #f4f4f5;
-          font-size: 12px;
+          font-size: 13px;
+          letter-spacing: -0.01em;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -301,45 +361,119 @@
           font-size: 11px;
           color: #a1a1aa;
           margin-top: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .btn-action {
+        .ats-ring-wrap {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          padding: 4px 8px;
+          flex-shrink: 0;
+        }
+
+        .ats-num {
+          font-size: 13px;
+          font-weight: 700;
+          color: #34d399;
+          letter-spacing: -0.02em;
+        }
+
+        .ats-caption {
+          font-size: 9px;
+          font-weight: 500;
+          color: #71717a;
+          text-transform: uppercase;
+        }
+
+        /* Buttons (Emil Kowalski Tactile Style) */
+        .btn-action-primary {
+          background: #ffffff;
+          color: #09090b;
+          border: none;
+          border-radius: 10px;
+          padding: 9px 12px;
+          font-weight: 600;
+          font-size: 12px;
+          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 6px;
-          background: #ffffff;
-          color: #09090b;
-          border: none;
-          border-radius: 8px;
+          transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+                      background 150ms ease;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .btn-action-primary:hover {
+          background: #e4e4e7;
+        }
+
+        .btn-action-primary:active {
+          transform: scale(0.97);
+        }
+
+        .btn-action-primary.saved {
+          background: #10b981;
+          color: #ffffff;
+        }
+
+        .btn-action-emerald {
+          background: rgba(16, 185, 129, 0.12);
+          color: #34d399;
+          border: 1px solid rgba(16, 185, 129, 0.25);
+          border-radius: 10px;
           padding: 8px 12px;
           font-weight: 600;
           font-size: 12px;
           cursor: pointer;
-          transition: filter 0.15s;
-        }
-
-        .btn-action:hover {
-          background: #e4e4e7;
-        }
-
-        .btn-secondary {
-          background: #18181b;
-          color: #f4f4f5;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 8px;
-          padding: 7px 10px;
-          font-weight: 600;
-          font-size: 11px;
-          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 5px;
+          gap: 6px;
+          transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+                      background 150ms ease;
+          width: 100%;
+          box-sizing: border-box;
         }
 
-        .btn-secondary:hover {
-          background: #27272a;
+        .btn-action-emerald:hover {
+          background: rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-action-emerald:active {
+          transform: scale(0.97);
+        }
+
+        .footer-strip {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding-top: 8px;
+          margin-top: 2px;
+        }
+
+        .btn-footer-link {
+          background: transparent;
+          border: none;
+          color: #71717a;
+          font-size: 11px;
+          cursor: pointer;
+          padding: 2px 4px;
+          border-radius: 4px;
+          transition: color 150ms ease;
+        }
+
+        .btn-footer-link:hover {
+          color: #f43f5e;
         }
 
         .status-msg {
@@ -347,41 +481,63 @@
           color: #10b981;
           text-align: center;
           min-height: 14px;
+          font-weight: 500;
         }
       `;
 
       this.shadow.appendChild(style);
 
       const container = document.createElement("div");
-      const title = this.jobData?.title || "Job Detected";
-      const company = this.jobData?.company || "Open Role";
+      const title = this.jobData?.title || "Job Opportunity";
+      const company = this.jobData?.company || "Open Position";
+
+      let pillText = "Resumely";
+      let badgeHtml = '<span class="pill-badge">Active</span>';
+
+      if (atsScore !== null) {
+        badgeHtml = `<span class="pill-badge score">${atsScore}% Match</span>`;
+      } else if (detectedFieldsCount > 0) {
+        badgeHtml = `<span class="pill-badge">${detectedFieldsCount} fields</span>`;
+      }
 
       container.innerHTML = `
         <div class="resumely-card" id="widget-card">
           <div class="card-header">
             <div class="card-title">
               <span class="logo-mark">re.</span>
-              <span>Resumely Assistant</span>
+              <span>Assistant</span>
             </div>
-            <button class="close-btn" id="btn-close">×</button>
+            <button class="close-btn" id="btn-close" title="Minimize">×</button>
           </div>
 
           <div class="job-snippet">
-            <div class="job-title">${this.escapeHtml(title)}</div>
-            <div class="job-company">${this.escapeHtml(company)}</div>
+            <div class="job-details">
+              <div class="job-title">${this.escapeHtml(title)}</div>
+              <div class="job-company">${this.escapeHtml(company)}</div>
+            </div>
+            ${
+              atsScore !== null
+                ? `
+              <div class="ats-ring-wrap">
+                <span class="ats-num">${atsScore}%</span>
+                <span class="ats-caption">Match</span>
+              </div>
+            `
+                : ""
+            }
           </div>
 
-          <button class="btn-action" id="btn-save-job">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Save to Resumely Tracker
+          <button class="btn-action-primary" id="btn-save-job">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span id="btn-save-text">Save to Resumely Tracker</span>
           </button>
 
           ${
             detectedFieldsCount > 0
               ? `
-            <button class="btn-secondary" id="btn-autofill">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-              Autofill Form (${detectedFieldsCount} fields detected)
+            <button class="btn-action-emerald" id="btn-autofill">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span>Autofill Form (${detectedFieldsCount} fields)</span>
             </button>
           `
               : ""
@@ -389,15 +545,18 @@
 
           <div class="status-msg" id="widget-status"></div>
 
-          <div style="display:flex; justify-content:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:6px; margin-top:2px;">
-            <button id="btn-block-site" style="background:none; border:none; color:#71717a; font-size:10px; cursor:pointer; padding:2px;">Don't show on this site</button>
+          <div class="footer-strip">
+            <button class="btn-footer-link" id="btn-block-site">Don't show on this site</button>
           </div>
         </div>
 
-        <div class="resumely-pill" id="widget-pill">
-          <div class="logo-mark">re.</div>
-          <span class="pill-text">Resumely</span>
-          ${detectedFieldsCount > 0 ? `<span class="badge">${detectedFieldsCount} fields</span>` : '<span class="badge">Active</span>'}
+        <div class="resumely-pill" id="widget-pill" title="Resumely Assistant">
+          <div class="brand-icon-wrap">
+            <span class="logo-mark">re.</span>
+            <span class="status-dot"></span>
+          </div>
+          <span class="pill-label">${this.escapeHtml(company !== "Open Position" ? company : pillText)}</span>
+          ${badgeHtml}
         </div>
       `;
 
@@ -412,6 +571,7 @@
       const card = this.shadow.getElementById("widget-card");
       const btnClose = this.shadow.getElementById("btn-close");
       const btnSave = this.shadow.getElementById("btn-save-job");
+      const btnSaveText = this.shadow.getElementById("btn-save-text");
       const btnAutofill = this.shadow.getElementById("btn-autofill");
       const statusEl = this.shadow.getElementById("widget-status");
       const btnBlockSite = this.shadow.getElementById("btn-block-site");
@@ -447,17 +607,20 @@
 
       if (btnAutofill) {
         btnAutofill.addEventListener("click", async () => {
-          let profile = null;
-          if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-            const data = await new Promise((r) => chrome.storage.local.get(["profile"], r));
-            profile = data.profile;
+          let profile = this.activeResume;
+          if (!profile && typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+            const data = await new Promise((r) => chrome.storage.local.get(["activeResume", "resumes", "profile"], r));
+            profile = data.activeResume || data.resumes?.[0] || data.profile;
           }
-          if (!profile && window.DEFAULT_PROFILE) profile = window.DEFAULT_PROFILE;
 
           if (window.__ResumelyAutofillEngine && profile) {
             const res = window.__ResumelyAutofillEngine.autofill(profile);
-            statusEl.textContent = `Autofilled ${res.count} fields!`;
-            setTimeout(() => (statusEl.textContent = ""), 2500);
+            if (statusEl) {
+              statusEl.textContent = `Autofilled ${res.count} fields!`;
+              setTimeout(() => {
+                if (statusEl) statusEl.textContent = "";
+              }, 2500);
+            }
           }
         });
       }
@@ -465,7 +628,8 @@
       if (btnSave) {
         btnSave.addEventListener("click", async () => {
           btnSave.disabled = true;
-          btnSave.textContent = "Saving...";
+          if (btnSaveText) btnSaveText.textContent = "Saving...";
+
           try {
             if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
               chrome.runtime.sendMessage(
@@ -474,17 +638,17 @@
                   jobData: this.jobData,
                 },
                 (response) => {
-                  btnSave.textContent = "Saved to Tracker!";
-                  btnSave.style.background = "#10b981";
-                  statusEl.textContent = "Added to Wishlist / Saved";
+                  btnSave.classList.add("saved");
+                  if (btnSaveText) btnSaveText.textContent = "Saved to Kanban ✓";
+                  if (statusEl) statusEl.textContent = "Saved to Resumely Tracker";
                   setTimeout(() => {
                     card.classList.remove("open");
-                  }, 1500);
+                  }, 1400);
                 }
               );
             }
           } catch (e) {
-            btnSave.textContent = "Saved locally";
+            if (btnSaveText) btnSaveText.textContent = "Saved locally ✓";
             btnSave.disabled = false;
           }
         });
