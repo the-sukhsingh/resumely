@@ -247,7 +247,7 @@ export function PopupApp() {
       ...payload,
       applicationId: appId,
       syncedWithServer: serverSaved,
-      score: analysis.score,
+      score: analysis?.score ?? null,
     });
 
     const updated = await ResumelyStorage.getSavedJobs();
@@ -353,7 +353,7 @@ export function PopupApp() {
                 </div>
                 <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto">
                   {resumes.map((r) => {
-                    const id = r._id || r.id;
+                    const id = r._id || r.id || "demo_master";
                     const isSelected = id === activeResumeId;
                     return (
                       <button
@@ -1046,7 +1046,7 @@ export function PopupApp() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => {
-                  setPitchContent(ResumelyMatcher.generateTailoredPitch(job, activeResume));
+                  setPitchContent(ResumelyMatcher.generateTailoredPitch(job || {}, activeResume));
                   showToast("Regenerated pitch!");
                 }}
                 className="rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-[11px] font-medium text-zinc-700 hover:bg-zinc-100 cursor-pointer shadow-2xs"
