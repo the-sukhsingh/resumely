@@ -101,11 +101,50 @@ async function saveJobInternal(jobData) {
 
 // 4. Message Router
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "SYNC_AUTHENTICATED_USER") {
+    (async () => {
+      try {
+        const fullData = request.payload;
+        if (fullData && fullData.user) {
+          await ResumelyStorage.saveAuthenticatedUser(fullData.user);
+
+          const realResumes = [];
+          if (fullData.masterResume) {
+            realResumes.push({ ...fullData.masterResume, isMasterResume: true });
+          }
+          if (Array.isArray(fullData.resumeVersions)) {
+            fullData.resumeVersions.forEach((v) => {
+              if (!fullData.masterResume || v._id !== fullData.masterResume._id) {
+                realResumes.push(v);
+              }
+            });
+          }
+
+          if (realResumes.length > 0) {
+            await ResumelyStorage.saveResumes(realResumes);
+          }
+
+          // Update badge with credit balance or checkmark
+          const credits = fullData.user.credits !== undefined ? String(fullData.user.credits) : "✓";
+          chrome.action.setBadgeText({ text: credits });
+          chrome.action.setBadgeBackgroundColor({ color: "#10b981" });
+
+          sendResponse({ success: true, user: fullData.user, resumeCount: realResumes.length });
+        } else {
+          sendResponse({ success: false, error: "Invalid payload" });
+        }
+      } catch (err) {
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    return true; // async response
+  }
+
   if (request.action === "SAVE_JOB_QUICK") {
     saveJobInternal(request.jobData)
       .then((result) => sendResponse(result))
       .catch((err) => sendResponse({ success: false, error: err.message }));
-    return true; // Keep message channel open for async response
+    return true;
   }
 
   if (request.action === "PING_BACKGROUND") {
