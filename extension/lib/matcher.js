@@ -1,7 +1,12 @@
 // Resumely ATS Matcher & Keyword Gap Analyzer
 // Analyzes job descriptions against resume content to score match and identify skill gaps
 
-const SKILL_TAXONOMY = [
+(function () {
+  if (typeof window !== "undefined" && window.ResumelyMatcher) {
+    return;
+  }
+
+  const SKILL_TAXONOMY = [
   // Frontend
   "React", "Next.js", "TypeScript", "JavaScript", "HTML", "HTML5", "CSS", "CSS3",
   "Tailwind", "Tailwind CSS", "Redux", "Zustand", "Vue", "Vue.js", "Nuxt", "Angular",
@@ -194,10 +199,11 @@ const ResumelyMatcher = {
 };
 
 // Export
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { ResumelyMatcher, SKILL_TAXONOMY };
-} else if (typeof window !== "undefined") {
-  window.ResumelyMatcher = ResumelyMatcher;
-  window.SKILL_TAXONOMY = SKILL_TAXONOMY;
-}
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { ResumelyMatcher, SKILL_TAXONOMY };
+  } else if (typeof window !== "undefined") {
+    window.ResumelyMatcher = ResumelyMatcher;
+    window.SKILL_TAXONOMY = SKILL_TAXONOMY;
+  }
+})();
 

@@ -1,7 +1,12 @@
 // Resumely Extension Storage & State Management
 // Handles chrome.storage.local with automatic fallback and preloaded demo data
 
-const DEFAULT_PROFILE = {
+(function () {
+  if (typeof window !== "undefined" && window.ResumelyStorage) {
+    return;
+  }
+
+  const DEFAULT_PROFILE = {
   id: "demo_profile_1",
   name: "Alex Morgan",
   title: "Senior Full Stack Engineer",
@@ -382,11 +387,12 @@ const ResumelyStorage = {
 };
 
 // Export for ES modules and standard script inclusion
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { ResumelyStorage, DEFAULT_PROFILE, DEFAULT_SETTINGS };
-} else if (typeof window !== "undefined") {
-  window.ResumelyStorage = ResumelyStorage;
-  window.DEFAULT_PROFILE = DEFAULT_PROFILE;
-  window.DEFAULT_SETTINGS = DEFAULT_SETTINGS;
-}
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { ResumelyStorage, DEFAULT_PROFILE, DEFAULT_SETTINGS };
+  } else if (typeof window !== "undefined") {
+    window.ResumelyStorage = ResumelyStorage;
+    window.DEFAULT_PROFILE = DEFAULT_PROFILE;
+    window.DEFAULT_SETTINGS = DEFAULT_SETTINGS;
+  }
+})();
 
