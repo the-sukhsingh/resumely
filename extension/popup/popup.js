@@ -76,8 +76,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const settingAppUrl = document.getElementById("setting-app-url");
   const settingUserEmail = document.getElementById("setting-user-email");
   const btnTestConnection = document.getElementById("btn-test-connection");
-  const toggleFloatingWidget = document.getElementById("toggle-floating-widget");
+  const selectWidgetMode = document.getElementById("select-widget-mode");
+  const currentTabDomain = document.getElementById("current-tab-domain");
+  const btnToggleCurrentDomain = document.getElementById("btn-toggle-current-domain");
   const btnResetDemo = document.getElementById("btn-reset-demo");
+  let activeTabHostname = "";
 
   // Navigation Switcher
   const navTabs = document.querySelectorAll(".nav-tab-pill");
@@ -169,7 +172,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Populate Settings UI
     if (settingAppUrl) settingAppUrl.value = settings.appUrl;
     if (settingUserEmail) settingUserEmail.value = authenticatedUser?.email || settings.userEmail || "";
-    if (toggleFloatingWidget) toggleFloatingWidget.checked = settings.showFloatingWidget !== false;
+    if (selectWidgetMode) {
+      selectWidgetMode.value = settings.widgetActivationMode || "job_sites_only";
+    }
+
+    // Inspect active tab domain
+    if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.query) {
+      try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab && tab.url && tab.url.startsWith("http")) {
+          activeTabHostname = new URL(tab.url).hostname.toLowerCase();
+          updateDomainControlUI();
+        } else if (tab && tab.url) {
+          activeTabHostname = "Local File / Special Page";
+          if (currentTabDomain) currentTabDomain.textContent = activeTabHostname;
+          if (btnToggleCurrentDomain) btnToggleCurrentDomain.style.display = "none";
+        }
+      } catch (e) {}
+    }
+  }
+
+  function updateDomainControlUI() {
+    if (!currentTabDomain) return;
+    if (!activeTabHostname || activeTabHostname.startsWith("Local")) {
+      currentTabDomain.textContent = activeTabHostname || "No domain";
+      if (btnToggleCurrentDomain) btnToggleCurrentDomain.style.display = "none";
+      return;
+    }
+
+    currentTabDomain.textContent = activeTabHostname;
+    const isBlocked = Array.isArray(settings?.blacklistedDomains) && settings.blacklistedDomains.includes(activeTabHostname);
+
+    if (btnToggleCurrentDomain) {
+      btnToggleCurrentDomain.style.display = "inline-block";
+      btnToggleCurrentDomain.textContent = isBlocked ? "Allow on this site" : "Block on this site";
+      btnToggleCurrentDomain.className = isBlocked ? "btn-micro" : "btn-micro danger";
+    }
   }
 
   function updateAuthHeaderUI() {
@@ -745,9 +783,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  toggleFloatingWidget?.addEventListener("change", async () => {
-    await ResumelyStorage.saveSettings({ showFloatingWidget: toggleFloatingWidget.checked });
-    showToast(toggleFloatingWidget.checked ? "Floating pill enabled" : "Floating pill disabled");
+  selectWidgetMode?.addEventListener("change", async () => {
+    const val = selectWidgetMode.value;
+    const updated = await ResumelyStorage.saveSettings({
+      widgetActivationMode: val,
+      showFloatingWidget: val !== "disabled",
+    });
+    settings = updated;
+    const label =
+      val === "job_sites_only"
+        ? "Active only on Job Boards & Career Sites"
+        : val === "all_sites"
+        ? "Active on All Websites with job content"
+        : "Floating widget disabled";
+    showToast(label);
+  });
+
+  btnToggleCurrentDomain?.addEventListener("click", async () => {
+    if (!activeTabHostname || activeTabHostname.startsWith("Local")) return;
+    const isBlocked = await ResumelyStorage.toggleDomainBlacklist(activeTabHostname);
+    settings = await ResumelyStorage.getSettings();
+    updateDomainControlUI();
+    showToast(isBlocked ? `Excluded on ${activeTabHostname}` : `Allowed on ${activeTabHostname}`);
   });
 
   btnResetDemo?.addEventListener("click", async () => {

@@ -316,14 +316,23 @@
       </section>
 
       <section class="card-outline">
-        <h3 class="card-h3">Preferences</h3>
+        <h3 class="card-h3">Assistant & In-Page Widget</h3>
 
-        <div class="toggle-row">
-          <div>
-            <div class="toggle-name">In-Page Floating Widget</div>
-            <div class="toggle-caption">Show Resumely pill on job postings</div>
+        <div class="form-item">
+          <label class="form-label-sub" for="select-widget-mode">Where should the floating widget appear?</label>
+          <select class="input-dark select-mode" id="select-widget-mode">
+            <option value="job_sites_only">🎯 Only on Job Boards & Career Sites (Default)</option>
+            <option value="all_sites">🌐 On All Websites (when job/form is detected)</option>
+            <option value="disabled">🚫 Disabled Everywhere (Popup only)</option>
+          </select>
+        </div>
+
+        <div class="domain-control-row" id="domain-control-box">
+          <div class="domain-info">
+            <span class="domain-label">Current Site</span>
+            <span class="domain-name" id="current-tab-domain">Detecting...</span>
           </div>
-          <input type="checkbox" id="toggle-floating-widget" checked>
+          <button class="btn-micro" id="btn-toggle-current-domain">Block Site</button>
         </div>
 
         <button class="btn-dark-secondary full-width" id="btn-reset-demo">
