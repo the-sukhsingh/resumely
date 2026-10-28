@@ -190,19 +190,17 @@
           user-select: none;
         }
 
-        /* 1. Frosted Dynamic Island Capsule Pill */
+        /* 1. Clean Minimal Floating Pill */
         .resumely-pill {
-          background: rgba(12, 12, 15, 0.92);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.12);
           border-radius: 9999px;
-          padding: 6px 14px 6px 10px;
+          padding: 6px 14px 6px 11px;
           display: flex;
           align-items: center;
           gap: 8px;
           cursor: pointer;
-          box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
           transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
                       border-color 160ms ease,
                       box-shadow 160ms ease;
@@ -210,8 +208,8 @@
 
         .resumely-pill:hover {
           transform: translateY(-2px);
-          border-color: rgba(255, 255, 255, 0.22);
-          box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          border-color: rgba(0, 0, 0, 0.22);
+          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
         }
 
         .resumely-pill:active {
@@ -229,7 +227,7 @@
           font-weight: 800;
           font-size: 14px;
           letter-spacing: -0.06em;
-          color: #ffffff;
+          color: #09090b;
         }
 
         .status-dot {
@@ -237,22 +235,22 @@
           height: 6px;
           border-radius: 50%;
           background: #10b981;
-          box-shadow: 0 0 8px #10b981;
+          box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
         }
 
         .pill-label {
-          font-weight: 500;
+          font-weight: 600;
           font-size: 12px;
-          color: #e4e4e7;
+          color: #27272a;
           display: flex;
           align-items: center;
           gap: 6px;
         }
 
         .pill-badge {
-          background: rgba(16, 185, 129, 0.12);
-          color: #34d399;
-          border: 1px solid rgba(16, 185, 129, 0.25);
+          background: #ecfdf5;
+          color: #047857;
+          border: 1px solid #a7f3d0;
           border-radius: 9999px;
           padding: 1px 7px;
           font-size: 10px;
@@ -261,24 +259,22 @@
         }
 
         .pill-badge.score {
-          background: rgba(59, 130, 246, 0.12);
-          color: #60a5fa;
-          border-color: rgba(59, 130, 246, 0.25);
+          background: #eff6ff;
+          color: #1d4ed8;
+          border-color: #bfdbfe;
         }
 
-        /* 2. Expanded Glass Card */
+        /* 2. Clean Expanded Card */
         .resumely-card {
           position: absolute;
           bottom: 48px;
           right: 0;
           width: 320px;
-          background: rgba(12, 12, 15, 0.96);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.1);
           border-radius: 16px;
           padding: 14px;
-          box-shadow: 0 24px 50px -6px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -301,13 +297,13 @@
           align-items: center;
           justify-content: space-between;
           padding-bottom: 8px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.07);
         }
 
         .card-title {
           font-size: 13px;
-          font-weight: 600;
-          color: #f4f4f5;
+          font-weight: 700;
+          color: #09090b;
           display: flex;
           align-items: center;
           gap: 6px;
@@ -316,7 +312,7 @@
         .close-btn {
           background: transparent;
           border: none;
-          color: #a1a1aa;
+          color: #71717a;
           cursor: pointer;
           font-size: 18px;
           line-height: 1;
@@ -326,14 +322,14 @@
         }
 
         .close-btn:hover {
-          color: #fff;
-          background: rgba(255, 255, 255, 0.08);
+          color: #09090b;
+          background: rgba(0, 0, 0, 0.05);
         }
 
         /* Job Snippet */
         .job-snippet {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.07);
+          background: #f4f4f5;
+          border: 1px solid #e4e4e7;
           border-radius: 10px;
           padding: 10px 12px;
           display: flex;
@@ -348,8 +344,8 @@
         }
 
         .job-title {
-          font-weight: 600;
-          color: #f4f4f5;
+          font-weight: 700;
+          color: #09090b;
           font-size: 13px;
           letter-spacing: -0.01em;
           white-space: nowrap;
@@ -359,7 +355,8 @@
 
         .job-company {
           font-size: 11px;
-          color: #a1a1aa;
+          color: #52525b;
+          font-weight: 500;
           margin-top: 2px;
           white-space: nowrap;
           overflow: hidden;
@@ -371,8 +368,8 @@
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #ffffff;
+          border: 1px solid #e4e4e7;
           border-radius: 8px;
           padding: 4px 8px;
           flex-shrink: 0;
@@ -380,23 +377,56 @@
 
         .ats-num {
           font-size: 13px;
-          font-weight: 700;
-          color: #34d399;
+          font-weight: 800;
+          color: #047857;
           letter-spacing: -0.02em;
         }
 
         .ats-caption {
           font-size: 9px;
-          font-weight: 500;
+          font-weight: 600;
           color: #71717a;
           text-transform: uppercase;
         }
 
-        /* Buttons (Emil Kowalski Tactile Style) */
+        /* Buttons */
         .btn-action-primary {
-          background: #ffffff;
-          color: #09090b;
+          background: #09090b;
+          color: #ffffff;
           border: none;
+          border-radius: 10px;
+          padding: 10px 12px;
+          font-weight: 600;
+          font-size: 12px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+                      background 150ms ease;
+          width: 100%;
+          box-sizing: border-box;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-action-primary:hover {
+          background: #27272a;
+        }
+
+        .btn-action-primary:active {
+          transform: scale(0.97);
+        }
+
+        .btn-action-primary.saved {
+          background: #059669;
+          color: #ffffff;
+        }
+
+        .btn-action-emerald {
+          background: #ecfdf5;
+          color: #047857;
+          border: 1px solid #a7f3d0;
           border-radius: 10px;
           padding: 9px 12px;
           font-weight: 600;
@@ -412,40 +442,8 @@
           box-sizing: border-box;
         }
 
-        .btn-action-primary:hover {
-          background: #e4e4e7;
-        }
-
-        .btn-action-primary:active {
-          transform: scale(0.97);
-        }
-
-        .btn-action-primary.saved {
-          background: #10b981;
-          color: #ffffff;
-        }
-
-        .btn-action-emerald {
-          background: rgba(16, 185, 129, 0.12);
-          color: #34d399;
-          border: 1px solid rgba(16, 185, 129, 0.25);
-          border-radius: 10px;
-          padding: 8px 12px;
-          font-weight: 600;
-          font-size: 12px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
-                      background 150ms ease;
-          width: 100%;
-          box-sizing: border-box;
-        }
-
         .btn-action-emerald:hover {
-          background: rgba(16, 185, 129, 0.2);
+          background: #d1fae5;
         }
 
         .btn-action-emerald:active {
@@ -456,7 +454,7 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          border-top: 1px solid rgba(0, 0, 0, 0.07);
           padding-top: 8px;
           margin-top: 2px;
         }
@@ -466,6 +464,7 @@
           border: none;
           color: #71717a;
           font-size: 11px;
+          font-weight: 500;
           cursor: pointer;
           padding: 2px 4px;
           border-radius: 4px;
@@ -473,15 +472,15 @@
         }
 
         .btn-footer-link:hover {
-          color: #f43f5e;
+          color: #e11d48;
         }
 
         .status-msg {
           font-size: 11px;
-          color: #10b981;
+          color: #059669;
           text-align: center;
           min-height: 14px;
-          font-weight: 500;
+          font-weight: 600;
         }
       `;
 
