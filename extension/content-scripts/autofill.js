@@ -308,29 +308,62 @@
       if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
         el.focus();
 
-        // 1. Google Forms support: set data-initial-value
-        el.setAttribute("data-initial-value", value);
-
-        // 2. React / Synthetic framework support: use native prototype property setter
-        const proto = el.tagName === "INPUT" ? window.HTMLInputElement.prototype : window.HTMLTextAreaElement.prototype;
-        const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
-
-        if (setter) {
-          setter.call(el, value);
-        } else {
-          el.value = value;
+        // 1. First attempt: use document.execCommand('insertText')
+        // In Chromium/Google Forms, execCommand generates trusted keystroke InputEvents
+        // that Google Closure Library requires to clear "This is a required question" errors
+        // and float the input label.
+        let execSuccess = false;
+        try {
+          el.select();
+          execSuccess = document.execCommand("insertText", false, value);
+        } catch (e) {
+          execSuccess = false;
         }
 
-        // 3. Dispatch full event sequence to satisfy Google Forms, React 18/19, and Angular
+        // 2. Fallback / reinforcement: native prototype setter
+        if (!execSuccess || el.value !== value) {
+          const proto = el.tagName === "INPUT" ? window.HTMLInputElement.prototype : window.HTMLTextAreaElement.prototype;
+          const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+          if (setter) {
+            setter.call(el, value);
+          } else {
+            el.value = value;
+          }
+        }
+
+        // 3. Dispatch full event sequence to notify React, Vue, Google Closure, and Angular
         try {
-          el.dispatchEvent(new Event("focus", { bubbles: true }));
-          el.dispatchEvent(new InputEvent("beforeinput", { bubbles: true, cancelable: true, data: value }));
-          el.dispatchEvent(new InputEvent("input", { bubbles: true, cancelable: true, data: value }));
-          el.dispatchEvent(new Event("change", { bubbles: true }));
-          el.dispatchEvent(new Event("blur", { bubbles: true }));
+          el.dispatchEvent(new Event("focus", { bubbles: true, composed: true }));
+          el.dispatchEvent(new InputEvent("beforeinput", { bubbles: true, cancelable: true, composed: true, data: value, inputType: "insertText" }));
+          el.dispatchEvent(new InputEvent("input", { bubbles: true, cancelable: true, composed: true, data: value, inputType: "insertText" }));
+          el.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
         } catch (e) {
           el.dispatchEvent(new Event("input", { bubbles: true }));
           el.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+
+        // 4. Google Forms specific DOM repair:
+        // Clear any "This is a required question" error banner on the question container
+        const parentQuestion = el.closest('.Qr7Oae, [role="listitem"], .geS5n, .rFrNMe, div[jsmodel]');
+        if (parentQuestion) {
+          // Remove Google Forms error classes (.m2, .has-error)
+          parentQuestion.classList.remove("m2", "has-error");
+
+          const textWrapper = el.closest('.rFrNMe, .u3bW4e, .m2, .CDELRd');
+          if (textWrapper) {
+            textWrapper.classList.remove("m2");
+            textWrapper.classList.add("is-filled", "has-value");
+          }
+
+          // Hide the red "This is a required question" message element
+          const errorAlerts = parentQuestion.querySelectorAll('[role="alert"], .RVEQvd');
+          errorAlerts.forEach((alertEl) => {
+            if (alertEl.textContent && alertEl.textContent.includes("required")) {
+              alertEl.style.display = "none";
+            }
+          });
+
+          el.setAttribute("aria-invalid", "false");
         }
 
         // Mark element as filled by Resumely
