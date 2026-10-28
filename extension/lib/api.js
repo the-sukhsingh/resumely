@@ -27,6 +27,56 @@ const ResumelyAPI = {
     return baseUrl.replace(/\/+$/, "");
   },
 
+  async checkActiveSession(baseUrl) {
+    const root = this.cleanUrl(baseUrl);
+    try {
+      const res = await this.fetchWithTimeout(`${root}/api/extension/session`, {
+        method: "GET",
+        credentials: "include",
+      }, 4000);
+      if (res.ok) {
+        return await res.json();
+      }
+      return { authenticated: false };
+    } catch (e) {
+      return { authenticated: false, error: e.message };
+    }
+  },
+
+  async loginWithEmail(baseUrl, email) {
+    const root = this.cleanUrl(baseUrl);
+    try {
+      const res = await this.fetchWithTimeout(
+        `${root}/api/extension/session?email=${encodeURIComponent(email)}`,
+        { method: "GET" }
+      );
+      if (res.ok) {
+        return await res.json();
+      }
+      return { authenticated: false, error: `HTTP ${res.status}` };
+    } catch (e) {
+      return { authenticated: false, error: e.message };
+    }
+  },
+
+  async fetchUserSavedJobs(baseUrl, { userId, email }) {
+    const root = this.cleanUrl(baseUrl);
+    const query = new URLSearchParams();
+    if (userId) query.set("userId", userId);
+    if (email) query.set("email", email);
+    try {
+      const res = await this.fetchWithTimeout(`${root}/api/extension/jobs?${query.toString()}`, {
+        method: "GET",
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      return { success: false, error: `HTTP ${res.status}` };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
   async pingServer(baseUrl) {
     const root = this.cleanUrl(baseUrl);
     try {

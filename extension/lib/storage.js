@@ -197,15 +197,62 @@ const ResumelyStorage = {
     return updated;
   },
 
+  async getAuthenticatedUser() {
+    const data = await this.get(["authenticatedUser"]);
+    return data.authenticatedUser || null;
+  },
+
+  async saveAuthenticatedUser(user) {
+    await this.set({ authenticatedUser: user });
+    if (user && user.email) {
+      await this.saveSettings({ userEmail: user.email, userId: user.id || user._id, useDemoMode: false });
+    }
+    return user;
+  },
+
+  async clearAuthenticatedUser() {
+    await this.set({ authenticatedUser: null, resumes: [] });
+    await this.saveSettings({ userEmail: "", userId: "", useDemoMode: true });
+    return true;
+  },
+
+  async getActiveResume() {
+    const resumes = await this.getResumes();
+    const data = await this.get(["activeResumeId"]);
+    if (data.activeResumeId) {
+      const found = resumes.find((r) => (r._id || r.id) === data.activeResumeId);
+      if (found) return found;
+    }
+    // Default to first resume (or master)
+    return resumes[0] || null;
+  },
+
+  async setActiveResumeId(resumeId) {
+    await this.set({ activeResumeId: resumeId });
+    return resumeId;
+  },
+
   async getActiveProfile() {
+    const authUser = await this.getAuthenticatedUser();
+    const activeResume = await this.getActiveResume();
+
+    if (activeResume && activeResume.personalInfo) {
+      return {
+        ...activeResume,
+        personalInfo: {
+          ...activeResume.personalInfo,
+          email: activeResume.personalInfo.email || authUser?.email || "",
+          name: activeResume.personalInfo.name || authUser?.name || "Candidate",
+        },
+      };
+    }
+
     const data = await this.get(["profile", "settings"]);
     const settings = data.settings || {};
 
-    // If live profile exists and not strictly in demo mode, return live profile
     if (!settings.useDemoMode && data.profile && data.profile.personalInfo) {
       return data.profile;
     }
-    // Return demo profile as ready-to-test fallback
     return DEFAULT_PROFILE;
   },
 
@@ -215,10 +262,17 @@ const ResumelyStorage = {
   },
 
   async getResumes() {
-    const data = await this.get(["resumes", "profile"]);
+    const data = await this.get(["resumes", "profile", "settings"]);
+    const settings = data.settings || {};
+
     if (Array.isArray(data.resumes) && data.resumes.length > 0) {
       return data.resumes;
     }
+
+    if (settings.useDemoMode === false && data.profile) {
+      return [data.profile];
+    }
+
     // Fallback to active/demo profile as the master resume
     const profile = data.profile || DEFAULT_PROFILE;
     return [
@@ -256,8 +310,9 @@ const ResumelyStorage = {
     const record = {
       ...job,
       id: job.id || `job_${Date.now()}`,
-      savedAt: Date.now(),
+      savedAt: job.savedAt || Date.now(),
       syncedWithServer: !!job.syncedWithServer,
+      stage: job.stage || "saved",
     };
 
     if (existingIndex >= 0) {
@@ -266,10 +321,28 @@ const ResumelyStorage = {
       jobs.unshift(record);
     }
 
-    // Keep last 100 jobs
-    const trimmed = jobs.slice(0, 100);
+    const trimmed = jobs.slice(0, 150);
     await this.set({ savedJobs: trimmed });
     return record;
+  },
+
+  async updateSavedJobStage(jobId, stage) {
+    const jobs = await this.getSavedJobs();
+    const target = jobs.find((j) => j.id === jobId || j.applicationId === jobId);
+    if (target) {
+      target.stage = stage;
+      target.updatedAt = Date.now();
+      await this.set({ savedJobs: jobs });
+      return target;
+    }
+    return null;
+  },
+
+  async deleteSavedJob(jobId) {
+    const jobs = await this.getSavedJobs();
+    const filtered = jobs.filter((j) => j.id !== jobId && j.applicationId !== jobId);
+    await this.set({ savedJobs: filtered });
+    return true;
   },
 };
 
