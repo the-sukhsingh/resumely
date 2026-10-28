@@ -43,6 +43,18 @@ The Resumely Browser Extension bridges your web browsing experience with your Re
 
 ---
 
+## 🛠️ Architecture & Build (React 19 + Tailwind CSS)
+
+The extension popup is built with **React 19**, **Tailwind CSS**, and **Lucide Icons** bundled via **Vite**.
+
+To rebuild the extension after making changes in `src/extension/`:
+```bash
+npm run build:extension
+```
+The compiled bundle outputs directly to `extension/dist/`, which is immediately loaded by Chrome Manifest V3.
+
+---
+
 ## 🛠️ Installation & Setup (Manual Testing)
 
 ### 1. Load Unpacked in Chrome, Edge, or Brave
