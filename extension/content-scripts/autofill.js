@@ -377,75 +377,10 @@
       }, 2500);
     },
 
-    // Show temporary toast notification (singleton, stable, non-flashing)
-    _toastTimer: null,
+    // Webpage UI is kept clean with 0 injected floating toasts; popup surfaces all user notifications
     showToast(message, isSuccess = true) {
-      if (window.self !== window.top) return;
-
-      let toast = document.getElementById("resumely-autofill-toast");
-      if (toast) {
-        // Reuse existing element without destroying and recreating DOM nodes
-        const span = toast.querySelector("span");
-        if (span) span.textContent = message;
-        toast.style.opacity = "1";
-        toast.style.transform = "translateY(0)";
-
-        if (this._toastTimer) clearTimeout(this._toastTimer);
-        this._toastTimer = setTimeout(() => {
-          if (toast) {
-            toast.style.opacity = "0";
-            toast.style.transform = "translateY(8px)";
-            setTimeout(() => toast.remove(), 250);
-          }
-        }, 2800);
-        return;
-      }
-
-      toast = document.createElement("div");
-      toast.id = "resumely-autofill-toast";
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 2147483647;
-        background: #09090b;
-        color: #f4f4f5;
-        border: 1px solid ${isSuccess ? "rgba(16, 185, 129, 0.4)" : "rgba(244, 63, 94, 0.4)"};
-        border-radius: 9999px;
-        padding: 9px 16px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        backdrop-filter: blur(12px);
-        transform: translateY(8px);
-        opacity: 0;
-        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease;
-        pointer-events: none;
-      `;
-
-      toast.innerHTML = `
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${isSuccess ? "#10b981" : "#f43f5e"}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          ${isSuccess ? '<path d="M20 6L9 17l-5-5"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
-        </svg>
-        <span>${message}</span>
-      `;
-
-      document.body.appendChild(toast);
-      requestAnimationFrame(() => {
-        toast.style.opacity = "1";
-        toast.style.transform = "translateY(0)";
-      });
-
-      if (this._toastTimer) clearTimeout(this._toastTimer);
-      this._toastTimer = setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(8px)";
-        setTimeout(() => toast.remove(), 250);
-      }, 2800);
+      const existing = document.getElementById("resumely-autofill-toast");
+      if (existing) existing.remove();
     },
 
     // Main autofill execution
