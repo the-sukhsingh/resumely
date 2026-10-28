@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Resumely - AI Job Matcher & Application Assistant",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "1-Click save jobs to Resumely Tracker, analyze real-time ATS match score & keyword gaps, and autofill job applications instantly.",
   "icons": {
     "16": "icons/icon16.png",
