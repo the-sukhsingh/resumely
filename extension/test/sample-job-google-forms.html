@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Engineering Candidate Application - Google Forms Format</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --gf-purple: #673ab7;
+      --gf-bg: #ede7f6;
+      --card-bg: #ffffff;
+      --text-main: #202124;
+      --text-muted: #5f6368;
+      --border-color: #dadce0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--gf-bg);
+      color: var(--text-main);
+      font-family: Roboto, Arial, sans-serif;
+      padding: 30px 16px;
+      line-height: 1.5;
+    }
+    .form-container {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .banner-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      border-top: 10px solid var(--gf-purple);
+      padding: 24px 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    .form-title {
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .form-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .step-badge {
+      display: inline-block;
+      background: #e8eaed;
+      color: #3c4043;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+    /* Google Forms specific container classes */
+    .Qr7Oae {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 24px 28px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .M7eMe {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      display: block;
+    }
+    .req-star {
+      color: #d93025;
+      margin-left: 3px;
+    }
+    /* Google Forms input fields */
+    .whsOnd {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #70757a;
+      padding: 8px 0;
+      font-size: 14px;
+      color: #202124;
+      outline: none;
+      transition: border-bottom-color 0.2s ease;
+      background: transparent;
+    }
+    .whsOnd:focus {
+      border-bottom: 2px solid var(--gf-purple);
+    }
+    .KHxj8b {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #70757a;
+      padding: 8px 0;
+      font-size: 14px;
+      color: #202124;
+      outline: none;
+      resize: vertical;
+      min-height: 50px;
+      background: transparent;
+    }
+    .KHxj8b:focus {
+      border-bottom: 2px solid var(--gf-purple);
+    }
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .btn-submit {
+      background: var(--gf-purple);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn-next-step {
+      background: #fff;
+      color: var(--gf-purple);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tip-box {
+      background: #e8f0fe;
+      color: #1967d2;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="banner-card">
+      <h1 class="form-title">Full Stack Engineer Application</h1>
+      <p class="form-desc">
+        Welcome to the recruitment form. Please fill out your details below. Resumely extension will autofill Google Forms questions automatically!
+      </p>
+      <span class="step-badge" id="step-indicator">Step 1 of 2</span>
+      <div class="tip-box">
+        💡 <strong>Text Change Auto-Trigger Demo:</strong> Click "Load Additional Questions" to simulate a multi-step dynamic form — Resumely automatically detects the website text changes and fills the new questions without you touching input fields!
+      </div>
+    </div>
+
+    <!-- Question 1: Candidate Name -->
+    <div class="Qr7Oae" role="listitem">
+      <span class="M7eMe" id="q1-title">Candidate Full Name <span class="req-star">*</span></span>
+      <input type="text" class="whsOnd zHQkBf" aria-labelledby="q1-title" placeholder="Your answer">
+    </div>
+
+    <!-- Question 2: Email -->
+    <div class="Qr7Oae" role="listitem">
+      <span class="M7eMe" id="q2-title">Email Address <span class="req-star">*</span></span>
+      <input type="email" class="whsOnd zHQkBf" aria-labelledby="q2-title" placeholder="Your answer">
+    </div>
+
+    <!-- Question 3: Phone Number -->
+    <div class="Qr7Oae" role="listitem">
+      <span class="M7eMe" id="q3-title">Phone Number <span class="req-star">*</span></span>
+      <input type="tel" class="whsOnd zHQkBf" aria-labelledby="q3-title" placeholder="Your answer">
+    </div>
+
+    <!-- Question 4: LinkedIn Profile -->
+    <div class="Qr7Oae" role="listitem">
+      <span class="M7eMe" id="q4-title">LinkedIn Profile URL <span class="req-star">*</span></span>
+      <input type="url" class="whsOnd zHQkBf" aria-labelledby="q4-title" placeholder="Your answer">
+    </div>
+
+    <!-- Question 5: GitHub / Portfolio -->
+    <div class="Qr7Oae" role="listitem">
+      <span class="M7eMe" id="q5-title">GitHub or Portfolio URL</span>
+      <input type="url" class="whsOnd zHQkBf" aria-labelledby="q5-title" placeholder="Your answer">
+    </div>
+
+    <!-- Container for dynamic second step questions -->
+    <div id="dynamic-step-container"></div>
+
+    <div class="btn-row">
+      <button type="button" class="btn-next-step" id="btn-load-more">Load Additional Questions (Test Text Change Auto-Trigger)</button>
+      <button type="button" class="btn-submit" onclick="alert('Form completed!')">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    // Simulate dynamic page content change (multi-step form)
+    document.getElementById("btn-load-more").addEventListener("click", function() {
+      const container = document.getElementById("dynamic-step-container");
+      if (container.children.length > 0) return;
+
+      document.getElementById("step-indicator").textContent = "Step 2 of 2: Experience & Details";
+      
+      const newQuestions = `
+        <div class="Qr7Oae" role="listitem" style="margin-top: 14px;">
+          <span class="M7eMe" id="q6-title">Current Employer / Company Name</span>
+          <input type="text" class="whsOnd zHQkBf" aria-labelledby="q6-title" placeholder="Your answer">
+        </div>
+
+        <div class="Qr7Oae" role="listitem" style="margin-top: 14px;">
+          <span class="M7eMe" id="q7-title">Current Job Title</span>
+          <input type="text" class="whsOnd zHQkBf" aria-labelledby="q7-title" placeholder="Your answer">
+        </div>
+
+        <div class="Qr7Oae" role="listitem" style="margin-top: 14px;">
+          <span class="M7eMe" id="q8-title">Current Location / City</span>
+          <input type="text" class="whsOnd zHQkBf" aria-labelledby="q8-title" placeholder="Your answer">
+        </div>
+
+        <div class="Qr7Oae" role="listitem" style="margin-top: 14px;">
+          <span class="M7eMe" id="q9-title">Introduce yourself / Summary note to hiring team</span>
+          <textarea class="KHxj8b tL9Q4c" aria-labelledby="q9-title" placeholder="Your answer" rows="3"></textarea>
+        </div>
+      `;
+
+      container.innerHTML = newQuestions;
+      this.textContent = "✓ Questions Loaded (Autofill triggered automatically)";
+      this.disabled = true;
+    });
+  </script>
+</body>
+</html>

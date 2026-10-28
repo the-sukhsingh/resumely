@@ -531,7 +531,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (matchScoreVal) matchScoreVal.textContent = score;
 
     if (scoreRing) {
-      const circumference = 201; // 2 * PI * 32
+      const circumference = 176; // 2 * PI * 28
       const offset = circumference - (score / 100) * circumference;
       scoreRing.style.strokeDashoffset = offset;
 
