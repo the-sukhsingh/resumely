@@ -1,5 +1,5 @@
-// Resumely Popup Controller - Real Data & Authentication Engine
-// Integrates live Convex user sessions, multiple tailored resumes, local storage & form autofill
+// Resumely Popup Controller - High Craft, Minimal, Real Data Engine
+// Aligned to Resumely Web App (Convex Backend + Local Storage + ATS Matcher + Form Autofill)
 
 document.addEventListener("DOMContentLoaded", async () => {
   // State
@@ -10,23 +10,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   let settings = null;
   let currentStage = "saved";
   let savedJobsList = [];
+  let activeTabHostname = "";
 
-  // DOM Elements
+  // 1. Navigation & Header Elements
+  const btnBrandHome = document.getElementById("btn-brand-home");
+  const navTabs = document.querySelectorAll(".nav-tab");
+  const tabViews = document.querySelectorAll(".tab-view");
+  const trackerCounter = document.getElementById("tracker-counter");
   const headerCredits = document.getElementById("header-credits");
   const creditsCount = document.getElementById("credits-count");
+  const btnUserMenu = document.getElementById("btn-user-menu");
   const userAvatarImg = document.getElementById("user-avatar-img");
   const userAvatarFallback = document.getElementById("user-avatar-fallback");
   const authStatusDot = document.getElementById("auth-status-dot");
+  const toastEl = document.getElementById("popup-toast");
+
+  // Auth Banner Elements
   const authBanner = document.getElementById("auth-banner");
   const btnOpenResumelyLogin = document.getElementById("btn-open-resumely-login");
   const quickEmailInput = document.getElementById("quick-email-input");
   const btnQuickEmailConnect = document.getElementById("btn-quick-email-connect");
-  const selectResume = document.getElementById("select-resume");
-  const savedJobsCounter = document.getElementById("saved-jobs-counter");
-  const toastEl = document.getElementById("popup-toast");
 
-  // Tab 1 Elements
+  // Active Resume Selector
+  const selectResume = document.getElementById("select-resume");
+
+  // Tab 1: Match & Save Elements
   const jobSourceEl = document.getElementById("job-source");
+  const jobSalaryEl = document.getElementById("job-salary");
   const jobTitleEl = document.getElementById("job-title");
   const jobCompanyEl = document.getElementById("job-company");
   const jobLocationEl = document.getElementById("job-location");
@@ -39,14 +49,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const missingChipsContainer = document.getElementById("missing-chips");
   const matchedCountEl = document.getElementById("matched-count");
   const missingCountEl = document.getElementById("missing-count");
-  const stagePills = document.querySelectorAll(".stage-pill");
+  const stageSegBtns = document.querySelectorAll(".stage-seg");
   const jobNotesInput = document.getElementById("job-notes");
   const btnSaveJob = document.getElementById("btn-save-job");
   const saveBtnText = document.getElementById("save-btn-text");
   const linkOpenTracker = document.getElementById("link-open-tracker");
   const linkTailorInApp = document.getElementById("link-tailor-in-app");
+  const btnOpenPitchModal = document.getElementById("btn-open-pitch-modal");
 
-  // Tab 2 Elements
+  // Tab 2: Autofill & Cheat Sheet Elements
   const btnTriggerAutofill = document.getElementById("btn-trigger-autofill");
   const autofillStatusText = document.getElementById("autofill-status-text");
   const qcName = document.getElementById("qc-name");
@@ -59,33 +70,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   const qcSummaryText = document.getElementById("qc-summary-text");
   const btnCopySummary = document.getElementById("btn-copy-summary");
 
-  // Tab 3 Elements (Saved Jobs)
-  const savedJobsContainer = document.getElementById("saved-jobs-container");
-  const searchSavedJobs = document.getElementById("search-saved-jobs");
+  // Tab 3: Tracker Elements
   const linkHeaderTracker = document.getElementById("link-header-tracker");
+  const searchSavedJobs = document.getElementById("search-saved-jobs");
+  const savedJobsContainer = document.getElementById("saved-jobs-container");
 
-  // Tab 4 Elements (Pitch)
+  // Slide-over Drawer Elements
+  const drawerOverlay = document.getElementById("drawer-overlay");
+  const settingsDrawer = document.getElementById("settings-drawer");
+  const btnCloseDrawer = document.getElementById("btn-close-drawer");
+  const drawerAvatarImg = document.getElementById("drawer-avatar-img");
+  const drawerAvatarFallback = document.getElementById("drawer-avatar-fallback");
+  const accName = document.getElementById("acc-name");
+  const accEmail = document.getElementById("acc-email");
+  const btnDisconnectAccount = document.getElementById("btn-disconnect-account");
+  const selectWidgetMode = document.getElementById("select-widget-mode");
+  const currentTabDomain = document.getElementById("current-tab-domain");
+  const btnToggleCurrentDomain = document.getElementById("btn-toggle-current-domain");
+  const settingAppUrl = document.getElementById("setting-app-url");
+  const settingUserEmail = document.getElementById("setting-user-email");
+  const btnTestConnection = document.getElementById("btn-test-connection");
+  const btnResetDemo = document.getElementById("btn-reset-demo");
+
+  // Pitch Modal Elements
+  const pitchModal = document.getElementById("pitch-modal");
+  const btnClosePitch = document.getElementById("btn-close-pitch");
   const pitchText = document.getElementById("pitch-text");
   const btnGeneratePitch = document.getElementById("btn-generate-pitch");
   const btnCopyPitch = document.getElementById("btn-copy-pitch");
 
-  // Tab 5 Elements (Settings)
-  const accName = document.getElementById("acc-name");
-  const accEmail = document.getElementById("acc-email");
-  const btnDisconnectAccount = document.getElementById("btn-disconnect-account");
-  const settingAppUrl = document.getElementById("setting-app-url");
-  const settingUserEmail = document.getElementById("setting-user-email");
-  const btnTestConnection = document.getElementById("btn-test-connection");
-  const selectWidgetMode = document.getElementById("select-widget-mode");
-  const currentTabDomain = document.getElementById("current-tab-domain");
-  const btnToggleCurrentDomain = document.getElementById("btn-toggle-current-domain");
-  const btnResetDemo = document.getElementById("btn-reset-demo");
-  let activeTabHostname = "";
-
-  // Navigation Switcher
-  const navTabs = document.querySelectorAll(".nav-tab-pill");
-  const tabPanes = document.querySelectorAll(".tab-pane");
-
+  // Helpers
   function showToast(msg) {
     if (!toastEl) return;
     toastEl.textContent = msg;
@@ -100,28 +114,65 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 1. Tab Switching
+  function openDrawer() {
+    drawerOverlay?.classList.add("open");
+    settingsDrawer?.classList.add("open");
+  }
+
+  function closeDrawer() {
+    drawerOverlay?.classList.remove("open");
+    settingsDrawer?.classList.remove("open");
+  }
+
+  btnUserMenu?.addEventListener("click", openDrawer);
+  btnCloseDrawer?.addEventListener("click", closeDrawer);
+  drawerOverlay?.addEventListener("click", closeDrawer);
+
+  btnOpenPitchModal?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (pitchModal) {
+      pitchModal.style.display = "flex";
+      generatePitch();
+    }
+  });
+
+  btnClosePitch?.addEventListener("click", () => {
+    if (pitchModal) pitchModal.style.display = "none";
+  });
+
+  // 2. Tab Switching
   navTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       navTabs.forEach((t) => t.classList.remove("active"));
-      tabPanes.forEach((p) => p.classList.remove("active"));
+      tabViews.forEach((v) => v.classList.remove("active"));
+
       tab.classList.add("active");
       const targetId = tab.getAttribute("data-tab");
-      const targetPane = document.getElementById(targetId);
-      if (targetPane) targetPane.classList.add("active");
+      const targetView = document.getElementById(targetId);
+      if (targetView) targetView.classList.add("active");
 
-      if (targetId === "tab-saved-jobs") {
+      if (targetId === "tab-tracker") {
         renderSavedJobs();
       }
     });
   });
 
-  // 2. Authentication & Session Initialization
+  btnBrandHome?.addEventListener("click", (e) => {
+    e.preventDefault();
+    const root = settings?.appUrl || "http://localhost:3000";
+    if (chrome.tabs && chrome.tabs.create) {
+      chrome.tabs.create({ url: root });
+    } else {
+      window.open(root, "_blank");
+    }
+  });
+
+  // 3. Authentication & Data Initialization
   async function initAuthAndData() {
     settings = await ResumelyStorage.getSettings();
     authenticatedUser = await ResumelyStorage.getAuthenticatedUser();
 
-    // Check live server session automatically
+    // Verify session with Resumely server
     try {
       const liveSession = await ResumelyAPI.checkActiveSession(settings.appUrl);
       if (liveSession && liveSession.authenticated && liveSession.user) {
@@ -144,13 +195,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
     } catch (e) {
-      // offline or not responding
+      // offline or server not ready
     }
 
-    // Update Auth UI
     updateAuthHeaderUI();
 
-    // Load Resumes
+    // Resumes
     availableResumes = await ResumelyStorage.getResumes();
     activeResume = await ResumelyStorage.getActiveResume();
     if (!activeResume && availableResumes.length > 0) {
@@ -160,23 +210,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     populateResumeSelector();
     populateCheatSheet();
 
-    // Load Saved Jobs
+    // Saved Jobs
     savedJobsList = await ResumelyStorage.getSavedJobs();
     updateSavedJobsCounter();
 
-    // Set deep links
+    // Deep Links
     const root = settings.appUrl || "http://localhost:3000";
     if (linkOpenTracker) linkOpenTracker.href = `${root}/tracker`;
     if (linkHeaderTracker) linkHeaderTracker.href = `${root}/tracker`;
 
-    // Populate Settings UI
+    // Preferences in Drawer
     if (settingAppUrl) settingAppUrl.value = settings.appUrl;
     if (settingUserEmail) settingUserEmail.value = authenticatedUser?.email || settings.userEmail || "";
     if (selectWidgetMode) {
       selectWidgetMode.value = settings.widgetActivationMode || "job_sites_only";
     }
 
-    // Inspect active tab domain
+    // Inspect active browser tab domain
     if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.query) {
       try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -184,7 +234,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           activeTabHostname = new URL(tab.url).hostname.toLowerCase();
           updateDomainControlUI();
         } else if (tab && tab.url) {
-          activeTabHostname = "Local File / Special Page";
+          activeTabHostname = "Browser Special Page";
           if (currentTabDomain) currentTabDomain.textContent = activeTabHostname;
           if (btnToggleCurrentDomain) btnToggleCurrentDomain.style.display = "none";
         }
@@ -194,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updateDomainControlUI() {
     if (!currentTabDomain) return;
-    if (!activeTabHostname || activeTabHostname.startsWith("Local")) {
+    if (!activeTabHostname || activeTabHostname.startsWith("Browser")) {
       currentTabDomain.textContent = activeTabHostname || "No domain";
       if (btnToggleCurrentDomain) btnToggleCurrentDomain.style.display = "none";
       return;
@@ -206,7 +256,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnToggleCurrentDomain) {
       btnToggleCurrentDomain.style.display = "inline-block";
       btnToggleCurrentDomain.textContent = isBlocked ? "Allow on this site" : "Block on this site";
-      btnToggleCurrentDomain.className = isBlocked ? "btn-micro" : "btn-micro danger";
+      btnToggleCurrentDomain.style.color = isBlocked ? "var(--text-primary)" : "#f87171";
     }
   }
 
@@ -214,45 +264,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (authenticatedUser && authenticatedUser.email) {
       if (authBanner) authBanner.style.display = "none";
       if (authStatusDot) {
-        authStatusDot.className = "status-indicator-dot";
+        authStatusDot.className = "status-dot";
         authStatusDot.title = "Connected to Resumely";
       }
 
-      // Show user avatar
+      const initial = (authenticatedUser.name || authenticatedUser.email || "R")[0].toUpperCase();
+
+      // Top navbar avatar
       if (authenticatedUser.picture && userAvatarImg) {
         userAvatarImg.src = authenticatedUser.picture;
         userAvatarImg.style.display = "block";
         if (userAvatarFallback) userAvatarFallback.style.display = "none";
       } else if (userAvatarFallback) {
-        userAvatarFallback.textContent = (authenticatedUser.name || "U")[0].toUpperCase();
+        userAvatarFallback.textContent = initial;
         userAvatarFallback.style.display = "block";
         if (userAvatarImg) userAvatarImg.style.display = "none";
       }
 
-      // Show Credits
-      const credits = authenticatedUser.credits !== undefined ? authenticatedUser.credits : 25;
-      if (creditsCount) creditsCount.textContent = `${credits}`;
-      if (headerCredits) headerCredits.title = `You have ${credits} Resumely credits available`;
+      // Drawer avatar
+      if (authenticatedUser.picture && drawerAvatarImg) {
+        drawerAvatarImg.src = authenticatedUser.picture;
+        drawerAvatarImg.style.display = "block";
+        if (drawerAvatarFallback) drawerAvatarFallback.style.display = "none";
+      } else if (drawerAvatarFallback) {
+        drawerAvatarFallback.textContent = initial;
+        drawerAvatarFallback.style.display = "block";
+        if (drawerAvatarImg) drawerAvatarImg.style.display = "none";
+      }
 
-      // Settings card
+      // Credits badge
+      const credits = authenticatedUser.credits !== undefined ? authenticatedUser.credits : 100;
+      if (creditsCount) creditsCount.textContent = `${credits}`;
+      if (headerCredits) headerCredits.title = `${credits} Resumely credits available`;
+
+      // Drawer account info
       if (accName) accName.textContent = authenticatedUser.name || "Resumely User";
-      if (accEmail) accEmail.textContent = `${authenticatedUser.email} • ${credits} Credits`;
+      if (accEmail) accEmail.textContent = `${authenticatedUser.email}`;
       if (btnDisconnectAccount) btnDisconnectAccount.style.display = "block";
     } else {
       if (authBanner) authBanner.style.display = "block";
       if (authStatusDot) {
-        authStatusDot.className = "status-indicator-dot offline";
-        authStatusDot.title = "Using Demo Profile";
+        authStatusDot.className = "status-dot offline";
+        authStatusDot.title = "Demo Mode (Offline)";
       }
       if (creditsCount) creditsCount.textContent = "Demo";
       if (userAvatarFallback) {
-        userAvatarFallback.textContent = "A";
+        userAvatarFallback.textContent = "D";
         userAvatarFallback.style.display = "block";
       }
       if (userAvatarImg) userAvatarImg.style.display = "none";
 
-      if (accName) accName.textContent = "Demo Mode (Alex Morgan)";
-      if (accEmail) accEmail.textContent = "Not connected to live Resumely";
+      if (drawerAvatarFallback) {
+        drawerAvatarFallback.textContent = "D";
+        drawerAvatarFallback.style.display = "block";
+      }
+      if (drawerAvatarImg) drawerAvatarImg.style.display = "none";
+
+      if (accName) accName.textContent = "Demo Candidate (Alex Morgan)";
+      if (accEmail) accEmail.textContent = "Sign in to sync your live account";
       if (btnDisconnectAccount) btnDisconnectAccount.style.display = "none";
     }
   }
@@ -287,15 +356,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (qcEmail) qcEmail.textContent = p.email || authenticatedUser?.email || "alex.morgan@example.com";
     if (qcPhone) qcPhone.textContent = p.phone || "+1 (555) 349-8210";
     if (qcLocation) qcLocation.textContent = p.location || "San Francisco, CA";
-    if (qcLinkedin) qcLinkedin.textContent = (p.linkedin || "").replace(/^https?:\/\//, "") || "linkedin.com/in/alexmorgan-dev";
+    if (qcLinkedin) qcLinkedin.textContent = (p.linkedin || "").replace(/^https?:\/\//, "") || "linkedin.com/in/alexmorgan";
     if (qcGithub) qcGithub.textContent = (p.github || "").replace(/^https?:\/\//, "") || "github.com/alexmorgan";
     if (qcWebsite) qcWebsite.textContent = (p.website || "").replace(/^https?:\/\//, "") || "alexmorgan.dev";
-    if (qcSummaryText) qcSummaryText.textContent = activeResume?.summary || "Senior software engineer with track record building scalable web products.";
+    if (qcSummaryText) qcSummaryText.textContent = activeResume?.summary || "Full-stack engineer specialized in React, Next.js, TypeScript, and high-performance cloud architectures.";
   }
 
-  // 3. Connect via Resumely Web or Email
+  // 4. Connect Web / Email Handlers
   btnOpenResumelyLogin?.addEventListener("click", () => {
-    const root = settings.appUrl || "http://localhost:3000";
+    const root = settings?.appUrl || "http://localhost:3000";
     if (chrome.tabs && chrome.tabs.create) {
       chrome.tabs.create({ url: `${root}/auth` });
     } else {
@@ -306,12 +375,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   btnQuickEmailConnect?.addEventListener("click", async () => {
     const email = quickEmailInput?.value?.trim();
     if (!email || !email.includes("@")) {
-      showToast("Please enter a valid email");
+      showToast("Please enter a valid email address");
       return;
     }
 
     btnQuickEmailConnect.disabled = true;
-    btnQuickEmailConnect.textContent = "Connecting...";
+    btnQuickEmailConnect.textContent = "...";
 
     try {
       const res = await ResumelyAPI.loginWithEmail(settings.appUrl, email);
@@ -341,10 +410,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         showToast(`Connected as ${res.user.name || email}!`);
       } else {
-        showToast(res.error || "No account found with this email in Resumely");
+        showToast(res.error || "No account found with this email");
       }
     } catch (e) {
-      showToast("Could not connect to Resumely server");
+      showToast("Unable to reach Resumely server");
     } finally {
       btnQuickEmailConnect.disabled = false;
       btnQuickEmailConnect.textContent = "Connect";
@@ -360,10 +429,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     populateResumeSelector();
     populateCheatSheet();
     if (currentJob) analyzeAndDisplayMatch();
+    closeDrawer();
     showToast("Signed out. Switched to demo profile.");
   });
 
-  // Switch Active Resume Version
   selectResume?.addEventListener("change", async () => {
     const selectedId = selectResume.value;
     const found = availableResumes.find((r) => (r._id || r.id) === selectedId);
@@ -372,11 +441,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       await ResumelyStorage.setActiveResumeId(selectedId);
       populateCheatSheet();
       if (currentJob) analyzeAndDisplayMatch();
-      showToast(`Active: ${found.name || "Resume"}`);
+      showToast(`Selected: ${found.name || "Resume"}`);
     }
   });
 
-  // 4. Job Extraction from Current Active Tab
+  // 5. Job Extraction from Current Tab
   async function extractJob() {
     if (typeof chrome === "undefined" || !chrome.tabs || !chrome.tabs.query) {
       setMockJob();
@@ -404,22 +473,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function setMockJob(title = "Staff Frontend Engineer", url = "https://linear.app/careers/staff-frontend") {
+  function setMockJob(title = "Senior Frontend Engineer", url = "https://linear.app/careers/senior-frontend") {
     currentJob = {
-      title: title.includes(" - ") ? title.split(" - ")[0] : "Staff Frontend Engineer",
+      title: title && title.includes(" - ") ? title.split(" - ")[0] : "Senior Frontend Engineer",
       company: "Linear",
       location: "San Francisco, CA (or Remote)",
-      salary: "$180,000 - $240,000",
+      salary: "$170,000 - $220,000",
       source: "Career Portal",
-      jobUrl: url,
+      jobUrl: url || "https://linear.app/careers",
       description: `
-        Linear is looking for a Staff Frontend Engineer proficient in React, Next.js, TypeScript, Tailwind CSS, GraphQL, and WebSockets to scale our client web architecture.
+        Linear is building the next-generation issue tracking and product planning tool.
+        We are looking for a Senior Frontend Engineer proficient in React, Next.js, TypeScript, Tailwind CSS, GraphQL, and real-time state synchronization.
         Requirements:
-        • 6+ years of production experience in React, TypeScript, and modern JavaScript.
-        • Deep familiarity with Next.js App Router, React Server Components, and client performance profiling.
-        • Hands-on experience with GraphQL, REST APIs, and real-time WebSockets.
-        • Knowledge of cloud deployment pipelines, Docker, CI/CD, and GitHub Actions.
-        • Strong grasp of System Design, Unit Testing (Jest, Vitest), and web security best practices.
+        • 5+ years building high-craft web applications with React and TypeScript.
+        • Strong expertise in Next.js App Router, performance profiling, and accessible component architecture.
+        • Experience with GraphQL APIs, WebSockets, and optimistic client-side UI updates.
+        • Deep empathy for user experience, animation polish, and tactile interactions.
       `,
     };
     displayJobDetails();
@@ -433,7 +502,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (jobLocationEl) jobLocationEl.textContent = currentJob.location || "Remote / Onsite";
     if (jobSourceEl) jobSourceEl.textContent = currentJob.source || "Detected";
 
-    // Set tailor link in web app
+    if (jobSalaryEl) {
+      if (currentJob.salary) {
+        jobSalaryEl.textContent = currentJob.salary;
+        jobSalaryEl.style.display = "inline-block";
+      } else {
+        jobSalaryEl.style.display = "none";
+      }
+    }
+
     const root = settings?.appUrl || "http://localhost:3000";
     if (linkTailorInApp) {
       const q = new URLSearchParams({
@@ -444,7 +521,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // 5. ATS Match Scoring with Real Resume
+  // 6. ATS Match Scoring
   function analyzeAndDisplayMatch() {
     if (!currentJob || !activeResume) return;
 
@@ -454,25 +531,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (matchScoreVal) matchScoreVal.textContent = score;
 
     if (scoreRing) {
-      const circumference = 226.2; // 2 * PI * 36
+      const circumference = 201; // 2 * PI * 32
       const offset = circumference - (score / 100) * circumference;
       scoreRing.style.strokeDashoffset = offset;
 
-      if (score >= 80) scoreRing.style.stroke = "var(--emerald)";
-      else if (score >= 60) scoreRing.style.stroke = "var(--amber)";
-      else scoreRing.style.stroke = "var(--rose)";
+      if (score >= 80) scoreRing.style.stroke = "var(--accent-emerald)";
+      else if (score >= 60) scoreRing.style.stroke = "var(--accent-amber)";
+      else scoreRing.style.stroke = "var(--accent-rose)";
     }
 
     if (scoreRatingLabel) {
-      if (score >= 85) {
-        scoreRatingLabel.textContent = "🎯 Strong ATS Fit";
-        scoreRatingLabel.style.color = "var(--emerald)";
-      } else if (score >= 65) {
-        scoreRatingLabel.textContent = "⚡ Solid Alignment";
-        scoreRatingLabel.style.color = "var(--amber)";
+      scoreRatingLabel.className = "match-badge";
+      if (score >= 80) {
+        scoreRatingLabel.textContent = "🎯 Strong Match";
+        scoreRatingLabel.classList.add("great");
+      } else if (score >= 60) {
+        scoreRatingLabel.textContent = "⚡ Good Match";
+        scoreRatingLabel.classList.add("good");
       } else {
         scoreRatingLabel.textContent = "⚠️ Tailoring Recommended";
-        scoreRatingLabel.style.color = "var(--rose)";
+        scoreRatingLabel.classList.add("fair");
       }
     }
 
@@ -486,13 +564,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (analysis.matchedSkills.length > 0) {
         analysis.matchedSkills.forEach((s) => {
           const chip = document.createElement("span");
-          chip.className = "skill-chip matched";
+          chip.className = "chip matched";
           chip.textContent = s;
           matchedChipsContainer.appendChild(chip);
         });
         if (matchedCountEl) matchedCountEl.textContent = analysis.matchedSkills.length;
       } else {
-        matchedChipsContainer.innerHTML = '<span class="chip-muted">No exact skill matches</span>';
+        matchedChipsContainer.innerHTML = '<span class="chip-empty">No exact matches</span>';
         if (matchedCountEl) matchedCountEl.textContent = "0";
       }
     }
@@ -503,19 +581,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (analysis.missingSkills.length > 0) {
         analysis.missingSkills.forEach((s) => {
           const chip = document.createElement("span");
-          chip.className = "skill-chip missing";
+          chip.className = "chip missing";
           chip.textContent = s;
           missingChipsContainer.appendChild(chip);
         });
         if (missingCountEl) missingCountEl.textContent = analysis.missingSkills.length;
       } else {
-        missingChipsContainer.innerHTML = '<span class="chip-muted">No critical missing keywords!</span>';
+        missingChipsContainer.innerHTML = '<span class="chip-empty">No critical missing keywords</span>';
         if (missingCountEl) missingCountEl.textContent = "0";
       }
     }
-
-    // Pre-generate elevator pitch
-    generatePitch();
   }
 
   btnRefreshJob?.addEventListener("click", () => {
@@ -523,12 +598,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     showToast("Re-scanned active page!");
   });
 
-  // 6. Save Job to Resumely Tracker (Real Data)
-  stagePills.forEach((pill) => {
-    pill.addEventListener("click", () => {
-      stagePills.forEach((p) => p.classList.remove("active"));
-      pill.classList.add("active");
-      currentStage = pill.getAttribute("data-stage") || "saved";
+  // 7. Stage Selection & Saving Job
+  stageSegBtns.forEach((seg) => {
+    seg.addEventListener("click", () => {
+      stageSegBtns.forEach((s) => s.classList.remove("active"));
+      seg.classList.add("active");
+      currentStage = seg.getAttribute("data-stage") || "saved";
     });
   });
 
@@ -566,8 +641,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // offline fallback
     }
 
-    // Persist locally on user-side
-    const savedRecord = await ResumelyStorage.addSavedJobLocally({
+    await ResumelyStorage.addSavedJobLocally({
       ...payload,
       applicationId: appId,
       syncedWithServer: serverSaved,
@@ -577,23 +651,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     savedJobsList = await ResumelyStorage.getSavedJobs();
     updateSavedJobsCounter();
 
-    btnSaveJob.classList.add("saved-state");
+    btnSaveJob.classList.add("saved");
     if (saveBtnText) {
-      saveBtnText.textContent = serverSaved ? "✓ Saved to Convex Tracker!" : "✓ Saved Locally!";
+      saveBtnText.textContent = serverSaved ? "✓ Saved to Convex Kanban!" : "✓ Saved to Extension!";
     }
-    showToast(serverSaved ? "Saved to Resumely Kanban!" : "Saved in Extension History!");
+    showToast(serverSaved ? "Saved to Resumely Kanban!" : "Saved in Extension Tracker!");
 
     setTimeout(() => {
       btnSaveJob.disabled = false;
-      btnSaveJob.classList.remove("saved-state");
-      if (saveBtnText) saveBtnText.textContent = "Save to Resumely Tracker";
-    }, 2500);
+      btnSaveJob.classList.remove("saved");
+      if (saveBtnText) saveBtnText.textContent = "Save to Job Tracker";
+    }, 2400);
   });
 
-  // 7. Saved Jobs Drawer / View (Real User-Side Storage)
+  // 8. Saved Jobs Tracker (Tab 3)
   function updateSavedJobsCounter() {
-    if (savedJobsCounter) {
-      savedJobsCounter.textContent = savedJobsList.length;
+    if (trackerCounter) {
+      trackerCounter.textContent = savedJobsList.length;
     }
   }
 
@@ -611,38 +685,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     if (filtered.length === 0) {
-      savedJobsContainer.innerHTML = `<div class="empty-state">${
-        query ? "No applications match your filter." : "No saved jobs yet. Clip one from the Match tab!"
+      savedJobsContainer.innerHTML = `<div class="empty-placeholder">${
+        query ? "No applications match your search." : "No saved jobs yet. Clip one from the Match tab!"
       }</div>`;
       return;
     }
 
     filtered.forEach((job) => {
-      const card = document.createElement("div");
-      card.className = "job-item-card";
+      const item = document.createElement("div");
+      item.className = "tracker-item";
 
       const timeAgo = formatTimeAgo(job.savedAt || Date.now());
-      const root = settings.appUrl || "http://localhost:3000";
 
-      card.innerHTML = `
-        <div class="job-item-top">
-          <div>
-            <div class="job-item-title">${escapeHtml(job.title)}</div>
-            <div class="job-item-company">${escapeHtml(job.company)}</div>
-          </div>
-          <span class="job-item-stage-pill ${job.stage || "saved"}">${job.stage || "saved"}</span>
+      item.innerHTML = `
+        <div class="tracker-item-left">
+          <div class="tracker-item-title">${escapeHtml(job.title)}</div>
+          <div class="tracker-item-company">${escapeHtml(job.company)} • ${timeAgo}</div>
         </div>
-        <div class="job-item-meta">
-          <span>${timeAgo}</span>
-          <div class="job-item-actions">
-            ${job.jobUrl ? `<a href="${job.jobUrl}" target="_blank" class="job-action-link">Open Posting ↗</a>` : ""}
-            <a href="${root}/tracker" target="_blank" class="job-action-link">Kanban ↗</a>
-            <button class="job-btn-delete" data-id="${job.id || job.applicationId}" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-          </div>
-        </div>
+        <span class="tracker-item-badge ${job.stage || "saved"}">${job.stage || "saved"}</span>
+        <button class="tracker-item-del" data-id="${job.id || job.applicationId}" title="Delete">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
       `;
 
-      card.querySelector(".job-btn-delete")?.addEventListener("click", async (e) => {
+      item.querySelector(".tracker-item-left")?.addEventListener("click", () => {
+        if (job.jobUrl && chrome.tabs && chrome.tabs.create) {
+          chrome.tabs.create({ url: job.jobUrl });
+        } else if (job.jobUrl) {
+          window.open(job.jobUrl, "_blank");
+        }
+      });
+
+      item.querySelector(".tracker-item-del")?.addEventListener("click", async (e) => {
         e.stopPropagation();
         await ResumelyStorage.deleteSavedJob(job.id || job.applicationId);
         savedJobsList = await ResumelyStorage.getSavedJobs();
@@ -651,7 +725,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         showToast("Removed from tracker");
       });
 
-      savedJobsContainer.appendChild(card);
+      savedJobsContainer.appendChild(item);
     });
   }
 
@@ -674,7 +748,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return div.innerHTML;
   }
 
-  // 8. Form Autofill
+  // 9. Form Autofill (Tab 2)
   btnTriggerAutofill?.addEventListener("click", async () => {
     if (typeof chrome === "undefined" || !chrome.tabs || !chrome.tabs.query) {
       showToast("Autofill simulated in test environment");
@@ -698,20 +772,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else if (res.count > 0) {
           showToast(`Autofilled ${res.count} fields!`);
           if (autofillStatusText) {
-            autofillStatusText.textContent = `Successfully autofilled ${res.count} application fields!`;
+            autofillStatusText.textContent = `Successfully filled ${res.count} inputs!`;
           }
         } else {
-          showToast("No compatible form inputs found on page");
+          showToast("No compatible form fields found on this page");
         }
       }
     );
   });
 
-  // 9. Quick Copy Clicks
-  document.querySelectorAll(".copy-item-row").forEach((row) => {
+  // Quick Copy Click Handling
+  document.querySelectorAll(".cheat-row").forEach((row) => {
     row.addEventListener("click", () => {
       const fieldKey = row.getAttribute("data-copy");
-      const valEl = row.querySelector(".copy-value");
+      const valEl = row.querySelector(".cheat-val");
       copyToClipboard(valEl?.textContent?.trim(), fieldKey || "Text");
     });
   });
@@ -720,7 +794,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     copyToClipboard(qcSummaryText?.textContent?.trim(), "Summary Statement");
   });
 
-  // 10. AI Pitch Generator
+  // 10. AI Pitch Modal
   function generatePitch() {
     if (!pitchText || !currentJob || !activeResume) return;
     const pitch = ResumelyMatcher.generateTailoredPitch(currentJob, activeResume);
@@ -738,7 +812,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 11. Settings Actions
+  // 11. Preferences & Drawer Settings
   btnTestConnection?.addEventListener("click", async () => {
     const appUrl = settingAppUrl?.value?.trim() || "http://localhost:3000";
     const email = settingUserEmail?.value?.trim() || "";
@@ -770,14 +844,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         populateCheatSheet();
         if (currentJob) analyzeAndDisplayMatch();
 
-        showToast(`Synced! Found ${realResumes.length} resumes.`);
+        showToast(`Connected! Synced ${realResumes.length} resumes.`);
         return;
       }
     }
 
     const ping = await ResumelyAPI.pingServer(appUrl);
     if (ping.online) {
-      showToast("Connected to Resumely API!");
+      showToast("Server connected successfully!");
     } else {
       showToast("Server unreachable at " + appUrl);
     }
@@ -794,13 +868,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       val === "job_sites_only"
         ? "Active only on Job Boards & Career Sites"
         : val === "all_sites"
-        ? "Active on All Websites with job content"
+        ? "Active on All Sites with job content"
         : "Floating widget disabled";
     showToast(label);
   });
 
   btnToggleCurrentDomain?.addEventListener("click", async () => {
-    if (!activeTabHostname || activeTabHostname.startsWith("Local")) return;
+    if (!activeTabHostname || activeTabHostname.startsWith("Browser")) return;
     const isBlocked = await ResumelyStorage.toggleDomainBlacklist(activeTabHostname);
     settings = await ResumelyStorage.getSettings();
     updateDomainControlUI();
@@ -816,10 +890,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     populateResumeSelector();
     populateCheatSheet();
     if (currentJob) analyzeAndDisplayMatch();
+    closeDrawer();
     showToast("Switched to Alex Morgan demo profile.");
   });
 
-  // Boot
+  // Initialize
   await initAuthAndData();
   await extractJob();
 });

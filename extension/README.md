@@ -8,7 +8,7 @@ The Resumely Browser Extension bridges your web browsing experience with your Re
 
 ## ✨ Key Features
 
-1. **🎯 1-Click Job Clipper & Saver:**
+1. **🎯 1-Click Job Clipper & Match Tab:**
    - Automatically detects job title, company name, location, salary, and description from:
      - **LinkedIn** (`linkedin.com/jobs/...`)
      - **Indeed** (`indeed.com/...`)
@@ -16,48 +16,30 @@ The Resumely Browser Extension bridges your web browsing experience with your Re
      - **Lever** (`jobs.lever.co/...`)
      - **Wellfound / AngelList** (`wellfound.com/...`)
      - **Generic Career Sites** via Schema.org JSON-LD `JobPosting` and smart DOM inspection.
-   - Choose application stage: `Saved / Wishlist`, `Applied`, or `Interviewing`.
-   - Links directly to your Resumely Job Tracker (`/tracker`).
+   - Evaluates ATS score (0-100%) against your selected resume version.
+   - Categorizes skills into matched and missing keyword chips.
+   - Stage selector: `Wishlist`, `Applied`, or `Interviewing`.
+   - Links directly to your Resumely Job Tracker (`/tracker`), AI tailor (`/resume/create`), and tailored elevator pitch modal.
 
-2. **⚡ Real-Time ATS Match Score & Skill Gap Analysis:**
-   - Evaluates the job description against your master or tailored resume.
-   - Computes an overall match score (0–100%).
-   - Displays **Matched Skills** (green badges) and **Missing Keywords** (amber badges).
-   - Provides instant tailoring recommendations to boost your match rate.
+2. **📝 Smart Form Autofill & Quick-Copy Tab:**
+   - One-click page autofill for Greenhouse, Lever, Workday, and custom job application forms.
+   - Interactive quick-copy cheat sheet with click-to-copy rows for Name, Email, Phone, Location, LinkedIn, GitHub, and Portfolio.
+   - Formatted professional summary statement with one-click copy.
 
-3. **📝 Smart Application Form Autofill:**
-   - Detects input fields across application forms (Greenhouse, Lever, Workday, custom portals).
-   - Autofills:
-     - First Name, Last Name, Full Name
-     - Email Address, Phone Number
-     - Location (City, State, Country)
-     - LinkedIn, GitHub, Portfolio URLs
-     - Current Employer & Job Title
-     - Cover Letter / Note to hiring manager
-   - Dispatches synthetic framework events so React/Angular/Vue forms recognize the data.
-   - Highlights filled inputs with an emerald glow.
+3. **📊 Real-Time Job Tracker Tab:**
+   - Synced with your live Resumely Convex Kanban board.
+   - Search & filter your saved applications directly inside the extension.
+   - One-click launch to the original job posting or Resumely Kanban.
 
-4. **📋 Quick-Copy Resume Cheat Sheet:**
-   - 1-click copy buttons for your contact details, profile links, summary, and work experience bullet points.
-   - Instant toast notification upon copying.
-
-5. **✍️ AI Elevator Pitch Generator:**
-   - Generates a custom 3-paragraph pitch / cover letter snippet tailored specifically to the active job posting.
-
-6. **🛡️ Smart Job-Site Filtering & User Preferences:**
+4. **🛡️ In-Page Assistant Widget & User Preferences Drawer:**
    - By default, the in-page floating widget only activates on recognized job boards (LinkedIn, Indeed, Greenhouse, Lever, Wellfound, Workday, etc.) and company career pages (`/careers`, `/jobs`).
    - It will **not** appear on non-job websites like Google, YouTube, Reddit, or GitHub.
-   - You can customize your preferences in Settings:
-     - **Only on Job Boards & Career Sites (Default)**
-     - **On All Websites (when job content or form is detected)**
-     - **Disabled Everywhere (use extension popup only)**
-   - Includes 1-click **"Don't show on this site"** / **"Block Site"** domain-level exclusions right from the widget and Settings!
-
-7. **🌐 Real-Time Authentication Bridge & Client-Side Data Storage:**
-   - Automatically detects your active NextAuth session whenever you open Resumely (`localhost:3000` or `resumely.tech`).
-   - Supports 1-click email connection (e.g. entering your account email) to pull your real master resume, all tailored resume versions, and AI credits from Convex.
-   - Saves all data on the user side in `chrome.storage.local` with an in-extension **Tracked Applications** viewer!
-   - Sleek UI aligned to the Resumely website (minimalist dark zinc theme, `re.` branding, credits pill, and Kanban stage colors).
+   - User slide-over drawer accessible via user avatar with preferences:
+     - **🎯 Only on Job Boards & Career Sites (Default)**
+     - **🌐 On All Websites**
+     - **🚫 Disabled Everywhere (Popup only)**
+     - 1-click **Block Site / Allow Site** domain-level toggle.
+     - Resumely server URL & direct account email sync.
 
 ---
 
