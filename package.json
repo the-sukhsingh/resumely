@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:extension": "vite build --config vite.extension.config.ts",
+    "build:extension": "vite build --config extension/vite.config.ts",
     "start": "next start",
     "lint": "eslint"
   },
