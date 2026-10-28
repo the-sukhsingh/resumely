@@ -84,69 +84,63 @@
         }
 
         .resumely-pill {
-          background: #090d16;
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          background: #09090b;
+          border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 9999px;
-          padding: 8px 14px;
+          padding: 7px 12px;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           cursor: pointer;
-          box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(99, 102, 241, 0.25);
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+          transition: all 0.2s ease;
           user-select: none;
         }
 
         .resumely-pill:hover {
           transform: translateY(-2px);
-          border-color: rgba(99, 102, 241, 0.5);
-          box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.7), 0 0 20px rgba(99, 102, 241, 0.4);
+          border-color: rgba(255, 255, 255, 0.25);
+          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
         }
 
         .logo-mark {
-          width: 22px;
-          height: 22px;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
-          border-radius: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 800;
-          font-size: 13px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-weight: 700;
+          font-size: 15px;
+          letter-spacing: -0.05em;
           color: #fff;
         }
 
         .pill-text {
           font-weight: 600;
-          font-size: 13px;
-          letter-spacing: -0.01em;
-          color: #e2e8f0;
+          font-size: 12px;
+          color: #f4f4f5;
         }
 
         .badge {
-          background: rgba(16, 185, 129, 0.15);
+          background: rgba(16, 185, 129, 0.12);
           color: #34d399;
-          border: 1px solid rgba(16, 185, 129, 0.3);
+          border: 1px solid rgba(16, 185, 129, 0.25);
           border-radius: 12px;
-          padding: 2px 7px;
+          padding: 1px 7px;
           font-size: 11px;
           font-weight: 600;
         }
 
         .resumely-card {
           position: absolute;
-          bottom: 50px;
+          bottom: 46px;
           right: 0;
-          width: 320px;
-          background: #0b0f19;
+          width: 310px;
+          background: #121215;
           border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 16px;
-          padding: 16px;
-          box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(99, 102, 241, 0.2);
+          border-radius: 14px;
+          padding: 14px;
+          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
           display: none;
           flex-direction: column;
-          gap: 12px;
-          animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          gap: 10px;
+          animation: slideUp 0.2s ease;
         }
 
         .resumely-card.open {
@@ -154,7 +148,7 @@
         }
 
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
@@ -163,22 +157,22 @@
           align-items: center;
           justify-content: space-between;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          padding-bottom: 10px;
+          padding-bottom: 8px;
         }
 
         .card-title {
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 700;
-          color: #f8fafc;
+          color: #f4f4f5;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
         }
 
         .close-btn {
           background: none;
           border: none;
-          color: #94a3b8;
+          color: #71717a;
           cursor: pointer;
           font-size: 16px;
           padding: 2px 6px;
@@ -187,28 +181,28 @@
 
         .close-btn:hover {
           color: #fff;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.08);
         }
 
         .job-snippet {
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 10px;
-          padding: 10px;
+          border-radius: 8px;
+          padding: 9px;
         }
 
         .job-title {
           font-weight: 600;
-          color: #f1f5f9;
-          font-size: 13px;
+          color: #f4f4f5;
+          font-size: 12px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
         .job-company {
-          font-size: 12px;
-          color: #94a3b8;
+          font-size: 11px;
+          color: #a1a1aa;
           margin-top: 2px;
         }
 
@@ -216,39 +210,39 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
-          background: linear-gradient(135deg, #4f46e5, #6366f1);
-          color: #fff;
+          gap: 6px;
+          background: #ffffff;
+          color: #09090b;
           border: none;
-          border-radius: 10px;
-          padding: 9px 14px;
-          font-weight: 600;
-          font-size: 13px;
-          cursor: pointer;
-          transition: filter 0.2s;
-        }
-
-        .btn-action:hover {
-          filter: brightness(1.1);
-        }
-
-        .btn-secondary {
-          background: rgba(255, 255, 255, 0.08);
-          color: #e2e8f0;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
+          border-radius: 8px;
           padding: 8px 12px;
           font-weight: 600;
           font-size: 12px;
           cursor: pointer;
+          transition: filter 0.15s;
+        }
+
+        .btn-action:hover {
+          background: #e4e4e7;
+        }
+
+        .btn-secondary {
+          background: #18181b;
+          color: #f4f4f5;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 7px 10px;
+          font-weight: 600;
+          font-size: 11px;
+          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 5px;
         }
 
         .btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.14);
+          background: #27272a;
         }
 
         .status-msg {
@@ -269,7 +263,7 @@
         <div class="resumely-card" id="widget-card">
           <div class="card-header">
             <div class="card-title">
-              <span class="logo-mark">R</span>
+              <span class="logo-mark">re.</span>
               <span>Resumely Assistant</span>
             </div>
             <button class="close-btn" id="btn-close">×</button>
@@ -300,7 +294,7 @@
         </div>
 
         <div class="resumely-pill" id="widget-pill">
-          <div class="logo-mark">R</div>
+          <div class="logo-mark">re.</div>
           <span class="pill-text">Resumely</span>
           ${detectedFieldsCount > 0 ? `<span class="badge">${detectedFieldsCount} fields</span>` : '<span class="badge">Active</span>'}
         </div>

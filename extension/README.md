@@ -44,9 +44,11 @@ The Resumely Browser Extension bridges your web browsing experience with your Re
 5. **✍️ AI Elevator Pitch Generator:**
    - Generates a custom 3-paragraph pitch / cover letter snippet tailored specifically to the active job posting.
 
-6. **🌐 Dual Mode (Live Backend Sync + Standalone Demo Mode):**
-   - Seamlessly connects to your local Resumely web app (`http://localhost:3000`) or production.
-   - Works immediately out of the box with the bundled **Alex Morgan** demo profile even if your backend is offline!
+6. **🌐 Real-Time Authentication Bridge & Client-Side Data Storage:**
+   - Automatically detects your active NextAuth session whenever you open Resumely (`localhost:3000` or `resumely.tech`).
+   - Supports 1-click email connection (e.g. entering your account email) to pull your real master resume, all tailored resume versions, and AI credits from Convex.
+   - Saves all data on the user side in `chrome.storage.local` with an in-extension **Tracked Applications** viewer!
+   - Sleek UI aligned to the Resumely website (minimalist dark zinc theme, `re.` branding, credits pill, and Kanban stage colors).
 
 ---
 
