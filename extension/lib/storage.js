@@ -140,8 +140,8 @@ const DEFAULT_SETTINGS = {
   userId: "",
   useDemoMode: false, // will auto-fallback to demo if not connected
   autoDetectJobs: true,
-  showFloatingWidget: true,
-  widgetActivationMode: "job_sites_only", // "job_sites_only" (default) | "all_sites" | "disabled"
+  showFloatingWidget: false,
+  widgetActivationMode: "disabled", // Floating widget disabled - user accesses features via extension popup
   whitelistedDomains: [], // domains where widget is forced ON
   blacklistedDomains: [], // domains where widget is forced OFF
   autoFillHighlights: true,

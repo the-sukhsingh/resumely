@@ -124,8 +124,8 @@ export const DEFAULT_DEMO_RESUME: ResumeVersion = {
 const DEFAULT_SETTINGS: ExtensionSettings = {
   appUrl: "http://localhost:3000",
   userEmail: "",
-  showFloatingWidget: true,
-  widgetActivationMode: "job_sites_only",
+  showFloatingWidget: false,
+  widgetActivationMode: "disabled",
   whitelistedDomains: [],
   blacklistedDomains: [],
   enableAutofill: true,
