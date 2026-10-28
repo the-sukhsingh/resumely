@@ -45,13 +45,37 @@ The Resumely Browser Extension bridges your web browsing experience with your Re
 
 ## 🛠️ Architecture & Build (React 19 + Tailwind CSS)
 
-The extension popup is built with **React 19**, **Tailwind CSS**, and **Lucide Icons** bundled via **Vite**.
+The extension is a self-contained modern project located in `extension/` powered by **React 19**, **Tailwind CSS**, and **Lucide Icons** bundled with **Vite**.
 
-To rebuild the extension after making changes in `src/extension/`:
-```bash
-npm run build:extension
+### Directory Structure:
+```text
+extension/
+├── package.json          # Extension dependencies & scripts
+├── vite.config.ts        # Vite build configuration (React SWC + Tailwind v4)
+├── tsconfig.json         # Isolated TypeScript compiler options
+├── manifest.json         # Chrome Manifest V3 declaration
+├── dist/                 # Production compiled bundle (ready for Chrome)
+│   ├── popup/index.html  # Production popup entry
+│   └── assets/           # Compiled JS & Tailwind CSS
+├── src/                  # React Source Code
+│   ├── popup/            # React Popup Application
+│   │   ├── index.html
+│   │   ├── main.tsx
+│   │   ├── PopupApp.tsx  # Full React + Tailwind + Lucide UI
+│   │   └── popup.css
+│   └── lib/              # Typesafe Storage, ATS Matcher, API bridges
+├── content-scripts/      # In-page Floating Capsule & Smart Autofill Engine
+└── background/           # Background Service Worker
 ```
-The compiled bundle outputs directly to `extension/dist/`, which is immediately loaded by Chrome Manifest V3.
+
+To rebuild the extension after making changes in `extension/src/`:
+```bash
+# From workspace root:
+npm run build:extension
+
+# Or inside extension directory:
+cd extension && npm run build
+```
 
 ---
 
