@@ -2,13 +2,15 @@
 
 import React from "react";
 import { BarsPreview } from "@/components/custom/bg-shader";
-import HeroSection from "@/components/homepage/Hero";
-import ExtensionShowcase from "@/components/homepage/ExtensionShowcase";
+import BrandHero from "@/components/homepage/BrandHero";
+import BrandMarquee from "@/components/homepage/BrandMarquee";
+import BrandBento from "@/components/homepage/BrandBento";
 import FeatureSection from "@/components/homepage/Features";
 import WorkflowSection from "@/components/homepage/Workflow";
+import BrandOrbitCta from "@/components/homepage/BrandOrbitCta";
 import PricingSection from "@/components/homepage/Pricing";
 import FaqSection from "@/components/homepage/Faq";
-import Footer from "@/components/homepage/Footer";
+import BrandFooter from "@/components/homepage/BrandFooter";
 
 export default function HomePage() {
   return (
@@ -22,27 +24,33 @@ export default function HomePage() {
           <BarsPreview decreaseFromLeft={false} />
         </div>
 
-        {/* Hero Section with Interactive Specimen */}
-        <HeroSection />
+        {/* 1. World-Class Brand Hero with Dual-Pane Specimen Workbench */}
+        <BrandHero />
 
-        {/* Browser Assistant / Extension Showcase */}
-        <ExtensionShowcase />
+        {/* 2. Platform & ATS Compatibility Marquee Strip */}
+        <BrandMarquee />
 
-        {/* Core Features: Hairline Ledger, Comparator & Pipeline */}
+        {/* 3. 3-Step Bento Interactive Pipeline (Agentwork-inspired) */}
+        <BrandBento />
+
+        {/* 4. Deep-Dive Isometric Hairline Engineering Capabilities */}
         <FeatureSection />
 
-        {/* How It Works / 3-Step Pipeline */}
+        {/* 5. 3-Step Ingestion & Calibration Timeline */}
         <WorkflowSection />
 
-        {/* Credit-Based Pricing */}
+        {/* 6. Floating Orbit CTA Card (Skydive-inspired) */}
+        <BrandOrbitCta />
+
+        {/* 7. Pragmatic Credit-Based Pricing */}
         <PricingSection />
 
-        {/* Objection-Crushing FAQ */}
+        {/* 8. Technical Objection-Crushing FAQ */}
         <FaqSection />
       </div>
 
-      {/* Footer / Final Statement CTA */}
-      <Footer />
+      {/* 9. Brand Wordmark & Final Action Footer */}
+      <BrandFooter />
     </div>
   );
 }
