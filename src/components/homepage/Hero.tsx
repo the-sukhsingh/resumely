@@ -12,7 +12,7 @@ export default function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-28 sm:pt-44 md:pt-48 pb-16 sm:pb-20 flex flex-col items-start text-left relative z-10">
+    <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-28 sm:pt-40 md:pt-44 pb-16 sm:pb-20 flex flex-col items-start text-left relative z-10">
       {/* Upright Roman Headline (Left-aligned) */}
       <motion.h1
         initial={{ opacity: 0, y: 8 }}
@@ -76,6 +76,16 @@ export default function HeroSection() {
             How it works
           </a>
         </Button>
+      </motion.div>
+
+      {/* Interactive Experience Alignment Specimen */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.22, ease: [0.23, 1, 0.32, 1] }}
+        className="w-full mt-10 sm:mt-14"
+      >
+        <InteractiveResumeDemo />
       </motion.div>
     </section>
   );

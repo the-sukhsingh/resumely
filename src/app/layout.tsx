@@ -106,7 +106,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${newsreader.variable} h-full antialiased no-scrollbar`}
+      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased no-scrollbar`}
     >
       <head>
         <link rel="icon" href="/white.ico" media="(prefers-color-scheme: light)" />
