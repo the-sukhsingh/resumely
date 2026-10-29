@@ -1,46 +1,33 @@
-'use client';
+"use client";
 
-/* Hallmark · genre: modern-minimal · macrostructure: Marquee Hero · theme: Cobalt · enrichment: E2 · nav: N5 · footer: Ft5 */
-
-import React from 'react';
-import { BarsPreview } from '@/components/custom/bg-shader';
-import HeroSection from '@/components/homepage/Hero';
-import FeatureSection from '@/components/homepage/Features';
-import WorkflowSection from '@/components/homepage/Workflow';
-import PricingSection from '@/components/homepage/Pricing';
-import FaqSection from '@/components/homepage/Faq';
-import Footer from '@/components/homepage/Footer';
+import React from "react";
+import MinimalHero from "@/components/homepage/MinimalHero";
+import LogoMarquee from "@/components/homepage/LogoMarquee";
+import BentoSteps from "@/components/homepage/BentoSteps";
+import FeatureTabs from "@/components/homepage/FeatureTabs";
+import OrbitCta from "@/components/homepage/OrbitCta";
+import MinimalFooter from "@/components/homepage/MinimalFooter";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen text-foreground font-sans no-scrollbar relative bg-background">
-      {/* Hero Container with Background Shader */}
-      <div className="relative z-10 bg-background border-b border-border/60 overflow-hidden">
-        <div className="absolute inset-0 noise dark:opacity-30 pointer-events-none" />
-        
-        {/* Background Shader: smooth architectural backdrop visible in both light & dark modes */}
-        <div className="absolute inset-0 h-dvh overflow-hidden pointer-events-none ">
-          <BarsPreview decreaseFromLeft={false} />
-        </div>
+    <main className="min-h-screen bg-[#f4f3f1] dark:bg-[#0e0e11] text-[#1e1d1b] dark:text-zinc-100 font-sans selection:bg-[#e8531f]/20 selection:text-[#e8531f] transition-colors">
+      {/* Hero Section */}
+      <MinimalHero />
 
-        {/* Hero Section */}
-        <HeroSection />
+      {/* Integration Marquee */}
+      <LogoMarquee />
 
-        {/* Features Section */}
-        <FeatureSection />
+      {/* 3-Step Bento Pipeline */}
+      <BentoSteps />
 
-        {/* How It Works (3-step Timeline Pipeline) */}
-        <WorkflowSection />
+      {/* Deep-Dive Feature Tabs */}
+      <FeatureTabs />
 
-        {/* Pragmatic Credit Pricing */}
-        <PricingSection />
+      {/* Floating CTA with Orbit Composition */}
+      <OrbitCta />
 
-        {/* Objection-Crushing FAQ */}
-        <FaqSection />
-      </div>
-
-      {/* Footer / Final Statement CTA */}
-      <Footer />
-    </div>
+      {/* Asymmetric Minimal Dark Footer */}
+      <MinimalFooter />
+    </main>
   );
 }
