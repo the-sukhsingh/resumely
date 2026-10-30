@@ -23,36 +23,35 @@ uniform float iTime;
 uniform vec4 iMouse;
 uniform float uDarkMode;
 
-// ── 2D Rotation ──────────────────────────────────────────────
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-}
-
-// ── Hash & Grain for physical film texture ───────────────────
+// ── Film grain hash ──────────────────────────────────────────
 float hash(vec2 p) {
-    p = fract(p * vec2(127.1, 311.7));
-    p += dot(p, p + 74.51);
+    p = fract(p * vec2(234.34, 435.345));
+    p += dot(p, p + 34.23);
     return fract(p.x * p.y);
 }
 
-// ── True Optical Prism Spectral Dispersion ───────────────────
-// Wavelength parameter lambda in [0.0, 1.0]
-vec3 spectrum(float lambda) {
+// ── Spectral Wavelength to RGB (CIE Color Match) ─────────────
+// Maps lambda in [0.0, 1.0] to pure physical prism spectrum
+vec3 spectralColor(float lambda) {
     lambda = clamp(lambda, 0.0, 1.0);
-    // Refractive wavelength spectrum: Violet -> Azure -> Cyan -> Emerald -> Gold -> Coral
-    vec3 c0 = vec3(0.58, 0.22, 0.96); // 400nm Violet
-    vec3 c1 = vec3(0.15, 0.52, 0.98); // 450nm Electric Blue
-    vec3 c2 = vec3(0.05, 0.82, 0.76); // 500nm Cyan
-    vec3 c3 = vec3(0.18, 0.88, 0.38); // 540nm Emerald
-    vec3 c4 = vec3(0.98, 0.78, 0.12); // 590nm Radiant Gold
-    vec3 c5 = vec3(0.96, 0.32, 0.28); // 650nm Vivid Coral
+    // 0.00: Deep Violet
+    // 0.20: Sapphire Blue
+    // 0.40: Electric Cyan
+    // 0.55: Emerald Lime
+    // 0.75: Radiant Gold
+    // 1.00: Vivid Crimson / Orange
+    vec3 c0 = vec3(0.38, 0.12, 0.72); // Violet
+    vec3 c1 = vec3(0.08, 0.32, 0.95); // Deep Azure
+    vec3 c2 = vec3(0.02, 0.72, 0.88); // Cyan
+    vec3 c3 = vec3(0.12, 0.82, 0.38); // Emerald
+    vec3 c4 = vec3(0.98, 0.72, 0.10); // Warm Gold
+    vec3 c5 = vec3(0.92, 0.24, 0.18); // Crimson Coral
 
     float b0 = smoothstep(0.00, 0.20, lambda);
     float b1 = smoothstep(0.20, 0.40, lambda);
-    float b2 = smoothstep(0.40, 0.60, lambda);
-    float b3 = smoothstep(0.60, 0.80, lambda);
-    float b4 = smoothstep(0.80, 1.00, lambda);
+    float b2 = smoothstep(0.40, 0.58, lambda);
+    float b3 = smoothstep(0.58, 0.78, lambda);
+    float b4 = smoothstep(0.78, 1.00, lambda);
 
     vec3 col = mix(c0, c1, b0);
     col = mix(col, c2, b1);
@@ -62,99 +61,110 @@ vec3 spectrum(float lambda) {
     return col;
 }
 
+// Gaussian beam helper
+float gbeam(float x, float center, float sigma) {
+    float d = (x - center) / max(sigma, 0.001);
+    return exp(-0.5 * d * d);
+}
+
 void main() {
     vec2 fragCoord = gl_FragCoord.xy;
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / min(iResolution.x, iResolution.y);
+    vec2 uv = fragCoord / iResolution.xy;
+    float aspect = iResolution.x / iResolution.y;
 
-    float t = iTime * 0.38;
+    float t = iTime * 0.22;
 
-    // Interactive pointer parallax (smooth normalized mouse offset)
-    vec2 mouseOffset = (iMouse.xy - 0.5 * iResolution.xy) / min(iResolution.x, iResolution.y);
-    uv -= mouseOffset * 0.12;
+    // Pointer parallax response (gentle shift of the light apex)
+    vec2 mouseNorm = (iMouse.xy / iResolution.xy - 0.5);
+    vec2 apex = vec2(0.60 + mouseNorm.x * 0.08, 1.08 + mouseNorm.y * 0.05);
 
-    // Base background tone depending on light / dark mode
-    vec3 bg;
-    if (uDarkMode > 0.5) {
-        // Dark Mode: deep obsidian with subtle graphite warmth
-        bg = vec3(0.045, 0.045, 0.055);
-    } else {
-        // Light Mode: clean, crisp, airy titanium white
-        bg = vec3(0.985, 0.985, 0.992);
-    }
+    // Vector from light apex to current pixel in aspect-corrected space
+    vec2 d = vec2((uv.x - apex.x) * aspect, uv.y - apex.y);
+    float dist = length(d);
+    
+    // Polar angle fanning downward (0 is straight down)
+    float baseAngle = atan(d.x, -d.y);
 
-    vec3 accumCol = vec3(0.0);
-    float totalWeight = 0.0;
+    // Subtle silky wave undulation along the ray propagation path
+    float wave1 = sin(dist * 3.8 - t * 0.7) * 0.022;
+    float wave2 = cos(dist * 7.2 + t * 0.5 + baseAngle * 2.0) * 0.012;
+    float warpedAngle = baseAngle + wave1 + wave2;
 
-    // Multi-pass chromatic wavelength dispersion (8 distinct spectral rays)
-    const int PASSES = 8;
-    for (int i = 0; i < PASSES; i++) {
-        float fi = float(i);
-        float lambda = fi / float(PASSES - 1);
+    // Background: deep velvety obsidian with subtle photographic warmth
+    vec3 bg = vec3(0.038, 0.040, 0.048);
+
+    vec3 totalLight = vec3(0.0);
+
+    // Radiating beam definitions (matching the exact fan structure of the reference image)
+    // 7 primary light shafts radiating from the top
+    const int NUM_BEAMS = 7;
+    float beamCenters[NUM_BEAMS];
+    float beamWidths[NUM_BEAMS];
+    float beamGains[NUM_BEAMS];
+
+    beamCenters[0] = -0.58; beamWidths[0] = 0.085; beamGains[0] = 0.45; // Far left faint beam
+    beamCenters[1] = -0.38; beamWidths[1] = 0.065; beamGains[1] = 0.85; // Left medium beam
+    beamCenters[2] = -0.18; beamWidths[2] = 0.055; beamGains[2] = 1.25; // Left prominent beam
+    beamCenters[3] =  0.02; beamWidths[3] = 0.075; beamGains[3] = 1.70; // Central brilliant hero beam
+    beamCenters[4] =  0.19; beamWidths[4] = 0.048; beamGains[4] = 1.10; // Right narrow ray
+    beamCenters[5] =  0.36; beamWidths[5] = 0.060; beamGains[5] = 0.95; // Right secondary ray
+    beamCenters[6] =  0.58; beamWidths[6] = 0.095; beamGains[6] = 0.60; // Far right wide fan
+
+    // Multi-pass spectral dispersion (10 wavelength samples)
+    const int PASSES = 10;
+    float dispersionScale = 0.042; // Optical angular separation factor
+
+    for (int p = 0; p < PASSES; p++) {
+        float fp = float(p);
+        float lambda = fp / float(PASSES - 1);
         
-        // Cauchy-like angular chromatic offset
-        float dispersionAngle = (lambda - 0.5) * 0.26;
-        
-        vec2 p = uv;
-        // Rotate into optical axis with gentle breathing
-        p *= rot(0.42 + dispersionAngle + sin(t * 0.4) * 0.06);
+        // Wavelength-dependent angular refraction offset
+        float lambdaOffset = (lambda - 0.5) * dispersionScale;
+        float evalAngle = warpedAngle + lambdaOffset;
 
-        // Sinusoidal dispersive wavefronts
-        float waveA = sin(p.x * 2.8 + p.y * 1.8 + t * 1.1 + dispersionAngle * 3.5);
-        float waveB = cos(p.y * 3.2 - p.x * 2.2 - t * 0.85);
-        float waveC = sin((p.x - p.y) * 4.4 + waveA * 1.6 + t * 0.65);
+        // Sum intensity for this wavelength across all beams
+        float waveIntensity = 0.0;
+        for (int b = 0; b < NUM_BEAMS; b++) {
+            // Modulate beam width slightly with wavelength to create chromatic edge feathering
+            float bw = beamWidths[b] * (0.85 + lambda * 0.30);
+            float beamProfile = gbeam(evalAngle, beamCenters[b], bw);
+            waveIntensity += beamProfile * beamGains[b];
+        }
 
-        // Intense, luminous caustic focal line
-        float causticField = abs(p.y + waveA * 0.28 + waveB * 0.18 + waveC * 0.12);
-        float causticLine = 0.024 / (causticField + 0.016);
-        
-        // Secondary softer prism flare
-        float causticField2 = abs(p.x * 0.75 - p.y * 1.1 + waveB * 0.32);
-        float causticLine2 = 0.014 / (causticField2 + 0.022);
-
-        // Soft volumetric aura around the caustic beam
-        float aura = exp(-length(p * vec2(0.85, 1.3)) * 2.4) * 0.45;
-
-        float intensity = causticLine * 1.15 + causticLine2 * 0.65 + aura;
-        vec3 spectralColor = spectrum(lambda);
-
-        accumCol += spectralColor * intensity;
-        totalWeight += 1.0;
+        vec3 color = spectralColor(lambda);
+        totalLight += color * waveIntensity;
     }
 
-    accumCol /= float(PASSES);
+    totalLight /= float(PASSES);
 
-    // Subtle floating prismatic caustic sparks
-    for (int j = 0; j < 4; j++) {
-        float fj = float(j);
-        vec2 sparkPos = vec2(
-            sin(t * 0.8 + fj * 1.8) * 0.55,
-            cos(t * 0.6 + fj * 2.2) * 0.40
-        );
-        float sparkDist = length(uv - sparkPos);
-        float sparkIntensity = 0.0035 / (sparkDist * sparkDist + 0.006);
-        accumCol += spectrum(fract(fj * 0.28 + t * 0.1)) * sparkIntensity * 0.4;
-    }
+    // Central core brilliance: when all wavelengths converge, boost to luminous champagne/white
+    float coreWhiteMask = gbeam(warpedAngle, 0.02, 0.042) * 1.4 + gbeam(warpedAngle, -0.18, 0.035) * 0.8;
+    vec3 coreColor = vec3(0.98, 0.96, 0.92) * coreWhiteMask;
 
-    // Smooth soft vignette around the canvas perimeter
-    float r = length(uv);
-    float vignette = smoothstep(1.35, 0.4, r);
-    accumCol *= vignette;
+    // Distance attenuation: rays emerge bright near apex, stay luminous through mid-body, and softly feather
+    float distFade = smoothstep(1.9, 0.2, dist) * smoothstep(0.02, 0.18, dist);
+    
+    // Ambient volumetric scatter haze around the light source
+    float ambientHaze = 0.12 / (dist * 1.5 + 0.4);
+    vec3 hazeColor = vec3(0.12, 0.22, 0.38) * ambientHaze;
 
-    vec3 finalColor;
-    if (uDarkMode > 0.5) {
-        // Dark Mode: glowing, radiant spectral caustics over obsidian
-        finalColor = bg + accumCol * 2.6;
-    } else {
-        // Light Mode: pure white ground with luminous spectral refraction ribbons
-        vec3 invertedDispersion = vec3(1.0) - accumCol * 1.35;
-        finalColor = bg * clamp(invertedDispersion, 0.0, 1.0) + accumCol * 0.75;
-    }
+    // Combine rays, core brilliance, and ambient haze
+    vec3 finalLight = (totalLight * 2.2 + coreColor * 1.6 + hazeColor) * distFade;
 
-    // High-resolution physical 35mm grain to eliminate color banding
-    float grainVal = (hash(fragCoord + floor(iTime * 12.0)) - 0.5) * 0.022;
-    finalColor += grainVal;
+    // Composite over deep obsidian background
+    vec3 sceneColor = bg + finalLight;
 
-    gl_FragColor = vec4(clamp(finalColor, 0.0, 1.0), 1.0);
+    // Soft borderless vignette around the outer canvas edge
+    vec2 vigUV = uv * 2.0 - 1.0;
+    float edgeVig = 1.0 - dot(vigUV * vec2(0.40, 0.45), vigUV * vec2(0.40, 0.45));
+    edgeVig = clamp(edgeVig, 0.0, 1.0);
+    sceneColor *= (0.85 + 0.15 * edgeVig);
+
+    // Authentic 35mm film grain (jittered at 10fps for tangible cinematic grain)
+    float grain = (hash(fragCoord + floor(iTime * 10.0) * 19.3) - 0.5) * 0.032;
+    sceneColor += grain;
+
+    gl_FragColor = vec4(clamp(sceneColor, 0.0, 1.0), 1.0);
 }
 `;
 
@@ -202,7 +212,6 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
     }
     gl.useProgram(program);
 
-    // Quad geometry
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(
@@ -238,8 +247,8 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
       canvas.width = Math.max(1, Math.floor(rect.width * dpr));
       canvas.height = Math.max(1, Math.floor(rect.height * dpr));
       gl.viewport(0, 0, canvas.width, canvas.height);
-      mouse.targetX = canvas.width * 0.5;
-      mouse.targetY = canvas.height * 0.5;
+      mouse.targetX = canvas.width * 0.6;
+      mouse.targetY = canvas.height * 0.9;
       mouse.x = mouse.targetX;
       mouse.y = mouse.targetY;
     };
@@ -263,9 +272,8 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
 
     const render = (now: number) => {
       if (isVisible) {
-        // Smooth mouse lerping
-        mouse.x += (mouse.targetX - mouse.x) * 0.08;
-        mouse.y += (mouse.targetY - mouse.y) * 0.08;
+        mouse.x += (mouse.targetX - mouse.x) * 0.06;
+        mouse.y += (mouse.targetY - mouse.y) * 0.06;
 
         const elapsed = ((now - start) / 1000) * speed;
         gl.uniform2f(iResLoc, canvas.width, canvas.height);
@@ -297,7 +305,7 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
       ref={containerRef}
       className={cn(
         "relative w-full h-[480px] sm:h-[560px] lg:h-[640px] rounded-3xl sm:rounded-[44px] lg:rounded-tl-[56px] overflow-hidden select-none",
-        "border border-neutral-200/80 dark:border-white/10 shadow-2xl shadow-neutral-900/10 dark:shadow-black/50 bg-neutral-100 dark:bg-neutral-950",
+        "border border-neutral-800/90 dark:border-white/10 shadow-2xl shadow-neutral-950/40 bg-[#07080b]",
         className
       )}
     >
@@ -305,8 +313,10 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
         ref={canvasRef}
         className="w-full h-full block pointer-events-none"
       />
-      {/* Subtle glass reflection highlight along top edge */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 dark:via-white/20 to-transparent pointer-events-none" />
+      {/* Precision hairline rim light along top edge */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+      {/* Subtle corner specular glint */}
+      <div className="absolute top-0 left-0 w-24 h-24 bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none" />
     </div>
   );
 }
