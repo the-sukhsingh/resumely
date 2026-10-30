@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { motion, AnimatePresence, LayoutGroup, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 interface FaqItem {
@@ -110,7 +110,7 @@ export default function Faq() {
 
             <a
               href="mailto:support@resumely.tech"
-              className="mt-7 inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[14px] font-medium shadow-sm transition-[background-color,transform] duration-150 active:scale-95 cursor-pointer"
+              className="mt-7 inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[14px] font-medium transition-[background-color,transform] duration-150 active:scale-95 cursor-pointer"
             >
               Write to us
             </a>
@@ -118,61 +118,82 @@ export default function Faq() {
 
           {/* Right Column: Inline Chat Accordion List (Every Question has its own answer directly beneath it) */}
           <div className="lg:col-span-7 flex flex-col gap-3.5 w-full">
-            {FAQS.map((faq) => {
-              const isActive = activeId === faq.id;
+            <LayoutGroup id="faq-accordion-group">
+              {FAQS.map((faq) => {
+                const isActive = activeId === faq.id;
 
-              return (
-                <div key={faq.id} className="w-full flex flex-col items-start">
-                  
-                  {/* Question Pill */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveId(isActive ? null : faq.id)}
-                    className={cn(
-                      "w-fit inline-flex items-center text-left px-5 py-3 rounded-full text-[14px] font-medium transition-all duration-150 cursor-pointer active:scale-[0.98]",
-                      isActive
-                        ? "border border-neutral-900 dark:border-neutral-200 bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6] shadow-xs"
-                        : "bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6] shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-md border border-neutral-200/80 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 hover:-translate-y-0.5"
-                    )}
+                return (
+                  <motion.div
+                    key={faq.id}
+                    layout="position"
+                    transition={{
+                      layout: {
+                        duration: shouldReduceMotion ? 0 : 0.32,
+                        ease: [0.23, 1, 0.32, 1],
+                      },
+                    }}
+                    className="w-full flex flex-col items-start"
                   >
-                    {faq.question}
-                  </button>
+                    {/* Question Pill (Completely shadow-free, crisp flat borders) */}
+                    <button
+                      type="button"
+                      onClick={() => setActiveId(isActive ? null : faq.id)}
+                      className={cn(
+                        "w-fit inline-flex items-center text-left px-5 py-3 rounded-full text-[14px] font-medium transition-[color,background-color,border-color,transform] duration-150 cursor-pointer active:scale-[0.98]",
+                        isActive
+                          ? "border border-neutral-900 dark:border-neutral-200 bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6]"
+                          : "bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6] border border-neutral-200/90 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600"
+                      )}
+                    >
+                      {faq.question}
+                    </button>
 
-                  {/* Answer Speech Bubble directly beneath the active question */}
-                  <AnimatePresence initial={false}>
-                    {isActive && (
-                      <motion.div
-                        initial={
-                          shouldReduceMotion
-                            ? { opacity: 1, height: "auto" }
-                            : { opacity: 0, height: 0 }
-                        }
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={
-                          shouldReduceMotion
-                            ? { opacity: 0, height: 0 }
-                            : { opacity: 0, height: 0 }
-                        }
-                        transition={{
-                          duration: 0.28,
-                          ease: [0.16, 1, 0.3, 1],
-                        }}
-                        className="w-full overflow-hidden"
-                      >
-                        <div className="pt-3 pb-1 flex justify-end w-full">
-                          <div className="relative rounded-[24px] rounded-br-[4px] p-6 sm:p-7 bg-[#18181b] dark:bg-[#1c1b18] text-neutral-100 dark:text-neutral-200 shadow-xl max-w-full sm:max-w-[540px] w-full border border-neutral-800/60 dark:border-neutral-700/60">
-                            <p className="text-[14px] sm:text-[14.5px] leading-relaxed text-neutral-200 font-normal">
-                              {faq.answer}
-                            </p>
+                    {/* Answer Speech Bubble directly beneath the active question */}
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div
+                          key="answer-bubble"
+                          initial={
+                            shouldReduceMotion
+                              ? { opacity: 1, height: "auto" }
+                              : { opacity: 0, height: 0 }
+                          }
+                          animate={{
+                            opacity: 1,
+                            height: "auto",
+                            transition: {
+                              height: { duration: 0.32, ease: [0.23, 1, 0.32, 1] },
+                              opacity: { duration: 0.22, delay: 0.05, ease: "easeOut" },
+                            },
+                          }}
+                          exit={
+                            shouldReduceMotion
+                              ? { opacity: 0, height: 0 }
+                              : {
+                                  opacity: 0,
+                                  height: 0,
+                                  transition: {
+                                    height: { duration: 0.26, ease: [0.23, 1, 0.32, 1] },
+                                    opacity: { duration: 0.16, ease: "easeIn" },
+                                  },
+                                }
+                          }
+                          className="w-full overflow-hidden"
+                        >
+                          <div className="pt-3 pb-1 flex justify-end w-full">
+                            <div className="relative rounded-[24px] rounded-br-[4px] p-6 sm:p-7 bg-[#18181b] dark:bg-[#1c1b18] text-neutral-100 dark:text-neutral-200 max-w-full sm:max-w-[540px] w-full border border-neutral-800/80 dark:border-neutral-700/80">
+                              <p className="text-[14px] sm:text-[14.5px] leading-relaxed text-neutral-200 font-normal">
+                                {faq.answer}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                </div>
-              );
-            })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </LayoutGroup>
           </div>
 
         </div>
