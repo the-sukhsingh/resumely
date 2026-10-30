@@ -1,283 +1,310 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
-  GitBranch,
-  SlidersHorizontal,
-  FileCheck2,
-  GitCommit,
-  Check,
-  AlertCircle,
-  Clock,
-  Sparkles,
+  FileText,
+  Search,
+  Download,
+  ChevronRight,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function FeatureShowcase() {
   return (
-    <section id="features" className="py-20 sm:py-28 max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header - Human, specific, non-templated */}
-      <div className="max-w-3xl mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-neutral-900 dark:text-neutral-50 leading-[1.14]">
-          Designed around how modern hiring actually works.
-        </h2>
-        <p className="mt-4 text-base sm:text-lg text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl">
-          Every tool in Resumely exists to bridge the gap between your real career achievements and what applicant tracking systems and hiring managers look for.
-        </p>
-      </div>
-
-      {/* Asymmetric Bento Architecture */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+    <section
+      id="features"
+      className="relative w-full bg-[#f5f3ef] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-16 sm:py-24 border-t border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200"
+    >
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Tile 1: Master Career Ledger (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl border border-border/70 bg-neutral-50/60 dark:bg-neutral-900/40 p-6 sm:p-8 flex flex-col justify-between hover:border-border transition-colors duration-150 ease-out">
-          <div>
-            <div className="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200">
-              <div className="w-8 h-8 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 flex items-center justify-center text-neutral-800 dark:text-neutral-200">
-                <GitBranch className="w-4 h-4 stroke-[2]" />
-              </div>
-              <span className="text-xs font-mono uppercase tracking-wider text-neutral-500">
-                Master Ledger
-              </span>
+        {/* Slim Top Sub-Nav Bar */}
+        <div className="flex items-center justify-between pb-6 mb-16 sm:mb-20 border-b border-[#e2e0da] dark:border-[#24231f]">
+          {/* Left: Brand Icon & Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-5 h-5 rounded-md bg-[#1c1b18] dark:bg-[#edebe6] text-[#f5f3ef] dark:text-[#121110] flex items-center justify-center text-[10px] font-bold font-mono">
+              R
             </div>
-
-            <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mt-4">
-              A single source of truth for your whole career.
-            </h3>
-            <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-2 leading-relaxed">
-              Never lose track of past accomplishments across dozens of scattered files. Store every role, verified metric, and technical skill in one living ledger that dynamically powers all your applications.
-            </p>
+            <span className="text-[13px] font-medium tracking-tight text-[#1c1b18] dark:text-[#edebe6]">
+              Resumely Studio
+            </span>
           </div>
 
-          {/* Ledger Specimen Artifact */}
-          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-background border border-border/60 shadow-xs space-y-3.5">
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/40">
-              <div>
-                <span className="font-medium text-sm text-foreground">Stripe</span>
-                <span className="text-neutral-400 mx-1.5">•</span>
-                <span className="text-sm text-neutral-600 dark:text-neutral-300">Senior Infrastructure Engineer</span>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300/40 dark:border-emerald-700/40">
-                Branch: Staff Backend
-              </span>
-            </div>
+          {/* Center: Five Text Links */}
+          <nav className="hidden md:flex items-center gap-7 text-[13px] text-[#8b897f] dark:text-[#9c9a8f]">
+            <a href="#ledger" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
+              Ledger
+            </a>
+            <a href="#calibration" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
+              Calibration
+            </a>
+            <a href="#matcher" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
+              ATS Matcher
+            </a>
+            <a href="#templates" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
+              Templates
+            </a>
+            <a href="#pipeline" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
+              Pipeline
+            </a>
+          </nav>
 
-            <div className="space-y-2.5 text-xs sm:text-[13px] text-neutral-700 dark:text-neutral-300 leading-relaxed">
-              <div className="flex items-start gap-2.5">
-                <span className="text-neutral-400 mt-1 select-none">•</span>
-                <span>
-                  Architected distributed event ingestion pipeline processing{" "}
-                  <strong className="font-semibold text-foreground">120M+ daily events</strong> with{" "}
-                  <span className="underline decoration-emerald-500/50 underline-offset-2">99.99% uptime</span> across multi-region clusters.
-                </span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <span className="text-neutral-400 mt-1 select-none">•</span>
-                <span>
-                  Reduced payment processing p99 latency from{" "}
-                  <strong className="font-semibold text-foreground">340ms to 110ms</strong> by introducing Redis cluster caching and async database pipelines.
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-2 flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-neutral-100 dark:bg-neutral-800/80 text-neutral-600 dark:text-neutral-300 border border-border/40">
-                Distributed Systems
-              </span>
-              <span className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-neutral-100 dark:bg-neutral-800/80 text-neutral-600 dark:text-neutral-300 border border-border/40">
-                Go & Kafka
-              </span>
-              <span className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-neutral-100 dark:bg-neutral-800/80 text-neutral-600 dark:text-neutral-300 border border-border/40">
-                High Availability
-              </span>
-              <span className="text-[11px] font-mono text-neutral-500 ml-auto">
-                34 metrics indexed
-              </span>
-            </div>
+          {/* Right: Solid Dark Pill Action Button */}
+          <div>
+            <Link
+              href="/resume"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#1c1b18] hover:bg-[#2b2a26] text-[#f5f3ef] dark:bg-[#edebe6] dark:hover:bg-[#ffffff] dark:text-[#121110] text-[13px] font-medium transition-colors shadow-xs active:scale-[0.96]"
+            >
+              <span>Download</span>
+              <Download className="w-3.5 h-3.5 stroke-[2]" />
+            </Link>
           </div>
         </div>
 
-        {/* Tile 2: Semantic ATS Rubric Matcher (5 cols) */}
-        <div className="lg:col-span-5 rounded-3xl border border-border/70 bg-neutral-50/60 dark:bg-neutral-900/40 p-6 sm:p-8 flex flex-col justify-between hover:border-border transition-colors duration-150 ease-out">
-          <div>
-            <div className="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200">
-              <div className="w-8 h-8 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 flex items-center justify-center text-neutral-800 dark:text-neutral-200">
-                <FileCheck2 className="w-4 h-4 stroke-[2]" />
-              </div>
-              <span className="text-xs font-mono uppercase tracking-wider text-neutral-500">
-                Semantic Matcher
-              </span>
-            </div>
-
-            <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mt-4">
-              Direct rubric calibration without buzzwords.
-            </h3>
-            <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-2 leading-relaxed">
-              Recruiting algorithms score competencies against job requirements. Resumely analyzes the exact rubric criteria and highlights real coverage.
-            </p>
-          </div>
-
-          {/* Rubric Matcher Specimen */}
-          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-background border border-border/60 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-2.5 border-b border-border/40">
-              <div>
-                <div className="text-xs font-medium text-neutral-500">Target Benchmark</div>
-                <div className="text-sm font-semibold text-foreground">Staff Backend Engineer</div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                  94% Rubric Match
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100/70 dark:bg-neutral-800/50">
-                <span className="text-neutral-800 dark:text-neutral-200 font-medium">Distributed Consensus (Raft)</span>
-                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-medium">Matched (3x)</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100/70 dark:bg-neutral-800/50">
-                <span className="text-neutral-800 dark:text-neutral-200 font-medium">Database Latency Optimization</span>
-                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-medium">Matched (2x)</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100/70 dark:bg-neutral-800/50">
-                <span className="text-neutral-800 dark:text-neutral-200 font-medium">Technical Mentorship & RFCs</span>
-                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-medium">Matched (4x)</span>
-              </div>
-            </div>
-
-            <div className="pt-1 flex items-center gap-1.5 text-[11px] text-neutral-500">
-              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Zero keyword stuffing. 100% verified career truth.</span>
-            </div>
-          </div>
+        {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
+        <div className="max-w-[620px] mx-auto text-center mb-16 sm:mb-20">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+            The quiet system behind
+            <br />
+            every interview-winning resume.
+          </h2>
+          <p className="mt-4 text-sm sm:text-[15px] text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
+            Store your accomplishments once. Generate calibrated applications in seconds.
+          </p>
         </div>
 
-        {/* Tile 3: 1:1 Tailored Application Generation (5 cols) */}
-        <div className="lg:col-span-5 rounded-3xl border border-border/70 bg-neutral-50/60 dark:bg-neutral-900/40 p-6 sm:p-8 flex flex-col justify-between hover:border-border transition-colors duration-150 ease-out">
-          <div>
-            <div className="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200">
-              <div className="w-8 h-8 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 flex items-center justify-center text-neutral-800 dark:text-neutral-200">
-                <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
-              </div>
-              <span className="text-xs font-mono uppercase tracking-wider text-neutral-500">
-                Role Calibration
-              </span>
-            </div>
-
-            <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mt-4">
-              Calibrated bullet points for every opening.
-            </h3>
-            <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-2 leading-relaxed">
-              Every job values different achievements. Resumely re-ranks and sharpens your accomplishments to match the role priorities.
-            </p>
-          </div>
-
-          {/* Before & After Diff Artifact */}
-          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-background border border-border/60 shadow-xs space-y-3">
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500">
-                <span>BEFORE (GENERIC DRAFT)</span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-neutral-100/50 dark:bg-neutral-800/40 text-xs text-neutral-500 line-through decoration-neutral-400">
-                Worked on checkout page performance improvements and updated dependencies.
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium">
-                <span>AFTER (CALIBRATED FOR STAFF IMPACT)</span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-300/40 dark:border-emerald-800/40 text-xs text-neutral-900 dark:text-neutral-100 leading-relaxed font-normal">
-                Spearheaded checkout flow redesign that boosted conversion by <strong className="font-semibold text-emerald-700 dark:text-emerald-300">4.2%</strong> and reduced mobile p99 bundle latency by <strong className="font-semibold text-emerald-700 dark:text-emerald-300">38%</strong>.
-              </div>
-            </div>
-
-            <div className="text-[11px] font-mono text-neutral-500 pt-1">
-              Re-ranked for Staff Level Scope & Quantified Metrics
-            </div>
-          </div>
-        </div>
-
-        {/* Tile 4: Visual Application Pipeline & Snapshot Memory (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl border border-border/70 bg-neutral-50/60 dark:bg-neutral-900/40 p-6 sm:p-8 flex flex-col justify-between hover:border-border transition-colors duration-150 ease-out">
-          <div>
-            <div className="flex items-center gap-2.5 text-neutral-800 dark:text-neutral-200">
-              <div className="w-8 h-8 rounded-lg bg-neutral-200/70 dark:bg-neutral-800 flex items-center justify-center text-neutral-800 dark:text-neutral-200">
-                <GitCommit className="w-4 h-4 stroke-[2]" />
-              </div>
-              <span className="text-xs font-mono uppercase tracking-wider text-neutral-500">
-                Snapshot Memory
-              </span>
-            </div>
-
-            <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mt-4">
-              Know exactly which resume version you sent.
-            </h3>
-            <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-2 leading-relaxed">
-              Never walk into an interview wondering which bullet points the team is reviewing. Every application is tied directly to the exact vector PDF snapshot submitted.
-            </p>
-          </div>
-
-          {/* Pipeline Specimen Rows */}
-          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-background border border-border/60 shadow-xs space-y-2.5">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-border/40 text-xs sm:text-sm">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                <div className="truncate">
-                  <span className="font-semibold text-foreground">Linear</span>
-                  <span className="text-neutral-400 mx-1.5">•</span>
-                  <span className="text-neutral-600 dark:text-neutral-300">Staff Frontend Engineer</span>
+        {/* 3-Column Equal-Width Bento Grid with Third Row Cut-Off */}
+        <div className="relative overflow-hidden max-h-[810px] sm:max-h-[850px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            
+            {/* Card 1: Quick Capture / Keyboard-Key Chips */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1.5 p-2 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs">
+                  <span className="px-2 py-1 rounded-md bg-[#f5f3ef] dark:bg-[#181715] text-[11px] font-mono font-medium text-[#1c1b18] dark:text-[#edebe6] border border-[#e2e0da] dark:border-[#2d2b26] shadow-2xs">
+                    ⌘ K
+                  </span>
+                  <span className="text-xs text-[#8b897f] dark:text-[#9c9a8f] px-1 font-mono">
+                    Log 120M events/day...
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0 text-xs">
-                <span className="hidden sm:inline font-mono text-neutral-500 text-[11px]">
-                  Resume v3.2 (UI Focus)
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-medium text-[11px]">
-                  Offer Extended
-                </span>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Quick Capture
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Record career milestones and quantified impacts directly into your ledger as they happen.
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-border/40 text-xs sm:text-sm">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                <div className="truncate">
-                  <span className="font-semibold text-foreground">Stripe</span>
-                  <span className="text-neutral-400 mx-1.5">•</span>
-                  <span className="text-neutral-600 dark:text-neutral-300">Distributed Systems Eng</span>
+            {/* Card 2: Career Ledger / Inbox List Snippet */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center w-full px-2">
+                <div className="w-full max-w-[210px] rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs p-2.5 space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-semibold text-[#1c1b18] dark:text-[#edebe6]">Stripe · Staff</span>
+                    <span className="font-mono text-[10px] text-[#8b897f]">34 metrics</span>
+                  </div>
+                  <div className="h-px bg-[#e2e0da]/60 dark:bg-[#2d2b26]" />
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-medium text-[#8b897f]">Airbnb · Full Stack</span>
+                    <span className="font-mono text-[10px] text-[#8b897f]">18 metrics</span>
+                  </div>
+                  <div className="h-px bg-[#e2e0da]/60 dark:bg-[#2d2b26]" />
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-medium text-[#8b897f]">Figma · Systems</span>
+                    <span className="font-mono text-[10px] text-[#8b897f]">12 metrics</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0 text-xs">
-                <span className="hidden sm:inline font-mono text-neutral-500 text-[11px]">
-                  Resume v2.8 (Infra Focus)
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-medium text-[11px]">
-                  Technical Round 3
-                </span>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Career Ledger
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  One historical ledger for your entire career trajectory. Zero lost bullet points.
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/60 border border-border/40 text-xs sm:text-sm">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
-                <div className="truncate">
-                  <span className="font-semibold text-foreground">Vercel</span>
-                  <span className="text-neutral-400 mx-1.5">•</span>
-                  <span className="text-neutral-600 dark:text-neutral-300">Next.js Framework Architect</span>
+            {/* Card 3: Tag Chips with Tiny Colored Dots (with the orange pop) */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-[210px]">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-medium text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Distributed
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-medium text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
+                    {/* Tiny orange accent chip from user spec */}
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ea580c]" />
+                    Latency p99
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-medium text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                    Kubernetes
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0 text-xs">
-                <span className="hidden sm:inline font-mono text-neutral-500 text-[11px]">
-                  Resume v4.0 (Compiler Focus)
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-medium text-[11px]">
-                  Applied
-                </span>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Rubric Alignment
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Semantic tags verify competency alignment against the hiring rubric without buzzword spam.
+                </p>
               </div>
             </div>
+
+            {/* Card 4: Placeholder Panel / Vector Resume Miniature */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="w-[170px] p-3 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs space-y-2">
+                  <div className="h-2 w-16 bg-[#1c1b18] dark:bg-[#edebe6] rounded-xs" />
+                  <div className="h-1.5 w-full bg-[#e2e0da] dark:bg-[#2d2b26] rounded-xs" />
+                  <div className="h-1.5 w-4/5 bg-[#e2e0da] dark:bg-[#2d2b26] rounded-xs" />
+                  <div className="pt-1 flex items-center justify-between">
+                    <div className="h-1.5 w-12 bg-emerald-500/80 rounded-xs" />
+                    <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                      94% Match
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Vector PDF Specs
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Standard single-column vector output designed for flawless machine parsing and human review.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 5: App-Icon Trio (Workday, Greenhouse, Lever) */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="flex items-center gap-2">
+                  <div className="px-2.5 py-1.5 rounded-lg bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-mono text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
+                    Workday
+                  </div>
+                  <div className="px-2.5 py-1.5 rounded-lg bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-mono text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
+                    Greenhouse
+                  </div>
+                  <div className="px-2.5 py-1.5 rounded-lg bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-mono text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
+                    Lever
+                  </div>
+                </div>
+                <div className="mt-2 text-[10px] font-mono text-emerald-600 dark:text-emerald-400">
+                  ✓ 100% Extraction Verified
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Universal Ingestion
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Engineered to pass every major automated parsing engine without formatting degradation.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 6: Search-Pill Mockup */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs">
+                  <Search className="w-3.5 h-3.5 text-[#8b897f]" />
+                  <span className="text-[12px] text-[#1c1b18] dark:text-[#edebe6] font-medium font-sans">
+                    Linear · Staff Frontend
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#f5f3ef] dark:bg-[#181715] text-[#8b897f] font-mono border border-[#e2e0da] dark:border-[#2d2b26]">
+                    Tailor
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Job Description Sync
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Paste any role link to instantly compare requirement coverage against your historical record.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 7 (Row 3, cut-off): Dark Pill Badge */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="px-3.5 py-2 rounded-full bg-[#1c1b18] text-[#f5f3ef] dark:bg-[#edebe6] dark:text-[#121110] text-[11px] font-mono flex items-center gap-2 shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>Branch: Staff Systems v2.4</span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Branch Versioning
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Branch your career story into focused tracks for engineering, leadership, or architecture.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 8 (Row 3, cut-off): Application Pipeline Stage Chips */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1.5 text-[11px] font-mono">
+                  <span className="px-2 py-1 rounded-md bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[#8b897f]">
+                    Applied
+                  </span>
+                  <ChevronRight className="w-3 h-3 text-[#8b897f]" />
+                  <span className="px-2 py-1 rounded-md bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-emerald-600 dark:text-emerald-400 font-medium">
+                    Technical R3
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  Pipeline Tracking
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Link every submission to the exact resume version and recruiter contact in your visual board.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 9 (Row 3, cut-off): One-Click Export Tile */}
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs text-xs">
+                  <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span className="font-medium text-[#1c1b18] dark:text-[#edebe6]">resume-staff-v3.pdf</span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-[#e2e0da]/40 dark:border-[#24231f]">
+                <h3 className="text-sm font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  One-Click Export
+                </h3>
+                <p className="mt-1 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  Compile crisp vector documents with flawless spacing and typography in under 2 seconds.
+                </p>
+              </div>
+            </div>
+
           </div>
+
+          {/* Bottom Cut-off Fade Overlay suggesting grid continuation */}
+          <div className="pointer-events-none absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-[#f5f3ef] dark:from-[#121110] via-[#f5f3ef]/80 dark:via-[#121110]/80 to-transparent flex items-end justify-center pb-4" />
         </div>
 
       </div>
