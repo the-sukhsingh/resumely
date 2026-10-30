@@ -46,12 +46,12 @@ export default function Hero() {
             scale,
             borderRadius,
             opacity,
-            boxShadow,
+            // boxShadow,
           }}
           className="relative w-full h-full flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-20 sm:pb-28 overflow-hidden bg-background border border-border/40 select-none will-change-transform"
         >
           {/* Background Architectural Bars Shader */}
-          <div className="absolute inset-0 h-full w-full overflow-hidden pointer-events-none opacity-45 dark:opacity-30">
+          <div className="absolute inset-0 z-10 h-full w-full overflow-hidden pointer-events-none opacity-85 dark:opacity-30">
             <BarsPreview decreaseFromLeft={false} />
           </div>
 
@@ -72,7 +72,7 @@ export default function Hero() {
               </h1>
 
               {/* Subheadline */}
-              <p className="text-base sm:text-lg md:text-xl text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl mx-auto">
                 From ATS keyword calibration to role-tailored bullet points, build an application pipeline that spends less time in review and more time landing interviews.
               </p>
             </div>

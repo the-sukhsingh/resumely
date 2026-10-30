@@ -21,50 +21,6 @@ export default function FeatureShowcase() {
       className="relative w-full bg-[#f5f3ef] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-16 sm:py-24 border-t border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Slim Top Sub-Nav Bar */}
-        <div className="flex items-center justify-between pb-6 mb-16 sm:mb-20 border-b border-[#e2e0da] dark:border-[#24231f]">
-          {/* Left: Brand Icon & Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-5 h-5 rounded-md bg-[#1c1b18] dark:bg-[#edebe6] text-[#f5f3ef] dark:text-[#121110] flex items-center justify-center text-[10px] font-bold font-mono">
-              R
-            </div>
-            <span className="text-[13px] font-medium tracking-tight text-[#1c1b18] dark:text-[#edebe6]">
-              Resumely Core
-            </span>
-          </div>
-
-          {/* Center: Five Text Links corresponding to Resumely's real architecture */}
-          <nav className="hidden md:flex items-center gap-7 text-[13px] text-[#8b897f] dark:text-[#9c9a8f]">
-            <a href="#ledger" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
-              Master Ledger
-            </a>
-            <a href="#rules" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
-              Agent Rules
-            </a>
-            <a href="#analyzer" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
-              ATS Analyzer
-            </a>
-            <a href="#latex" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
-              PDF Engine
-            </a>
-            <a href="#tracker" className="hover:text-[#1c1b18] dark:hover:text-[#edebe6] transition-colors">
-              Job Tracker
-            </a>
-          </nav>
-
-          {/* Right: Solid Dark Pill Action Button */}
-          <div>
-            <Link
-              href="/resume"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#1c1b18] hover:bg-[#2b2a26] text-[#f5f3ef] dark:bg-[#edebe6] dark:hover:bg-[#ffffff] dark:text-[#121110] text-[13px] font-medium transition-colors shadow-xs active:scale-[0.96]"
-            >
-              <span>Build resume</span>
-              <Download className="w-3.5 h-3.5 stroke-[2]" />
-            </Link>
-          </div>
-        </div>
-
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
         <div className="max-w-[620px] mx-auto text-center mb-16 sm:mb-20">
           <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
