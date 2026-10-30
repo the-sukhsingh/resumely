@@ -22,11 +22,6 @@ export default function Footer() {
         <div className="pb-16 sm:pb-20 border-b border-[#e2e0da] dark:border-[#24231f]">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] text-[11px] font-mono text-[#71717a] dark:text-[#a1a1aa] mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Zero hallucination · 100% verified ledger</span>
-              </div>
-
               <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
                 Ready to land your next
                 <br />
