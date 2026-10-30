@@ -28,16 +28,16 @@ export default function Hero() {
         {/* Typographic Group */}
         <div className="space-y-5 sm:space-y-6">
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[76px] font-medium tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.08] max-w-3xl mx-auto">
-            A resume that moves{" "}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[76px] font-medium tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.08] max-w-4xl mx-auto">
+            Resumes tailored for{" "}
             <span className="block sm:inline md:block">
-              while you think ahead.
+              the roles you want.
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl mx-auto">
-            From ATS keyword calibration to role-tailored applications, build an application pipeline that spends less time catching up and more time moving forward.
+          <p className="text-base sm:text-lg md:text-xl text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl mx-auto">
+            From ATS keyword calibration to role-tailored bullet points, build an application pipeline that spends less time in review and more time landing interviews.
           </p>
         </div>
 
