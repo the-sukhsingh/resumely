@@ -16,9 +16,6 @@ export default function HomePage() {
       {/* 1. Clean, Minimal Editorial Hero with bg-shader BarsPreview */}
       <Hero />
 
-      {/* 2. Hiring Teams Trust Strip */}
-      <SocialProofStrip />
-
       {/* 3. Core Platform Capabilities */}
       <FeatureShowcase />
 
