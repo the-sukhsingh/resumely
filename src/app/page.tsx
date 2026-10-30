@@ -2,7 +2,6 @@
 
 import React from "react";
 import Hero from "@/components/homepage/Hero";
-import SocialProofStrip from "@/components/homepage/SocialProofStrip";
 import FeatureShowcase from "@/components/homepage/FeatureShowcase";
 import LiveTemplates from "@/components/homepage/LiveTemplates";
 import Workflow from "@/components/homepage/Workflow";
@@ -16,23 +15,26 @@ export default function HomePage() {
       {/* 1. Clean, Minimal Editorial Hero with bg-shader BarsPreview */}
       <Hero />
 
-      {/* 3. Core Platform Capabilities */}
-      <FeatureShowcase />
+      {/* Main Content Sections with background to glide over floating hero */}
+      <div className="relative z-20 bg-background">
+        {/* 3. Core Platform Capabilities */}
+        <FeatureShowcase />
 
-      {/* 4. Live Vector Template Specimens */}
-      <LiveTemplates />
+        {/* 4. Live Vector Template Specimens */}
+        <LiveTemplates />
 
-      {/* 5. 3-Step Calibration Workflow */}
-      <Workflow />
+        {/* 5. 3-Step Calibration Workflow */}
+        <Workflow />
 
-      {/* 6. Transparent Credit-Based Pricing */}
-      <Pricing />
+        {/* 6. Transparent Credit-Based Pricing */}
+        <Pricing />
 
-      {/* 7. Objection-Crushing FAQ */}
-      <Faq />
+        {/* 7. Objection-Crushing FAQ */}
+        <Faq />
 
-      {/* 8. Modern Editorial Footer */}
-      <Footer />
+        {/* 8. Modern Editorial Footer */}
+        <Footer />
+      </div>
     </div>
   );
 }
