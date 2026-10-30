@@ -15,68 +15,72 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative w-full bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] pt-16 sm:pt-20 pb-12 transition-colors duration-200 border-t border-[#e2e0da] dark:border-[#24231f]">
+    <footer className="relative w-full bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] pt-20 sm:pt-28 pb-12 transition-colors duration-200 border-t border-[#e2e0da] dark:border-[#24231f]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Top Minimal Call to Action Surface */}
-        <div className="rounded-3xl p-8 sm:p-12 lg:p-14 bg-[#edebe6] dark:bg-[#181715] border border-[#e2e0da] dark:border-[#282622] flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 sm:mb-20">
-          <div className="max-w-xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-white/5 border border-[#e2e0da] dark:border-[#282622] text-[11px] font-mono text-[#71717a] dark:text-[#a1a1aa] mb-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>Zero hallucination · 100% verified ledger</span>
+        {/* Seamless Closing Callout (Borderless, Open, Editorial) */}
+        <div className="pb-16 sm:pb-20 border-b border-[#e2e0da] dark:border-[#24231f]">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] text-[11px] font-mono text-[#71717a] dark:text-[#a1a1aa] mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Zero hallucination · 100% verified ledger</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+                Ready to land your next
+                <br />
+                high-impact role?
+              </h2>
+
+              <p className="mt-4 text-sm sm:text-base text-[#71717a] dark:text-[#a1a1aa] font-normal leading-relaxed max-w-lg">
+                Start with our free Master Ledger. Calibrate role-tailored resumes in seconds with clean vector ATS compliance.
+              </p>
             </div>
 
-            <h3 className="text-3xl sm:text-4xl lg:text-[40px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.12] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
-              Ready to land your next high-impact role?
-            </h3>
-            
-            <p className="text-sm sm:text-[15px] text-[#71717a] dark:text-[#a1a1aa] font-normal leading-relaxed">
-              Start with our free Master Ledger. Calibrate role-tailored resumes in seconds with clean ATS vector compliance.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
-            {isAuthenticated ? (
-              <ColoredButton
-                asChild
-                color="neutral"
-                size="lg"
-                className="h-11 rounded-full px-6 text-sm font-medium cursor-pointer inline-flex items-center gap-2 active:scale-95 transition-transform"
-              >
-                <Link href="/resume">
-                  <span>Go to Dashboard</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+              {isAuthenticated ? (
+                <ColoredButton
+                  asChild
+                  color="neutral"
+                  size="xl"
+                  className="h-11 rounded-full px-6 text-sm font-medium cursor-pointer inline-flex items-center gap-2 active:scale-95 transition-transform"
+                >
+                  <Link href="/resume">
+                    <span>Go to Dashboard</span>
+                    <ArrowUpRight className="w-4 h-4 stroke-[2]" />
+                  </Link>
+                </ColoredButton>
+              ) : (
+                <ColoredButton
+                  type="button"
+                  color="neutral"
+                  size="xl"
+                  onClick={() => signIn("google")}
+                  className="h-11 rounded-full px-6 text-sm font-medium cursor-pointer inline-flex items-center gap-2 active:scale-95 transition-transform"
+                >
+                  <span>Start Free Trial</span>
                   <ArrowUpRight className="w-4 h-4 stroke-[2]" />
-                </Link>
-              </ColoredButton>
-            ) : (
-              <ColoredButton
-                type="button"
-                color="neutral"
-                size="lg"
-                onClick={() => signIn("google")}
-                className="h-11 rounded-full px-6 text-sm font-medium cursor-pointer inline-flex items-center gap-2 active:scale-95 transition-transform"
-              >
-                <span>Start Free Trial</span>
-                <ArrowUpRight className="w-4 h-4 stroke-[2]" />
-              </ColoredButton>
-            )}
+                </ColoredButton>
+              )}
 
-            <Link
-              href="#templates"
-              className="inline-flex items-center px-4 py-2.5 text-xs sm:text-sm font-medium text-[#71717a] dark:text-[#a1a1aa] hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
-            >
-              Browse templates
-            </Link>
+              <Link
+                href="#templates"
+                className="h-11 px-5 rounded-full inline-flex items-center text-xs sm:text-sm font-medium text-[#71717a] dark:text-[#a1a1aa] hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
+              >
+                Browse templates
+              </Link>
+            </div>
           </div>
         </div>
 
         {/* Footer Navigation Columns */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12 pb-14 border-b border-[#e2e0da] dark:border-[#24231f] text-sm">
+        <div className="pt-14 sm:pt-16 pb-12 grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12 text-sm">
           {/* Brand & Purpose (spans 2 cols on desktop) */}
-          <div className="col-span-2 space-y-4 pr-0 lg:pr-6">
+          <div className="col-span-2 space-y-4 pr-0 lg:pr-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-lg font-mono font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]"
+              className="inline-flex items-center gap-2 text-xl font-mono font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]"
             >
               <span>re.</span>
               <span className="text-xs text-[#8b897f] font-sans font-normal border-l border-[#e2e0da] dark:border-[#282622] pl-2">
@@ -162,7 +166,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal & Contact */}
+          {/* Legal & Company */}
           <div>
             <div className="font-mono text-xs uppercase tracking-wider text-[#8b897f] dark:text-[#71717a] mb-4">
               Company
@@ -193,7 +197,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright & Back to Top */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#71717a] dark:text-[#8b897f] gap-4">
+        <div className="pt-8 border-t border-[#e2e0da] dark:border-[#24231f] flex flex-col sm:flex-row items-center justify-between text-xs text-[#71717a] dark:text-[#8b897f] gap-4">
           <div>
             © {new Date().getFullYear()} Resumely. Built for career truthfulness and verified ATS compliance.
           </div>
