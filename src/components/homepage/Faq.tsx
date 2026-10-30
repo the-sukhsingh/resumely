@@ -118,7 +118,7 @@ export default function Faq() {
                 size="lg"
                 className="h-10.5 rounded-full px-6 text-sm font-medium cursor-pointer inline-flex items-center gap-2 active:scale-95 transition-transform"
               >
-                <a href="mailto:support@resumely.tech">
+                <a href="mailto:sukhaji65@gmail.com">
                   <span>Write to us</span>
                 </a>
               </ColoredButton>

@@ -178,12 +178,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#faq" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="/security" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
                   Security
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@resumely.tech" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <a href="mailto:sukhaji65@gmail.com" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
                   Contact Support
                 </a>
               </li>
@@ -197,23 +197,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Resumely. Built for career truthfulness and verified ATS compliance.
           </div>
 
-          <div className="flex items-center gap-6">
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
-            >
-              Twitter (X)
-            </a>
+          <div>
             <button
               type="button"
               onClick={scrollToTop}

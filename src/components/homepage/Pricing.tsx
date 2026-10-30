@@ -2,10 +2,11 @@
 
 import React from "react";
 import Link from "next/link";
-import { Check, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import ColoredButton from "@/components/custom/colored-button";
 
 export default function Pricing() {
   const { isAuthenticated } = useAuth();
@@ -31,15 +32,14 @@ export default function Pricing() {
       cadence: "one-time pack",
       description: "Targeted credits for candidates actively applying to high-yield positions.",
       features: [
-        "Everything in Starter",
         "40 Role-Tailored Calibrations",
         "Synchronized Cover Letters",
         "ATS Deep Semantic Rubric Audit",
+        "Unlimited Vector PDF & LaTeX Exports",
         "Credits never expire",
       ],
       cta: "Get Active Seeker",
       popular: true,
-      highlight: "Most Popular",
     },
     {
       name: "Pro Scale",
@@ -61,103 +61,144 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative w-full bg-[#f5f3ef] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-16 sm:py-24 border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200 select-none"
+      className="relative w-full bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-20 sm:py-28 border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200"
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[620px] mx-auto text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
-            Pay only when you are
+        {/* Typographic Header echoing the FAQ section vibe */}
+        <div className="max-w-xl mb-14 sm:mb-16">
+          <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+            Pricing,
             <br />
-            actively interviewing.
+            calibrated
           </h2>
-          <p className="mt-4 text-sm sm:text-[15px] text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
-            No recurring monthly subscriptions. Buy credits once, use them at your own pace, and keep your unused balance forever.
+
+          <p className="mt-3.5 text-[13px] text-[#71717a] dark:text-[#a1a1aa] font-normal">
+            Pay as you interview · Credits never expire
+          </p>
+
+          <p className="mt-6 text-[14px] sm:text-[15px] text-[#52525b] dark:text-[#a1a1aa] font-normal leading-relaxed">
+            No recurring monthly charges. Purchase credit packs only when actively applying, and keep your unused balance forever.
           </p>
         </div>
 
-        {/* 3-Column Equal-Width Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+        {/* 3-Column Flat Pricing Cards with Chat/Speech-Bubble Contrast */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
           {plans.map((p) => {
             const isPopular = p.popular;
+
             return (
               <div
                 key={p.name}
                 className={cn(
-                  "p-6 sm:p-7 rounded-2xl flex flex-col justify-between transition-[border-color,transform] duration-150 ease-out",
+                  "rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-[border-color,background-color] duration-150",
                   isPopular
-                    ? "bg-[#edebe6] dark:bg-[#1b1a17] border-2 border-[#1c1b18] dark:border-[#edebe6] shadow-sm relative"
-                    : "bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/70 dark:border-[#282622]"
+                    ? "bg-[#18181b] dark:bg-[#1c1b18] text-white border border-neutral-800/80 dark:border-neutral-700/80 rounded-br-[4px]"
+                    : "bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6] border border-neutral-200/90 dark:border-neutral-800"
                 )}
               >
                 <div>
-                  {/* Top Badge Row */}
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-base sm:text-lg font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                  {/* Card Header & Badge */}
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h3
+                      className={cn(
+                        "text-base sm:text-lg font-semibold tracking-tight",
+                        isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
+                      )}
+                    >
                       {p.name}
                     </h3>
                     {isPopular && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#1c1b18] text-[#f5f3ef] dark:bg-[#edebe6] dark:text-[#121110] text-[10px] font-mono font-medium">
-                        Popular
+                      <span className="px-2.5 py-0.5 rounded-full bg-white/15 text-white text-[10px] font-mono font-medium border border-white/20">
+                        Most Popular
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-2">
+                  <p
+                    className={cn(
+                      "text-xs leading-relaxed min-h-[36px]",
+                      isPopular ? "text-neutral-300" : "text-[#71717a] dark:text-[#a1a1aa]"
+                    )}
+                  >
                     {p.description}
                   </p>
 
-                  {/* Price */}
-                  <div className="mt-5 mb-5 pb-5 border-b border-[#e2e0da]/60 dark:border-[#282622] flex items-baseline gap-1.5">
-                    <span className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#1c1b18] dark:text-[#f3f2ee] font-sans">
+                  {/* Price Block */}
+                  <div
+                    className={cn(
+                      "mt-5 mb-6 pb-5 border-b flex items-baseline gap-1.5",
+                      isPopular
+                        ? "border-neutral-800"
+                        : "border-neutral-200/80 dark:border-neutral-800"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "text-3xl sm:text-4xl font-semibold tracking-tight",
+                        isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
+                      )}
+                    >
                       {p.price}
                     </span>
-                    <span className="text-xs font-mono text-[#8b897f] dark:text-[#9c9a8f]">
+                    <span
+                      className={cn(
+                        "text-xs font-mono",
+                        isPopular ? "text-neutral-400" : "text-[#71717a] dark:text-[#a1a1aa]"
+                      )}
+                    >
                       / {p.cadence}
                     </span>
                   </div>
 
-                  {/* Feature Checklist */}
-                  <ul className="space-y-2.5 text-xs text-[#1c1b18] dark:text-[#edebe6]">
+                  {/* Features List */}
+                  <ul className="space-y-3 text-xs">
                     {p.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 stroke-[2.2]" />
-                        <span className="leading-tight">{f}</span>
+                      <li key={f} className="flex items-start gap-2.5">
+                        <Check
+                          className={cn(
+                            "w-3.5 h-3.5 mt-0.5 shrink-0 stroke-[2.2]",
+                            isPopular ? "text-blue-400" : "text-emerald-600 dark:text-emerald-400"
+                          )}
+                        />
+                        <span
+                          className={cn(
+                            "leading-relaxed",
+                            isPopular ? "text-neutral-200" : "text-[#52525b] dark:text-[#d4d4d8]"
+                          )}
+                        >
+                          {f}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Bottom CTA Action Button */}
-                <div className="pt-6 sm:pt-7">
+                {/* Bottom CTA Button using ColoredButton */}
+                <div className="pt-8">
                   {isAuthenticated ? (
-                    <Link
-                      href="/resume"
-                      className={cn(
-                        "w-full py-2.5 rounded-full text-xs font-medium inline-flex items-center justify-center gap-2 transition-[background-color,transform] duration-150 ease-out active:scale-[0.96] shadow-2xs",
-                        isPopular
-                          ? "bg-[#1c1b18] hover:bg-[#2b2a26] text-[#f5f3ef] dark:bg-[#edebe6] dark:hover:bg-[#ffffff] dark:text-[#121110]"
-                          : "bg-[#ffffff] hover:bg-[#f5f3ef] text-[#1c1b18] border border-[#e2e0da] dark:bg-[#23221f] dark:hover:bg-[#2a2925] dark:text-[#edebe6] dark:border-[#2d2b26]"
-                      )}
+                    <ColoredButton
+                      asChild
+                      color={isPopular ? "blue" : "neutral"}
+                      size="lg"
+                      className="w-full h-11 rounded-full text-xs font-medium cursor-pointer inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
                     >
-                      <span>{p.cta}</span>
-                      <ArrowRight className="w-3 h-3 stroke-[2]" />
-                    </Link>
+                      <Link href="/resume">
+                        <span>{p.cta}</span>
+                        <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                      </Link>
+                    </ColoredButton>
                   ) : (
-                    <button
+                    <ColoredButton
                       type="button"
+                      color={isPopular ? "blue" : "neutral"}
+                      size="lg"
                       onClick={() => signIn("google")}
-                      className={cn(
-                        "w-full py-2.5 rounded-full text-xs font-medium inline-flex items-center justify-center gap-2 transition-[background-color,transform] duration-150 ease-out cursor-pointer active:scale-[0.96] shadow-2xs",
-                        isPopular
-                          ? "bg-[#1c1b18] hover:bg-[#2b2a26] text-[#f5f3ef] dark:bg-[#edebe6] dark:hover:bg-[#ffffff] dark:text-[#121110]"
-                          : "bg-[#ffffff] hover:bg-[#f5f3ef] text-[#1c1b18] border border-[#e2e0da] dark:bg-[#23221f] dark:hover:bg-[#2a2925] dark:text-[#edebe6] dark:border-[#2d2b26]"
-                      )}
+                      className="w-full h-11 rounded-full text-xs font-medium cursor-pointer inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
                     >
                       <span>{p.cta}</span>
-                      <ArrowRight className="w-3 h-3 stroke-[2]" />
-                    </button>
+                      <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                    </ColoredButton>
                   )}
                 </div>
               </div>
@@ -165,22 +206,34 @@ export default function Pricing() {
           })}
         </div>
 
-        {/* Quiet Reassurance Strip */}
-        <div className="mt-12 text-center text-xs text-[#8b897f] dark:text-[#9c9a8f] font-mono flex flex-wrap items-center justify-center gap-4">
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            No recurring subscription charges
-          </span>
-          <span>•</span>
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            Credits never expire
-          </span>
-          <span>•</span>
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            Master resume is free forever
-          </span>
+        {/* Reassurance Footer Strip */}
+        <div className="mt-12 pt-6 border-t border-[#e2e0da]/80 dark:border-[#24231f] flex flex-col sm:flex-row items-center justify-between text-xs text-[#71717a] dark:text-[#a1a1aa] gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              Zero auto-renewals
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              Credits never expire
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              Master Ledger export is always free
+            </span>
+          </div>
+
+          <div>
+            Need custom credits or team licenses?{" "}
+            <a
+              href="mailto:sukhaji65@gmail.com"
+              className="underline underline-offset-3 hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
+            >
+              Write to us
+            </a>
+          </div>
         </div>
 
       </div>
