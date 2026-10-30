@@ -9,14 +9,12 @@ import Workflow from "@/components/homepage/Workflow";
 import Pricing from "@/components/homepage/Pricing";
 import Faq from "@/components/homepage/Faq";
 import Footer from "@/components/homepage/Footer";
-import PrismShader from "@/components/custom/prism-shader";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen text-foreground font-sans relative bg-background antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800">
-      {/* 1. Hero Section with minimal vibrant prism shader across entire section & real software workbench */}
+      {/* 1. Clean, Minimal Editorial Hero with bg-shader BarsPreview */}
       <Hero />
-      <PrismShader />
 
       {/* 2. Hiring Teams Trust Strip */}
       <SocialProofStrip />
@@ -24,7 +22,7 @@ export default function HomePage() {
       {/* 3. Core Platform Capabilities */}
       <FeatureShowcase />
 
-      {/* 4. Live Vector Template Specimens (LaTeX, Classic, Two-Column) */}
+      {/* 4. Live Vector Template Specimens */}
       <LiveTemplates />
 
       {/* 5. 3-Step Calibration Workflow */}
