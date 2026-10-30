@@ -5,37 +5,34 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { signIn } from "next-auth/react";
-import PrismShader from "@/components/custom/prism-shader";
 import HeroShader from "./HeroShader";
 
 export default function Hero() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="relative w-full min-h-[90vh] flex flex-col justify-center pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-24 overflow-hidden border-b border-border/40">
+    <section className="relative w-full min-h-[92vh] sm:min-h-screen flex items-center justify-center pt-24 sm:pt-28 md:pt-32 pb-20 sm:pb-28 overflow-hidden border-b border-border/40 select-none">
       
       {/* ======================================================== */}
-      {/* AMBIENT BACKGROUND PRISM SHADER (Subtle Atmospheric Light) */}
+      {/* FULL-SECTION SCREEN SHADER (No closed box)                */}
       {/* ======================================================== */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-        <PrismShader className="w-full h-full opacity-60 dark:opacity-40" speed={0.6} />
-      </div>
+      <HeroShader speed={0.85} />
 
       {/* Subtle Noise Texture for Physical Screen Tangibility */}
-      <div className="pointer-events-none absolute inset-0 noise opacity-40 bg-neutral-900/5 dark:bg-white/5 z-1" />
+      <div className="pointer-events-none absolute inset-0 noise opacity-35 bg-neutral-900/5 dark:bg-white/5 z-1" />
 
       {/* Main Hero Container */}
       <div className="relative z-10 max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
           {/* ======================================================== */}
           {/* LEFT COLUMN: Editorial Typography, CTA & Social Proof     */}
           {/* ======================================================== */}
-          <div className="lg:col-span-5 flex flex-col justify-center space-y-8 sm:space-y-10">
+          <div className="lg:col-span-7 xl:col-span-6 flex flex-col justify-center space-y-8 sm:space-y-10">
             <div className="space-y-6 max-w-xl">
               
               {/* Main Headline (Direct reference cadence & layout) */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[66px] xl:text-[72px] font-medium tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.08]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[66px] xl:text-[74px] font-medium tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.08]">
                 A resume that moves{" "}
                 <span className="block sm:inline lg:block">
                   while you think ahead.
@@ -104,11 +101,9 @@ export default function Hero() {
           </div>
 
           {/* ======================================================== */}
-          {/* RIGHT COLUMN: Generative Optical Prism Shader Canvas     */}
+          {/* RIGHT COLUMN: Open space where the prism light cascades  */}
           {/* ======================================================== */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
-            <HeroShader speed={0.9} />
-          </div>
+          <div className="hidden lg:block lg:col-span-5 xl:col-span-6 pointer-events-none" />
 
         </div>
       </div>

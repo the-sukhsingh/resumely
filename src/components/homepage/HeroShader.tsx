@@ -23,29 +23,28 @@ uniform float iTime;
 uniform vec4 iMouse;
 uniform float uDarkMode;
 
-// ── Film grain hash ──────────────────────────────────────────
+// ── Physical 35mm film grain hash ────────────────────────────
 float hash(vec2 p) {
     p = fract(p * vec2(234.34, 435.345));
     p += dot(p, p + 34.23);
     return fract(p.x * p.y);
 }
 
-// ── Spectral Wavelength to RGB (CIE Color Match) ─────────────
-// Maps lambda in [0.0, 1.0] to pure physical prism spectrum
+// ── Physical Prism Spectrum (CIE Spectral Match) ─────────────
 vec3 spectralColor(float lambda) {
     lambda = clamp(lambda, 0.0, 1.0);
-    // 0.00: Deep Violet
-    // 0.20: Sapphire Blue
-    // 0.40: Electric Cyan
-    // 0.55: Emerald Lime
-    // 0.75: Radiant Gold
-    // 1.00: Vivid Crimson / Orange
-    vec3 c0 = vec3(0.38, 0.12, 0.72); // Violet
-    vec3 c1 = vec3(0.08, 0.32, 0.95); // Deep Azure
-    vec3 c2 = vec3(0.02, 0.72, 0.88); // Cyan
-    vec3 c3 = vec3(0.12, 0.82, 0.38); // Emerald
-    vec3 c4 = vec3(0.98, 0.72, 0.10); // Warm Gold
-    vec3 c5 = vec3(0.92, 0.24, 0.18); // Crimson Coral
+    // 0.00: Violet (400nm)
+    // 0.20: Sapphire Azure (450nm)
+    // 0.40: Cyan (495nm)
+    // 0.58: Emerald Lime (540nm)
+    // 0.78: Radiant Gold (585nm)
+    // 1.00: Vivid Crimson Coral (650nm)
+    vec3 c0 = vec3(0.42, 0.16, 0.78);
+    vec3 c1 = vec3(0.10, 0.38, 0.96);
+    vec3 c2 = vec3(0.04, 0.76, 0.86);
+    vec3 c3 = vec3(0.16, 0.86, 0.36);
+    vec3 c4 = vec3(0.98, 0.74, 0.12);
+    vec3 c5 = vec3(0.94, 0.26, 0.22);
 
     float b0 = smoothstep(0.00, 0.20, lambda);
     float b1 = smoothstep(0.20, 0.40, lambda);
@@ -61,7 +60,7 @@ vec3 spectralColor(float lambda) {
     return col;
 }
 
-// Gaussian beam helper
+// Gaussian beam envelope
 float gbeam(float x, float center, float sigma) {
     float d = (x - center) / max(sigma, 0.001);
     return exp(-0.5 * d * d);
@@ -72,63 +71,60 @@ void main() {
     vec2 uv = fragCoord / iResolution.xy;
     float aspect = iResolution.x / iResolution.y;
 
-    float t = iTime * 0.22;
+    float t = iTime * 0.18;
 
-    // Pointer parallax response (gentle shift of the light apex)
+    // Interactive pointer parallax across the full hero viewport
     vec2 mouseNorm = (iMouse.xy / iResolution.xy - 0.5);
-    vec2 apex = vec2(0.60 + mouseNorm.x * 0.08, 1.08 + mouseNorm.y * 0.05);
+    // Light apex located in upper-right quadrant, fanning down & left across the hero
+    vec2 apex = vec2(0.68 + mouseNorm.x * 0.06, 1.12 + mouseNorm.y * 0.04);
 
-    // Vector from light apex to current pixel in aspect-corrected space
+    // Vector from apex in aspect-corrected coordinates
     vec2 d = vec2((uv.x - apex.x) * aspect, uv.y - apex.y);
     float dist = length(d);
-    
-    // Polar angle fanning downward (0 is straight down)
+
+    // Polar angle fanning downward (0 = straight down)
     float baseAngle = atan(d.x, -d.y);
 
-    // Subtle silky wave undulation along the ray propagation path
-    float wave1 = sin(dist * 3.8 - t * 0.7) * 0.022;
-    float wave2 = cos(dist * 7.2 + t * 0.5 + baseAngle * 2.0) * 0.012;
+    // Subtle silky wave undulation along propagation path
+    float wave1 = sin(dist * 3.4 - t * 0.6) * 0.020;
+    float wave2 = cos(dist * 6.8 + t * 0.4 + baseAngle * 1.8) * 0.010;
     float warpedAngle = baseAngle + wave1 + wave2;
 
-    // Background: deep velvety obsidian with subtle photographic warmth
-    vec3 bg = vec3(0.038, 0.040, 0.048);
+    // Background color: deep velvety obsidian in dark mode, pure crisp white in light mode
+    vec3 bg = mix(vec3(0.99, 0.99, 1.0), vec3(0.038, 0.040, 0.046), uDarkMode);
 
     vec3 totalLight = vec3(0.0);
 
-    // Radiating beam definitions (matching the exact fan structure of the reference image)
-    // 7 primary light shafts radiating from the top
+    // 7 distinct radiating light shafts matching reference image public/image.png
     const int NUM_BEAMS = 7;
     float beamCenters[NUM_BEAMS];
     float beamWidths[NUM_BEAMS];
     float beamGains[NUM_BEAMS];
 
-    beamCenters[0] = -0.58; beamWidths[0] = 0.085; beamGains[0] = 0.45; // Far left faint beam
-    beamCenters[1] = -0.38; beamWidths[1] = 0.065; beamGains[1] = 0.85; // Left medium beam
-    beamCenters[2] = -0.18; beamWidths[2] = 0.055; beamGains[2] = 1.25; // Left prominent beam
-    beamCenters[3] =  0.02; beamWidths[3] = 0.075; beamGains[3] = 1.70; // Central brilliant hero beam
-    beamCenters[4] =  0.19; beamWidths[4] = 0.048; beamGains[4] = 1.10; // Right narrow ray
-    beamCenters[5] =  0.36; beamWidths[5] = 0.060; beamGains[5] = 0.95; // Right secondary ray
-    beamCenters[6] =  0.58; beamWidths[6] = 0.095; beamGains[6] = 0.60; // Far right wide fan
+    beamCenters[0] = -0.56; beamWidths[0] = 0.090; beamGains[0] = 0.40; // Faint left beam
+    beamCenters[1] = -0.36; beamWidths[1] = 0.068; beamGains[1] = 0.80; // Left medium ray
+    beamCenters[2] = -0.16; beamWidths[2] = 0.058; beamGains[2] = 1.20; // Left prominent beam
+    beamCenters[3] =  0.03; beamWidths[3] = 0.076; beamGains[3] = 1.65; // Central hero beam
+    beamCenters[4] =  0.20; beamWidths[4] = 0.050; beamGains[4] = 1.05; // Right narrow ray
+    beamCenters[5] =  0.38; beamWidths[5] = 0.064; beamGains[5] = 0.90; // Right secondary ray
+    beamCenters[6] =  0.60; beamWidths[6] = 0.098; beamGains[6] = 0.55; // Far right wide fan
 
-    // Multi-pass spectral dispersion (10 wavelength samples)
+    // Multi-pass optical dispersion (10 spectral samples)
     const int PASSES = 10;
-    float dispersionScale = 0.042; // Optical angular separation factor
+    float dispersionScale = 0.040;
 
     for (int p = 0; p < PASSES; p++) {
         float fp = float(p);
         float lambda = fp / float(PASSES - 1);
-        
-        // Wavelength-dependent angular refraction offset
+
         float lambdaOffset = (lambda - 0.5) * dispersionScale;
         float evalAngle = warpedAngle + lambdaOffset;
 
-        // Sum intensity for this wavelength across all beams
         float waveIntensity = 0.0;
         for (int b = 0; b < NUM_BEAMS; b++) {
-            // Modulate beam width slightly with wavelength to create chromatic edge feathering
             float bw = beamWidths[b] * (0.85 + lambda * 0.30);
-            float beamProfile = gbeam(evalAngle, beamCenters[b], bw);
-            waveIntensity += beamProfile * beamGains[b];
+            float profile = gbeam(evalAngle, beamCenters[b], bw);
+            waveIntensity += profile * beamGains[b];
         }
 
         vec3 color = spectralColor(lambda);
@@ -137,45 +133,43 @@ void main() {
 
     totalLight /= float(PASSES);
 
-    // Central core brilliance: when all wavelengths converge, boost to luminous champagne/white
-    float coreWhiteMask = gbeam(warpedAngle, 0.02, 0.042) * 1.4 + gbeam(warpedAngle, -0.18, 0.035) * 0.8;
-    vec3 coreColor = vec3(0.98, 0.96, 0.92) * coreWhiteMask;
+    // Central core brilliance where all wavelengths converge into champagne/white light
+    float coreWhiteMask = gbeam(warpedAngle, 0.03, 0.044) * 1.35 + gbeam(warpedAngle, -0.16, 0.036) * 0.75;
+    vec3 coreColor = vec3(0.98, 0.96, 0.93) * coreWhiteMask;
 
-    // Distance attenuation: rays emerge bright near apex, stay luminous through mid-body, and softly feather
-    float distFade = smoothstep(1.9, 0.2, dist) * smoothstep(0.02, 0.18, dist);
-    
-    // Ambient volumetric scatter haze around the light source
-    float ambientHaze = 0.12 / (dist * 1.5 + 0.4);
-    vec3 hazeColor = vec3(0.12, 0.22, 0.38) * ambientHaze;
+    // Distance attenuation across full viewport: bright near top-right, soft fade across bottom & left
+    float distFade = smoothstep(2.4, 0.15, dist) * smoothstep(0.01, 0.15, dist);
 
-    // Combine rays, core brilliance, and ambient haze
-    vec3 finalLight = (totalLight * 2.2 + coreColor * 1.6 + hazeColor) * distFade;
+    // Subtle atmospheric scatter haze
+    float ambientHaze = 0.09 / (dist * 1.6 + 0.45);
+    vec3 hazeColor = mix(vec3(0.08, 0.16, 0.28), vec3(0.12, 0.24, 0.42), uDarkMode) * ambientHaze;
 
-    // Composite over deep obsidian background
-    vec3 sceneColor = bg + finalLight;
+    // Composite the light
+    vec3 beamComp = (totalLight * 2.1 + coreColor * 1.5 + hazeColor) * distFade;
 
-    // Soft borderless vignette around the outer canvas edge
-    vec2 vigUV = uv * 2.0 - 1.0;
-    float edgeVig = 1.0 - dot(vigUV * vec2(0.40, 0.45), vigUV * vec2(0.40, 0.45));
-    edgeVig = clamp(edgeVig, 0.0, 1.0);
-    sceneColor *= (0.85 + 0.15 * edgeVig);
+    vec3 finalScene;
+    if (uDarkMode > 0.5) {
+        // Dark Mode: luminous chromatic rays on obsidian
+        finalScene = bg + beamComp;
+    } else {
+        // Light Mode: clean airy paper with delicate chromatic refraction
+        finalScene = bg - (vec3(1.0) - totalLight) * 0.08 + beamComp * 0.45;
+    }
 
-    // Authentic 35mm film grain (jittered at 10fps for tangible cinematic grain)
-    float grain = (hash(fragCoord + floor(iTime * 10.0) * 19.3) - 0.5) * 0.032;
-    sceneColor += grain;
+    // Authentic physical 35mm film grain (jittered at 10fps to avoid banding)
+    float grain = (hash(fragCoord + floor(iTime * 10.0) * 17.7) - 0.5) * 0.024;
+    finalScene += grain;
 
-    gl_FragColor = vec4(clamp(sceneColor, 0.0, 1.0), 1.0);
+    gl_FragColor = vec4(clamp(finalScene, 0.0, 1.0), 1.0);
 }
 `;
 
 export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
+    if (!canvas) return;
 
     const gl = canvas.getContext("webgl", {
       antialias: true,
@@ -242,26 +236,26 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
 
     const handleResize = () => {
-      const rect = container.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.max(1, Math.floor(rect.width * dpr));
       canvas.height = Math.max(1, Math.floor(rect.height * dpr));
       gl.viewport(0, 0, canvas.width, canvas.height);
-      mouse.targetX = canvas.width * 0.6;
-      mouse.targetY = canvas.height * 0.9;
+      mouse.targetX = canvas.width * 0.68;
+      mouse.targetY = canvas.height * 0.90;
       mouse.x = mouse.targetX;
       mouse.y = mouse.targetY;
     };
 
     handleResize();
     const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(container);
+    resizeObserver.observe(canvas);
 
     let isVisible = true;
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       isVisible = entry.isIntersecting;
     });
-    intersectionObserver.observe(container);
+    intersectionObserver.observe(canvas);
 
     let animId = 0;
     const start = performance.now();
@@ -301,22 +295,9 @@ export default function HeroShader({ className, speed = 1.0 }: HeroShaderProps) 
   }, [speed]);
 
   return (
-    <div
-      ref={containerRef}
-      className={cn(
-        "relative w-full h-[480px] sm:h-[560px] lg:h-[640px] rounded-3xl sm:rounded-[44px] lg:rounded-tl-[56px] overflow-hidden select-none",
-        "border border-neutral-800/90 dark:border-white/10 shadow-2xl shadow-neutral-950/40 bg-[#07080b]",
-        className
-      )}
-    >
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full block pointer-events-none"
-      />
-      {/* Precision hairline rim light along top edge */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
-      {/* Subtle corner specular glint */}
-      <div className="absolute top-0 left-0 w-24 h-24 bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none" />
-    </div>
+    <canvas
+      ref={canvasRef}
+      className={cn("absolute inset-0 w-full h-full pointer-events-none block", className)}
+    />
   );
 }
