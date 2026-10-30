@@ -343,3 +343,24 @@
 }
 
 
+
+@keyframes meadowSwaySlow {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.8deg) skewX(0.8deg); }
+}
+
+@keyframes meadowSwayMed {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2.4deg) skewX(-1.2deg); }
+}
+
+@keyframes meadowSwayFast {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(3deg) skewX(1.4deg); }
+}
+
+@keyframes meadowSwayFlower {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(2.8deg); }
+  75% { transform: rotate(-1.5deg); }
+}
