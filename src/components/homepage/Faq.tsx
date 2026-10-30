@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, LayoutGroup, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
+import ColoredButton from "@/components/custom/colored-button";
 
 interface FaqItem {
   id: string;
@@ -74,22 +75,24 @@ export default function Faq() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left Column: Heading, Metadata, Legal Context, and Write to us Button */}
+          {/* Left Column: Heading, Metadata, Legal Context, and ColoredButton CTA */}
           <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-4">
-            <h2 className="text-4xl sm:text-5xl font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
-              Questions, answered
+            <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+              Questions,
+              <br />
+              answered
             </h2>
 
-            <p className="mt-3 text-[13px] text-[#71717a] dark:text-[#a1a1aa] font-normal">
+            <p className="mt-3.5 text-[13px] text-[#71717a] dark:text-[#a1a1aa] font-normal">
               Updated 20 October 2026
             </p>
 
-            <div className="mt-8 space-y-4 max-w-sm">
-              <p className="text-[14px] sm:text-[15px] text-[#52525b] dark:text-[#a1a1aa] font-normal leading-relaxed">
+            <div className="mt-10 sm:mt-12 space-y-5 max-w-sm">
+              <p className="text-[15px] sm:text-base text-[#52525b] dark:text-[#a1a1aa] font-normal leading-relaxed">
                 Something we haven&apos;t covered? We read every message.
               </p>
 
-              <p className="text-[13px] text-[#71717a] dark:text-[#8b897f] leading-relaxed">
+              <p className="text-[13px] sm:text-[13.5px] text-[#71717a] dark:text-[#8b897f] leading-relaxed">
                 How we handle and retain your data is set out in our{" "}
                 <Link
                   href="/privacy"
@@ -108,15 +111,21 @@ export default function Faq() {
               </p>
             </div>
 
-            <a
-              href="mailto:support@resumely.tech"
-              className="mt-7 inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[14px] font-medium transition-[background-color,transform] duration-150 active:scale-95 cursor-pointer"
-            >
-              Write to us
-            </a>
+            <div className="mt-8">
+              <ColoredButton
+                asChild
+                color="blue"
+                size="lg"
+                className="h-10.5 rounded-full px-6 text-sm font-medium cursor-pointer inline-flex items-center gap-2 active:scale-95 transition-transform"
+              >
+                <a href="mailto:support@resumely.tech">
+                  <span>Write to us</span>
+                </a>
+              </ColoredButton>
+            </div>
           </div>
 
-          {/* Right Column: Inline Chat Accordion List (Every Question has its own answer directly beneath it) */}
+          {/* Right Column: Inline Chat Accordion List with Smooth Layout Motion */}
           <div className="lg:col-span-7 flex flex-col gap-3.5 w-full">
             <LayoutGroup id="faq-accordion-group">
               {FAQS.map((faq) => {
@@ -128,13 +137,13 @@ export default function Faq() {
                     layout="position"
                     transition={{
                       layout: {
-                        duration: shouldReduceMotion ? 0 : 0.32,
-                        ease: [0.23, 1, 0.32, 1],
+                        duration: shouldReduceMotion ? 0 : 0.48,
+                        ease: [0.16, 1, 0.3, 1],
                       },
                     }}
                     className="w-full flex flex-col items-start"
                   >
-                    {/* Question Pill (Completely shadow-free, crisp flat borders) */}
+                    {/* Question Pill */}
                     <button
                       type="button"
                       onClick={() => setActiveId(isActive ? null : faq.id)}
@@ -162,8 +171,8 @@ export default function Faq() {
                             opacity: 1,
                             height: "auto",
                             transition: {
-                              height: { duration: 0.32, ease: [0.23, 1, 0.32, 1] },
-                              opacity: { duration: 0.22, delay: 0.05, ease: "easeOut" },
+                              height: { duration: 0.48, ease: [0.16, 1, 0.3, 1] },
+                              opacity: { duration: 0.35, delay: 0.08, ease: "easeOut" },
                             },
                           }}
                           exit={
@@ -173,8 +182,8 @@ export default function Faq() {
                                   opacity: 0,
                                   height: 0,
                                   transition: {
-                                    height: { duration: 0.26, ease: [0.23, 1, 0.32, 1] },
-                                    opacity: { duration: 0.16, ease: "easeIn" },
+                                    height: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+                                    opacity: { duration: 0.22, ease: "easeIn" },
                                   },
                                 }
                           }
