@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { signIn } from "next-auth/react";
 import PrismShader from "@/components/custom/prism-shader";
-import HeroProductPreview from "./HeroProductPreview";
+import HeroShader from "./HeroShader";
 
 export default function Hero() {
   const { isAuthenticated } = useAuth();
@@ -15,13 +15,13 @@ export default function Hero() {
     <section className="relative w-full min-h-[90vh] flex flex-col justify-center pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-24 overflow-hidden border-b border-border/40">
       
       {/* ======================================================== */}
-      {/* WHOLE-HERO PRISM SHADER (Minimal Vibrant Refraction)      */}
+      {/* AMBIENT BACKGROUND PRISM SHADER (Subtle Atmospheric Light) */}
       {/* ======================================================== */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-        <PrismShader className="w-full h-full opacity-90 dark:opacity-80" speed={0.9} />
+        <PrismShader className="w-full h-full opacity-60 dark:opacity-40" speed={0.6} />
       </div>
 
-      {/* Subtle Noise Texture for Physical Paper/Screen Tangibility */}
+      {/* Subtle Noise Texture for Physical Screen Tangibility */}
       <div className="pointer-events-none absolute inset-0 noise opacity-40 bg-neutral-900/5 dark:bg-white/5 z-1" />
 
       {/* Main Hero Container */}
@@ -104,10 +104,10 @@ export default function Hero() {
           </div>
 
           {/* ======================================================== */}
-          {/* RIGHT COLUMN: Real Software Workbench Product Preview     */}
+          {/* RIGHT COLUMN: Generative Optical Prism Shader Canvas     */}
           {/* ======================================================== */}
           <div className="lg:col-span-7 flex flex-col justify-center">
-            <HeroProductPreview />
+            <HeroShader speed={0.9} />
           </div>
 
         </div>
