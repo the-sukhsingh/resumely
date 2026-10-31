@@ -87,7 +87,7 @@ export default function Pricing() {
         <div className="relative">
           {/* Subtle ambient lighting behind the featured card */}
           <div
-            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[360px] bg-blue-500/10 dark:bg-blue-500/15 blur-[120px] rounded-full"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[360px] bg-blue-500/10 dark:bg-blue-500/15 blur-[150px] rounded-full"
             aria-hidden="true"
           />
 
@@ -99,20 +99,12 @@ export default function Pricing() {
                 <div
                   key={p.name}
                   className={cn(
-                    "relative overflow-hidden rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-all duration-200",
+                    "relative overflow-hidden rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 shadow-[0_0_0_1px_rgba(0,0,0,0.1)]",
                     isPopular
-                      ? "bg-gradient-to-b from-[#18181b] via-[#141416] to-[#0f0f10] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] text-white border border-blue-500/35 dark:border-blue-400/30 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]"
-                      : "bg-gradient-to-b from-[#ffffff] via-[#f7f7f8] to-[#ededef] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] text-neutral-900 dark:text-neutral-100 border border-neutral-300/80 dark:border-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.03),0_12px_24px_-8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_12px_24px_-8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]"
+                      ? "bg-gradient-to-b from-[#18181b] via-[#141416] to-[#0f0f10] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] text-white "
+                      : "bg-gradient-to-b from-[#ffffff] via-[#f7f7f8] to-[#ededef] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] text-neutral-900 dark:text-neutral-100"
                   )}
                 >
-                  {/* Subtle top edge highlight */}
-                  <div
-                    className={cn(
-                      "pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent",
-                      isPopular ? "via-blue-400/60" : "via-neutral-300/80 dark:via-white/15"
-                    )}
-                    aria-hidden="true"
-                  />
 
                   {/* Architectural blueprint grid with blinking cells */}
                   <BlinkingGrid

@@ -37,7 +37,7 @@ export default function FeatureCard({
   className,
   seed = 0,
   gridVariant = "neutral",
-  cellSize = 14,
+  cellSize = 12,
 }: FeatureCardProps) {
   return (
     <div
@@ -46,7 +46,6 @@ export default function FeatureCard({
         "group relative p-6 sm:p-7 rounded-3xl",
         // Shader-aligned cool neutral palette with fine vertical gradient
         "bg-gradient-to-b from-[#f4f4f4] via-[#ededed] to-[#e4e4e4] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10]",
-        "border border-neutral-300/80 dark:border-neutral-800",
         "hover:border-neutral-400 dark:hover:border-neutral-700",
         "flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-all duration-200 select-none overflow-hidden",
         "shadow-[0_2px_8px_rgba(0,0,0,0.02),0_8px_20px_-6px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.85)]",
@@ -54,11 +53,7 @@ export default function FeatureCard({
         className
       )}
     >
-      {/* Subtle top edge highlight */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neutral-400/50 dark:via-white/12 to-transparent"
-        aria-hidden="true"
-      />
+
 
       {/* Blueprint drafting grid with blinking cells & paper noise texture */}
       <BlinkingGrid
