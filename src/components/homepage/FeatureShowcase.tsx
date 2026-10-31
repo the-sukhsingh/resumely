@@ -146,7 +146,7 @@ export default function FeatureShowcase() {
 
         {/* 3-Column Equal-Width Capabilities Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((feature) => (
+          {FEATURES.map((feature, idx) => (
             <FeatureCard
               key={feature.title}
               id={feature.id}
@@ -155,6 +155,7 @@ export default function FeatureShowcase() {
               description={feature.description}
               manifestHeader={feature.manifestHeader}
               manifestRows={feature.manifestRows}
+              seed={idx}
             />
           ))}
         </div>

@@ -94,13 +94,14 @@ export default function Workflow() {
 
         {/* 3-Column Equal-Width Process Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {steps.map((s) => (
+          {steps.map((s, idx) => (
             <FeatureCard
               key={s.step}
               eyebrow={`Step ${s.step}`}
               title={s.title}
               description={s.description}
               manifest={s.artifact}
+              seed={idx}
             />
           ))}
         </div>

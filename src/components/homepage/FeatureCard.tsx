@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import BlinkingGrid from "@/components/custom/blinking-grid";
 
 export interface FeatureCardManifestRow {
   label: string;
@@ -19,6 +20,8 @@ export interface FeatureCardProps {
   manifest?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
+  seed?: number;
+  gridVariant?: "neutral" | "blue" | "emerald";
 }
 
 export default function FeatureCard({
@@ -31,6 +34,8 @@ export default function FeatureCard({
   manifest,
   children,
   className,
+  seed = 0,
+  gridVariant = "neutral",
 }: FeatureCardProps) {
   return (
     <div
@@ -46,14 +51,13 @@ export default function FeatureCard({
         aria-hidden="true"
       />
 
-      {/* Blueprint drafting grid & paper noise texture */}
-      <div
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_75%_55%_at_50%_0%,#000_45%,transparent_100%)]" />
-        <div className="absolute inset-0 noise opacity-18 pointer-events-none" />
-      </div>
+      {/* Blueprint drafting grid with blinking cells & paper noise texture */}
+      <BlinkingGrid
+        cellSize={24}
+        seed={seed}
+        variant={gridVariant}
+        maskClassName="[mask-image:radial-gradient(ellipse_75%_55%_at_50%_0%,#000_45%,transparent_100%)]"
+      />
 
       <div className="relative z-10 flex flex-col justify-between h-full">
         <div>
