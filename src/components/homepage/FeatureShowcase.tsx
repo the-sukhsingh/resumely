@@ -39,9 +39,6 @@ export default function FeatureShowcase() {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header: Two-Line Editorial Headline + Lede */}
         <div className="max-w-[620px] mb-10 sm:mb-12">
-          <span className="font-mono text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 block mb-3">
-            Core Architecture · 01–09
-          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             The quiet system behind
             <br />

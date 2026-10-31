@@ -31,7 +31,7 @@ export default function HeroHeadline() {
   }, [isPaused, shouldReduceMotion, advanceWord]);
 
   return (
-    <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[68px] xl:text-[74px] font-medium tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.18] sm:leading-[1.12] max-w-4xl mx-auto select-none">
+    <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[68px] xl:text-[74px] tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.18] sm:leading-[1.12] max-w-4xl mx-auto select-none">
       {/* Row 1: Guaranteed 1st line, never wraps */}
       <span className="block whitespace-nowrap">
         <span>Resumes </span>

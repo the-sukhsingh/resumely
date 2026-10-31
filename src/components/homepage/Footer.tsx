@@ -15,11 +15,11 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 pt-20 sm:pt-28 pb-12 transition-colors duration-200 border-t border-border">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        
+    <footer className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Seamless Closing Callout (Borderless, Open, Editorial) */}
-        <div className="pb-16 sm:pb-20 border-b border-border">
+        <div className="pb-16 sm:pb-20">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div className="max-w-xl">
               <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
@@ -58,13 +58,6 @@ export default function Footer() {
                   <ArrowUpRight className="w-4 h-4 stroke-[2]" />
                 </ColoredButton>
               )}
-
-              <Link
-                href="#templates"
-                className="h-11 px-5 rounded-full inline-flex items-center text-xs sm:text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-              >
-                Browse templates
-              </Link>
             </div>
           </div>
         </div>

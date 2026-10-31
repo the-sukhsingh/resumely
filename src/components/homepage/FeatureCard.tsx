@@ -54,7 +54,6 @@ export default function FeatureCard({
         "transition-all duration-300 ease-out select-none overflow-hidden",
         "shadow-[0_1px_3px_rgba(0,0,0,0.02),0_8px_20px_-4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.95)]",
         "dark:shadow-[0_1px_3px_rgba(0,0,0,0.4),0_12px_28px_-6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)]",
-        "hover:-translate-y-1 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05),0_16px_36px_-6px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.5),0_20px_40px_-6px_rgba(0,0,0,0.45)]",
         className
       )}
     >
@@ -64,7 +63,7 @@ export default function FeatureCard({
         seed={seed}
         variant={gridVariant}
         maskClassName="[mask-image:radial-gradient(ellipse_75%_45%_at_50%_0%,#000_25%,transparent_100%)]"
-        className="opacity-40 dark:opacity-30"
+        className="opacity-70 dark:opacity-30"
       />
 
       {/* Subtle hover spotlight bloom */}
