@@ -62,23 +62,23 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative w-full bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-20 sm:py-28 border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200"
+      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-20 sm:py-28 border-b border-border transition-colors duration-200"
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Typographic Header echoing the FAQ section vibe */}
         <div className="max-w-xl mb-14 sm:mb-16">
-          <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+          <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Pricing,
             <br />
             calibrated
           </h2>
 
-          <p className="mt-3.5 text-[13px] text-[#71717a] dark:text-[#a1a1aa] font-normal">
+          <p className="mt-3.5 text-[13px] text-neutral-500 dark:text-neutral-400 font-normal">
             Pay as you interview · Credits never expire
           </p>
 
-          <p className="mt-6 text-[14px] sm:text-[15px] text-[#52525b] dark:text-[#a1a1aa] font-normal leading-relaxed">
+          <p className="mt-6 text-[14px] sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
             No recurring monthly charges. Purchase credit packs only when actively applying, and keep your unused balance forever.
           </p>
         </div>
@@ -101,8 +101,8 @@ export default function Pricing() {
                   className={cn(
                     "relative overflow-hidden rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-all duration-200",
                     isPopular
-                      ? "bg-gradient-to-b from-[#18181b] via-[#141416] to-[#0f0f10] dark:from-[#1f1e1b] dark:via-[#191815] dark:to-[#121110] text-white border border-blue-500/35 dark:border-blue-400/30 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]"
-                      : "bg-gradient-to-b from-[#ffffff] via-[#faf9f6] to-[#f4f2ee] dark:from-[#1b1a17] dark:via-[#171614] dark:to-[#121110] text-[#1c1b18] dark:text-[#edebe6] border border-[#e2e0da] dark:border-[#282622] shadow-[0_2px_8px_rgba(0,0,0,0.03),0_12px_24px_-8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_12px_24px_-8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]"
+                      ? "bg-gradient-to-b from-[#18181b] via-[#141416] to-[#0f0f10] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] text-white border border-blue-500/35 dark:border-blue-400/30 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]"
+                      : "bg-gradient-to-b from-[#ffffff] via-[#f7f7f8] to-[#ededef] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] text-neutral-900 dark:text-neutral-100 border border-neutral-300/80 dark:border-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.03),0_12px_24px_-8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_12px_24px_-8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]"
                   )}
                 >
                   {/* Subtle top edge highlight */}
@@ -131,7 +131,7 @@ export default function Pricing() {
                         <h3
                           className={cn(
                             "text-base sm:text-lg font-semibold tracking-tight",
-                            isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
+                            isPopular ? "text-white" : "text-neutral-900 dark:text-neutral-100"
                           )}
                         >
                           {p.name}
@@ -164,7 +164,7 @@ export default function Pricing() {
                         <span
                           className={cn(
                             "text-3xl sm:text-4xl font-semibold tracking-tight",
-                            isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
+                            isPopular ? "text-white" : "text-neutral-900 dark:text-neutral-100"
                           )}
                         >
                           {p.price}
