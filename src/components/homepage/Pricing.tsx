@@ -14,47 +14,62 @@ export default function Pricing() {
 
   const plans = [
     {
-      name: "Starter Trial",
+      id: "free",
+      name: "Free Starter",
+      creditsBadge: "25 Starter Credits",
       price: "$0",
-      cadence: "free forever",
-      description: "Everything you need to set up your master career record and test ATS calibration.",
+      cadence: "free on signup",
+      unitRate: "No credit card required",
+      description: "Set up your verified master career record, test semantic rubric scoring, and calibrate your first tailored resumes.",
       features: [
-        "1 Master Career Ledger",
-        "3 Full AI Tailoring Calibrations",
-        "Unlimited Vector LaTeX & PDF Exports",
-        "Full Application Kanban Tracker",
+        "25 non-expiring starter credits included",
+        "1 Master Career Ledger with branch memory",
+        "Full AI resume tailoring (~2-3 calibrations)",
+        "ATS semantic rubric score & keyword scan",
+        "Unlimited clean LaTeX source & PDF exports",
+        "Full Application Kanban pipeline tracker",
       ],
-      cta: "Start free",
+      cta: "Start with 25 free credits",
       popular: false,
     },
     {
+      id: "active",
       name: "Active Seeker",
+      creditsBadge: "400 Credits Pack",
+      badge: "Most Popular",
       price: "$19",
       cadence: "one-time pack",
-      description: "Targeted credits for candidates actively applying to high-yield positions.",
+      unitRate: "~$0.048 / credit · Save 25%",
+      description: "Targeted credit reserve for candidates actively interviewing and calibrating across multiple target roles.",
       features: [
-        "40 Role-Tailored Calibrations",
-        "Synchronized Cover Letters",
-        "ATS Deep Semantic Rubric Audit",
-        "Unlimited Vector PDF & LaTeX Exports",
-        "Credits never expire",
+        "400 non-expiring credits in your balance",
+        "~40 tailored applications or 15 complete packages",
+        "Synchronized Cover Letter generation (6 credits)",
+        "Deep ATS semantic rubric audit (10 credits)",
+        "Section-Focused Copilot rewrites with instant undo",
+        "Credits never expire · Use at your own pace",
       ],
-      cta: "Get Active Seeker",
+      cta: "Get Active Seeker (400 Credits)",
       popular: true,
     },
     {
+      id: "pro",
       name: "Pro Scale",
+      creditsBadge: "1,000 Credits Pack",
+      badge: "Save 40%",
       price: "$39",
       cadence: "one-time pack",
-      description: "Comprehensive credits for high-volume searches and multiple career tracks.",
+      unitRate: "~$0.039 / credit · Best value",
+      description: "High-volume credit reserve for comprehensive multi-track searches, executive portfolios, and career pivots.",
       features: [
-        "100 Role-Tailored Calibrations",
-        "Multiple Career Tracks & Branches",
-        "Custom LaTeX & Typography Tuning",
-        "Priority Parser Throughput",
-        "Credits never expire",
+        "1,000 non-expiring credits in your balance",
+        "~100 tailored applications or 40+ complete application suites",
+        "Multiple distinct career tracks & branch ledgers",
+        "Priority AI processing throughput & parser pipeline",
+        "Custom LaTeX typesetting & typography tuning",
+        "Credits never expire · Retain balance forever",
       ],
-      cta: "Get Pro Scale",
+      cta: "Get Pro Scale (1,000 Credits)",
       popular: false,
     },
   ];
@@ -62,23 +77,18 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-20 sm:py-28 border-b border-border transition-colors duration-200"
+      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-20 transition-colors duration-200"
     >
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Typographic Header echoing the FAQ section vibe */}
-        <div className="max-w-xl mb-14 sm:mb-16">
+        <div className="max-w-xl mb-8">
           <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Pricing,
             <br />
             calibrated
           </h2>
-
-          <p className="mt-3.5 text-[13px] text-neutral-500 dark:text-neutral-400 font-normal">
-            Pay as you interview · Credits never expire
-          </p>
-
-          <p className="mt-6 text-[14px] sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
+          <p className="mt-4 text-[14px] sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed text-balance">
             No recurring monthly charges. Purchase credit packs only when actively applying, and keep your unused balance forever.
           </p>
         </div>
@@ -120,17 +130,26 @@ export default function Pricing() {
                     <div>
                       {/* Card Header & Badge */}
                       <div className="flex items-center justify-between gap-2 mb-2">
-                        <h3
-                          className={cn(
-                            "text-base sm:text-lg font-semibold tracking-tight",
-                            isPopular ? "text-white" : "text-neutral-900 dark:text-neutral-100"
-                          )}
-                        >
-                          {p.name}
-                        </h3>
-                        {isPopular && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-mono font-medium border border-blue-400/30 shadow-xs">
-                            Most Popular
+                        <div className="flex items-center gap-2">
+                          <h3
+                            className={cn(
+                              "text-base sm:text-lg font-semibold tracking-tight",
+                              isPopular ? "text-white" : "text-neutral-900 dark:text-neutral-100"
+                            )}
+                          >
+                            {p.name}
+                          </h3>
+                        </div>
+                        {p.badge && (
+                          <span
+                            className={cn(
+                              "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium border shadow-xs",
+                              isPopular
+                                ? "bg-blue-500/15 text-blue-300 border-blue-400/30"
+                                : "bg-neutral-200/70 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-300/50 dark:border-neutral-700/60"
+                            )}
+                          >
+                            {p.badge}
                           </span>
                         )}
                       </div>
@@ -144,31 +163,57 @@ export default function Pricing() {
                         {p.description}
                       </p>
 
-                      {/* Price Block */}
+                      {/* Price & Credit Count Block */}
                       <div
                         className={cn(
-                          "mt-5 mb-6 pb-5 border-b flex items-baseline gap-1.5",
+                          "mt-5 mb-6 pb-5 border-b",
                           isPopular
                             ? "border-neutral-800"
                             : "border-neutral-200/80 dark:border-neutral-800"
                         )}
                       >
-                        <span
+                        {/* Prominent Credit Badge */}
+                        <div className="mb-2.5">
+                          <span
+                            className={cn(
+                              "inline-block font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md",
+                              isPopular
+                                ? "bg-blue-500/20 text-blue-300 border border-blue-400/30"
+                                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200/80 dark:border-neutral-700/80"
+                            )}
+                          >
+                            {p.creditsBadge}
+                          </span>
+                        </div>
+
+                        <div className="flex items-baseline gap-1.5">
+                          <span
+                            className={cn(
+                              "text-3xl sm:text-4xl font-semibold tracking-tight",
+                              isPopular ? "text-white" : "text-neutral-900 dark:text-neutral-100"
+                            )}
+                          >
+                            {p.price}
+                          </span>
+                          <span
+                            className={cn(
+                              "text-xs font-mono",
+                              isPopular ? "text-neutral-400" : "text-[#71717a] dark:text-[#a1a1aa]"
+                            )}
+                          >
+                            / {p.cadence}
+                          </span>
+                        </div>
+
+                        {/* Unit Rate / Transparency */}
+                        <div
                           className={cn(
-                            "text-3xl sm:text-4xl font-semibold tracking-tight",
-                            isPopular ? "text-white" : "text-neutral-900 dark:text-neutral-100"
+                            "mt-1.5 text-[11px] font-mono",
+                            isPopular ? "text-blue-300/80" : "text-neutral-500 dark:text-neutral-400"
                           )}
                         >
-                          {p.price}
-                        </span>
-                        <span
-                          className={cn(
-                            "text-xs font-mono",
-                            isPopular ? "text-neutral-400" : "text-[#71717a] dark:text-[#a1a1aa]"
-                          )}
-                        >
-                          / {p.cadence}
-                        </span>
+                          {p.unitRate}
+                        </div>
                       </div>
 
                       {/* Features List */}
@@ -228,36 +273,41 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Reassurance Footer Strip */}
-        <div className="mt-12 pt-6 border-t border-[#e2e0da]/80 dark:border-[#24231f] flex flex-col sm:flex-row items-center justify-between text-xs text-[#71717a] dark:text-[#a1a1aa] gap-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              Zero auto-renewals
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              Credits never expire
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              Master Ledger export is always free
+        {/* Transparent Credit Consumption Breakdown */}
+        <div className="mt-12 sm:mt-14 p-5 sm:p-6 rounded-2xl bg-neutral-100/60 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-800">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <h4 className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+                Transparent Credit Consumption
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                Spend credits only when triggering AI calibrations. Basic editing, formatting, and exports remain permanently free.
+              </p>
+            </div>
+            <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+              ✓ Non-Expiring Balance
             </span>
           </div>
 
-          <div>
-            Need custom credits or team licenses?{" "}
-            <a
-              href="mailto:sukhaji65@gmail.com"
-              className="underline underline-offset-3 hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
-            >
-              Write to us
-            </a>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
+            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
+              <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">1 Credit</span>
+              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">AI Resume Tailoring</span>
+            </div>
+            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
+              <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">6 Credits</span>
+              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">Matched Cover Letter</span>
+            </div>
+            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
+              <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">10 Credits</span>
+              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">ATS Rubric & Keyword Audit</span>
+            </div>
+            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block font-semibold">0 Credits (Free)</span>
+              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">PDF/LaTeX Exports & Tracker</span>
+            </div>
           </div>
         </div>
-
       </div>
     </section>
   );
