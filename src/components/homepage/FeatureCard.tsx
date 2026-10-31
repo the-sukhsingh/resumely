@@ -22,6 +22,7 @@ export interface FeatureCardProps {
   className?: string;
   seed?: number;
   gridVariant?: "neutral" | "blue" | "emerald";
+  cellSize?: number;
 }
 
 export default function FeatureCard({
@@ -36,6 +37,7 @@ export default function FeatureCard({
   className,
   seed = 0,
   gridVariant = "neutral",
+  cellSize = 14,
 }: FeatureCardProps) {
   return (
     <div
@@ -53,7 +55,7 @@ export default function FeatureCard({
 
       {/* Blueprint drafting grid with blinking cells & paper noise texture */}
       <BlinkingGrid
-        cellSize={24}
+        cellSize={cellSize}
         seed={seed}
         variant={gridVariant}
         maskClassName="[mask-image:radial-gradient(ellipse_75%_55%_at_50%_0%,#000_45%,transparent_100%)]"

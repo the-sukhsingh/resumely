@@ -116,7 +116,7 @@ export default function Pricing() {
 
                   {/* Architectural blueprint grid with blinking cells */}
                   <BlinkingGrid
-                    cellSize={24}
+                    cellSize={14}
                     seed={idx}
                     variant={isPopular ? "blue" : "neutral"}
                   />
