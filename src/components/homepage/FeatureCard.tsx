@@ -43,13 +43,20 @@ export default function FeatureCard({
     <div
       id={id}
       className={cn(
-        "group relative p-6 sm:p-7 rounded-3xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-all duration-200 select-none overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02),0_8px_20px_-6px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.25),0_8px_20px_-6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-[#c8c5bc] dark:hover:border-[#38352f]",
+        "group relative p-6 sm:p-7 rounded-3xl",
+        // Shader-aligned cool neutral palette with fine vertical gradient
+        "bg-gradient-to-b from-[#f4f4f4] via-[#ededed] to-[#e4e4e4] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10]",
+        "border border-neutral-300/80 dark:border-neutral-800",
+        "hover:border-neutral-400 dark:hover:border-neutral-700",
+        "flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-all duration-200 select-none overflow-hidden",
+        "shadow-[0_2px_8px_rgba(0,0,0,0.02),0_8px_20px_-6px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.85)]",
+        "dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_8px_20px_-6px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]",
         className
       )}
     >
       {/* Subtle top edge highlight */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neutral-300/70 dark:via-white/12 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neutral-400/50 dark:via-white/12 to-transparent"
         aria-hidden="true"
       />
 
@@ -64,15 +71,15 @@ export default function FeatureCard({
       <div className="relative z-10 flex flex-col justify-between h-full">
         <div>
           {eyebrow && (
-            <span className="font-mono text-[11px] font-medium text-[#8b897f] dark:text-[#9c9a8f] uppercase tracking-wider block mb-2">
+            <span className="font-mono text-[11px] font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider block mb-2">
               {eyebrow}
             </span>
           )}
 
-          <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-[#1c1b18] dark:text-[#f3f2ee]">
+          <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-neutral-900 dark:text-neutral-100">
             {title}
           </h3>
-          <p className="mt-2 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-3">
+          <p className="mt-2 text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-3">
             {description}
           </p>
         </div>
@@ -81,9 +88,9 @@ export default function FeatureCard({
         {manifest ? (
           <div className="mt-auto pt-4">{manifest}</div>
         ) : manifestHeader || (manifestRows && manifestRows.length > 0) ? (
-          <div className="mt-auto pt-4 border-t border-[#e2e0da] dark:border-[#282622] space-y-2 font-mono text-[11px]">
+          <div className="mt-auto pt-4 border-t border-neutral-300/70 dark:border-neutral-800 space-y-2 font-mono text-[11px]">
             {manifestHeader && (
-              <div className="flex items-center justify-between text-[#8b897f] dark:text-[#9c9a8f]">
+              <div className="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                 <span className="uppercase tracking-wider text-[10px]">{manifestHeader.label}</span>
                 <span className="text-emerald-700 dark:text-emerald-400 font-medium">{manifestHeader.value}</span>
               </div>
@@ -94,8 +101,8 @@ export default function FeatureCard({
                 className={cn(
                   "flex items-baseline justify-between",
                   idx === 0
-                    ? "text-xs font-medium text-[#1c1b18] dark:text-[#edebe6]"
-                    : "text-[10px] pt-1 border-t border-[#e2e0da]/50 dark:border-[#282622]/50 text-[#8b897f] dark:text-[#9c9a8f]"
+                    ? "text-xs font-medium text-neutral-900 dark:text-neutral-100"
+                    : "text-[10px] pt-1 border-t border-neutral-300/40 dark:border-neutral-800/60 text-neutral-500 dark:text-neutral-400"
                 )}
               >
                 <span className="truncate">{row.label}</span>
@@ -103,8 +110,8 @@ export default function FeatureCard({
                   className={cn(
                     "tabular-nums shrink-0 ml-2",
                     idx === 0
-                      ? "font-normal text-[11px] text-[#8b897f] dark:text-[#9c9a8f]"
-                      : "text-[#1c1b18] dark:text-[#edebe6] font-medium"
+                      ? "font-normal text-[11px] text-neutral-500 dark:text-neutral-400"
+                      : "text-neutral-900 dark:text-neutral-100 font-medium"
                   )}
                 >
                   {row.value}

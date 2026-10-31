@@ -129,17 +129,17 @@ export default function FeatureShowcase() {
   return (
     <section
       id="features"
-      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-16 transition-colors duration-200"
+      className="relative w-full text-neutral-900 dark:text-neutral-100 py-16 transition-colors duration-200"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
         <div className="max-w-[620px] mb-8">
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             The quiet system behind
             <br />
             every interview-winning resume.
           </h2>
-          <p className="mt-4 text-sm sm:text-[15px] text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
+          <p className="mt-4 text-sm sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
             Store your career ledger once. Generate calibrated applications in seconds.
           </p>
         </div>
