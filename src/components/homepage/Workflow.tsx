@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import FeatureCard from "./FeatureCard";
 
 export default function Workflow() {
   const steps = [
@@ -94,28 +95,13 @@ export default function Workflow() {
         {/* 3-Column Equal-Width Process Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {steps.map((s) => (
-            <div
+            <FeatureCard
               key={s.step}
-              className="p-6 sm:p-7 rounded-3xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-colors duration-150"
-            >
-              <div>
-                <span className="font-mono text-[11px] font-medium text-[#8b897f] dark:text-[#9c9a8f] uppercase tracking-wider block mb-2">
-                  Step {s.step}
-                </span>
-
-                <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-[#1c1b18] dark:text-[#f3f2ee]">
-                  {s.title}
-                </h3>
-                <p className="mt-2 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-3">
-                  {s.description}
-                </p>
-              </div>
-
-              {/* Technical manifest at bottom */}
-              <div className="mt-auto pt-4">
-                {s.artifact}
-              </div>
-            </div>
+              eyebrow={`Step ${s.step}`}
+              title={s.title}
+              description={s.description}
+              manifest={s.artifact}
+            />
           ))}
         </div>
 
