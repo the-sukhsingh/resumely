@@ -53,29 +53,29 @@ export default function HeroHeadline() {
       <span className="block whitespace-nowrap mt-0.5 sm:mt-1">
         <span className="inline-block">the&nbsp;</span>
 
-        {/* Word 2: "roles" / "teams" / "offers" with fluid GPU slot roll & zero gap */}
+        {/* Word 2: "roles" / "teams" / "offers" with synchronous position layout */}
         <motion.button
-          layout
+          layout="position"
           type="button"
           onClick={advanceWord}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
           transition={{
-            layout: { duration: 0.48, ease: MOTION_EASE },
+            layout: { duration: 0.45, ease: MOTION_EASE },
           }}
-          className="relative inline-grid grid-cols-1 grid-rows-1 overflow-hidden align-baseline text-left font-semibold text-neutral-950 dark:text-white cursor-pointer select-none"
+          className="relative inline-block align-baseline text-left font-semibold text-neutral-950 dark:text-white cursor-pointer select-none"
           title="Click to cycle target"
           aria-label={`Target: ${currentTarget}. Click to cycle.`}
         >
-          <AnimatePresence initial={false}>
+          <AnimatePresence mode="popLayout" initial={false}>
             <motion.span
               key={currentTarget}
-              className="col-start-1 row-start-1 inline-block whitespace-nowrap"
+              className="inline-block whitespace-nowrap"
               initial={
                 shouldReduceMotion
                   ? { opacity: 0 }
-                  : { y: "105%", opacity: 0 }
+                  : { y: "45%", opacity: 0 }
               }
               animate={
                 shouldReduceMotion
@@ -85,16 +85,12 @@ export default function HeroHeadline() {
               exit={
                 shouldReduceMotion
                   ? { opacity: 0 }
-                  : { y: "-105%", opacity: 0 }
+                  : { y: "-45%", opacity: 0 }
               }
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0.15 }
-                  : {
-                      y: { duration: 0.48, ease: MOTION_EASE },
-                      opacity: { duration: 0.28, ease: MOTION_EASE },
-                    }
-              }
+              transition={{
+                duration: 0.45,
+                ease: MOTION_EASE,
+              }}
               style={{ willChange: "transform, opacity" }}
             >
               {currentTarget}
@@ -103,9 +99,9 @@ export default function HeroHeadline() {
         </motion.button>
 
         <motion.span
-          layout
+          layout="position"
           transition={{
-            layout: { duration: 0.48, ease: MOTION_EASE },
+            layout: { duration: 0.45, ease: MOTION_EASE },
           }}
           className="inline-block"
         >
