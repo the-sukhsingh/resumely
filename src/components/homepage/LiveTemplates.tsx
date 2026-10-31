@@ -58,7 +58,7 @@ export default function LiveTemplates() {
   return (
     <section
       id="templates"
-      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-16 transition-colors duration-200 select-none"
+      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-8 transition-colors duration-200 select-none"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -69,8 +69,8 @@ export default function LiveTemplates() {
             <br />
             calibrated for every reader.
           </h2>
-          <p className="mt-4 text-sm  text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
-            Every template compiles to crisp vector PDFs with zero invisible table traps or broken glyphs.
+          <p className="mt-4 text-sm sm:text-[15px] text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
+            Every template compiles to crisp vector PDFs with 0 invisible table traps or broken glyphs.
           </p>
 
           {/* Switcher Controls */}

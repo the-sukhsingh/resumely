@@ -20,9 +20,6 @@ export default function HomePage() {
         {/* 3. Core Platform Capabilities */}
         <FeatureShowcase />
 
-        {/* 4. Live Vector Template Specimens */}
-        <LiveTemplates />
-
         {/* 5. 3-Step Calibration Workflow */}
         <Workflow />
 

@@ -96,3 +96,4 @@ export default function FeatureCard({
     </div>
   );
 }
+
