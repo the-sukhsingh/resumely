@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Download, ArrowRight, Check } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
+import AnimatedSwitcher, { SwitcherItem } from "@/components/custom/animated-switcher";
 
 type TemplateId = "latex" | "classic" | "two-column";
 type PaperSize = "letter" | "a4";
@@ -37,6 +38,16 @@ const TEMPLATES: Template[] = [
   },
 ];
 
+const TEMPLATE_SWITCHER_ITEMS: SwitcherItem<TemplateId>[] = TEMPLATES.map((t) => ({
+  value: t.id,
+  label: t.label,
+}));
+
+const PAPER_SIZE_ITEMS: SwitcherItem<PaperSize>[] = [
+  { value: "letter", label: "Letter" },
+  { value: "a4", label: "A4" },
+];
+
 export default function LiveTemplates() {
   const [activeTemplate, setActiveTemplate] = useState<TemplateId>("latex");
   const [paperSize, setPaperSize] = useState<PaperSize>("letter");
@@ -47,83 +58,38 @@ export default function LiveTemplates() {
   return (
     <section
       id="templates"
-      className="relative w-full bg-[#f5f3ef] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-16 sm:py-24 border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200 select-none"
+      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-16 transition-colors duration-200 select-none"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[620px] mx-auto text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+        <div className="max-w-[620px]  mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Precision typesetting,
             <br />
             calibrated for every reader.
           </h2>
-          <p className="mt-4 text-sm sm:text-[15px] text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
+          <p className="mt-4 text-sm  text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
             Every template compiles to crisp vector PDFs with zero invisible table traps or broken glyphs.
           </p>
 
-          {/* Minimal Centered Switcher Controls */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          {/* Switcher Controls */}
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             {/* Template Selector Pills */}
-            <div className="inline-flex p-1 rounded-full bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622]">
-              {TEMPLATES.map((t) => {
-                const isActive = activeTemplate === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setActiveTemplate(t.id)}
-                    className={cn(
-                      "relative px-4 py-1.5 rounded-full text-xs font-medium transition-[color,transform] duration-150 ease-out cursor-pointer active:scale-[0.96]",
-                      isActive
-                        ? "text-[#1c1b18] dark:text-[#f3f2ee]"
-                        : "text-[#8b897f] dark:text-[#9c9a8f] hover:text-[#1c1b18] dark:hover:text-[#edebe6]"
-                    )}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTemplateIndicator"
-                        className="absolute inset-0 bg-[#ffffff] dark:bg-[#252420] rounded-full shadow-xs border border-[#e2e0da] dark:border-[#2d2b26]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 450,
-                          damping: 32,
-                        }}
-                      />
-                    )}
-                    <span className="relative z-10">{t.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <AnimatedSwitcher<TemplateId>
+              value={activeTemplate}
+              onChange={setActiveTemplate}
+              items={TEMPLATE_SWITCHER_ITEMS}
+            />
 
             {/* Paper Size Mini Toggle */}
-            <div className="inline-flex p-1 rounded-full bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] text-[11px] font-mono">
-              <button
-                type="button"
-                onClick={() => setPaperSize("letter")}
-                className={cn(
-                  "px-3 py-1 rounded-full transition-colors cursor-pointer",
-                  paperSize === "letter"
-                    ? "bg-[#ffffff] dark:bg-[#252420] text-[#1c1b18] dark:text-[#edebe6] font-semibold shadow-2xs border border-[#e2e0da] dark:border-[#2d2b26]"
-                    : "text-[#8b897f] hover:text-[#1c1b18] dark:hover:text-[#edebe6]"
-                )}
-              >
-                Letter
-              </button>
-              <button
-                type="button"
-                onClick={() => setPaperSize("a4")}
-                className={cn(
-                  "px-3 py-1 rounded-full transition-colors cursor-pointer",
-                  paperSize === "a4"
-                    ? "bg-[#ffffff] dark:bg-[#252420] text-[#1c1b18] dark:text-[#edebe6] font-semibold shadow-2xs border border-[#e2e0da] dark:border-[#2d2b26]"
-                    : "text-[#8b897f] hover:text-[#1c1b18] dark:hover:text-[#edebe6]"
-                )}
-              >
-                A4
-              </button>
-            </div>
+            <AnimatedSwitcher<PaperSize>
+              value={paperSize}
+              onChange={setPaperSize}
+              size="sm"
+              className="font-mono text-[11px]"
+              items={PAPER_SIZE_ITEMS}
+            />
           </div>
         </div>
 
