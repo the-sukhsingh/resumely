@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import ColoredButton from "@/components/custom/colored-button";
+import BlinkingGrid from "@/components/custom/blinking-grid";
 
 export default function Pricing() {
   const { isAuthenticated } = useAuth();
@@ -91,7 +92,7 @@ export default function Pricing() {
           />
 
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
-            {plans.map((p) => {
+            {plans.map((p, idx) => {
               const isPopular = p.popular;
 
               return (
@@ -113,24 +114,15 @@ export default function Pricing() {
                     aria-hidden="true"
                   />
 
-                  {/* Architectural blueprint grid & paper noise texture */}
-                  <div
-                    className="pointer-events-none absolute inset-0 overflow-hidden"
-                    aria-hidden="true"
-                  >
-                    <div
-                      className={cn(
-                        "absolute inset-0 bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_50%,transparent_100%)]",
-                        isPopular
-                          ? "bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)]"
-                          : "bg-[linear-gradient(to_right,rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.035)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)]"
-                      )}
-                    />
-                    {isPopular && (
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.18),transparent_70%)]" />
-                    )}
-                    <div className="absolute inset-0 noise opacity-20 pointer-events-none" />
-                  </div>
+                  {/* Architectural blueprint grid with blinking cells */}
+                  <BlinkingGrid
+                    cellSize={24}
+                    seed={idx}
+                    variant={isPopular ? "blue" : "neutral"}
+                  />
+                  {isPopular && (
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.18),transparent_70%)]" />
+                  )}
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>

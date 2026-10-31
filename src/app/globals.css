@@ -83,6 +83,28 @@
   animation: spinSlow 40s linear infinite;
 }
 
+@keyframes gridCellBlink {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-grid-cell-blink {
+  animation-name: gridCellBlink;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-grid-cell-blink {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
 .mask-radial-fade {
   mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
