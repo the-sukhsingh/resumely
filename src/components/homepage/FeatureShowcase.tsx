@@ -18,12 +18,12 @@ export default function FeatureShowcase() {
   return (
     <section
       id="features"
-      className="relative w-full bg-[#f5f3ef] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-16 sm:py-24 border-t border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200"
+      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-16 transition-colors duration-200"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[620px] mx-auto text-center mb-16 sm:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+        <div className="max-w-[620px] mb-8">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             The quiet system behind
             <br />
             every interview-winning resume.
@@ -38,7 +38,7 @@ export default function FeatureShowcase() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             
             {/* Card 1: Master Career Record */}
-            <div id="ledger" className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div id="ledger" className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center w-full px-2">
                 <div className="w-full max-w-[210px] rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs p-2.5 space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
@@ -70,7 +70,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 2: Custom Agent Rules */}
-            <div id="rules" className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div id="rules" className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="w-full max-w-[210px] rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs p-2.5 space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
@@ -101,7 +101,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 3: ATS Tag Chips with Tiny Colored Dots (with orange pop!) */}
-            <div id="analyzer" className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div id="analyzer" className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-[210px]">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[11px] font-medium text-[#1c1b18] dark:text-[#edebe6] shadow-2xs">
@@ -131,7 +131,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 4: In-Editor AI Copilot with Section Focus */}
-            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="w-[190px] p-2.5 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs space-y-2">
                   <div className="flex items-center justify-between text-[10px] font-mono text-[#8b897f]">
@@ -158,7 +158,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 5: Real Vector LaTeX & Typography Engine */}
-            <div id="latex" className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div id="latex" className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="w-[170px] p-3 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs space-y-2">
                   <div className="flex items-center justify-between">
@@ -182,7 +182,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 6: Synchronized Cover Letters */}
-            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs">
                   <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -206,7 +206,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 7 (Row 3, cut-off): Visual Job Application Tracker */}
-            <div id="tracker" className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div id="tracker" className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="flex items-center gap-1.5 text-[10px] font-mono">
                   <span className="px-2 py-1 rounded-md bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] text-[#8b897f]">
@@ -232,7 +232,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 8 (Row 3, cut-off): Snapshot Version Link Memory */}
-            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="px-3.5 py-2 rounded-full bg-[#1c1b18] text-[#f5f3ef] dark:bg-[#edebe6] dark:text-[#121110] text-[11px] font-mono flex items-center gap-2 shadow-xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -251,7 +251,7 @@ export default function FeatureShowcase() {
             </div>
 
             {/* Card 9 (Row 3, cut-off): Public Shareable Links */}
-            <div className="h-[270px] sm:h-[280px] p-5 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between select-none">
+            <div className="h-[270px] sm:h-[280px] p-5 rounded-4xl bg-[#ececec] dark:bg-[#151515] flex flex-col justify-between select-none">
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs text-xs font-mono">
                   <Link2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
