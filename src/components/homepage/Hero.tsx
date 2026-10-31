@@ -8,6 +8,7 @@ import { signIn } from "next-auth/react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { BarsPreview } from "@/components/custom/bg-shader";
 import ColoredButton from "@/components/custom/colored-button";
+import HeroHeadline from "./HeroHeadline";
 
 export default function Hero() {
   const { isAuthenticated } = useAuth();
@@ -64,12 +65,7 @@ export default function Hero() {
             {/* Typographic Group */}
             <div className="space-y-5 sm:space-y-6">
               {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[76px] font-medium tracking-[-0.035em] text-neutral-900 dark:text-neutral-50 leading-[1.08] max-w-4xl mx-auto">
-                Resumes tailored for{" "}
-                <span className="block sm:inline md:block">
-                  the roles you want.
-                </span>
-              </h1>
+              <HeroHeadline />
 
               {/* Subheadline */}
               <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl mx-auto">
