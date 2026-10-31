@@ -12,6 +12,7 @@ export interface FeatureCardProps {
   eyebrow?: string | React.ReactNode;
   title: string | React.ReactNode;
   description: string | React.ReactNode;
+  preview?: React.ReactNode;
   manifestHeader?: {
     label: string;
     value: React.ReactNode;
@@ -30,6 +31,7 @@ export default function FeatureCard({
   eyebrow,
   title,
   description,
+  preview,
   manifestHeader,
   manifestRows,
   manifest,
@@ -37,53 +39,68 @@ export default function FeatureCard({
   className,
   seed = 0,
   gridVariant = "neutral",
-  cellSize = 12,
+  cellSize = 14,
 }: FeatureCardProps) {
   return (
     <div
       id={id}
       className={cn(
-        "group relative p-6 sm:p-7 rounded-3xl",
-        // Shader-aligned cool neutral palette with fine vertical gradient
-        "bg-gradient-to-b from-[#f4f4f4] via-[#ededed] to-[#e4e4e4] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10]",
-        "hover:border-neutral-400 dark:hover:border-neutral-700",
-        "flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-all duration-200 select-none overflow-hidden",
-        "shadow-[0_2px_8px_rgba(0,0,0,0.02),0_8px_20px_-6px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.85)]",
-        "dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_8px_20px_-6px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]",
+        "group relative p-6 sm:p-7 rounded-[22px]",
+        // Luminous card surface with fine vertical elevation gradient
+        "bg-gradient-to-b from-white via-[#f9f9fa] to-[#f1f1f3] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10]",
+        "border border-neutral-200/80 dark:border-neutral-800/80",
+        "hover:border-neutral-300 dark:hover:border-neutral-700",
+        "flex flex-col justify-between min-h-[340px] sm:min-h-[360px]",
+        "transition-all duration-300 ease-out select-none overflow-hidden",
+        "shadow-[0_1px_3px_rgba(0,0,0,0.02),0_8px_20px_-4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.95)]",
+        "dark:shadow-[0_1px_3px_rgba(0,0,0,0.4),0_12px_28px_-6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)]",
+        "hover:-translate-y-1 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05),0_16px_36px_-6px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.5),0_20px_40px_-6px_rgba(0,0,0,0.45)]",
         className
       )}
     >
-
-
-      {/* Blueprint drafting grid with blinking cells & paper noise texture */}
+      {/* Blueprint drafting grid with subtle mask so it never competes with text */}
       <BlinkingGrid
         cellSize={cellSize}
         seed={seed}
         variant={gridVariant}
-        maskClassName="[mask-image:radial-gradient(ellipse_75%_55%_at_50%_0%,#000_45%,transparent_100%)]"
+        maskClassName="[mask-image:radial-gradient(ellipse_75%_45%_at_50%_0%,#000_25%,transparent_100%)]"
+        className="opacity-40 dark:opacity-30"
+      />
+
+      {/* Subtle hover spotlight bloom */}
+      <div
+        className="pointer-events-none absolute -inset-px rounded-[22px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(0,0,0,0.02),transparent_70%)] dark:bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(255,255,255,0.04),transparent_70%)]"
+        aria-hidden="true"
       />
 
       <div className="relative z-10 flex flex-col justify-between h-full">
+        {/* Top Text Block */}
         <div>
           {eyebrow && (
-            <span className="font-mono text-[11px] font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider block mb-2">
-              {eyebrow}
-            </span>
+            <div className="flex items-center gap-2 mb-2.5">
+              <span className="font-mono text-[10.5px] font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider block">
+                {eyebrow}
+              </span>
+            </div>
           )}
 
-          <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-neutral-900 dark:text-neutral-100">
+          <h3 className="text-base sm:text-lg font-semibold tracking-[-0.015em] text-neutral-900 dark:text-neutral-100 leading-snug">
             {title}
           </h3>
-          <p className="mt-2 text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-3">
+          <p className="mt-2 text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-400 leading-relaxed">
             {description}
           </p>
         </div>
 
-        {/* Integrated Technical Manifest at Bottom */}
-        {manifest ? (
-          <div className="mt-auto pt-4">{manifest}</div>
+        {/* Tangible Micro-UI Preview or Manifest */}
+        {preview ? (
+          <div className="mt-5 pt-3">
+            {preview}
+          </div>
+        ) : manifest ? (
+          <div className="mt-5 pt-3">{manifest}</div>
         ) : manifestHeader || (manifestRows && manifestRows.length > 0) ? (
-          <div className="mt-auto pt-4 border-t border-neutral-300/70 dark:border-neutral-800 space-y-2 font-mono text-[11px]">
+          <div className="mt-5 pt-3 border-t border-neutral-200/80 dark:border-neutral-800 space-y-2 font-mono text-[11px]">
             {manifestHeader && (
               <div className="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
                 <span className="uppercase tracking-wider text-[10px]">{manifestHeader.label}</span>
@@ -97,7 +114,7 @@ export default function FeatureCard({
                   "flex items-baseline justify-between",
                   idx === 0
                     ? "text-xs font-medium text-neutral-900 dark:text-neutral-100"
-                    : "text-[10px] pt-1 border-t border-neutral-300/40 dark:border-neutral-800/60 text-neutral-500 dark:text-neutral-400"
+                    : "text-[10px] pt-1 border-t border-neutral-200/50 dark:border-neutral-800/60 text-neutral-500 dark:text-neutral-400"
                 )}
               >
                 <span className="truncate">{row.label}</span>
