@@ -11,60 +11,60 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] flex flex-col justify-between transition-colors duration-200">
+    <div className="min-h-screen bg-background text-neutral-900 dark:text-neutral-100 flex flex-col justify-between transition-colors duration-200">
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-36 pb-20 w-full">
         {/* Navigation Breadcrumb */}
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-[#71717a] dark:text-[#a1a1aa] hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors mb-8 group"
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors mb-8 group"
         >
           <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
           <span>Back to home</span>
         </Link>
 
         {/* Header Block */}
-        <div className="border-b border-[#e2e0da] dark:border-[#24231f] pb-10 mb-12">
-          <h1 className="text-4xl sm:text-5xl font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+        <div className="border-b border-border pb-10 mb-12">
+          <h1 className="text-4xl sm:text-5xl font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Terms of Service
           </h1>
-          <p className="mt-3 text-[13px] text-[#71717a] dark:text-[#a1a1aa] font-mono">
+          <p className="mt-3 text-[13px] text-neutral-500 dark:text-neutral-400 font-mono">
             Updated 20 October 2026 · Effective immediately
           </p>
-          <p className="mt-6 text-base text-[#52525b] dark:text-[#a1a1aa] font-normal leading-relaxed">
+          <p className="mt-6 text-base text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
             These terms set out your rights and responsibilities when using Resumely. We believe in transparent contracts, non-expiring credit packs, and honest career representation.
           </p>
         </div>
 
         {/* Key Tenets Callout */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1a1918] border border-neutral-200/90 dark:border-neutral-800 flex flex-col gap-2">
+          <div className="p-4 rounded-2xl bg-card border border-border flex flex-col gap-2 shadow-xs">
             <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <h2 className="text-xs font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">No Auto-Renewals</h2>
-            <p className="text-[11px] text-[#71717a] dark:text-[#a1a1aa] leading-relaxed">
+            <h2 className="text-xs font-semibold text-neutral-900 dark:text-neutral-100">No Auto-Renewals</h2>
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
               Credits are purchased in one-time packs and never expire. You will never be billed for an ongoing monthly subscription.
             </p>
           </div>
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1a1918] border border-neutral-200/90 dark:border-neutral-800 flex flex-col gap-2">
+          <div className="p-4 rounded-2xl bg-card border border-border flex flex-col gap-2 shadow-xs">
             <Scale className="w-4 h-4 text-[#2563eb]" />
-            <h2 className="text-xs font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">Your Intellectual Property</h2>
-            <p className="text-[11px] text-[#71717a] dark:text-[#a1a1aa] leading-relaxed">
+            <h2 className="text-xs font-semibold text-neutral-900 dark:text-neutral-100">Your Intellectual Property</h2>
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
               You own all rights to your career ledger, accomplishment bullet points, and compiled resumes.
             </p>
           </div>
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1a1918] border border-neutral-200/90 dark:border-neutral-800 flex flex-col gap-2">
+          <div className="p-4 rounded-2xl bg-card border border-border flex flex-col gap-2 shadow-xs">
             <Award className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <h2 className="text-xs font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">Career Truth Pledge</h2>
-            <p className="text-[11px] text-[#71717a] dark:text-[#a1a1aa] leading-relaxed">
+            <h2 className="text-xs font-semibold text-neutral-900 dark:text-neutral-100">Career Truth Pledge</h2>
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
               We design our models to optimize your genuine contributions without fabricating fictitious metrics or fake credentials.
             </p>
           </div>
         </div>
 
         {/* Detailed Terms Prose */}
-        <div className="space-y-12 text-sm text-[#3f3f46] dark:text-[#d4d4d8] leading-relaxed">
+        <div className="space-y-12 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
           
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               1. Acceptance of Terms
             </h2>
             <p>
@@ -73,7 +73,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               2. User Accounts & Identity
             </h2>
             <p>
@@ -82,7 +82,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               3. Master Ledger Ownership & User Content
             </h2>
             <p>
@@ -91,33 +91,33 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               4. Credit Packs, Payments & Non-Expiration Policy
             </h2>
-            <ul className="list-disc pl-5 space-y-2 text-xs sm:text-sm text-[#52525b] dark:text-[#a1a1aa]">
+            <ul className="list-disc pl-5 space-y-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
               <li>
-                <strong className="text-[#1c1b18] dark:text-[#f3f2ee]">One-Time Purchases:</strong> Resumely does not charge recurring auto-renewing subscriptions. Credits are sold in discrete packs.
+                <strong className="text-neutral-900 dark:text-neutral-100">One-Time Purchases:</strong> Resumely does not charge recurring auto-renewing subscriptions. Credits are sold in discrete packs.
               </li>
               <li>
-                <strong className="text-[#1c1b18] dark:text-[#f3f2ee]">Permanent Balance:</strong> Purchased credits do not expire as long as your account remains in good standing.
+                <strong className="text-neutral-900 dark:text-neutral-100">Permanent Balance:</strong> Purchased credits do not expire as long as your account remains in good standing.
               </li>
               <li>
-                <strong className="text-[#1c1b18] dark:text-[#f3f2ee]">Free Features:</strong> Editing your Master Ledger, standard vector PDF compilation, and your Kanban job tracker remain permanently accessible at no charge.
+                <strong className="text-neutral-900 dark:text-neutral-100">Free Features:</strong> Editing your Master Ledger, standard vector PDF compilation, and your Kanban job tracker remain permanently accessible at no charge.
               </li>
               <li>
-                <strong className="text-[#1c1b18] dark:text-[#f3f2ee]">Refunds:</strong> If you experience technical defects preventing credit usage, please reach out to support within 14 days of purchase.
+                <strong className="text-neutral-900 dark:text-neutral-100">Refunds:</strong> If you experience technical defects preventing credit usage, please reach out to support within 14 days of purchase.
               </li>
             </ul>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               5. Ethical Use & Career Truthfulness
             </h2>
             <p>
               Resumely is engineered to empower job candidates with ATS-optimized typography and truthful accomplishment reframing. You agree not to use the Service to:
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-xs sm:text-sm text-[#52525b] dark:text-[#a1a1aa]">
+            <ul className="list-disc pl-5 space-y-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
               <li>Generate intentionally fraudulent degrees, licensed certifications, or counterfeit employment records.</li>
               <li>Reverse engineer, scrape, or systematically extract proprietary ATS rubric data or software logic.</li>
               <li>Upload malicious code, exploits, or automated bot traffic to our servers.</li>
@@ -125,7 +125,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               6. Limitation of Liability
             </h2>
             <p>
@@ -134,7 +134,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
               7. Contact & Notices
             </h2>
             <p>
@@ -143,7 +143,7 @@ export default function TermsPage() {
             <div className="pt-2">
               <a
                 href="mailto:sukhaji65@gmail.com"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#1a1918] border border-neutral-200/90 dark:border-neutral-800 text-xs font-mono text-[#1c1b18] dark:text-[#f3f2ee] hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs font-mono text-neutral-900 dark:text-neutral-100 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors"
               >
                 <Mail className="w-3.5 h-3.5 text-[#2563eb]" />
                 <span>sukhaji65@gmail.com</span>
