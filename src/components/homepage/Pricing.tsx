@@ -235,62 +235,33 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Clean Credit Transparency & Reassurance Strip */}
-        <div className="mt-14 pt-8 border-t border-neutral-200/80 dark:border-neutral-800">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            {/* Left: Transparent Credit Burn Rate */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-600 dark:text-neutral-400">
-              <span className="text-neutral-400 dark:text-neutral-500 font-mono text-[11px] uppercase tracking-wider">
-                Usage:
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="font-mono text-[10.5px] font-semibold text-neutral-900 dark:text-neutral-100 bg-neutral-200/60 dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-300/60 dark:border-neutral-700/60">
-                  1 credit
-                </span>
-                <span>AI tailoring</span>
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="font-mono text-[10.5px] font-semibold text-neutral-900 dark:text-neutral-100 bg-neutral-200/60 dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-300/60 dark:border-neutral-700/60">
-                  6 credits
-                </span>
-                <span>Cover letter</span>
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="font-mono text-[10.5px] font-semibold text-neutral-900 dark:text-neutral-100 bg-neutral-200/60 dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-300/60 dark:border-neutral-700/60">
-                  10 credits
-                </span>
-                <span>ATS audit</span>
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="font-mono text-[10.5px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                  0 credits
-                </span>
-                <span>Exports & tracker</span>
-              </span>
-            </div>
+        {/* Reassurance Footer Strip */}
+        <div className="mt-14 pt-8 border-t border-neutral-200/80 dark:border-neutral-800 flex flex-col md:flex-row items-center justify-between text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 gap-4">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-6">
+            <span className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+              <span>Zero auto-renewals</span>
+            </span>
+            <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
+            <span className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+              <span>Credits never expire</span>
+            </span>
+            <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
+            <span className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+              <span>Master Ledger & PDF exports are always free</span>
+            </span>
+          </div>
 
-            {/* Right: Reassurance Guarantees */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400 shrink-0">
-              <span className="flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                Credits never expire
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
-              <span className="flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                Zero auto-renewals
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
-              <a
-                href="mailto:sukhaji65@gmail.com"
-                className="underline underline-offset-3 hover:text-neutral-900 dark:hover:text-white transition-colors"
-              >
-                Team packs
-              </a>
-            </div>
+          <div className="shrink-0 text-center md:text-right">
+            <span>Need custom credits or team licenses? </span>
+            <a
+              href="mailto:sukhaji65@gmail.com"
+              className="font-medium text-neutral-800 dark:text-neutral-200 underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:decoration-neutral-900 dark:hover:decoration-white transition-colors"
+            >
+              Write to us →
+            </a>
           </div>
         </div>
       </div>
