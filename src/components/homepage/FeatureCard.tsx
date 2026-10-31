@@ -36,63 +36,80 @@ export default function FeatureCard({
     <div
       id={id}
       className={cn(
-        "p-6 sm:p-7 rounded-3xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-colors duration-150 select-none",
+        "group relative p-6 sm:p-7 rounded-3xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-all duration-200 select-none overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02),0_8px_20px_-6px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.25),0_8px_20px_-6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-[#c8c5bc] dark:hover:border-[#38352f]",
         className
       )}
     >
-      <div>
-        {eyebrow && (
-          <span className="font-mono text-[11px] font-medium text-[#8b897f] dark:text-[#9c9a8f] uppercase tracking-wider block mb-2">
-            {eyebrow}
-          </span>
-        )}
+      {/* Subtle top edge highlight */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neutral-300/70 dark:via-white/12 to-transparent"
+        aria-hidden="true"
+      />
 
-        <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-[#1c1b18] dark:text-[#f3f2ee]">
-          {title}
-        </h3>
-        <p className="mt-2 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-3">
-          {description}
-        </p>
+      {/* Blueprint drafting grid & paper noise texture */}
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_75%_55%_at_50%_0%,#000_45%,transparent_100%)]" />
+        <div className="absolute inset-0 noise opacity-18 pointer-events-none" />
       </div>
 
-      {/* Integrated Technical Manifest at Bottom */}
-      {manifest ? (
-        <div className="mt-auto pt-4">{manifest}</div>
-      ) : manifestHeader || (manifestRows && manifestRows.length > 0) ? (
-        <div className="mt-auto pt-4 border-t border-[#e2e0da] dark:border-[#282622] space-y-2 font-mono text-[11px]">
-          {manifestHeader && (
-            <div className="flex items-center justify-between text-[#8b897f] dark:text-[#9c9a8f]">
-              <span className="uppercase tracking-wider text-[10px]">{manifestHeader.label}</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-medium">{manifestHeader.value}</span>
-            </div>
+      <div className="relative z-10 flex flex-col justify-between h-full">
+        <div>
+          {eyebrow && (
+            <span className="font-mono text-[11px] font-medium text-[#8b897f] dark:text-[#9c9a8f] uppercase tracking-wider block mb-2">
+              {eyebrow}
+            </span>
           )}
-          {manifestRows?.map((row, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                "flex items-baseline justify-between",
-                idx === 0
-                  ? "text-xs font-medium text-[#1c1b18] dark:text-[#edebe6]"
-                  : "text-[10px] pt-1 border-t border-[#e2e0da]/50 dark:border-[#282622]/50 text-[#8b897f] dark:text-[#9c9a8f]"
-              )}
-            >
-              <span className="truncate">{row.label}</span>
-              <span
+
+          <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-[#1c1b18] dark:text-[#f3f2ee]">
+            {title}
+          </h3>
+          <p className="mt-2 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-3">
+            {description}
+          </p>
+        </div>
+
+        {/* Integrated Technical Manifest at Bottom */}
+        {manifest ? (
+          <div className="mt-auto pt-4">{manifest}</div>
+        ) : manifestHeader || (manifestRows && manifestRows.length > 0) ? (
+          <div className="mt-auto pt-4 border-t border-[#e2e0da] dark:border-[#282622] space-y-2 font-mono text-[11px]">
+            {manifestHeader && (
+              <div className="flex items-center justify-between text-[#8b897f] dark:text-[#9c9a8f]">
+                <span className="uppercase tracking-wider text-[10px]">{manifestHeader.label}</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-medium">{manifestHeader.value}</span>
+              </div>
+            )}
+            {manifestRows?.map((row, idx) => (
+              <div
+                key={idx}
                 className={cn(
-                  "tabular-nums shrink-0 ml-2",
+                  "flex items-baseline justify-between",
                   idx === 0
-                    ? "font-normal text-[11px] text-[#8b897f] dark:text-[#9c9a8f]"
-                    : "text-[#1c1b18] dark:text-[#edebe6] font-medium"
+                    ? "text-xs font-medium text-[#1c1b18] dark:text-[#edebe6]"
+                    : "text-[10px] pt-1 border-t border-[#e2e0da]/50 dark:border-[#282622]/50 text-[#8b897f] dark:text-[#9c9a8f]"
                 )}
               >
-                {row.value}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : null}
+                <span className="truncate">{row.label}</span>
+                <span
+                  className={cn(
+                    "tabular-nums shrink-0 ml-2",
+                    idx === 0
+                      ? "font-normal text-[11px] text-[#8b897f] dark:text-[#9c9a8f]"
+                      : "text-[#1c1b18] dark:text-[#edebe6] font-medium"
+                  )}
+                >
+                  {row.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
 
-      {children}
+        {children}
+      </div>
     </div>
   );
 }

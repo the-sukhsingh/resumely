@@ -82,128 +82,166 @@ export default function Pricing() {
           </p>
         </div>
 
-        {/* 3-Column Flat Pricing Cards with Chat/Speech-Bubble Contrast */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
-          {plans.map((p) => {
-            const isPopular = p.popular;
+        {/* 3-Column Flat Pricing Cards with Ambient Depth & Drafting Grid */}
+        <div className="relative">
+          {/* Subtle ambient lighting behind the featured card */}
+          <div
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[360px] bg-blue-500/10 dark:bg-blue-500/15 blur-[120px] rounded-full"
+            aria-hidden="true"
+          />
 
-            return (
-              <div
-                key={p.name}
-                className={cn(
-                  "rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-[border-color,background-color] duration-150",
-                  isPopular
-                    ? "bg-[#18181b] dark:bg-[#1c1b18] text-white border border-neutral-800/80 dark:border-neutral-700/80 rounded-br-[4px]"
-                    : "bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6] border border-neutral-200/90 dark:border-neutral-800"
-                )}
-              >
-                <div>
-                  {/* Card Header & Badge */}
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <h3
-                      className={cn(
-                        "text-base sm:text-lg font-semibold tracking-tight",
-                        isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
-                      )}
-                    >
-                      {p.name}
-                    </h3>
-                    {isPopular && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-white/15 text-white text-[10px] font-mono font-medium border border-white/20">
-                        Most Popular
-                      </span>
-                    )}
-                  </div>
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
+            {plans.map((p) => {
+              const isPopular = p.popular;
 
-                  <p
-                    className={cn(
-                      "text-xs leading-relaxed min-h-[36px]",
-                      isPopular ? "text-neutral-300" : "text-[#71717a] dark:text-[#a1a1aa]"
-                    )}
-                  >
-                    {p.description}
-                  </p>
-
-                  {/* Price Block */}
+              return (
+                <div
+                  key={p.name}
+                  className={cn(
+                    "relative overflow-hidden rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-all duration-200",
+                    isPopular
+                      ? "bg-gradient-to-b from-[#18181b] via-[#141416] to-[#0f0f10] dark:from-[#1f1e1b] dark:via-[#191815] dark:to-[#121110] text-white border border-blue-500/35 dark:border-blue-400/30 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]"
+                      : "bg-gradient-to-b from-[#ffffff] via-[#faf9f6] to-[#f4f2ee] dark:from-[#1b1a17] dark:via-[#171614] dark:to-[#121110] text-[#1c1b18] dark:text-[#edebe6] border border-[#e2e0da] dark:border-[#282622] shadow-[0_2px_8px_rgba(0,0,0,0.03),0_12px_24px_-8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_12px_24px_-8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]"
+                  )}
+                >
+                  {/* Subtle top edge highlight */}
                   <div
                     className={cn(
-                      "mt-5 mb-6 pb-5 border-b flex items-baseline gap-1.5",
-                      isPopular
-                        ? "border-neutral-800"
-                        : "border-neutral-200/80 dark:border-neutral-800"
+                      "pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent",
+                      isPopular ? "via-blue-400/60" : "via-neutral-300/80 dark:via-white/15"
                     )}
+                    aria-hidden="true"
+                  />
+
+                  {/* Architectural blueprint grid & paper noise texture */}
+                  <div
+                    className="pointer-events-none absolute inset-0 overflow-hidden"
+                    aria-hidden="true"
                   >
-                    <span
+                    <div
                       className={cn(
-                        "text-3xl sm:text-4xl font-semibold tracking-tight",
-                        isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
+                        "absolute inset-0 bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_50%,transparent_100%)]",
+                        isPopular
+                          ? "bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)]"
+                          : "bg-[linear-gradient(to_right,rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.035)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)]"
                       )}
-                    >
-                      {p.price}
-                    </span>
-                    <span
-                      className={cn(
-                        "text-xs font-mono",
-                        isPopular ? "text-neutral-400" : "text-[#71717a] dark:text-[#a1a1aa]"
-                      )}
-                    >
-                      / {p.cadence}
-                    </span>
+                    />
+                    {isPopular && (
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.18),transparent_70%)]" />
+                    )}
+                    <div className="absolute inset-0 noise opacity-20 pointer-events-none" />
                   </div>
 
-                  {/* Features List */}
-                  <ul className="space-y-3 text-xs">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5">
-                        <Check
+                  <div className="relative z-10 flex flex-col justify-between h-full">
+                    <div>
+                      {/* Card Header & Badge */}
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <h3
                           className={cn(
-                            "w-3.5 h-3.5 mt-0.5 shrink-0 stroke-[2.2]",
-                            isPopular ? "text-blue-400" : "text-emerald-600 dark:text-emerald-400"
-                          )}
-                        />
-                        <span
-                          className={cn(
-                            "leading-relaxed",
-                            isPopular ? "text-neutral-200" : "text-[#52525b] dark:text-[#d4d4d8]"
+                            "text-base sm:text-lg font-semibold tracking-tight",
+                            isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
                           )}
                         >
-                          {f}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                          {p.name}
+                        </h3>
+                        {isPopular && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-mono font-medium border border-blue-400/30 shadow-xs">
+                            Most Popular
+                          </span>
+                        )}
+                      </div>
 
-                {/* Bottom CTA Button using ColoredButton */}
-                <div className="pt-8">
-                  {isAuthenticated ? (
-                    <ColoredButton
-                      asChild
-                      color={isPopular ? "blue" : "neutral"}
-                      size="lg"
-                      className="w-full h-11 rounded-full text-xs font-medium cursor-pointer inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                    >
-                      <Link href="/resume">
-                        <span>{p.cta}</span>
-                        <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
-                      </Link>
-                    </ColoredButton>
-                  ) : (
-                    <ColoredButton
-                      type="button"
-                      color={isPopular ? "blue" : "neutral"}
-                      size="lg"
-                      onClick={() => signIn("google")}
-                      className="w-full h-11 rounded-full text-xs font-medium cursor-pointer inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                    >
-                      <span>{p.cta}</span>
-                      <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
-                    </ColoredButton>
-                  )}
+                      <p
+                        className={cn(
+                          "text-xs leading-relaxed min-h-[36px]",
+                          isPopular ? "text-neutral-300" : "text-[#71717a] dark:text-[#a1a1aa]"
+                        )}
+                      >
+                        {p.description}
+                      </p>
+
+                      {/* Price Block */}
+                      <div
+                        className={cn(
+                          "mt-5 mb-6 pb-5 border-b flex items-baseline gap-1.5",
+                          isPopular
+                            ? "border-neutral-800"
+                            : "border-neutral-200/80 dark:border-neutral-800"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "text-3xl sm:text-4xl font-semibold tracking-tight",
+                            isPopular ? "text-white" : "text-[#1c1b18] dark:text-[#f3f2ee]"
+                          )}
+                        >
+                          {p.price}
+                        </span>
+                        <span
+                          className={cn(
+                            "text-xs font-mono",
+                            isPopular ? "text-neutral-400" : "text-[#71717a] dark:text-[#a1a1aa]"
+                          )}
+                        >
+                          / {p.cadence}
+                        </span>
+                      </div>
+
+                      {/* Features List */}
+                      <ul className="space-y-3 text-xs">
+                        {p.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2.5">
+                            <Check
+                              className={cn(
+                                "w-3.5 h-3.5 mt-0.5 shrink-0 stroke-[2.2]",
+                                isPopular ? "text-blue-400" : "text-emerald-600 dark:text-emerald-400"
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                "leading-relaxed",
+                                isPopular ? "text-neutral-200" : "text-[#52525b] dark:text-[#d4d4d8]"
+                              )}
+                            >
+                              {f}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Bottom CTA Button using ColoredButton */}
+                    <div className="pt-8">
+                      {isAuthenticated ? (
+                        <ColoredButton
+                          asChild
+                          color={isPopular ? "blue" : "neutral"}
+                          size="lg"
+                          className="w-full h-11 rounded-full text-xs font-medium cursor-pointer inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                        >
+                          <Link href="/resume">
+                            <span>{p.cta}</span>
+                            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                          </Link>
+                        </ColoredButton>
+                      ) : (
+                        <ColoredButton
+                          type="button"
+                          color={isPopular ? "blue" : "neutral"}
+                          size="lg"
+                          onClick={() => signIn("google")}
+                          className="w-full h-11 rounded-full text-xs font-medium cursor-pointer inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                        >
+                          <span>{p.cta}</span>
+                          <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                        </ColoredButton>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {/* Reassurance Footer Strip */}
