@@ -235,38 +235,61 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Transparent Credit Consumption Breakdown */}
-        <div className="mt-12 sm:mt-14 p-5 sm:p-6 rounded-2xl bg-neutral-100/60 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-neutral-800">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-            <div>
-              <h4 className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-                Transparent Credit Consumption
-              </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                Spend credits only when triggering AI calibrations. Basic editing, formatting, and exports remain permanently free.
-              </p>
+        {/* Clean Credit Transparency & Reassurance Strip */}
+        <div className="mt-14 pt-8 border-t border-neutral-200/80 dark:border-neutral-800">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            {/* Left: Transparent Credit Burn Rate */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-600 dark:text-neutral-400">
+              <span className="text-neutral-400 dark:text-neutral-500 font-mono text-[11px] uppercase tracking-wider">
+                Usage:
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="font-mono text-[10.5px] font-semibold text-neutral-900 dark:text-neutral-100 bg-neutral-200/60 dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-300/60 dark:border-neutral-700/60">
+                  1 credit
+                </span>
+                <span>AI tailoring</span>
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="font-mono text-[10.5px] font-semibold text-neutral-900 dark:text-neutral-100 bg-neutral-200/60 dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-300/60 dark:border-neutral-700/60">
+                  6 credits
+                </span>
+                <span>Cover letter</span>
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="font-mono text-[10.5px] font-semibold text-neutral-900 dark:text-neutral-100 bg-neutral-200/60 dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-300/60 dark:border-neutral-700/60">
+                  10 credits
+                </span>
+                <span>ATS audit</span>
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="font-mono text-[10.5px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                  0 credits
+                </span>
+                <span>Exports & tracker</span>
+              </span>
             </div>
-            <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-              ✓ Non-Expiring Balance
-            </span>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
-              <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">1 Credit</span>
-              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">AI Resume Tailoring</span>
-            </div>
-            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
-              <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">6 Credits</span>
-              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">Matched Cover Letter</span>
-            </div>
-            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
-              <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">10 Credits</span>
-              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">ATS Rubric & Keyword Audit</span>
-            </div>
-            <div className="p-3 rounded-xl bg-white/70 dark:bg-neutral-800/70 border border-neutral-200/50 dark:border-neutral-700/50">
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block font-semibold">0 Credits (Free)</span>
-              <span className="text-neutral-800 dark:text-neutral-200 font-medium mt-1 block">PDF/LaTeX Exports & Tracker</span>
+            {/* Right: Reassurance Guarantees */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400 shrink-0">
+              <span className="flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                Credits never expire
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
+              <span className="flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                Zero auto-renewals
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700 select-none">•</span>
+              <a
+                href="mailto:sukhaji65@gmail.com"
+                className="underline underline-offset-3 hover:text-neutral-900 dark:hover:text-white transition-colors"
+              >
+                Team packs
+              </a>
             </div>
           </div>
         </div>
