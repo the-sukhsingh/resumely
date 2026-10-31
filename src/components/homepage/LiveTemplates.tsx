@@ -58,18 +58,18 @@ export default function LiveTemplates() {
   return (
     <section
       id="templates"
-      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-8 transition-colors duration-200 select-none"
+      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-8 transition-colors duration-200 select-none"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
         <div className="max-w-[620px]  mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Precision typesetting,
             <br />
             calibrated for every reader.
           </h2>
-          <p className="mt-4 text-sm sm:text-[15px] text-[#8b897f] dark:text-[#9c9a8f] font-normal leading-relaxed">
+          <p className="mt-4 text-sm sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
             Every template compiles to crisp vector PDFs with 0 invisible table traps or broken glyphs.
           </p>
 
@@ -96,24 +96,24 @@ export default function LiveTemplates() {
         {/* Live Specimen Drafting Sheet */}
         <div className="max-w-[760px] mx-auto">
           {/* Subtle Outer Drafting Mat */}
-          <div className="rounded-3xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] p-4 sm:p-7 shadow-xs">
+          <div className="rounded-3xl bg-gradient-to-b from-[#f4f4f4] via-[#ededed] to-[#e4e4e4] dark:from-[#18181b] dark:via-[#141416] dark:to-[#0f0f10] border border-neutral-300/80 dark:border-neutral-800 p-4 sm:p-7 shadow-xs">
             
             {/* Minimal Specimen Header Bar */}
-            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-[#e2e0da] dark:border-[#282622] text-xs">
+            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-neutral-300/70 dark:border-neutral-800 text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-mono text-[11px] text-[#8b897f] dark:text-[#9c9a8f]">
+                <span className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400">
                   {current.format}
                 </span>
-                <span className="text-[#8b897f] hidden sm:inline">•</span>
-                <span className="font-mono text-[11px] text-[#8b897f] dark:text-[#9c9a8f] hidden sm:inline">
+                <span className="text-neutral-400 hidden sm:inline">•</span>
+                <span className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400 hidden sm:inline">
                   {paperSize === "letter" ? "8.5 × 11 in" : "210 × 297 mm"}
                 </span>
               </div>
 
               <Link
                 href="/resume"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1c1b18] dark:text-[#edebe6] hover:opacity-80 transition-opacity"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-900 dark:text-neutral-100 hover:opacity-80 transition-opacity"
               >
                 <span>Use this layout</span>
                 <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
@@ -130,7 +130,7 @@ export default function LiveTemplates() {
                   exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.16, ease: "easeOut" }}
                   className={cn(
-                    "w-full bg-[#ffffff] dark:bg-[#1e1d1a] text-[#1c1b18] dark:text-[#edebe6] rounded-xl shadow-lg border border-[#e2e0da] dark:border-[#282622] transition-all",
+                    "w-full bg-white dark:bg-[#18181b] text-neutral-900 dark:text-neutral-100 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-800 transition-all",
                     paperSize === "letter" ? "p-6 sm:p-8" : "p-6 sm:p-8"
                   )}
                 >

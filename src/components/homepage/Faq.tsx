@@ -70,29 +70,29 @@ export default function Faq() {
   return (
     <section
       id="faq"
-      className="relative w-full bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-20 sm:py-28 border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200"
+      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-20 sm:py-28 border-b border-border transition-colors duration-200"
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           {/* Left Column: Heading, Metadata, Legal Context, and ColoredButton CTA */}
           <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-4">
-            <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+            <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
               Questions,
               <br />
               answered
             </h2>
 
-            <p className="mt-3.5 text-[13px] text-[#71717a] dark:text-[#a1a1aa] font-normal">
+            <p className="mt-3.5 text-[13px] text-neutral-500 dark:text-neutral-400 font-normal">
               Updated 20 October 2026
             </p>
 
             <div className="mt-10 sm:mt-12 space-y-5 max-w-sm">
-              <p className="text-[15px] sm:text-base text-[#52525b] dark:text-[#a1a1aa] font-normal leading-relaxed">
+              <p className="text-[15px] sm:text-base text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
                 Something we haven&apos;t covered? We read every message.
               </p>
 
-              <p className="text-[13px] sm:text-[13.5px] text-[#71717a] dark:text-[#8b897f] leading-relaxed">
+              <p className="text-[13px] sm:text-[13.5px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
                 How we handle and retain your data is set out in our{" "}
                 <Link
                   href="/privacy"
@@ -150,8 +150,8 @@ export default function Faq() {
                       className={cn(
                         "w-fit inline-flex items-center text-left px-5 py-3 rounded-full text-[14px] font-medium transition-[color,background-color,border-color,transform] duration-150 cursor-pointer active:scale-[0.98]",
                         isActive
-                          ? "border border-neutral-900 dark:border-neutral-200 bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6]"
-                          : "bg-white dark:bg-[#1c1b18] text-[#1c1b18] dark:text-[#edebe6] border border-neutral-200/90 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600"
+                          ? "border border-neutral-900 dark:border-neutral-200 bg-card text-neutral-900 dark:text-neutral-100"
+                          : "bg-card text-neutral-900 dark:text-neutral-100 border border-border hover:border-neutral-400 dark:hover:border-neutral-600"
                       )}
                     >
                       {faq.question}

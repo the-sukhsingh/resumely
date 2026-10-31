@@ -15,20 +15,20 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative w-full bg-[#faf9f6] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] pt-20 sm:pt-28 pb-12 transition-colors duration-200 border-t border-[#e2e0da] dark:border-[#24231f]">
+    <footer className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 pt-20 sm:pt-28 pb-12 transition-colors duration-200 border-t border-border">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Seamless Closing Callout (Borderless, Open, Editorial) */}
-        <div className="pb-16 sm:pb-20 border-b border-[#e2e0da] dark:border-[#24231f]">
+        <div className="pb-16 sm:pb-20 border-b border-border">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div className="max-w-xl">
-              <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal tracking-[-0.025em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+              <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
                 Ready to land your next
                 <br />
                 high-impact role?
               </h2>
 
-              <p className="mt-4 text-sm sm:text-base text-[#71717a] dark:text-[#a1a1aa] font-normal leading-relaxed max-w-lg">
+              <p className="mt-4 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-lg">
                 Start with our free Master Ledger. Calibrate role-tailored resumes in seconds with clean vector ATS compliance.
               </p>
             </div>
@@ -61,7 +61,7 @@ export default function Footer() {
 
               <Link
                 href="#templates"
-                className="h-11 px-5 rounded-full inline-flex items-center text-xs sm:text-sm font-medium text-[#71717a] dark:text-[#a1a1aa] hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors"
+                className="h-11 px-5 rounded-full inline-flex items-center text-xs sm:text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
               >
                 Browse templates
               </Link>
@@ -75,19 +75,19 @@ export default function Footer() {
           <div className="col-span-2 space-y-4 pr-0 lg:pr-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xl font-mono font-medium tracking-tight text-[#1c1b18] dark:text-[#f3f2ee]"
+              className="inline-flex items-center gap-2 text-xl font-mono font-medium tracking-tight text-neutral-900 dark:text-neutral-100"
             >
               <span>re.</span>
-              <span className="text-xs text-[#8b897f] font-sans font-normal border-l border-[#e2e0da] dark:border-[#282622] pl-2">
+              <span className="text-xs text-neutral-500 font-sans font-normal border-l border-border pl-2">
                 resumely
               </span>
             </Link>
 
-            <p className="text-xs sm:text-[13px] text-[#71717a] dark:text-[#8b897f] max-w-sm leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-400 max-w-sm leading-relaxed">
               The ATS-first career engineering ledger. Calibrate verified accomplishments to real employer rubrics and manage applications from submission to offer.
             </p>
 
-            <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-[#71717a] dark:text-[#8b897f]">
+            <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-neutral-500 dark:text-neutral-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span>All systems operational · 2026 rubric ready</span>
             </div>
@@ -95,32 +95,32 @@ export default function Footer() {
 
           {/* Product Links */}
           <div>
-            <div className="font-mono text-xs uppercase tracking-wider text-[#8b897f] dark:text-[#71717a] mb-4">
+            <div className="font-mono text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
               Product
             </div>
-            <ul className="space-y-2.5 text-xs text-[#71717a] dark:text-[#a1a1aa]">
+            <ul className="space-y-2.5 text-xs text-neutral-600 dark:text-neutral-400">
               <li>
-                <Link href="#features" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#features" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Master Ledger
                 </Link>
               </li>
               <li>
-                <Link href="#templates" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#templates" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Vector Templates
                 </Link>
               </li>
               <li>
-                <Link href="#workflow" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#workflow" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   AI Calibration
                 </Link>
               </li>
               <li>
-                <Link href="/tracker" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="/tracker" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Job Tracker
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#pricing" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Pricing Packs
                 </Link>
               </li>
@@ -129,32 +129,32 @@ export default function Footer() {
 
           {/* Formats & Standards */}
           <div>
-            <div className="font-mono text-xs uppercase tracking-wider text-[#8b897f] dark:text-[#71717a] mb-4">
+            <div className="font-mono text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
               Standards
             </div>
-            <ul className="space-y-2.5 text-xs text-[#71717a] dark:text-[#a1a1aa]">
+            <ul className="space-y-2.5 text-xs text-neutral-600 dark:text-neutral-400">
               <li>
-                <Link href="#templates" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#templates" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Single-Column PDF
                 </Link>
               </li>
               <li>
-                <Link href="#templates" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#templates" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   LaTeX Source
                 </Link>
               </li>
               <li>
-                <Link href="#templates" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#templates" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Plaintext Markdown
                 </Link>
               </li>
               <li>
-                <Link href="#faq" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#faq" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   ATS Rubric Audit
                 </Link>
               </li>
               <li>
-                <Link href="#faq" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="#faq" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Career Truth Guard
                 </Link>
               </li>
@@ -163,27 +163,27 @@ export default function Footer() {
 
           {/* Legal & Company */}
           <div>
-            <div className="font-mono text-xs uppercase tracking-wider text-[#8b897f] dark:text-[#71717a] mb-4">
+            <div className="font-mono text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
               Company
             </div>
-            <ul className="space-y-2.5 text-xs text-[#71717a] dark:text-[#a1a1aa]">
+            <ul className="space-y-2.5 text-xs text-neutral-600 dark:text-neutral-400">
               <li>
-                <Link href="/privacy" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="/privacy" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="/terms" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/security" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <Link href="/security" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Security
                 </Link>
               </li>
               <li>
-                <a href="mailto:sukhaji65@gmail.com" className="hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors">
+                <a href="mailto:sukhaji65@gmail.com" className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
                   Contact Support
                 </a>
               </li>
@@ -192,7 +192,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright & Back to Top */}
-        <div className="pt-8 border-t border-[#e2e0da] dark:border-[#24231f] flex flex-col sm:flex-row items-center justify-between text-xs text-[#71717a] dark:text-[#8b897f] gap-4">
+        <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 gap-4">
           <div>
             © {new Date().getFullYear()} Resumely. Built for career truthfulness and verified ATS compliance.
           </div>
@@ -201,7 +201,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-1 hover:text-[#1c1b18] dark:hover:text-[#f3f2ee] transition-colors cursor-pointer group"
+              className="inline-flex items-center gap-1 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer group"
             >
               <span>Back to top</span>
               <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5" />
