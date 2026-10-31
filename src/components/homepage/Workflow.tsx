@@ -1,15 +1,6 @@
 "use client";
 
 import React from "react";
-import {
-  UploadCloud,
-  Sliders,
-  Send,
-  Check,
-  ArrowRight,
-  FileText,
-  Search,
-} from "lucide-react";
 
 export default function Workflow() {
   const steps = [
@@ -19,15 +10,18 @@ export default function Workflow() {
       description:
         "Import your existing resume or LinkedIn profile. Resumely extracts your roles, dates, and metrics into a verified master ledger.",
       artifact: (
-        <div className="w-full p-3 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="font-semibold text-[#1c1b18] dark:text-[#edebe6]">resume-draft.pdf</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-mono text-[9px]">
-              Extracted
-            </span>
+        <div className="pt-4 border-t border-[#e2e0da] dark:border-[#282622] space-y-2 font-mono text-[11px]">
+          <div className="flex items-center justify-between text-[#8b897f] dark:text-[#9c9a8f]">
+            <span className="uppercase tracking-wider text-[10px]">Source Ingest</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-medium">Extracted</span>
           </div>
-          <div className="text-[10px] text-[#8b897f] dark:text-[#9c9a8f] font-mono">
-            34 impact metrics parsed into Master Ledger
+          <div className="flex items-baseline justify-between text-xs font-medium text-[#1c1b18] dark:text-[#edebe6]">
+            <span className="truncate">resume-draft.pdf</span>
+            <span className="text-[11px] text-[#8b897f] dark:text-[#9c9a8f] font-normal tabular-nums shrink-0 ml-2">PDF / LinkedIn</span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] pt-1 border-t border-[#e2e0da]/50 dark:border-[#282622]/50 text-[#8b897f] dark:text-[#9c9a8f]">
+            <span>Master Ledger</span>
+            <span className="text-[#1c1b18] dark:text-[#edebe6] font-medium tabular-nums">34 impact metrics parsed</span>
           </div>
         </div>
       ),
@@ -38,15 +32,18 @@ export default function Workflow() {
       description:
         "Paste the job URL or description. The semantic engine extracts core requirements and re-ranks your achievements to match.",
       artifact: (
-        <div className="w-full p-3 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="font-semibold text-[#1c1b18] dark:text-[#edebe6]">Target: Staff Backend</span>
-            <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-              94% Match
-            </span>
+        <div className="pt-4 border-t border-[#e2e0da] dark:border-[#282622] space-y-2 font-mono text-[11px]">
+          <div className="flex items-center justify-between text-[#8b897f] dark:text-[#9c9a8f]">
+            <span className="uppercase tracking-wider text-[10px]">Rubric Match</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-medium tabular-nums">94% Semantic Fit</span>
           </div>
-          <div className="text-[10px] text-[#8b897f] dark:text-[#9c9a8f] font-mono">
-            Re-ranked: Distributed Raft & Latency Tuning
+          <div className="flex items-baseline justify-between text-xs font-medium text-[#1c1b18] dark:text-[#edebe6]">
+            <span className="truncate">Target: Staff Backend</span>
+            <span className="text-[10px] text-[#8b897f] dark:text-[#9c9a8f] font-normal shrink-0 ml-2">URL / Text</span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] pt-1 border-t border-[#e2e0da]/50 dark:border-[#282622]/50 text-[#8b897f] dark:text-[#9c9a8f]">
+            <span>Re-ranked</span>
+            <span className="text-[#1c1b18] dark:text-[#edebe6] font-medium">Distributed Raft & Latency</span>
           </div>
         </div>
       ),
@@ -57,15 +54,18 @@ export default function Workflow() {
       description:
         "Compile an ATS-proof vector PDF in seconds. The submission is automatically saved to your visual tracker linked to that snapshot.",
       artifact: (
-        <div className="w-full p-3 rounded-xl bg-[#ffffff] dark:bg-[#23221f] border border-[#e2e0da] dark:border-[#2d2b26] shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="font-semibold text-[#1c1b18] dark:text-[#edebe6]">Linear · Product Eng</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-mono text-[9px]">
-              Applied
-            </span>
+        <div className="pt-4 border-t border-[#e2e0da] dark:border-[#282622] space-y-2 font-mono text-[11px]">
+          <div className="flex items-center justify-between text-[#8b897f] dark:text-[#9c9a8f]">
+            <span className="uppercase tracking-wider text-[10px]">Vector Compile</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-medium">ATS Verified · 100%</span>
           </div>
-          <div className="text-[10px] text-[#8b897f] dark:text-[#9c9a8f] font-mono">
-            Linked snapshot: resume-v3.2.pdf
+          <div className="flex items-baseline justify-between text-xs font-medium text-[#1c1b18] dark:text-[#edebe6]">
+            <span className="truncate">linear-product-eng.pdf</span>
+            <span className="text-[11px] text-[#8b897f] dark:text-[#9c9a8f] font-normal tabular-nums shrink-0 ml-2">42 KB · Vector</span>
+          </div>
+          <div className="flex items-center justify-between text-[10px] pt-1 border-t border-[#e2e0da]/50 dark:border-[#282622]/50 text-[#8b897f] dark:text-[#9c9a8f]">
+            <span>Visual Tracker</span>
+            <span className="text-[#1c1b18] dark:text-[#edebe6] font-medium">Linear · Stage: Applied</span>
           </div>
         </div>
       ),
@@ -75,12 +75,12 @@ export default function Workflow() {
   return (
     <section
       id="workflow"
-      className="relative w-full bg-[#f5f3ef] dark:bg-[#121110] text-[#1c1b18] dark:text-[#edebe6] py-16 sm:py-24 border-b border-[#e2e0da] dark:border-[#24231f] transition-colors duration-200 select-none"
+      className="relative w-full text-[#1c1b18] dark:text-[#edebe6] py-8 transition-colors duration-200 select-none"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[620px] mx-auto text-center mb-12 sm:mb-16">
+        <div className="max-w-[620px] mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-[#1c1b18] dark:text-[#f3f2ee] leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             From career history to
             <br />
@@ -96,20 +96,14 @@ export default function Workflow() {
           {steps.map((s) => (
             <div
               key={s.step}
-              className="p-6 sm:p-7 rounded-2xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da]/60 dark:border-[#282622] flex flex-col justify-between h-[300px] sm:h-[320px] transition-colors duration-150"
+              className="p-6 sm:p-7 rounded-3xl bg-[#edebe6] dark:bg-[#1b1a17] border border-[#e2e0da] dark:border-[#282622] flex flex-col justify-between min-h-[300px] sm:min-h-[320px] transition-colors duration-150"
             >
               <div>
-                {/* Step Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#e2e0da]/60 dark:border-[#282622]">
-                  <span className="font-mono text-xs font-semibold text-[#8b897f] dark:text-[#9c9a8f]">
-                    STEP {s.step}
-                  </span>
-                  <span className="text-[11px] font-mono text-[#8b897f] dark:text-[#9c9a8f]">
-                    Workflow
-                  </span>
-                </div>
+                <span className="font-mono text-[11px] font-medium text-[#8b897f] dark:text-[#9c9a8f] uppercase tracking-wider block mb-2">
+                  Step {s.step}
+                </span>
 
-                <h3 className="text-base sm:text-lg font-semibold text-[#1c1b18] dark:text-[#f3f2ee]">
+                <h3 className="text-base sm:text-lg font-semibold tracking-[-0.01em] text-[#1c1b18] dark:text-[#f3f2ee]">
                   {s.title}
                 </h3>
                 <p className="mt-2 text-xs text-[#8b897f] dark:text-[#9c9a8f] leading-relaxed line-clamp-3">
@@ -117,7 +111,7 @@ export default function Workflow() {
                 </p>
               </div>
 
-              {/* Schematic Miniature Artifact at Bottom */}
+              {/* Technical manifest at bottom */}
               <div className="mt-auto pt-4">
                 {s.artifact}
               </div>
