@@ -107,10 +107,11 @@ export default function Pricing() {
                 >
 
                   {/* Architectural blueprint grid with blinking cells */}
-                  <BlinkingGrid
+                  <BlinkingGrid 
                     cellSize={14}
                     seed={idx}
                     variant={isPopular ? "blue" : "neutral"}
+                    className={cn(isPopular && "opacity-40")}
                   />
                   {isPopular && (
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.18),transparent_70%)]" />
