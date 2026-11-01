@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import GlassIcon from "./GlassIcon";
-import { WorkflowSchematic } from "./WorkflowIllustrations";
-import { FileText, Target, ShieldCheck } from "lucide-react";
+import { SmoothWorkflowIllustration } from "./WorkflowIllustrations";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -13,8 +11,6 @@ const STEPS = [
     title: "Ingest your career record",
     description:
       "Import your existing resume or LinkedIn profile. Resumely extracts your roles, dates, and metrics into an atomic, verified master ledger.",
-    icon: <FileText className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />,
-    variant: "default" as const,
   },
   {
     step: "02",
@@ -22,8 +18,6 @@ const STEPS = [
     title: "Calibrate to the job posting",
     description:
       "Paste the job URL or description. The semantic engine extracts core requirements and re-ranks your achievements via the Google XYZ formula.",
-    icon: <Target className="w-4 h-4 text-[#c15f3c] dark:text-[#D97757]" />,
-    variant: "coral" as const,
   },
   {
     step: "03",
@@ -31,8 +25,6 @@ const STEPS = [
     title: "Download vector PDF & track",
     description:
       "Compile an ATS-proof vector PDF in seconds. The submission is automatically saved to your visual tracker linked to that snapshot.",
-    icon: <ShieldCheck className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />,
-    variant: "default" as const,
   },
 ];
 
@@ -43,8 +35,8 @@ export default function Workflow() {
       className="relative w-full text-neutral-900 dark:text-neutral-100 py-16 sm:py-20 md:py-24 transition-colors duration-200 select-none"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="mb-10 sm:mb-12">
+        {/* Minimal Section Header */}
+        <div className="mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 text-[10.5px] font-mono text-neutral-600 dark:text-neutral-400 mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c15f3c] dark:bg-[#D97757]" />
             <span className="uppercase tracking-wider">Deterministic Pipeline Architecture</span>
@@ -60,20 +52,20 @@ export default function Workflow() {
           </p>
         </div>
 
-        {/* The Editorial Illustration Figure (§3 Framed Figure Chrome) */}
+        {/* The Cohesive, Smooth Editorial Workflow Illustration */}
         <figure
           className={cn(
-            "relative w-full rounded-2xl overflow-hidden select-none p-3 sm:p-5 md:p-6",
-            "border border-neutral-200 dark:border-neutral-800",
-            "bg-white/80 dark:bg-[#080807]/90 backdrop-blur-md",
-            "shadow-[0_1px_3px_rgba(0,0,0,0.02)] dark:shadow-none"
+            "relative w-full rounded-[28px] overflow-hidden select-none",
+            "border border-black/[0.06] dark:border-white/[0.08]",
+            "bg-neutral-50/50 dark:bg-[#141413]/50 backdrop-blur-md",
+            "shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
           )}
         >
-          {/* Main SVG Architecture Schematic */}
-          <WorkflowSchematic />
+          {/* Main Visual: Smooth Connected Pipeline */}
+          <SmoothWorkflowIllustration />
 
           {/* Authentic Editorial Figcaption */}
-          <figcaption className="mt-4 pt-3 border-t border-neutral-200 dark:border-neutral-800 font-mono text-[9px] sm:text-[9.5px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
+          <figcaption className="px-6 sm:px-8 py-3.5 border-t border-black/[0.05] dark:border-white/[0.06] font-mono text-[9px] sm:text-[9.5px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
             <span>
               Figure 1.0 — Deterministic pipeline: unstructured ingestion reconciled into atomic career ledger, calibrated against job description rubric, and compiled into ATS-verified vector artifact.
             </span>
@@ -83,31 +75,19 @@ export default function Workflow() {
           </figcaption>
         </figure>
 
-        {/* Clean 3-Step Narrative Strip with Glass Icons (No cards, pure typography) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 sm:pt-12">
+        {/* Clean, Refined 3-Step Narrative Row (Cardless, pure typographic rhythm) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 sm:pt-14">
           {STEPS.map((s) => (
-            <div key={s.step} className="flex items-start gap-4 group">
-              <GlassIcon variant={s.variant} size="lg" glow={s.variant === "coral"}>
-                {s.icon}
-              </GlassIcon>
-              <div className="flex-1 min-w-0">
-                <div
-                  className={cn(
-                    "font-mono text-[11px] uppercase tracking-wider mb-1",
-                    s.variant === "coral"
-                      ? "text-[#c15f3c] dark:text-[#D97757] font-semibold"
-                      : "text-neutral-400 dark:text-neutral-500"
-                  )}
-                >
-                  {s.step} / {s.phase}
-                </div>
-                <h3 className="text-[15px] sm:text-[16px] font-medium text-neutral-900 dark:text-neutral-100 tracking-tight">
-                  {s.title}
-                </h3>
-                <p className="mt-1.5 text-[13px] text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
-                  {s.description}
-                </p>
+            <div key={s.step} className="space-y-2">
+              <div className="font-mono text-[11px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                {s.step} / {s.phase}
               </div>
+              <h3 className="text-[16px] font-medium text-neutral-900 dark:text-neutral-100 tracking-tight">
+                {s.title}
+              </h3>
+              <p className="text-[13.5px] text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
+                {s.description}
+              </p>
             </div>
           ))}
         </div>
