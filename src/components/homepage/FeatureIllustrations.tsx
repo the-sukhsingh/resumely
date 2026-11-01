@@ -1,1183 +1,356 @@
 "use client";
 
 import React from "react";
+import {
+  GitBranch,
+  Sparkles,
+  Lock,
+  Search,
+  Check,
+} from "lucide-react";
 
 /**
- * Editorial Data-Illustrations in the monotykamary / Linear aesthetic:
- * - Near-black grayscale base with exactly ONE Claude-coral accent:
- *     Light mode: #c15f3c (AA compliant on light ground)
- *     Dark mode:  #D97757
- * - 1px hairlines, non-scaling stroke
- * - Monospace micro-typography (7px-10px, uppercase labels)
- * - True geometric primitives (node DAGs, ranked bars, spectrum partitions, coupled orbits)
- * - Zero emojis, zero chartjunk, zero slop
+ * Resumely Smooth Editorial Illustrations:
+ * - Anti-bold, refined, silky-smooth typography (font-normal to font-medium)
+ * - Soft rounded white tiles and pill capsules (bg-white dark:bg-[#222220])
+ * - Silky hairline borders (border-black/[0.06] dark:border-white/[0.08])
+ * - Subtle ambient drop shadows (shadow-[0_1px_3px_rgba(0,0,0,0.04)])
+ * - Soft Claude-coral (#D97757 / #c15f3c) and emerald accents used with quiet restraint
  */
-
-const CORAL_LIGHT = "#c15f3c";
-const CORAL_DARK = "#D97757";
 
 /* ==========================================================================
    01 · Master Career Ledger
-   Claim: Single verified root ledger branches into tailored variants without data duplication.
-   Geometry: Node-and-branch DAG (Atom 5c)
+   Clean, smooth branch diagram with pill capsules and silky bezier lines
    ========================================================================== */
 export function LedgerIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Branch Lines */}
-        <path
-          d="M 55 70 L 115 70 C 145 70, 155 38, 195 38 L 245 38"
-          strokeWidth="1.25"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          vectorEffect="non-scaling-stroke"
-        />
-        <path
-          d="M 115 70 L 255 70"
-          strokeWidth="1.25"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          vectorEffect="non-scaling-stroke"
-        />
-        <path
-          d="M 115 70 C 145 70, 155 102, 195 102 L 245 102"
-          strokeWidth="1.25"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          vectorEffect="non-scaling-stroke"
-        />
+    <div className="w-full h-full flex items-center justify-center p-2 select-none">
+      <div className="relative w-full max-w-[270px] h-[110px] flex items-center justify-between">
+        {/* Left: Root main pill */}
+        <div className="z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-[11.5px] font-medium text-neutral-800 dark:text-neutral-200">
+          <GitBranch className="w-3.5 h-3.5 text-neutral-400" />
+          <span>main</span>
+        </div>
 
-        {/* Root Node */}
-        <circle
-          cx="55"
-          cy="70"
-          r="7"
-          className="stroke-neutral-400 dark:stroke-neutral-600 fill-white dark:fill-[#121210]"
-          strokeWidth="1.25"
-        />
-        <circle
-          cx="55"
-          cy="70"
-          r="3"
-          className="fill-neutral-900 dark:fill-neutral-100"
-        />
-        <text
-          x="55"
-          y="93"
-          textAnchor="middle"
-          className="font-mono text-[8px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
+        {/* Middle: Silky SVG branch connectors */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          viewBox="0 0 270 110"
+          fill="none"
         >
-          ROOT // MAIN
-        </text>
+          {/* Top curve to Staff Infra */}
+          <path
+            d="M 68 55 C 105 55, 115 24, 150 24"
+            className="stroke-neutral-300/80 dark:stroke-neutral-700/80"
+            strokeWidth="1.25"
+          />
+          {/* Middle line to Founding */}
+          <path
+            d="M 68 55 L 150 55"
+            className="stroke-neutral-300/80 dark:stroke-neutral-700/80"
+            strokeWidth="1.25"
+          />
+          {/* Bottom curve to Fullstack */}
+          <path
+            d="M 68 55 C 105 55, 115 86, 150 86"
+            className="stroke-neutral-300/80 dark:stroke-neutral-700/80"
+            strokeWidth="1.25"
+          />
+        </svg>
 
-        {/* Branch 1 Node (Active Calibrated - Coral Accent) */}
-        <circle
-          cx="245"
-          cy="38"
-          r="10"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757] fill-transparent"
-          strokeWidth="1"
-          strokeDasharray="2 2"
-        />
-        <circle
-          cx="245"
-          cy="38"
-          r="5"
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
-        />
-        <text
-          x="245"
-          y="24"
-          textAnchor="middle"
-          className="font-mono text-[8px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          STAFF-INFRA // 34P
-        </text>
+        {/* Right: Destination branch pills */}
+        <div className="z-10 flex flex-col gap-2">
+          {/* Branch 1: Staff Infra (Active Focus with soft coral dot) */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-[#222220] border border-neutral-300 dark:border-neutral-700 shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c15f3c] dark:bg-[#D97757]" />
+            <span>Staff Infra</span>
+            <span className="text-neutral-400 dark:text-neutral-500 text-[10px]">34</span>
+          </div>
 
-        {/* Branch 2 Node (Neutral) */}
-        <circle
-          cx="255"
-          cy="70"
-          r="4.5"
-          className="stroke-neutral-400 dark:stroke-neutral-600 fill-white dark:fill-[#121210]"
-          strokeWidth="1.25"
-        />
-        <text
-          x="266"
-          y="73"
-          className="font-mono text-[7.5px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          FOUNDING // 28P
-        </text>
+          {/* Branch 2: Founding */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.03)] text-[11px] font-normal text-neutral-600 dark:text-neutral-400">
+            <span>Founding</span>
+            <span className="text-neutral-400 dark:text-neutral-500 text-[10px]">28</span>
+          </div>
 
-        {/* Branch 3 Node (Neutral) */}
-        <circle
-          cx="245"
-          cy="102"
-          r="4.5"
-          className="stroke-neutral-400 dark:stroke-neutral-600 fill-white dark:fill-[#121210]"
-          strokeWidth="1.25"
-        />
-        <text
-          x="245"
-          y="118"
-          textAnchor="middle"
-          className="font-mono text-[7.5px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          FULLSTACK // 18P
-        </text>
-      </svg>
+          {/* Branch 3: Fullstack */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.03)] text-[11px] font-normal text-neutral-500 dark:text-neutral-400">
+            <span>Fullstack</span>
+            <span className="text-neutral-400 dark:text-neutral-500 text-[10px]">18</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    02 · Target Roles & Spaces
-   Claim: Multidimensional competency clustering partitioned across engineering domains.
-   Geometry: Spectrum cell partition / architectural matrix (Atom 5a / 5e)
+   Exact pill cluster layout from user's uploaded reference (media_1793533079818_05d71f0a.png)
    ========================================================================== */
 export function SpacesIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Outer Frame */}
-        <rect
-          x="25"
-          y="25"
-          width="270"
-          height="90"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
+    <div className="flex flex-col items-center justify-center gap-2 w-full px-2 select-none">
+      {/* Top Row: Roles with tiny icons */}
+      <div className="flex items-center justify-center gap-2 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-[12px] font-normal text-neutral-700 dark:text-neutral-300">
+          <span className="text-[12px]">📁</span>
+          <span>Staff Infrastructure</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-[12px] font-normal text-neutral-700 dark:text-neutral-300">
+          <span className="text-[12px]">✏️</span>
+          <span>Founding Engineer</span>
+        </span>
+      </div>
 
-        {/* Column Divider 1 */}
-        <line
-          x1="115"
-          y1="25"
-          x2="115"
-          y2="115"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
-
-        {/* Column Divider 2 */}
-        <line
-          x1="205"
-          y1="25"
-          x2="205"
-          y2="115"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
-
-        {/* Cell 1: Infra */}
-        <text
-          x="35"
-          y="42"
-          className="font-mono text-[7.5px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          01 // INFRA
-        </text>
-        <line
-          x1="35"
-          y1="56"
-          x2="95"
-          y2="56"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="3"
-        />
-        <line
-          x1="35"
-          y1="66"
-          x2="80"
-          y2="66"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="3"
-        />
-        <text
-          x="35"
-          y="102"
-          className="font-mono text-[7.5px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          34 METRICS
-        </text>
-
-        {/* Cell 2: Distributed (Coral Accent Point) */}
-        <rect
-          x="115"
-          y="25"
-          width="90"
-          height="90"
-          className="fill-neutral-100/50 dark:fill-white/[0.02]"
-        />
-        <line
-          x1="115"
-          y1="25"
-          x2="205"
-          y2="25"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="2"
-        />
-        <text
-          x="125"
-          y="42"
-          className="font-mono text-[7.5px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          02 // DISTRIB
-        </text>
-        <circle
-          cx="160"
-          cy="68"
-          r="4.5"
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
-        />
-        <circle
-          cx="160"
-          cy="68"
-          r="9"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="0.75"
-          strokeDasharray="2 2"
-        />
-        <text
-          x="160"
-          y="102"
-          textAnchor="middle"
-          className="font-mono text-[7.5px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          ACTIVE CLUSTER
-        </text>
-
-        {/* Cell 3: Systems */}
-        <text
-          x="215"
-          y="42"
-          className="font-mono text-[7.5px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          03 // RUNTIME
-        </text>
-        <line
-          x1="215"
-          y1="56"
-          x2="275"
-          y2="56"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="3"
-        />
-        <line
-          x1="215"
-          y1="66"
-          x2="260"
-          y2="66"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="3"
-        />
-        <text
-          x="215"
-          y="102"
-          className="font-mono text-[7.5px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          18 METRICS
-        </text>
-      </svg>
+      {/* Bottom Row: Tags matching # ml, # philosophy, # ideas layout */}
+      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        <span className="px-3 py-1 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.03)] text-[11px] font-normal text-neutral-600 dark:text-neutral-400">
+          # distributed-systems
+        </span>
+        <span className="px-3 py-1 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.03)] text-[11px] font-normal text-neutral-600 dark:text-neutral-400">
+          # kubernetes
+        </span>
+        <span className="px-3 py-1 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.03)] text-[11px] font-normal text-neutral-600 dark:text-neutral-400">
+          # latency
+        </span>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    03 · Rubric & Skill Matcher
-   Claim: Real-time semantic calibration against hiring rubrics with ranked match fidelity.
-   Geometry: Precision ranked horizontal bars (Atom 5b)
+   Smooth floating index card snippet with quiet ATS calibrated telemetry
    ========================================================================== */
 export function MatcherIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Left Axis Line */}
-        <line
-          x1="90"
-          y1="22"
-          x2="90"
-          y2="118"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
+    <div className="flex items-center justify-center w-full select-none">
+      <div className="w-[220px] p-4 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)] space-y-2.5">
+        {/* Top Header Row */}
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#c15f3c]/10 dark:bg-[#D97757]/15 text-[#c15f3c] dark:text-[#D97757] font-medium text-[10.5px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c15f3c] dark:bg-[#D97757]" />
+            ATS Rubric
+          </span>
+          <span className="text-emerald-600 dark:text-emerald-400 font-medium text-[11px]">
+            94% Match
+          </span>
+        </div>
 
-        {/* Grid Guidelines */}
-        <line
-          x1="180"
-          y1="22"
-          x2="180"
-          y2="118"
-          className="stroke-neutral-200/60 dark:stroke-neutral-800/60"
-          strokeWidth="0.75"
-          strokeDasharray="2 3"
-        />
-        <line
-          x1="270"
-          y1="22"
-          x2="270"
-          y2="118"
-          className="stroke-neutral-200/60 dark:stroke-neutral-800/60"
-          strokeWidth="0.75"
-          strokeDasharray="2 3"
-        />
+        {/* Target Title */}
+        <div className="text-[12.5px] font-medium text-neutral-800 dark:text-neutral-200 truncate">
+          Senior Distributed Systems
+        </div>
 
-        {/* Row 1: Distributed Raft (Coral Accent - The Point) */}
-        <text
-          x="82"
-          y="42"
-          textAnchor="end"
-          className="font-mono text-[8px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          RAFT // DIST
-        </text>
-        <rect
-          x="90"
-          y="34"
-          width="180"
-          height="9"
-          className="fill-neutral-100 dark:fill-neutral-900"
-        />
-        <rect
-          x="90"
-          y="34"
-          width="169"
-          height="9"
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
-        />
-        <text
-          x="280"
-          y="42"
-          className="font-mono text-[8px] font-bold fill-[#c15f3c] dark:fill-[#D97757]"
-        >
-          94%
-        </text>
-
-        {/* Row 2: Latency Tuning */}
-        <text
-          x="82"
-          y="72"
-          textAnchor="end"
-          className="font-mono text-[8px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          P99-TUNING
-        </text>
-        <rect
-          x="90"
-          y="64"
-          width="180"
-          height="9"
-          className="fill-neutral-100 dark:fill-neutral-900"
-        />
-        <rect
-          x="90"
-          y="64"
-          width="156"
-          height="9"
-          className="fill-neutral-400 dark:fill-neutral-600"
-        />
-        <text
-          x="280"
-          y="72"
-          className="font-mono text-[8px] fill-neutral-500 dark:fill-neutral-400"
-        >
-          87%
-        </text>
-
-        {/* Row 3: gRPC Telemetry */}
-        <text
-          x="82"
-          y="102"
-          textAnchor="end"
-          className="font-mono text-[8px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          GRPC-INGEST
-        </text>
-        <rect
-          x="90"
-          y="94"
-          width="180"
-          height="9"
-          className="fill-neutral-100 dark:fill-neutral-900"
-        />
-        <rect
-          x="90"
-          y="94"
-          width="142"
-          height="9"
-          className="fill-neutral-300 dark:fill-neutral-700"
-        />
-        <text
-          x="280"
-          y="102"
-          className="font-mono text-[8px] fill-neutral-500 dark:fill-neutral-400"
-        >
-          79%
-        </text>
-
-        {/* Axis Ticks */}
-        <text
-          x="180"
-          y="130"
-          textAnchor="middle"
-          className="font-mono text-[7px] fill-neutral-400 dark:fill-neutral-600"
-        >
-          50%
-        </text>
-        <text
-          x="270"
-          y="130"
-          textAnchor="middle"
-          className="font-mono text-[7px] fill-neutral-400 dark:fill-neutral-600"
-        >
-          100%
-        </text>
-      </svg>
+        {/* Smooth 3px hairline progress track */}
+        <div className="space-y-1.5 pt-0.5">
+          <div className="h-1 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+            <div className="h-full bg-neutral-800 dark:bg-neutral-200 rounded-full w-[94%]" />
+          </div>
+          <div className="flex items-center justify-between text-[10.5px] text-neutral-400 dark:text-neutral-500">
+            <span># raft-consensus</span>
+            <span># grpc</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    04 · Google XYZ Calibrator
-   Claim: Strict tripartite constraint pipeline: Accomplished [X], measured by [Y], by doing [Z].
-   Geometry: 3-stage transformation pipeline rail with directional coupling (Atom 5e)
+   Smooth floating constraint pills (Accomplished X, Measured Y, By doing Z)
    ========================================================================== */
 export function XyzIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Stage 1: X (Action) */}
-        <rect
-          x="20"
-          y="42"
-          width="74"
-          height="56"
-          className="stroke-neutral-300 dark:stroke-neutral-800 fill-white dark:fill-[#121210]"
-          strokeWidth="1"
-        />
-        <text
-          x="28"
-          y="56"
-          className="font-mono text-[7px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          STAGE 01
-        </text>
-        <text
-          x="28"
-          y="72"
-          className="font-mono text-[9px] font-bold fill-neutral-800 dark:fill-neutral-200"
-        >
-          [X] ACTION
-        </text>
-        <text
-          x="28"
-          y="86"
-          className="font-mono text-[6.5px] fill-neutral-400 dark:fill-neutral-500 uppercase"
-        >
-          LED TELEMETRY
-        </text>
+    <div className="flex flex-col items-center justify-center gap-2 w-full px-2 select-none">
+      {/* Row 1 */}
+      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-[11.5px] font-normal text-neutral-700 dark:text-neutral-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500/80" />
+          <span>Accomplished telemetry</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-[11.5px] font-normal text-neutral-700 dark:text-neutral-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#c15f3c] dark:bg-[#D97757]" />
+          <span className="font-medium text-[#c15f3c] dark:text-[#D97757]">-42% p99 latency</span>
+        </span>
+      </div>
 
-        {/* Arrow 1 */}
-        <line
-          x1="94"
-          y1="70"
-          x2="114"
-          y2="70"
-          className="stroke-neutral-300 dark:stroke-neutral-700"
-          strokeWidth="1"
-        />
-        <path
-          d="M 110 67 L 114 70 L 110 73"
-          className="stroke-neutral-300 dark:stroke-neutral-700"
-          strokeWidth="1"
-        />
-
-        {/* Stage 2: Y (Metric - Coral Focus) */}
-        <rect
-          x="116"
-          y="38"
-          width="88"
-          height="64"
-          className="stroke-neutral-300 dark:stroke-neutral-800 fill-neutral-50 dark:fill-[#141412]"
-          strokeWidth="1"
-        />
-        <line
-          x1="116"
-          y1="38"
-          x2="204"
-          y2="38"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="2"
-        />
-        <text
-          x="124"
-          y="54"
-          className="font-mono text-[7px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          STAGE 02 // KEY
-        </text>
-        <text
-          x="124"
-          y="71"
-          className="font-mono text-[9.5px] font-bold fill-[#c15f3c] dark:fill-[#D97757]"
-        >
-          [Y] -42% P99
-        </text>
-        <text
-          x="124"
-          y="87"
-          className="font-mono text-[6.5px] fill-neutral-500 dark:fill-neutral-400 uppercase"
-        >
-          QUANTIFIED YIELD
-        </text>
-
-        {/* Arrow 2 */}
-        <line
-          x1="204"
-          y1="70"
-          x2="224"
-          y2="70"
-          className="stroke-neutral-300 dark:stroke-neutral-700"
-          strokeWidth="1"
-        />
-        <path
-          d="M 220 67 L 224 70 L 220 73"
-          className="stroke-neutral-300 dark:stroke-neutral-700"
-          strokeWidth="1"
-        />
-
-        {/* Stage 3: Z (Method) */}
-        <rect
-          x="226"
-          y="42"
-          width="74"
-          height="56"
-          className="stroke-neutral-300 dark:stroke-neutral-800 fill-white dark:fill-[#121210]"
-          strokeWidth="1"
-        />
-        <text
-          x="234"
-          y="56"
-          className="font-mono text-[7px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          STAGE 03
-        </text>
-        <text
-          x="234"
-          y="72"
-          className="font-mono text-[9px] font-bold fill-neutral-800 dark:fill-neutral-200"
-        >
-          [Z] METHOD
-        </text>
-        <text
-          x="234"
-          y="86"
-          className="font-mono text-[6.5px] fill-neutral-400 dark:fill-neutral-500 uppercase"
-        >
-          VIA REDIS STREAM
-        </text>
-      </svg>
+      {/* Row 2 */}
+      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-[11px] font-normal text-neutral-600 dark:text-neutral-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80" />
+          <span>Rewriting Redis ingest</span>
+        </span>
+        <span className="px-2.5 py-1 rounded-full bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.02)] text-[10.5px] text-neutral-400 font-mono">
+          # xyz
+        </span>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    05 · Section-Focused Copilot
-   Claim: Passive text is transformed into quantifiable metric yield in real time.
-   Geometry: Dual-channel transformation vector / differential state (Atom 5e / 5b)
+   Smooth floating AI refinement tile with subtle metric badge
    ========================================================================== */
 export function CopilotIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Upper Track: Passive Input */}
-        <text
-          x="30"
-          y="38"
-          className="font-mono text-[7px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          INPUT // PASSIVE DRAFT
-        </text>
-        <line
-          x1="30"
-          y1="48"
-          x2="290"
-          y2="48"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="1"
-          strokeDasharray="2 3"
-        />
-        <text
-          x="30"
-          y="62"
-          className="font-mono text-[8px] fill-neutral-400 dark:fill-neutral-500"
-        >
-          - Built backend microservices APIs for transaction processing
-        </text>
+    <div className="flex items-center justify-center w-full select-none">
+      <div className="w-[220px] p-4 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)] space-y-2">
+        {/* Top Header */}
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="inline-flex items-center gap-1 font-medium text-neutral-700 dark:text-neutral-300">
+            <Sparkles className="w-3 h-3 text-amber-500" />
+            Bullet Copilot
+          </span>
+          <span className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-400 font-mono text-[9.5px]">
+            ⌘K
+          </span>
+        </div>
 
-        {/* Connecting Vector Transition */}
-        <path
-          d="M 160 68 L 160 82"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1.25"
-        />
-        <circle
-          cx="160"
-          cy="82"
-          r="2.5"
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
-        />
+        {/* Refined sentence */}
+        <p className="text-[12px] text-neutral-800 dark:text-neutral-200 font-normal leading-relaxed">
+          Scaled gRPC streaming to{" "}
+          <span className="font-medium text-neutral-900 dark:text-neutral-100">120k req/s</span>
+        </p>
 
-        {/* Lower Track: Synthesized Output (Coral Accent Point) */}
-        <line
-          x1="30"
-          y1="94"
-          x2="290"
-          y2="94"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1"
-        />
-        <text
-          x="30"
-          y="108"
-          className="font-mono text-[8px] font-bold fill-neutral-900 dark:fill-neutral-100"
-        >
-          + Scaled gRPC pipeline to{" "}
-          <tspan className="fill-[#c15f3c] dark:fill-[#D97757]">120k req/s</tspan> with 0 frame drop
-        </text>
-
-        {/* Telemetry pill */}
-        <text
-          x="290"
-          y="126"
-          textAnchor="end"
-          className="font-mono text-[7px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          +140% YIELD // VERIFIED
-        </text>
-      </svg>
+        {/* Micro-badge */}
+        <div className="flex items-center gap-2 pt-0.5 text-[10.5px]">
+          <span className="px-2 py-0.5 rounded-full bg-[#c15f3c]/10 dark:bg-[#D97757]/15 text-[#c15f3c] dark:text-[#D97757] font-medium text-[10px]">
+            +42% throughput
+          </span>
+          <span className="text-neutral-400 text-[10px]">Zero fluff</span>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    06 · Vector PDF Engine
-   Claim: Single-column typographical purity rendered in exact LaTeX vector coordinates.
-   Geometry: Architectural blueprint grid with page coordinate system (Atom 5a / coordinate sheet)
+   Miniature architectural resume specimen sheet with clean guidelines
    ========================================================================== */
 export function VectorPdfIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Page Sheet Canvas */}
-        <rect
-          x="95"
-          y="18"
-          width="130"
-          height="104"
-          className="stroke-neutral-300 dark:stroke-neutral-800 fill-white dark:fill-[#121210]"
-          strokeWidth="1"
-        />
+    <div className="flex items-center justify-center w-full select-none">
+      <div className="w-[170px] h-[130px] p-3.5 rounded-xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+        {/* Resume Header */}
+        <div>
+          <div className="text-[11.5px] font-medium text-neutral-900 dark:text-neutral-100">
+            Alex Chen
+          </div>
+          <div className="text-[9px] text-neutral-400 mt-0.5">
+            Staff Infrastructure Engineer
+          </div>
+          <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800 my-2" />
+        </div>
 
-        {/* Origin Coordinate Crosshair (Coral Accent) */}
-        <line
-          x1="90"
-          y1="18"
-          x2="102"
-          y2="18"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1.25"
-        />
-        <line
-          x1="95"
-          y1="13"
-          x2="95"
-          y2="25"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1.25"
-        />
-        <text
-          x="92"
-          y="12"
-          className="font-mono text-[6.5px] fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          (X₀, Y₀)
-        </text>
+        {/* Skeletal Vector Layout Rules */}
+        <div className="space-y-1.5">
+          <div className="w-full h-1 bg-neutral-200/60 dark:bg-neutral-700/60 rounded-full" />
+          <div className="w-5/6 h-1 bg-neutral-200/50 dark:bg-neutral-700/50 rounded-full" />
+          <div className="w-2/3 h-1 bg-neutral-200/40 dark:bg-neutral-700/40 rounded-full" />
+        </div>
 
-        {/* Single-Column Margin Guides */}
-        <line
-          x1="110"
-          y1="26"
-          x2="110"
-          y2="114"
-          className="stroke-neutral-200/80 dark:stroke-neutral-800/80"
-          strokeWidth="0.75"
-          strokeDasharray="2 2"
-        />
-        <line
-          x1="210"
-          y1="26"
-          x2="210"
-          y2="114"
-          className="stroke-neutral-200/80 dark:stroke-neutral-800/80"
-          strokeWidth="0.75"
-          strokeDasharray="2 2"
-        />
-
-        {/* Micro-Typography Skeleton Lines */}
-        <text
-          x="160"
-          y="35"
-          textAnchor="middle"
-          className="font-mono text-[7px] font-bold fill-neutral-800 dark:fill-neutral-200"
-        >
-          ALEX CHEN // STAFF
-        </text>
-        <line
-          x1="115"
-          y1="41"
-          x2="205"
-          y2="41"
-          className="stroke-neutral-300 dark:stroke-neutral-700"
-          strokeWidth="0.75"
-        />
-
-        <line
-          x1="115"
-          y1="52"
-          x2="205"
-          y2="52"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="2"
-        />
-        <line
-          x1="115"
-          y1="60"
-          x2="195"
-          y2="60"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="2"
-        />
-        <line
-          x1="115"
-          y1="68"
-          x2="200"
-          y2="68"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="2"
-        />
-
-        <line
-          x1="115"
-          y1="82"
-          x2="205"
-          y2="82"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="2"
-        />
-        <line
-          x1="115"
-          y1="90"
-          x2="185"
-          y2="90"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="2"
-        />
-
-        {/* Precision Dimension Callouts */}
-        <text
-          x="50"
-          y="72"
-          className="font-mono text-[7px] fill-neutral-400 dark:fill-neutral-500 tracking-wider"
-        >
-          11.0 IN →
-        </text>
-        <text
-          x="160"
-          y="132"
-          textAnchor="middle"
-          className="font-mono text-[7px] font-bold fill-neutral-600 dark:fill-neutral-400 tracking-wider"
-        >
-          LATEX 2ε // 100% VECTOR
-        </text>
-      </svg>
+        {/* Precision Format Tag */}
+        <div className="flex items-center justify-between text-[9px] pt-1.5 border-t border-neutral-100 dark:border-neutral-800 text-neutral-400">
+          <span>Single Column</span>
+          <span className="font-mono text-neutral-500">LaTeX 2ε</span>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    07 · Matched Cover Letters
-   Claim: Harmonic phase synchrony between resume metrics and companion letter cadence.
-   Geometry: Coupled dual orbits / harmonic resonance bridge (Atom 5d)
+   Two smooth overlapping paper cards with gentle tilt
    ========================================================================== */
 export function CompanionIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Orbit A (Resume) */}
-        <circle
-          cx="95"
-          cy="70"
-          r="38"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
-        <circle
-          cx="95"
-          cy="70"
-          r="26"
-          className="stroke-neutral-200/80 dark:stroke-neutral-800/80"
-          strokeWidth="0.75"
-          strokeDasharray="2 3"
-        />
-        <text
-          x="95"
-          y="68"
-          textAnchor="middle"
-          className="font-mono text-[8px] font-bold fill-neutral-800 dark:fill-neutral-200 tracking-wider"
-        >
-          RESUME
-        </text>
-        <text
-          x="95"
-          y="79"
-          textAnchor="middle"
-          className="font-mono text-[6.5px] fill-neutral-400 dark:fill-neutral-500"
-        >
-          METRIC AXIS
-        </text>
+    <div className="flex items-center justify-center w-full relative h-[120px] select-none">
+      {/* Back Paper Card */}
+      <div className="absolute w-[180px] p-3 rounded-2xl bg-white/70 dark:bg-[#222220]/70 border border-black/[0.05] dark:border-white/[0.06] shadow-sm -rotate-2 -translate-y-2">
+        <div className="text-[10px] text-neutral-400">
+          Resume Bullets · Calibrated
+        </div>
+      </div>
 
-        {/* Orbit B (Cover Letter) */}
-        <circle
-          cx="225"
-          cy="70"
-          r="38"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
-        <circle
-          cx="225"
-          cy="70"
-          r="26"
-          className="stroke-neutral-200/80 dark:stroke-neutral-800/80"
-          strokeWidth="0.75"
-          strokeDasharray="2 3"
-        />
-        <text
-          x="225"
-          y="68"
-          textAnchor="middle"
-          className="font-mono text-[8px] font-bold fill-neutral-800 dark:fill-neutral-200 tracking-wider"
-        >
-          LETTER
-        </text>
-        <text
-          x="225"
-          y="79"
-          textAnchor="middle"
-          className="font-mono text-[6.5px] fill-neutral-400 dark:fill-neutral-500"
-        >
-          PROSE VOICE
-        </text>
-
-        {/* Synchronizing Bridge (Coral Accent Node) */}
-        <line
-          x1="133"
-          y1="70"
-          x2="187"
-          y2="70"
-          className="stroke-neutral-300 dark:stroke-neutral-700"
-          strokeWidth="1.25"
-        />
-        <circle
-          cx="160"
-          cy="70"
-          r="9"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1"
-          strokeDasharray="2 2"
-        />
-        <circle
-          cx="160"
-          cy="70"
-          r="4"
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
-        />
-        <text
-          x="160"
-          y="52"
-          textAnchor="middle"
-          className="font-mono text-[7px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          1:1 HARMONY
-        </text>
-      </svg>
+      {/* Front Paper Card */}
+      <div className="relative z-10 w-[190px] p-3.5 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_4px_12px_rgba(0,0,0,0.04)] space-y-1.5 rotate-1">
+        <div className="flex items-center justify-between text-[10px]">
+          <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9.5px] font-medium">
+            Cover Letter
+          </span>
+          <span className="text-emerald-600 dark:text-emerald-400 text-[9.5px]">
+            1:1 Voice
+          </span>
+        </div>
+        <div className="text-[11.5px] font-medium text-neutral-800 dark:text-neutral-200">
+          Matching tone & cadence
+        </div>
+        <div className="w-full h-1 bg-neutral-100 dark:bg-neutral-800 rounded-full" />
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    08 · Visual Job Application Tracker
-   Claim: Applications transition across discrete pipeline states to offer close.
-   Geometry: Horizontal state machine rail with traveling focus node (Atom 5a + rail)
+   Three smooth rounded tiles [ Saved ] [ Applied ] [ Interview ]
    ========================================================================== */
 export function TrackerIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Pipeline Rail */}
-        <line
-          x1="45"
-          y1="70"
-          x2="195"
-          y2="70"
-          className="stroke-neutral-400 dark:stroke-neutral-600"
-          strokeWidth="1.25"
-        />
-        <line
-          x1="195"
-          y1="70"
-          x2="275"
-          y2="70"
-          className="stroke-neutral-300 dark:stroke-neutral-800"
-          strokeWidth="1"
-          strokeDasharray="3 3"
-        />
+    <div className="flex items-center justify-center gap-2.5 w-full select-none">
+      {/* Tile 1: Saved */}
+      <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col items-center justify-center gap-1">
+        <span className="text-[13px]">📁</span>
+        <span className="text-[10px] font-normal text-neutral-700 dark:text-neutral-300">Saved</span>
+      </div>
 
-        {/* Milestone 1: Saved */}
-        <circle
-          cx="55"
-          cy="70"
-          r="5"
-          className="stroke-neutral-400 dark:stroke-neutral-600 fill-white dark:fill-[#121210]"
-          strokeWidth="1.25"
-        />
-        <text
-          x="55"
-          y="92"
-          textAnchor="middle"
-          className="font-mono text-[7.5px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          01 // SAVED
-        </text>
+      {/* Tile 2: Applied */}
+      <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col items-center justify-center gap-1">
+        <span className="text-[13px]">✈️</span>
+        <span className="text-[10px] font-normal text-neutral-700 dark:text-neutral-300">Applied</span>
+      </div>
 
-        {/* Milestone 2: Applied */}
-        <circle
-          cx="125"
-          cy="70"
-          r="5"
-          className="stroke-neutral-400 dark:stroke-neutral-600 fill-white dark:fill-[#121210]"
-          strokeWidth="1.25"
-        />
-        <text
-          x="125"
-          y="92"
-          textAnchor="middle"
-          className="font-mono text-[7.5px] fill-neutral-500 dark:fill-neutral-400 tracking-wider"
-        >
-          02 // APPLIED
-        </text>
-
-        {/* Milestone 3: Interview (Active Target Focus - Coral Accent) */}
-        <circle
-          cx="195"
-          cy="70"
-          r="11"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1"
-          strokeDasharray="2 2"
-        />
-        <circle
-          cx="195"
-          cy="70"
-          r="6"
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
-        />
-        <line
-          x1="195"
-          y1="59"
-          x2="195"
-          y2="42"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1"
-        />
-        <text
-          x="195"
-          y="36"
-          textAnchor="middle"
-          className="font-mono text-[8px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          ONSITE // ACTIVE
-        </text>
-        <text
-          x="195"
-          y="92"
-          textAnchor="middle"
-          className="font-mono text-[7.5px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          03 // INTERVIEW
-        </text>
-
-        {/* Milestone 4: Offer */}
-        <circle
-          cx="265"
-          cy="70"
-          r="5"
-          className="stroke-neutral-300 dark:stroke-neutral-800 fill-transparent"
-          strokeWidth="1"
-          strokeDasharray="2 2"
-        />
-        <text
-          x="265"
-          y="92"
-          textAnchor="middle"
-          className="font-mono text-[7.5px] fill-neutral-400 dark:fill-neutral-600 tracking-wider"
-        >
-          04 // OFFER
-        </text>
-      </svg>
+      {/* Tile 3: Interview (Active Target with soft coral dot) */}
+      <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#222220] border border-neutral-300 dark:border-neutral-700 shadow-[0_2px_6px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center gap-1 relative">
+        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#c15f3c] dark:bg-[#D97757]" />
+        <span className="text-[13px]">🎙️</span>
+        <span className="text-[10px] font-medium text-neutral-900 dark:text-neutral-100">Interview</span>
+      </div>
     </div>
   );
 }
 
 /* ==========================================================================
    09 · Resume Snapshot Memory
-   Claim: Cryptographic hash immutably binds submission state to application artifact.
-   Geometry: Merkle integrity block with verification seal (Atom 5e / cryptographic seal)
+   Smooth artifact tile with padlock and SHA hash
    ========================================================================== */
 export function SnapshotIllustration() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <svg
-        viewBox="0 0 320 140"
-        className="w-full max-w-[280px] h-auto select-none"
-        fill="none"
-        stroke="currentColor"
-      >
-        {/* Verification Container */}
-        <rect
-          x="35"
-          y="25"
-          width="250"
-          height="90"
-          className="stroke-neutral-200 dark:stroke-neutral-800 fill-white/50 dark:fill-white/[0.01]"
-          strokeWidth="1"
-        />
+    <div className="flex items-center justify-center w-full select-none">
+      <div className="w-[210px] p-4 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)] space-y-2">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="inline-flex items-center gap-1.5 font-medium text-neutral-700 dark:text-neutral-300">
+            <Lock className="w-3 h-3 text-neutral-400" />
+            Locked Version
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+        </div>
 
-        {/* Top Header Rule */}
-        <line
-          x1="35"
-          y1="48"
-          x2="285"
-          y2="48"
-          className="stroke-neutral-200 dark:stroke-neutral-800"
-          strokeWidth="1"
-        />
-        <text
-          x="48"
-          y="40"
-          className="font-mono text-[7.5px] font-bold fill-neutral-700 dark:fill-neutral-300 tracking-wider"
-        >
-          SHA-256 INTEGRITY BLOCK
-        </text>
+        <div className="text-[12px] font-medium text-neutral-800 dark:text-neutral-200 truncate">
+          resume-stripe-v3.2.pdf
+        </div>
 
-        {/* Telemetry rows */}
-        <text
-          x="48"
-          y="66"
-          className="font-mono text-[8px] fill-neutral-500 dark:fill-neutral-400"
-        >
-          ARTIFACT:{" "}
-          <tspan className="fill-neutral-800 dark:fill-neutral-200 font-bold">
-            RESUME-STRIPE-V3.2.PDF
-          </tspan>
-        </text>
-        <text
-          x="48"
-          y="80"
-          className="font-mono text-[7.5px] fill-neutral-400 dark:fill-neutral-500"
-        >
-          DIGEST: E82A79B1...F4D091A2
-        </text>
-        <text
-          x="48"
-          y="94"
-          className="font-mono text-[7.5px] fill-neutral-400 dark:fill-neutral-500"
-        >
-          TIMESTAMP: 2026-11-01T17:20Z
-        </text>
-
-        {/* Seal Mark (Coral Accent) */}
-        <circle
-          cx="252"
-          cy="75"
-          r="16"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1"
-        />
-        <circle
-          cx="252"
-          cy="75"
-          r="12"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="0.75"
-          strokeDasharray="2 2"
-        />
-        <path
-          d="M 246 75 L 250 79 L 258 71"
-          className="stroke-[#c15f3c] dark:stroke-[#D97757]"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <text
-          x="252"
-          y="104"
-          textAnchor="middle"
-          className="font-mono text-[6.5px] font-bold fill-[#c15f3c] dark:fill-[#D97757] tracking-wider"
-        >
-          LOCKED
-        </text>
-      </svg>
+        <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-neutral-100 dark:border-neutral-800 text-neutral-400 font-mono">
+          <span>SHA-256</span>
+          <span className="text-neutral-600 dark:text-neutral-400">e82a…9f12</span>
+        </div>
+      </div>
     </div>
   );
 }
