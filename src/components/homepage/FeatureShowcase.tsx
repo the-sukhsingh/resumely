@@ -4,51 +4,51 @@ import React from "react";
 import FeatureCard from "./FeatureCard";
 import {
   LedgerIllustration,
-  RulesIllustration,
+  SpacesIllustration,
   MatcherIllustration,
+  XyzIllustration,
   CopilotIllustration,
   VectorPdfIllustration,
   CompanionIllustration,
   TrackerIllustration,
   SnapshotIllustration,
-  ShareLinksIllustration,
 } from "./FeatureIllustrations";
 
 export default function FeatureShowcase() {
   return (
     <section
       id="features"
-      className="relative w-full bg-[#f5f3ef] dark:bg-[#121210] py-20 sm:py-24 transition-colors duration-200"
+      className="relative w-full py-16 sm:py-20 transition-colors duration-200"
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] mx-auto">
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[560px] mx-auto text-center mb-14 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-normal tracking-[-0.015em] text-[#1c1b18] dark:text-[#f3f1ec] leading-[1.2] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
+        <div className="max-w-[560px] mx-auto text-center px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-normal tracking-[-0.015em] text-neutral-900 dark:text-neutral-100 leading-[1.2] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             The quiet system behind
             <br />
             every interview-winning resume.
           </h2>
-          <p className="mt-3.5 text-sm sm:text-[14px] text-[#8b897f] dark:text-[#9e9c93] font-normal leading-relaxed">
+          <p className="mt-3.5 text-sm sm:text-[14px] text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
             Store your verified career ledger once. Generate calibrated applications, LaTeX vector exports, and tailored cover letters in seconds.
           </p>
         </div>
 
-        {/* 3-Column Equal-Width Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-          {/* Card 1: Quick Capture & Ledger */}
+        {/* 3-Column Equal-Width Bento Grid with exact classname requested */}
+        <div className="mt-10 grid grid-cols-1 gap-2 px-6 sm:grid-cols-2 md:mt-12 md:px-8 lg:grid-cols-3">
+          {/* Card 1: Master Career Ledger */}
           <FeatureCard
             id="ledger"
-            title="Quick Capture & Ledger"
-            description="Capture career wins and metrics with a global shortcut. Branch tailored versions with zero duplication."
+            title="Master Career Ledger"
+            description="Maintain one verified record of all roles, metrics, and skills. Branch tailored versions with zero duplication."
             preview={<LedgerIllustration />}
           />
 
-          {/* Card 2: Spaces & Target Roles */}
+          {/* Card 2: Spaces & Target Roles (Exact visual from uploaded photo!) */}
           <FeatureCard
-            id="rules"
+            id="spaces"
             title="Spaces & Target Roles"
-            description="Organize career achievements and skills by role domain, seniority, or engineering specialty."
-            preview={<RulesIllustration />}
+            description="Organize achievements, metrics, and technical skills by target role, seniority, or engineering specialty."
+            preview={<SpacesIllustration />}
           />
 
           {/* Card 3: Rubric & Skill Matcher */}
@@ -59,15 +59,23 @@ export default function FeatureShowcase() {
             preview={<MatcherIllustration />}
           />
 
-          {/* Card 4: Section-Focused Copilot */}
+          {/* Card 4: Google XYZ Calibrator */}
+          <FeatureCard
+            id="xyz"
+            title="Google XYZ Calibrator"
+            description="Enforce strict impact constraints: Accomplished [X], measured by [Y], by doing [Z], eliminating weak passive verbs."
+            preview={<XyzIllustration />}
+          />
+
+          {/* Card 5: Section-Focused Copilot */}
           <FeatureCard
             id="copilot"
             title="Section-Focused Copilot"
-            description="Target specific bullet points with the AI assistant, featuring instant metric refinement and live diffs."
+            description="Target specific bullet points with the AI assistant, featuring live metric enhancements and instant snapshot history."
             preview={<CopilotIllustration />}
           />
 
-          {/* Card 5: Vector PDF Engine */}
+          {/* Card 6: Vector PDF Engine */}
           <FeatureCard
             id="latex"
             title="Vector PDF Engine"
@@ -75,7 +83,7 @@ export default function FeatureShowcase() {
             preview={<VectorPdfIllustration />}
           />
 
-          {/* Card 6: Matched Cover Letters */}
+          {/* Card 7: Matched Cover Letters */}
           <FeatureCard
             id="companion"
             title="Matched Cover Letters"
@@ -83,7 +91,7 @@ export default function FeatureShowcase() {
             preview={<CompanionIllustration />}
           />
 
-          {/* Card 7: Visual Job Tracker */}
+          {/* Card 8: Visual Job Tracker */}
           <FeatureCard
             id="tracker"
             title="Visual Job Tracker"
@@ -91,20 +99,12 @@ export default function FeatureShowcase() {
             preview={<TrackerIllustration />}
           />
 
-          {/* Card 8: Resume Snapshot Memory */}
+          {/* Card 9: Snapshot Memory */}
           <FeatureCard
             id="snapshots"
             title="Snapshot Memory"
-            description="Every tracked job is linked to the exact tailored resume version submitted, so you always know what the team is reading."
+            description="Every tracked job is linked to the exact tailored resume version submitted, so you always know what hiring teams read."
             preview={<SnapshotIllustration />}
-          />
-
-          {/* Card 9: Recruiter Quick Route */}
-          <FeatureCard
-            id="distribution"
-            title="Recruiter Quick Route"
-            description="Share responsive, private view-only web links directly with recruiters and hiring managers without email attachments."
-            preview={<ShareLinksIllustration />}
           />
         </div>
       </div>
