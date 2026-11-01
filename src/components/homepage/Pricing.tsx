@@ -91,7 +91,7 @@ export default function Pricing() {
             aria-hidden="true"
           />
 
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-2 items-stretch">
             {plans.map((p, idx) => {
               const isPopular = p.popular;
 

@@ -22,7 +22,7 @@ export default function FeatureShowcase() {
     >
       <div className="max-w-[1240px] mx-auto">
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[560px] mx-auto text-center px-4 sm:px-6">
+        <div className="px-4 sm:px-6">
           <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-normal tracking-[-0.015em] text-neutral-900 dark:text-neutral-100 leading-[1.2] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
             The quiet system behind
             <br />
@@ -34,7 +34,7 @@ export default function FeatureShowcase() {
         </div>
 
         {/* 3-Column Equal-Width Bento Grid with exact classname requested */}
-        <div className="mt-10 grid grid-cols-1 gap-2 px-6 sm:grid-cols-2 md:mt-12 md:px-8 lg:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-2 px-6 sm:grid-cols-2 md:mt-12 lg:grid-cols-3">
           {/* Card 1: Master Career Ledger */}
           <FeatureCard
             id="ledger"

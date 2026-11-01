@@ -81,7 +81,7 @@ export default function Workflow() {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[620px] mb-12 sm:mb-16">
+        <div className=" mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             From career history to
             <br />
@@ -93,7 +93,7 @@ export default function Workflow() {
         </div>
 
         {/* 3-Column Equal-Width Process Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {steps.map((s, idx) => (
             <FeatureCard
               key={s.step}

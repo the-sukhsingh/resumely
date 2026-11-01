@@ -32,8 +32,7 @@ export default function FeatureCard({
           "color-mix(in oklab, oklch(var(--oklch-zinc-900)) 4%, transparent)",
       }}
       className={cn(
-        "group relative flex flex-col justify-between p-6 sm:p-7 rounded-[28px]",
-        "border border-black/[0.04] dark:border-white/[0.06]",
+        "group relative flex flex-col justify-between p-4 sm:p-7 rounded-[28px]",
         "min-h-[320px] sm:min-h-[340px]",
         "transition-[background-color,border-color,transform] duration-150 ease-out select-none overflow-hidden",
         "hover:bg-[color-mix(in_oklab,oklch(var(--oklch-zinc-900))_6%,transparent)]",
