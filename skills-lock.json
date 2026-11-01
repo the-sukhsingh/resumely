@@ -103,6 +103,12 @@
       "skillPath": "skills/convex-setup-auth/SKILL.md",
       "computedHash": "b1a940758751c5b2fdc6ced105b19927a1655f0c1d4bd2fd5536dc3264202c00"
     },
+    "editorial-illustrations": {
+      "source": "huytieu/cog-second-brain",
+      "sourceType": "github",
+      "skillPath": "skills/editorial-illustrations/SKILL.md",
+      "computedHash": "ec01253e150edf588265668c119afc04ff27c6547a9b4c93ec2af01d727d2259"
+    },
     "emil-design-eng": {
       "source": "emilkowalski/skills",
       "sourceType": "github",

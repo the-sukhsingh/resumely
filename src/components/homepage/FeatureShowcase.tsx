@@ -43,10 +43,10 @@ export default function FeatureShowcase() {
             preview={<LedgerIllustration />}
           />
 
-          {/* Card 2: Spaces & Target Roles (Exact visual from uploaded photo!) */}
+          {/* Card 2: Target Roles & Spaces */}
           <FeatureCard
             id="spaces"
-            title="Spaces & Target Roles"
+            title="Target Roles & Spaces"
             description="Organize achievements, metrics, and technical skills by target role, seniority, or engineering specialty."
             preview={<SpacesIllustration />}
           />
