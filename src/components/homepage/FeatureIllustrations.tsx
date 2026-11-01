@@ -7,247 +7,144 @@ import {
   Copy,
   Sparkles,
   Lock,
-  ArrowRight,
-  ShieldCheck,
-  Sliders,
-  CheckCircle2,
+  Search,
+  Folder,
+  PenTool,
+  Bookmark,
   FileText,
-  RotateCcw,
+  Command,
 } from "lucide-react";
 
 /**
- * Common Smooth Styling Tokens derived directly from the reference luminous button:
- * - Smooth sapphire gradient
- * - Luminous hairline cyan-blue perimeter
- * - Inset specular top highlight
- * - Soft ice-blue typography
- * - Tactile active press response
+ * Design Tokens matching the reference MyMind / Minimalist Bento aesthetic:
+ * - Card surface: Warm light gray (#edebe6 / #1a1917)
+ * - Tile surface: Crisp white (#ffffff / #252523)
+ * - Border: Hairline neutral (#e2e0da / #33322e)
+ * - Shadow: Soft, subtle physical drop shadow (no neon / heavy elevation)
+ * - Typography: Near-black (#1c1b18) & Muted gray (#8b897f)
+ * - Occasional tiny accent chips (orange, emerald, blue) as the only color pops
  */
-export const smoothPillClasses = {
-  // Primary active pill (matching the reference button)
-  active:
-    "relative inline-flex items-center justify-center rounded-full font-medium tracking-tight " +
-    "bg-gradient-to-b from-[#19427b] via-[#123363] to-[#0a1e3d] text-[#e0edff] " +
-    "dark:from-[#1b4684] dark:via-[#133464] dark:to-[#0a1d3b] dark:text-[#e0edff] " +
-    "border border-sky-400/40 hover:border-sky-300/70 " +
-    "shadow-[inset_0_1px_1px_rgba(255,255,255,0.28),0_2px_8px_rgba(14,165,233,0.25),0_0_12px_-2px_rgba(56,189,248,0.3)] " +
-    "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out " +
-    "active:scale-[0.97] cursor-pointer select-none",
-
-  // Inactive / secondary pill
-  inactive:
-    "relative inline-flex items-center justify-center rounded-full font-medium tracking-tight " +
-    "bg-white/70 dark:bg-[#0c1626]/70 text-neutral-600 dark:text-neutral-400 " +
-    "border border-neutral-200/80 dark:border-sky-950/70 hover:border-sky-300/60 dark:hover:border-sky-700/50 " +
-    "hover:text-neutral-900 dark:hover:text-neutral-200 " +
-    "shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-none " +
-    "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out " +
-    "active:scale-[0.97] cursor-pointer select-none",
-
-  // Smooth substrate container for illustrations (clean, minimal, zero dark-mode AI slop)
-  container:
-    "p-3 sm:p-3.5 rounded-2xl " +
-    "bg-gradient-to-b from-sky-50/50 via-white/80 to-slate-50/60 " +
-    "dark:bg-gradient-to-b dark:from-[#0a1526]/80 dark:via-[#081120]/75 dark:to-[#050b15]/90 " +
-    "border border-sky-900/10 dark:border-sky-500/20 " +
-    "shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_-4px_rgba(14,165,233,0.06)] " +
-    "dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_6px_20px_-6px_rgba(2,6,23,0.6)] " +
-    "backdrop-blur-sm",
-};
 
 /* ==========================================================================
-   01 · Master Career Ledger Illustration
+   01 · Quick Capture & Master Career Ledger
+   Archetype: Keyboard keycap chips [ ⌘ ] [ ⇧ ] [ L ] + branch tag
    ========================================================================== */
 export function LedgerIllustration() {
-  const [activeBranch, setActiveBranch] = useState<"main" | "staff" | "fullstack">("main");
+  const [copiedKey, setCopiedKey] = useState(false);
 
-  const branchMeta = {
-    main: { metrics: "52 metrics", label: "Master Verified Ledger", date: "Synced today" },
-    staff: { metrics: "34 metrics", label: "Staff Infrastructure Profile", date: "Calibrated" },
-    fullstack: { metrics: "18 metrics", label: "Founding Engineer Profile", date: "Calibrated" },
+  const handleKeyClick = () => {
+    setCopiedKey(true);
+    setTimeout(() => setCopiedKey(false), 1600);
   };
 
   return (
-    <div className="space-y-3">
-      {/* Top Telemetry Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight flex items-center gap-1.5">
-          <GitBranch className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
-          Branch Ecosystem
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 dark:bg-sky-400/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-400/25">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-sky-400 animate-pulse shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
-          Single Truth
-        </span>
+    <div className="flex flex-col items-center justify-center gap-3 w-full">
+      {/* 3 Physical Keycap Tiles */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleKeyClick}
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_2px_6px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.02)] flex items-center justify-center font-mono text-[16px] sm:text-[17px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec] transition-transform duration-150 hover:-translate-y-0.5 active:scale-95 cursor-pointer select-none"
+        >
+          ⌘
+        </button>
+        <button
+          type="button"
+          onClick={handleKeyClick}
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_2px_6px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.02)] flex items-center justify-center font-mono text-[16px] sm:text-[17px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec] transition-transform duration-150 hover:-translate-y-0.5 active:scale-95 cursor-pointer select-none"
+        >
+          ⇧
+        </button>
+        <button
+          type="button"
+          onClick={handleKeyClick}
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_2px_6px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.02)] flex items-center justify-center font-mono text-[15px] sm:text-[16px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec] transition-transform duration-150 hover:-translate-y-0.5 active:scale-95 cursor-pointer select-none"
+        >
+          L
+        </button>
       </div>
 
-      {/* Main Illustration Substrate */}
-      <div className={smoothPillClasses.container}>
-        {/* Branch Selector Pills */}
-        <div className="flex items-center gap-1.5 text-[11px]">
-          {(["main", "staff", "fullstack"] as const).map((branch) => {
-            const isActive = activeBranch === branch;
-            return (
-              <button
-                key={branch}
-                type="button"
-                onClick={() => setActiveBranch(branch)}
-                className={`px-3 py-1 text-[11px] ${
-                  isActive ? smoothPillClasses.active : smoothPillClasses.inactive
-                }`}
-              >
-                {branch === "main" ? "main" : branch === "staff" ? "staff-infra" : "fullstack"}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Live Branch Info Banner */}
-        <div className="mt-2.5 pt-2 border-t border-sky-900/10 dark:border-sky-500/15 flex items-center justify-between text-[11px]">
-          <span className="text-neutral-700 dark:text-neutral-300 font-medium truncate">
-            {branchMeta[activeBranch].label}
-          </span>
-          <span className="shrink-0 ml-2 px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-sky-100/80 dark:bg-sky-950/80 text-sky-900 dark:text-sky-200 border border-sky-200/60 dark:border-sky-800/60">
-            {branchMeta[activeBranch].metrics}
-          </span>
-        </div>
+      {/* Subtle Ledger Branch Status Pill */}
+      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-[11px] font-medium text-[#1c1b18] dark:text-[#f3f1ec]">
+        <GitBranch className="w-3 h-3 text-[#8b897f]" />
+        <span>main</span>
+        <span className="text-[#8b897f] dark:text-[#9e9c93]">·</span>
+        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">52 verified</span>
       </div>
     </div>
   );
 }
 
 /* ==========================================================================
-   02 · Custom Agent Rules Illustration
+   02 · Spaces & Custom Calibration Rules (Google XYZ)
+   Archetype: Floating tag-chip cluster with tiny colored dots
    ========================================================================== */
 export function RulesIllustration() {
-  const [strictMode, setStrictMode] = useState(true);
-
   return (
-    <div className="space-y-3">
-      {/* Header with Interactive Mode Toggle */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          XYZ Calibration Protocol
+    <div className="flex flex-col items-center justify-center gap-2 w-full px-2">
+      {/* Row 1 of Tag Chips */}
+      <div className="flex items-center justify-center gap-2 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_1px_4px_rgba(0,0,0,0.03)] text-[11.5px] font-medium text-[#1c1b18] dark:text-[#f3f1ec] select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span>Accomplished [X]</span>
         </span>
-        <button
-          type="button"
-          onClick={() => setStrictMode(!strictMode)}
-          className={`px-2.5 py-0.5 text-[10px] ${
-            strictMode ? smoothPillClasses.active : smoothPillClasses.inactive
-          }`}
-        >
-          {strictMode ? "Strict Enforced" : "Advisory"}
-        </button>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_1px_4px_rgba(0,0,0,0.03)] text-[11.5px] font-medium text-[#1c1b18] dark:text-[#f3f1ec] select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>Measured [Y]</span>
+        </span>
       </div>
 
-      {/* Formula Progression Strip */}
-      <div className={`${smoothPillClasses.container} space-y-2`}>
-        {/* Step X */}
-        <div className="flex items-center gap-2 text-[11px]">
-          <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold bg-sky-500/15 text-sky-600 dark:text-sky-300 shrink-0">
-            X
-          </span>
-          <span className="text-neutral-800 dark:text-neutral-200 truncate">
-            Accomplished real-time telemetry
-          </span>
-        </div>
-
-        {/* Step Y: Metric Highlight */}
-        <div className="flex items-center gap-2 text-[11px] px-2 py-1 rounded-xl bg-sky-500/10 dark:bg-sky-500/15 border border-sky-500/20 dark:border-sky-400/25">
-          <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold bg-sky-600 text-white dark:bg-sky-400 dark:text-sky-950 shrink-0">
-            Y
-          </span>
-          <span className="text-sky-900 dark:text-sky-100 font-semibold truncate">
-            Slashing p99 latency by 42%
-          </span>
-        </div>
-
-        {/* Step Z */}
-        <div className="flex items-center gap-2 text-[11px]">
-          <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold bg-sky-500/15 text-sky-600 dark:text-sky-300 shrink-0">
-            Z
-          </span>
-          <span className="text-neutral-600 dark:text-neutral-400 truncate">
-            By rewriting Redis stream ingest
-          </span>
-        </div>
+      {/* Row 2 of Tag Chips */}
+      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] text-[11px] font-medium text-[#1c1b18] dark:text-[#f3f1ec] select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+          <span>By doing [Z]</span>
+        </span>
+        <span className="px-2.5 py-1 rounded-full bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] text-[10.5px] text-[#8b897f] dark:text-[#9e9c93] font-mono select-none">
+          # metrics
+        </span>
+        <span className="px-2.5 py-1 rounded-full bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] text-[10.5px] text-[#8b897f] dark:text-[#9e9c93] font-mono select-none">
+          # xyz
+        </span>
       </div>
     </div>
   );
 }
 
 /* ==========================================================================
-   03 · Rubric & Skill Matcher Illustration (Directly addressing user feedback!)
+   03 · Rubric & Skill Matcher
+   Archetype: Floating white index card snippet with tiny orange tag pop
    ========================================================================== */
 export function MatcherIllustration() {
-  const [activeSkills, setActiveSkills] = useState({
-    distributed: true,
-    latency: true,
-    consensus: true,
-  });
-
-  const toggleSkill = (key: keyof typeof activeSkills) => {
-    setActiveSkills((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const activeCount = Object.values(activeSkills).filter(Boolean).length;
-  const calibratedScore = 84 + activeCount * 5; // 84%, 89%, 94%, 99%
-
   return (
-    <div className="space-y-3">
-      {/* Top Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          ATS Calibration
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-gradient-to-r from-sky-500/15 to-blue-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/25 dark:border-sky-400/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
-          {calibratedScore}% Calibrated
-        </span>
-      </div>
-
-      {/* Main Illustration Substrate */}
-      <div className={`${smoothPillClasses.container} space-y-3`}>
-        {/* Sleek Luminous Calibration Track */}
-        <div className="h-2 w-full bg-neutral-200/80 dark:bg-[#071324] rounded-full overflow-hidden p-0.5 border border-neutral-300/40 dark:border-sky-900/40">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 shadow-[0_0_10px_rgba(56,189,248,0.5)] transition-all duration-300 ease-out"
-            style={{ width: `${calibratedScore}%` }}
-          />
+    <div className="flex items-center justify-center w-full">
+      <div className="w-[210px] sm:w-[220px] p-3.5 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_4px_14px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] space-y-2 select-none">
+        {/* Header row with tiny orange accent badge */}
+        <div className="flex items-center justify-between text-[10.5px]">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400 font-semibold text-[10px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+            ATS Rubric
+          </span>
+          <span className="text-[#8b897f] dark:text-[#9e9c93] font-medium text-[10px]">
+            Calibrated
+          </span>
         </div>
 
-        {/* Tactile Keyword Pills modeled after the smooth button reference */}
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => toggleSkill("distributed")}
-            className={`px-3 py-1 text-[11px] flex items-center gap-1.5 ${
-              activeSkills.distributed ? smoothPillClasses.active : smoothPillClasses.inactive
-            }`}
-          >
-            <span>Distributed Systems</span>
-            <span className="text-[10px] opacity-75">(3x)</span>
-          </button>
+        {/* Snippet Title */}
+        <div className="text-[12px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec] leading-snug truncate">
+          Senior Distributed Systems
+        </div>
 
-          <button
-            type="button"
-            onClick={() => toggleSkill("latency")}
-            className={`px-3 py-1 text-[11px] flex items-center gap-1.5 ${
-              activeSkills.latency ? smoothPillClasses.active : smoothPillClasses.inactive
-            }`}
-          >
-            <span>p99 Latency Tuning</span>
-          </button>
+        {/* Minimal Progress Indicator & Chips */}
+        <div className="space-y-1.5 pt-0.5">
+          <div className="h-1 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+            <div className="h-full bg-neutral-900 dark:bg-neutral-200 rounded-full w-[94%]" />
+          </div>
 
-          <button
-            type="button"
-            onClick={() => toggleSkill("consensus")}
-            className={`px-3 py-1 text-[11px] flex items-center gap-1.5 ${
-              activeSkills.consensus ? smoothPillClasses.active : smoothPillClasses.inactive
-            }`}
-          >
-            <span>Raft Consensus</span>
-          </button>
+          <div className="flex items-center justify-between text-[10px] text-[#8b897f] dark:text-[#9e9c93]">
+            <span># raft-consensus</span>
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">94% fit</span>
+          </div>
         </div>
       </div>
     </div>
@@ -255,113 +152,72 @@ export function MatcherIllustration() {
 }
 
 /* ==========================================================================
-   04 · Section-Focused Copilot Illustration
+   04 · Section-Focused Copilot
+   Archetype: Search-pill / refinement card with keyboard shortcut badge
    ========================================================================== */
 export function CopilotIllustration() {
-  const [isEnhanced, setIsEnhanced] = useState(true);
-
   return (
-    <div className="space-y-3">
-      {/* Top Header with Interactive Diff Toggle */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
-          Bullet Refinement
-        </span>
-        <button
-          type="button"
-          onClick={() => setIsEnhanced(!isEnhanced)}
-          className={`px-2.5 py-0.5 text-[10px] ${
-            isEnhanced ? smoothPillClasses.active : smoothPillClasses.inactive
-          }`}
-        >
-          {isEnhanced ? "Enhanced Bullet" : "Original Draft"}
-        </button>
-      </div>
+    <div className="flex items-center justify-center w-full">
+      <div className="w-[210px] sm:w-[220px] p-3.5 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_4px_14px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] space-y-2 select-none">
+        {/* Top prompt bar with ⌘K chip */}
+        <div className="flex items-center justify-between text-[10.5px]">
+          <span className="inline-flex items-center gap-1 font-medium text-[#1c1b18] dark:text-[#f3f1ec]">
+            <Sparkles className="w-3 h-3 text-amber-500" />
+            Bullet Copilot
+          </span>
+          <span className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-[#8b897f] dark:text-[#9e9c93] font-mono text-[9.5px]">
+            ⌘K
+          </span>
+        </div>
 
-      {/* Comparison Preview Card */}
-      <div className={`${smoothPillClasses.container} space-y-2`}>
-        {isEnhanced ? (
-          <div className="space-y-1.5">
-            <p className="text-[11.5px] text-neutral-900 dark:text-[#f0f6ff] font-medium leading-relaxed">
-              Scaled gRPC streaming pipeline to{" "}
-              <span className="text-sky-600 dark:text-sky-300 font-semibold underline decoration-sky-400/40 underline-offset-2">
-                120k req/s
-              </span>{" "}
-              with zero dropped frames.
-            </p>
-            <div className="flex items-center gap-2 pt-1 text-[10px] text-sky-700 dark:text-sky-300">
-              <span className="px-2 py-0.5 rounded-full bg-sky-500/10 dark:bg-sky-400/10 border border-sky-500/20 dark:border-sky-400/20">
-                +140% Throughput
-              </span>
-              <span className="text-neutral-500 dark:text-neutral-400">XYZ Validated</span>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-1.5">
-            <p className="text-[11.5px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
-              Built backend microservices APIs for transaction processing.
-            </p>
-            <div className="pt-1 text-[10px] text-neutral-400 dark:text-neutral-500">
-              Generic wording · Lacks quantifiable metric
-            </div>
-          </div>
-        )}
+        {/* Calibrated Bullet Preview */}
+        <p className="text-[11.5px] text-[#1c1b18] dark:text-[#f3f1ec] font-medium leading-relaxed">
+          Scaled gRPC streaming to{" "}
+          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">120k req/s</span>
+        </p>
+
+        {/* Tiny pill pop */}
+        <div className="flex items-center gap-1.5 pt-0.5 text-[9.5px]">
+          <span className="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400 font-semibold">
+            +42% latency
+          </span>
+          <span className="text-[#8b897f] dark:text-[#9e9c93]">Zero fluff</span>
+        </div>
       </div>
     </div>
   );
 }
 
 /* ==========================================================================
-   05 · Vector PDF Engine Illustration
+   05 · Vector PDF Engine
+   Archetype: Miniature white vector resume sheet with architectural rules
    ========================================================================== */
 export function VectorPdfIllustration() {
-  const [paperFormat, setPaperFormat] = useState<"Letter" | "A4">("Letter");
-
   return (
-    <div className="space-y-3">
-      {/* Top Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          LaTeX 2ε Pure Vector
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 dark:bg-sky-400/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-400/20">
-          0 Broken Glyphs
-        </span>
-      </div>
-
-      {/* Main Illustration Substrate */}
-      <div className={`${smoothPillClasses.container} flex items-center justify-between gap-3`}>
-        {/* Architectural Specs */}
-        <div className="space-y-1">
-          <div className="text-[11.5px] font-semibold text-neutral-900 dark:text-neutral-100">
-            Single-Column Purity
+    <div className="flex items-center justify-center w-full">
+      <div className="w-[170px] h-[130px] p-3 rounded-xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_4px_12px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between select-none">
+        {/* Header Micro-Specimen */}
+        <div>
+          <div className="text-[11px] font-serif font-bold text-[#1c1b18] dark:text-[#f3f1ec] tracking-tight">
+            Alex Chen
           </div>
-          <div className="text-[10px] text-neutral-500 dark:text-neutral-400">
-            Micro-typography · 100% vector scale
+          <div className="text-[8.5px] text-[#8b897f] dark:text-[#9e9c93] mt-0.5">
+            Staff Infrastructure Engineer
           </div>
+          <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700 my-1.5" />
         </div>
 
-        {/* Format Selector Pills */}
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setPaperFormat("Letter")}
-            className={`px-2.5 py-1 text-[10.5px] ${
-              paperFormat === "Letter" ? smoothPillClasses.active : smoothPillClasses.inactive
-            }`}
-          >
-            Letter
-          </button>
-          <button
-            type="button"
-            onClick={() => setPaperFormat("A4")}
-            className={`px-2.5 py-1 text-[10.5px] ${
-              paperFormat === "A4" ? smoothPillClasses.active : smoothPillClasses.inactive
-            }`}
-          >
-            A4
-          </button>
+        {/* Skeletal Vector Layout Rules */}
+        <div className="space-y-1.5">
+          <div className="w-full h-1 bg-neutral-200/80 dark:bg-neutral-700/80 rounded-full" />
+          <div className="w-5/6 h-1 bg-neutral-200/60 dark:bg-neutral-700/60 rounded-full" />
+          <div className="w-2/3 h-1 bg-neutral-200/40 dark:bg-neutral-700/40 rounded-full" />
+        </div>
+
+        {/* Precision Format Tag */}
+        <div className="flex items-center justify-between text-[9px] pt-1 border-t border-neutral-100 dark:border-neutral-800 text-[#8b897f] dark:text-[#9e9c93] font-mono">
+          <span>LaTeX 2ε</span>
+          <span className="font-semibold text-[#1c1b18] dark:text-[#f3f1ec]">Single Column</span>
         </div>
       </div>
     </div>
@@ -369,153 +225,89 @@ export function VectorPdfIllustration() {
 }
 
 /* ==========================================================================
-   06 · Matched Cover Letters Illustration
+   06 · Matched Cover Letters
+   Archetype: Two layered / overlapping paper index tiles
    ========================================================================== */
 export function CompanionIllustration() {
-  const [role, setRole] = useState<"Staff Infra" | "Founding Eng">("Staff Infra");
-
   return (
-    <div className="space-y-3">
-      {/* Top Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          1:1 Typographic Sync
-        </span>
-        <button
-          type="button"
-          onClick={() => setRole(role === "Staff Infra" ? "Founding Eng" : "Staff Infra")}
-          className={`px-2 py-0.5 text-[10px] ${smoothPillClasses.active}`}
-        >
-          {role}
-        </button>
+    <div className="flex items-center justify-center w-full relative h-[130px]">
+      {/* Back Paper Tile (Tilted) */}
+      <div className="absolute w-[180px] p-3 rounded-2xl bg-white/70 dark:bg-[#252523]/70 border border-[#e2e0da] dark:border-neutral-700/60 shadow-[0_2px_8px_rgba(0,0,0,0.03)] -rotate-3 -translate-y-2 select-none">
+        <div className="text-[9.5px] font-mono text-[#8b897f] dark:text-[#9e9c93]">
+          Resume Bullets · Synced
+        </div>
       </div>
 
-      {/* Dual Document Synchronized Card */}
-      <div className={`${smoothPillClasses.container} space-y-2 text-[11px]`}>
-        <div className="flex items-center justify-between">
-          <span className="text-neutral-500 dark:text-neutral-400">Resume Voice</span>
-          <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-            {role === "Staff Infra" ? "High-Scale Distributed Systems" : "0-to-1 Product Architect"}
+      {/* Front Paper Tile */}
+      <div className="relative z-10 w-[190px] p-3.5 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_4px_14px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] space-y-1.5 rotate-1 select-none">
+        <div className="flex items-center justify-between text-[10px]">
+          <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-[9.5px]">
+            Cover Letter
+          </span>
+          <span className="text-emerald-600 dark:text-emerald-400 text-[9.5px] font-medium">
+            1:1 Voice
           </span>
         </div>
-        <div className="pt-1.5 border-t border-sky-900/10 dark:border-sky-500/15 flex items-center justify-between">
-          <span className="text-neutral-500 dark:text-neutral-400">Cover Letter</span>
-          <span className="text-sky-700 dark:text-sky-300 font-medium">
-            Matched cadence & measure
-          </span>
+        <div className="text-[11px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec]">
+          Matching tone & measure
         </div>
+        <div className="w-full h-1 bg-neutral-200/60 dark:bg-neutral-700/60 rounded-full" />
       </div>
     </div>
   );
 }
 
 /* ==========================================================================
-   07 · Visual Job Tracker Illustration
+   07 · Visual Job Application Tracker
+   Archetype: App-icon trio row [ 📁 Saved ] [ ✈️ Applied ] [ 🎙️ Interview ]
    ========================================================================== */
 export function TrackerIllustration() {
-  const [activeStage, setActiveStage] = useState(2); // 0: Saved, 1: Applied, 2: Interview, 3: Offer
-
-  const stages = ["Saved", "Applied", "Interview", "Offer"];
-  const stageDetails = [
-    { target: "Stripe · Staff Eng", status: "Role bookmarked · JD analyzed" },
-    { target: "Stripe · Staff Eng", status: "Calibrated v3.2 PDF submitted" },
-    { target: "Stripe · Staff Eng", status: "Technical round scheduled" },
-    { target: "Stripe · Staff Eng", status: "Offer in review · $260k base" },
-  ];
-
   return (
-    <div className="space-y-3">
-      {/* Top Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          Application Pipeline
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 dark:bg-sky-400/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-400/20">
-          6 Active Tracks
-        </span>
+    <div className="flex items-center justify-center gap-2.5 w-full">
+      {/* Tile 1: Saved */}
+      <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_2px_6px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center gap-1 select-none transition-transform duration-150 hover:-translate-y-0.5">
+        <span className="text-[14px]">📁</span>
+        <span className="text-[9.5px] font-medium text-[#1c1b18] dark:text-[#f3f1ec]">Saved</span>
       </div>
 
-      {/* Main Illustration Substrate */}
-      <div className={`${smoothPillClasses.container} space-y-2.5`}>
-        {/* Smooth Pipeline Stage Pills */}
-        <div className="flex items-center justify-between gap-1 text-[10.5px]">
-          {stages.map((stage, idx) => {
-            const isActive = activeStage === idx;
-            return (
-              <button
-                key={stage}
-                type="button"
-                onClick={() => setActiveStage(idx)}
-                className={`px-2.5 py-1 text-[10.5px] flex-1 text-center ${
-                  isActive ? smoothPillClasses.active : smoothPillClasses.inactive
-                }`}
-              >
-                {stage}
-              </button>
-            );
-          })}
-        </div>
+      {/* Tile 2: Applied */}
+      <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_2px_6px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center gap-1 select-none transition-transform duration-150 hover:-translate-y-0.5">
+        <span className="text-[14px]">✈️</span>
+        <span className="text-[9.5px] font-medium text-[#1c1b18] dark:text-[#f3f1ec]">Applied</span>
+      </div>
 
-        {/* Active Stage Data Card */}
-        <div className="pt-2 border-t border-sky-900/10 dark:border-sky-500/15 flex items-center justify-between text-[11px]">
-          <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
-            {stageDetails[activeStage].target}
-          </span>
-          <span className="text-[10px] text-sky-700 dark:text-sky-300 font-medium shrink-0 ml-2">
-            {stageDetails[activeStage].status}
-          </span>
-        </div>
+      {/* Tile 3: Interview (Active focus) */}
+      <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-[#252523] border border-neutral-300 dark:border-neutral-600 shadow-[0_3px_8px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-1 select-none transition-transform duration-150 hover:-translate-y-0.5 ring-1 ring-neutral-900/5 dark:ring-white/5">
+        <span className="text-[14px]">🎙️</span>
+        <span className="text-[9.5px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec]">Interview</span>
       </div>
     </div>
   );
 }
 
 /* ==========================================================================
-   08 · Resume Snapshot Memory Illustration
+   08 · Resume Snapshot Memory
+   Archetype: Clean white artifact tile with padlock and SHA hash
    ========================================================================== */
 export function SnapshotIllustration() {
-  const [isVerified, setIsVerified] = useState(false);
-
-  const handleVerify = () => {
-    setIsVerified(true);
-    setTimeout(() => setIsVerified(false), 2400);
-  };
-
   return (
-    <div className="space-y-3">
-      {/* Top Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          Snapshot Binding
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 dark:bg-sky-400/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-400/20">
-          <Lock className="w-2.5 h-2.5" />
-          Version Locked
-        </span>
-      </div>
-
-      {/* Main Illustration Substrate */}
-      <div className={`${smoothPillClasses.container} space-y-2 text-[11px]`}>
-        <div className="flex items-center justify-between">
-          <span className="text-neutral-500 dark:text-neutral-400">Linked Submission</span>
-          <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-            resume-stripe-v3.2.pdf
+    <div className="flex items-center justify-center w-full">
+      <div className="w-[200px] sm:w-[210px] p-3.5 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_4px_14px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] space-y-2 select-none">
+        <div className="flex items-center justify-between text-[10.5px]">
+          <span className="inline-flex items-center gap-1.5 font-medium text-[#1c1b18] dark:text-[#f3f1ec]">
+            <Lock className="w-3 h-3 text-[#8b897f]" />
+            Locked Version
           </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         </div>
 
-        <div className="pt-2 border-t border-sky-900/10 dark:border-sky-500/15 flex items-center justify-between">
-          <span className="text-neutral-400 dark:text-neutral-500 font-mono text-[10px]">
-            SHA: e82a…9f12
-          </span>
-          <button
-            type="button"
-            onClick={handleVerify}
-            className={`px-2.5 py-0.5 text-[10px] ${
-              isVerified ? smoothPillClasses.active : smoothPillClasses.inactive
-            }`}
-          >
-            {isVerified ? "✓ Verified Clean" : "Verify Integrity"}
-          </button>
+        <div className="text-[11.5px] font-semibold text-[#1c1b18] dark:text-[#f3f1ec] truncate">
+          resume-stripe-v3.2.pdf
+        </div>
+
+        <div className="flex items-center justify-between text-[9.5px] pt-1 border-t border-neutral-100 dark:border-neutral-800 text-[#8b897f] dark:text-[#9e9c93] font-mono">
+          <span>SHA-256</span>
+          <span className="text-[#1c1b18] dark:text-[#f3f1ec]">e82a…9f12</span>
         </div>
       </div>
     </div>
@@ -523,12 +315,13 @@ export function SnapshotIllustration() {
 }
 
 /* ==========================================================================
-   09 · Public Share Links Illustration (Modeled directly after the button!)
+   09 · Recruiter Quick Route & Share Links
+   Archetype: Search pill mockup with command badge and link telemetry
    ========================================================================== */
 export function ShareLinksIllustration() {
   const [copied, setCopied] = useState(false);
 
-  const handleCopyLink = () => {
+  const handleCopy = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText("https://resumely.tech/r/alex-chen");
       setCopied(true);
@@ -537,43 +330,29 @@ export function ShareLinksIllustration() {
   };
 
   return (
-    <div className="space-y-3">
-      {/* Top Header */}
-      <div className="flex items-center justify-between text-[11px]">
-        <span className="text-neutral-500 dark:text-neutral-400 font-medium tracking-tight">
-          Recruiter Fast-Route
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 dark:bg-sky-400/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-400/20">
-          Live Web Link
-        </span>
-      </div>
-
-      {/* Main Illustration Substrate */}
-      <div className={`${smoothPillClasses.container} flex items-center justify-between gap-2.5`}>
-        <div className="truncate text-[11px] font-mono text-neutral-700 dark:text-neutral-300">
-          resumely.tech/r/alex-chen
+    <div className="flex items-center justify-center w-full">
+      <div className="w-[220px] sm:w-[230px] p-3 rounded-2xl bg-white dark:bg-[#252523] border border-[#e2e0da] dark:border-neutral-700/80 shadow-[0_4px_14px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] space-y-2 select-none">
+        {/* Search / URL Pill Input */}
+        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-neutral-100/70 dark:bg-neutral-800/60 border border-[#e2e0da]/80 dark:border-neutral-700/50 text-[10.5px]">
+          <div className="flex items-center gap-1.5 text-[#1c1b18] dark:text-[#f3f1ec] truncate font-mono text-[10px]">
+            <Search className="w-3 h-3 text-[#8b897f] shrink-0" />
+            <span className="truncate">resumely.tech/r/alex</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="px-1.5 py-0.5 rounded bg-white dark:bg-[#252523] text-[#1c1b18] dark:text-[#f3f1ec] font-mono text-[9px] border border-[#e2e0da] dark:border-neutral-700 shadow-sm shrink-0 hover:bg-neutral-50 active:scale-95 cursor-pointer"
+          >
+            {copied ? "✓ Copied" : "⌘C"}
+          </button>
         </div>
 
-        {/* Copy Button: Styled exactly as the smooth luminous reference button */}
-        <button
-          type="button"
-          onClick={handleCopyLink}
-          className={`px-3.5 py-1.5 text-[11px] shrink-0 flex items-center gap-1.5 ${smoothPillClasses.active}`}
-        >
-          {copied ? (
-            <>
-              <Check className="w-3 h-3 text-sky-300" />
-              <span>Copied!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3 h-3 text-sky-300" />
-              <span>Copy</span>
-            </>
-          )}
-        </button>
+        {/* Metadata subline */}
+        <div className="flex items-center justify-between text-[9.5px] text-[#8b897f] dark:text-[#9e9c93] px-1">
+          <span>+ 12 recruiter views</span>
+          <span className="font-medium text-[#1c1b18] dark:text-[#f3f1ec]">Private link</span>
+        </div>
       </div>
     </div>
   );
 }
-
