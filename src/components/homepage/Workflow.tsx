@@ -59,7 +59,7 @@ export default function Workflow() {
           {STEPS.map((s) => (
             <div key={s.step} className="flex flex-col justify-between group">
               {/* Hairline Isometric Figure Canvas */}
-              <div className="w-full flex items-center justify-center py-2 mb-6 border-b border-neutral-100 dark:border-neutral-800/80">
+              <div className="w-full flex items-center justify-center py-2 mb-4">
                 {s.illustration}
               </div>
 

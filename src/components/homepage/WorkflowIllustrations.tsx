@@ -89,11 +89,6 @@ export function HairlineLedger({ className }: { className?: string }) {
           );
         })}
       </svg>
-
-      {/* Quiet read-out outside drawing (Rule 10) */}
-      <div className="absolute bottom-1 right-2 font-mono text-[9px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-        {isHovered ? "record 04 · active" : "ledger 04 · rest"}
-      </div>
     </div>
   );
 }
@@ -180,11 +175,6 @@ export function HairlineCalibrate({ className }: { className?: string }) {
           className="fill-[#c15f3c] dark:fill-[#D97757]"
         />
       </svg>
-
-      {/* Quiet read-out outside drawing (Rule 10) */}
-      <div className="absolute bottom-1 right-2 font-mono text-[9px] text-[#c15f3c] dark:text-[#D97757] uppercase tracking-wider font-semibold">
-        {isHovered ? "align 35° · 98% fit" : "align 35° · 94% fit"}
-      </div>
     </div>
   );
 }
@@ -278,11 +268,6 @@ export function HairlineCompile({ className }: { className?: string }) {
           className="fill-emerald-600 dark:fill-emerald-400"
         />
       </svg>
-
-      {/* Quiet read-out outside drawing (Rule 10) */}
-      <div className="absolute bottom-1 right-2 font-mono text-[9px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-        {isHovered ? "slot #104 · locked" : "vector pdf · ready"}
-      </div>
     </div>
   );
 }
