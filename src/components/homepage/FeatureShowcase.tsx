@@ -28,8 +28,8 @@ export default function FeatureShowcase() {
             <br />
             every interview-winning resume.
           </h2>
-          <p className="mt-3.5 text-sm sm:text-[14px] text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
-            Store your verified career ledger once. Generate calibrated applications, LaTeX vector exports, and tailored cover letters in seconds.
+          <p className="mt-3 text-sm sm:text-[14px] text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
+            Store your verified career ledger once. Tailor applications in seconds.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="ledger"
             title="Master Career Ledger"
-            description="Maintain one verified record of all roles, metrics, and skills. Branch tailored versions with zero duplication."
+            description="One verified career record. Tailor versions in seconds."
             preview={<LedgerIllustration />}
           />
 
@@ -47,7 +47,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="spaces"
             title="Target Roles & Spaces"
-            description="Organize achievements, metrics, and technical skills by target role, seniority, or engineering specialty."
+            description="Organize metrics and skills by target role or domain."
             preview={<SpacesIllustration />}
           />
 
@@ -55,7 +55,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="analyzer"
             title="Rubric & Skill Matcher"
-            description="Extract hiring requirements from job descriptions to calculate competency coverage in real time."
+            description="Score competency match against any job description."
             preview={<MatcherIllustration />}
           />
 
@@ -63,7 +63,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="xyz"
             title="Google XYZ Calibrator"
-            description="Enforce strict impact constraints: Accomplished [X], measured by [Y], by doing [Z], eliminating weak passive verbs."
+            description="Turn passive bullets into quantified XYZ impact."
             preview={<XyzIllustration />}
           />
 
@@ -71,7 +71,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="copilot"
             title="Section-Focused Copilot"
-            description="Target specific bullet points with the AI assistant, featuring live metric enhancements and instant snapshot history."
+            description="Refine bullets with quantified impact in real time."
             preview={<CopilotIllustration />}
           />
 
@@ -79,7 +79,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="latex"
             title="Vector PDF Engine"
-            description="Typeset in clean LaTeX standards with customizable margins, font sizes, section spacing, and single-column purity."
+            description="Pixel-perfect vector PDFs that ATS parsers love."
             preview={<VectorPdfIllustration />}
           />
 
@@ -87,7 +87,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="companion"
             title="Matched Cover Letters"
-            description="Generate matching cover letters in the same typography and tone, synchronized with your tailored resume bullets."
+            description="Matching typography and tone, synced with your resume."
             preview={<CompanionIllustration />}
           />
 
@@ -95,7 +95,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="tracker"
             title="Visual Job Tracker"
-            description="Manage applications in Kanban or list view across 6 stages with deadlines, salaries, and interview contact logs."
+            description="Track applications from saved role to final offer."
             preview={<TrackerIllustration />}
           />
 
@@ -103,7 +103,7 @@ export default function FeatureShowcase() {
           <FeatureCard
             id="snapshots"
             title="Snapshot Memory"
-            description="Every tracked job is linked to the exact tailored resume version submitted, so you always know what hiring teams read."
+            description="Lock the exact resume version submitted for every role."
             preview={<SnapshotIllustration />}
           />
         </div>
