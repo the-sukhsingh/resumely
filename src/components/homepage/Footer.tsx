@@ -16,19 +16,19 @@ export default function Footer() {
 
   return (
     <footer className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-10">
-      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Seamless Closing Callout (Borderless, Open, Editorial) */}
         <div className="pb-16 sm:pb-20">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <div className="max-w-xl">
-              <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.1] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+            <div className="max-w-2xl">
+              <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
                 Ready to land your next
                 <br />
                 high-impact role?
               </h2>
 
-              <p className="mt-4 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-lg">
+              <p className="mt-4 text-sm sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-lg">
                 Start with our free Master Ledger. Calibrate role-tailored resumes in seconds with clean vector ATS compliance.
               </p>
             </div>

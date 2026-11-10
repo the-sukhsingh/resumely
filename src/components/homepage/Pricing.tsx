@@ -67,18 +67,18 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-20 transition-colors duration-200"
+      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-16 sm:py-20 md:py-24 transition-colors duration-200"
     >
-      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Typographic Header echoing the FAQ section vibe */}
-        <div className="max-w-xl mb-8">
-          <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+        {/* Unadorned Section Header */}
+        <div className="mb-12 sm:mb-16 max-w-2xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Pricing,
             <br />
             calibrated
           </h2>
-          <p className="mt-4 text-[14px] sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed text-balance">
+          <p className="mt-4 text-sm sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
             No recurring monthly charges. Purchase credit packs only when actively applying, and keep your unused balance forever.
           </p>
         </div>

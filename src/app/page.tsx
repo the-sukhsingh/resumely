@@ -3,7 +3,6 @@
 import React from "react";
 import Hero from "@/components/homepage/Hero";
 import FeatureShowcase from "@/components/homepage/FeatureShowcase";
-import LiveTemplates from "@/components/homepage/LiveTemplates";
 import Workflow from "@/components/homepage/Workflow";
 import Pricing from "@/components/homepage/Pricing";
 import Faq from "@/components/homepage/Faq";

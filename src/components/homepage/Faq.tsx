@@ -70,20 +70,24 @@ export default function Faq() {
   return (
     <section
       id="faq"
-      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-20 transition-colors duration-200"
+      className="relative w-full bg-background text-neutral-900 dark:text-neutral-100 py-16 sm:py-20 md:py-24 transition-colors duration-200"
     >
-      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
 
           {/* Left Column: Heading, Metadata, Legal Context, and ColoredButton CTA */}
           <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-4">
-            <h2 className="text-4xl sm:text-5xl lg:text-[52px] font-normal tracking-[-0.025em] text-neutral-900 dark:text-neutral-100 leading-[1.08] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
+            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
               Questions,
               <br />
               answered
             </h2>
 
-            <p className="mt-3.5 text-[13px] text-neutral-500 dark:text-neutral-400 font-normal">
+            <p className="mt-4 text-sm sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
+              Everything you need to know about calibration, vector PDF exports, and privacy.
+            </p>
+
+            <p className="mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-normal">
               Updated 20 October 2026
             </p>
 
