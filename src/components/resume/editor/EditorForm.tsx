@@ -18,15 +18,23 @@ import { EducationModal } from './EducationModal';
 import { AchievementModal } from './AchievementModal';
 import CollapsibleSection from './CollapseSection';
 import { cn } from 'cn';
+import { toast } from 'sonner';
 
 interface EditorFormProps {
   data: ResumeData;
   onChange: (data: ResumeData) => void;
+  masterResume?: ResumeData | null;
+  isChildResume?: boolean;
 }
 
 const normalizeItems = (items: (string | null)[]) => items.filter(Boolean) as string[];
 
-export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
+export const EditorForm: React.FC<EditorFormProps> = ({
+  data,
+  onChange,
+  masterResume = null,
+  isChildResume = false,
+}) => {
   const [openSection, setOpenSection] = useState<string | null>('personal');
 
   const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
@@ -37,6 +45,101 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
+  };
+
+  const handleResetSection = (sectionKey: string, sectionTitle: string) => {
+    if (!masterResume) {
+      toast.error('Master resume not found');
+      return;
+    }
+
+    const nextData: ResumeData = { ...data };
+
+    switch (sectionKey) {
+      case 'personal':
+        nextData.personalInfo = {
+          name: masterResume.personalInfo.name || '',
+          email: masterResume.personalInfo.email ?? null,
+          phone: masterResume.personalInfo.phone ?? null,
+          location: masterResume.personalInfo.location ?? null,
+          linkedin: masterResume.personalInfo.linkedin ?? null,
+          github: masterResume.personalInfo.github ?? null,
+          website: masterResume.personalInfo.website ?? null,
+        };
+        break;
+
+      case 'summary':
+        nextData.summary = masterResume.summary ?? '';
+        break;
+
+      case 'experience':
+        nextData.experience = (masterResume.experience ?? []).map((exp) => ({
+          id: exp.id || Date.now().toString() + Math.random().toString(36).substring(2, 5),
+          company: exp.company || '',
+          position: exp.position || '',
+          location: exp.location ?? null,
+          startDate: exp.startDate || '',
+          endDate: exp.endDate ?? null,
+          current: Boolean(exp.current),
+          bullets: Array.isArray(exp.bullets) ? [...exp.bullets] : [],
+        }));
+        break;
+
+      case 'projects':
+        nextData.projects = (masterResume.projects ?? []).map((proj) => ({
+          id: proj.id || Date.now().toString() + Math.random().toString(36).substring(2, 5),
+          name: proj.name || '',
+          description: proj.description || '',
+          technologies: Array.isArray(proj.technologies) ? [...proj.technologies] : [],
+          link: proj.link ?? null,
+          bullets: Array.isArray(proj.bullets) ? [...proj.bullets] : [],
+        }));
+        break;
+
+      case 'skills':
+        nextData.skills = (masterResume.skills ?? []).map((skill) => ({
+          category: skill.category || '',
+          items: Array.isArray(skill.items) ? [...skill.items] : [],
+        }));
+        break;
+
+      case 'education':
+        nextData.education = (masterResume.education ?? []).map((edu) => ({
+          id: edu.id || Date.now().toString() + Math.random().toString(36).substring(2, 5),
+          institution: edu.institution || '',
+          degree: edu.degree || '',
+          field: edu.field ?? null,
+          location: edu.location ?? null,
+          startDate: edu.startDate ?? null,
+          endDate: edu.endDate ?? null,
+          gpa: edu.gpa ?? null,
+        }));
+        break;
+
+      case 'certifications':
+        nextData.certifications = (masterResume.certifications ?? []).map((cert) => ({
+          id: cert.id || Date.now().toString() + Math.random().toString(36).substring(2, 5),
+          name: cert.name || '',
+          issuer: cert.issuer || '',
+          date: cert.date ?? null,
+          link: cert.link ?? null,
+        }));
+        break;
+
+      case 'achievements':
+        nextData.achievements = (masterResume.achievements ?? []).map((ach) => ({
+          id: ach.id || Date.now().toString() + Math.random().toString(36).substring(2, 5),
+          title: ach.title || '',
+          description: ach.description || '',
+        }));
+        break;
+
+      default:
+        return;
+    }
+
+    onChange(nextData);
+    toast.success(`${sectionTitle} reset to master resume`);
   };
 
   const updatePersonalInfo = (field: keyof ResumeData['personalInfo'], value: string) => {
@@ -271,6 +374,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'personal'}
           onToggle={() => toggleSection('personal')}
           sectionKey="personal"
+          onReset={isChildResume && masterResume ? () => handleResetSection('personal', 'Personal Information') : undefined}
         >
           <div className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -359,6 +463,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'summary'}
           onToggle={() => toggleSection('summary')}
           sectionKey="summary"
+          onReset={isChildResume && masterResume ? () => handleResetSection('summary', 'Summary') : undefined}
         >
           <Textarea
             value={data.summary ?? ''}
@@ -375,6 +480,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'experience'}
           onToggle={() => toggleSection('experience')}
           sectionKey="experience"
+          onReset={isChildResume && masterResume ? () => handleResetSection('experience', 'Experience') : undefined}
         >
           <div className="space-y-3">
             {data.experience.length > 0 && (
@@ -405,6 +511,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'projects'}
           onToggle={() => toggleSection('projects')}
           sectionKey="projects"
+          onReset={isChildResume && masterResume ? () => handleResetSection('projects', 'Projects') : undefined}
         >
           <div className="space-y-3">
             {data.projects.length > 0 && (
@@ -440,6 +547,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'skills'}
           onToggle={() => toggleSection('skills')}
           sectionKey="skills"
+          onReset={isChildResume && masterResume ? () => handleResetSection('skills', 'Skills') : undefined}
         >
           <div className="space-y-3">
             {data.skills.length === 0 && (
@@ -494,6 +602,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'education'}
           onToggle={() => toggleSection('education')}
           sectionKey="education"
+          onReset={isChildResume && masterResume ? () => handleResetSection('education', 'Education') : undefined}
         >
           <div className="space-y-3">
             {data.education.length > 0 && (
@@ -523,6 +632,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'certifications'}
           onToggle={() => toggleSection('certifications')}
           sectionKey="certifications"
+          onReset={isChildResume && masterResume ? () => handleResetSection('certifications', 'Certifications') : undefined}
         >
           <div className="space-y-3">
             {(data.certifications ?? []).length > 0 && (
@@ -552,6 +662,7 @@ export const EditorForm: React.FC<EditorFormProps> = ({ data, onChange }) => {
           isOpen={openSection === 'achievements'}
           onToggle={() => toggleSection('achievements')}
           sectionKey="achievements"
+          onReset={isChildResume && masterResume ? () => handleResetSection('achievements', 'Achievements') : undefined}
         >
           <div className="space-y-3">
             {(data.achievements ?? []).length > 0 && (
