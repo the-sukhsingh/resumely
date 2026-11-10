@@ -52,15 +52,66 @@
 }
 
 @keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+@keyframes spinSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 35s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 40s linear infinite;
+}
+
+@keyframes gridCellBlink {
+  0%, 100% {
+    opacity: 0;
   }
-  100% {
-    transform: translateX(100%);
+  50% {
+    opacity: 1;
   }
 }
 
+.animate-grid-cell-blink {
+  animation-name: gridCellBlink;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-grid-cell-blink {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+.mask-radial-fade {
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
 :root {
+  --oklch-zinc-900: 0.205 0 0;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -96,6 +147,7 @@
 }
 
 .dark {
+  --oklch-zinc-900: 0.985 0 0;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -315,3 +367,24 @@
 }
 
 
+
+@keyframes meadowSwaySlow {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.8deg) skewX(0.8deg); }
+}
+
+@keyframes meadowSwayMed {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2.4deg) skewX(-1.2deg); }
+}
+
+@keyframes meadowSwayFast {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(3deg) skewX(1.4deg); }
+}
+
+@keyframes meadowSwayFlower {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(2.8deg); }
+  75% { transform: rotate(-1.5deg); }
+}
