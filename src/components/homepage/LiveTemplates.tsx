@@ -62,9 +62,9 @@ export default function LiveTemplates() {
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="max-w-[620px]  mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
+        {/* Unadorned Section Header */}
+        <div className="mb-12 sm:mb-16 max-w-2xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             Precision typesetting,
             <br />
             calibrated for every reader.

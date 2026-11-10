@@ -18,23 +18,23 @@ export default function FeatureShowcase() {
   return (
     <section
       id="features"
-      className="relative w-full py-16 sm:py-20 transition-colors duration-200"
+      className="relative w-full py-16 sm:py-20 md:py-24 transition-colors duration-200"
     >
-      <div className="max-w-[1240px] mx-auto">
-        {/* Centered Narrow Header Block: Two-Line Serif Headline + Muted Subline */}
-        <div className="px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-normal tracking-[-0.015em] text-neutral-900 dark:text-neutral-100 leading-[1.2] font-[Georgia,Cambria,'Times_New_Roman',Times,serif]">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Unadorned Section Header */}
+        <div className="mb-12 sm:mb-16 max-w-2xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             The quiet system behind
             <br />
             every interview-winning resume.
           </h2>
-          <p className="mt-3 text-sm sm:text-[14px] text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
+          <p className="mt-4 text-sm sm:text-[15px] text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed">
             Store your verified career ledger once. Tailor applications in seconds.
           </p>
         </div>
 
-        {/* 3-Column Equal-Width Bento Grid with exact classname requested */}
-        <div className="mt-10 grid grid-cols-1 gap-2 px-6 sm:grid-cols-2 md:mt-12 lg:grid-cols-3">
+        {/* 3-Column Equal-Width Bento Grid */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {/* Card 1: Master Career Ledger */}
           <FeatureCard
             id="ledger"
