@@ -10,7 +10,7 @@ import hairlineData from "./hairlineData.json";
  * - 45-degree 2:1 isometric projection from @lucasmarkes/hairline
  * - Rounded solids with silhouette (sil), crease (cr), and highlight (hi)
  * - Rule 10 (quiet): Zero words or text inside the drawing; geometry carries identity
- * - Rule 04 (accent): The stroke is the only highlight (Claude-coral #c15f3c / #D97757)
+ * - Rule 04 (accent): The stroke is the only highlight (Sapphire blue #2563eb / #60a5fa)
  * - Rule 09 (radius): Round every corner, then draw less
  * - No pills, no gradient borders, no cards-in-cards
  */
@@ -27,7 +27,7 @@ export function HairlineLedger({ className }: { className?: string }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "relative w-full aspect-[4/3] max-w-[320px] mx-auto select-none transition-transform duration-300 ease-out",
+        "relative w-full aspect-[4/3] max-w-[320px] mx-auto select-none transition-transform duration-300 ease-out group-hover:-translate-y-1",
         isHovered && "-translate-y-1",
         className
       )}
@@ -68,7 +68,7 @@ export function HairlineLedger({ className }: { className?: string }) {
                 className={cn(
                   "fill-white dark:fill-[#181817] transition-all duration-200",
                   isHi
-                    ? "stroke-[#c15f3c] dark:stroke-[#D97757] stroke-[1.4px]"
+                    ? "stroke-blue-600 dark:stroke-blue-400 stroke-[1.4px]"
                     : "stroke-neutral-400 dark:stroke-neutral-600 stroke-[1.1px]"
                 )}
                 strokeLinecap="round"
@@ -105,7 +105,7 @@ export function HairlineCalibrate({ className }: { className?: string }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "relative w-full aspect-[4/3] max-w-[320px] mx-auto select-none transition-transform duration-300 ease-out",
+        "relative w-full aspect-[4/3] max-w-[320px] mx-auto select-none transition-transform duration-300 ease-out group-hover:-translate-y-1",
         isHovered && "-translate-y-1",
         className
       )}
@@ -159,10 +159,10 @@ export function HairlineCalibrate({ className }: { className?: string }) {
           />
         ))}
 
-        {/* The Claude-coral Highlight Reticle / Needle (Rule 04) */}
+        {/* The Blue Highlight Reticle / Needle (Rule 04) */}
         <path
           d={needle}
-          className="fill-none stroke-[#c15f3c] dark:stroke-[#D97757]"
+          className="fill-none stroke-blue-600 dark:stroke-blue-400"
           strokeWidth="1.6"
           strokeLinecap="round"
         />
@@ -172,7 +172,7 @@ export function HairlineCalibrate({ className }: { className?: string }) {
           cx={centerP[0]}
           cy={centerP[1]}
           r={3.2}
-          className="fill-[#c15f3c] dark:fill-[#D97757]"
+          className="fill-blue-600 dark:fill-blue-400"
         />
       </svg>
     </div>
@@ -191,7 +191,7 @@ export function HairlineCompile({ className }: { className?: string }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "relative w-full aspect-[4/3] max-w-[320px] mx-auto select-none transition-transform duration-300 ease-out",
+        "relative w-full aspect-[4/3] max-w-[320px] mx-auto select-none transition-transform duration-300 ease-out group-hover:-translate-y-1",
         isHovered && "-translate-y-1",
         className
       )}
@@ -231,9 +231,9 @@ export function HairlineCompile({ className }: { className?: string }) {
         <path
           d={sheet}
           className={cn(
-            "fill-white dark:fill-[#181817] transition-all duration-200",
+            "fill-white dark:fill-[#181817] transition-all duration-200 group-hover:stroke-blue-600 dark:group-hover:stroke-blue-400",
             isHovered
-              ? "stroke-[#c15f3c] dark:stroke-[#D97757] stroke-[1.4px]"
+              ? "stroke-blue-600 dark:stroke-blue-400 stroke-[1.4px]"
               : "stroke-neutral-700 dark:stroke-neutral-300 stroke-[1.2px]"
           )}
           strokeLinecap="round"
@@ -265,7 +265,7 @@ export function HairlineCompile({ className }: { className?: string }) {
           cx={beadP[0]}
           cy={beadP[1]}
           r={3}
-          className="fill-emerald-600 dark:fill-emerald-400"
+          className="fill-blue-600 dark:fill-blue-400"
         />
       </svg>
     </div>
