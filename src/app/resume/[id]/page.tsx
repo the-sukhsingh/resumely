@@ -90,9 +90,28 @@ function ResumeEditorContent({
     _id: Id<'resumeVersions'>;
     masterResumeId?: Id<'resumeVersions'>;
     isMasterResume: boolean;
+    userId: Id<'users'>;
   };
   resumeId: string;
 }) {
+  const masterById = useQuery(
+    api.masterResumes.getMasterResumeById,
+    !resume.isMasterResume && resume.masterResumeId
+      ? { resumeId: resume.masterResumeId }
+      : 'skip'
+  );
+
+  const masterByUser = useQuery(
+    api.masterResumes.getMasterResumeByUser,
+    !resume.isMasterResume && (!resume.masterResumeId || masterById === null) && resume.userId
+      ? { userId: resume.userId }
+      : 'skip'
+  );
+
+  const masterResume = resume.isMasterResume
+    ? null
+    : (masterById ?? masterByUser ?? null);
+
   const [activeTab, setActiveTab] = useState<'editor' | 'agent' | 'setting'>('editor');
   const [mobileTab, setMobileTab] = useState<'preview' | 'editor' | 'agent' | 'setting'>('preview');
   const [activeView, setActiveView] = useState<'resume' | 'cover-letter'>('resume');
@@ -301,7 +320,12 @@ function ResumeEditorContent({
               </Tabs>
 
               <div className={activeTab === 'editor' ? 'h-full' : 'hidden'}>
-                <EditorForm data={draft} onChange={handleDraftChange} />
+                <EditorForm
+                  data={draft}
+                  onChange={handleDraftChange}
+                  masterResume={masterResume}
+                  isChildResume={!resume.isMasterResume}
+                />
               </div>
               <div className={activeTab === 'agent' ? 'h-full' : 'hidden'}>
                 <ChatPanel versionId={resumeId as Id<'resumeVersions'>} />
@@ -381,7 +405,12 @@ function ResumeEditorContent({
             </div>
 
             <div className={cn("h-full", mobileTab === 'editor' ? 'block' : 'hidden')}>
-              <EditorForm data={draft} onChange={handleDraftChange} />
+              <EditorForm
+                data={draft}
+                onChange={handleDraftChange}
+                masterResume={masterResume}
+                isChildResume={!resume.isMasterResume}
+              />
             </div>
 
             <div className={cn("h-full", mobileTab === 'agent' ? 'block' : 'hidden')}>

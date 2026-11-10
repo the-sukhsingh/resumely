@@ -42,8 +42,14 @@ export default function Workflow() {
       className="relative w-full text-neutral-900 dark:text-neutral-100 py-16 sm:py-20 md:py-24 transition-colors duration-200 select-none"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Subtle ambient lighting behind workflow section for the bluish tone */}
+        <div
+          className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[340px] bg-blue-500/[0.04] dark:bg-blue-500/[0.07] blur-[140px] rounded-full"
+          aria-hidden="true"
+        />
+
         {/* Clean, Unadorned Section Header (No pill, no gradient) */}
-        <div className="mb-12 sm:mb-16 max-w-2xl">
+        <div className="relative z-10 mb-12 sm:mb-16 max-w-2xl">
           <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-[-0.02em] text-neutral-900 dark:text-neutral-100 leading-[1.18] font-[family-name:Georgia,Cambria,'Times_New_Roman',Times,serif]">
             From career history to
             <br />
@@ -55,7 +61,7 @@ export default function Workflow() {
         </div>
 
         {/* 3-Step Process Grid with Hairline Isometric Figures */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
           {STEPS.map((s) => (
             <div key={s.step} className="flex flex-col justify-between group">
               {/* Hairline Isometric Figure Canvas */}
@@ -66,10 +72,7 @@ export default function Workflow() {
               {/* Step Narrative */}
               <div className="space-y-2">
                 <div
-                  className={
-                    s.isFocal
-                      ? "font-mono text-[11px] text-[#c15f3c] dark:text-[#D97757] uppercase tracking-wider font-semibold"
-                      : "font-mono text-[11px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wider"
+                  className={ "font-mono text-[11px] text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 uppercase tracking-wider transition-colors duration-200"
                   }
                 >
                   {s.step} / {s.phase}

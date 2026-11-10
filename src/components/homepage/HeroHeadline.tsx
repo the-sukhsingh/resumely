@@ -65,7 +65,6 @@ export default function HeroHeadline() {
             layout: { duration: 0.45, ease: MOTION_EASE },
           }}
           className="relative inline-block align-baseline text-left font-semibold text-neutral-950 dark:text-white cursor-pointer select-none"
-          title="Click to cycle target"
           aria-label={`Target: ${currentTarget}. Click to cycle.`}
         >
           <AnimatePresence mode="popLayout" initial={false}>
