@@ -8,6 +8,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export interface CollapsibleSectionProps {
   title: string;
@@ -28,6 +33,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   children,
   sectionKey = 'default',
   onReset,
+  resetTooltip,
 }) => {
   const [isResetOpen, setIsResetOpen] = useState(false);
 
@@ -53,20 +59,25 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         <div className="flex items-center gap-1 relative z-10 pointer-events-auto">
           {onReset && (
             <Popover open={isResetOpen} onOpenChange={setIsResetOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  className="h-6 px-1.5 rounded-md text-[11px] font-medium text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  title={`Reset ${title} to master resume`}
-                  aria-label={`Reset ${title} to master resume`}
-                >
-                  <RotateCcw className="size-3" />
-                  <span className="hidden sm:inline">Reset</span>
-                </button>
-              </PopoverTrigger>
+              <Tooltip open={isResetOpen ? false : undefined}>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="h-6 px-1.5 rounded-md text-[11px] font-medium text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    >
+                      <RotateCcw className="size-3" />
+                      <span className="hidden sm:inline">Reset</span>
+                    </button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={6} className="text-[11px] px-2 py-1">
+                  {resetTooltip || `Reset ${title.toLowerCase()} to master`}
+                </TooltipContent>
+              </Tooltip>
               <PopoverContent
                 align="end"
                 side="bottom"
@@ -111,19 +122,25 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             </Popover>
           )}
 
-          <button
-            onClick={handleToggle}
-            className="p-1 hover:bg-muted rounded transition-colors"
-            type="button"
-            aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
-          >
-            <motion.div
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-            >
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-            </motion.div>
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleToggle}
+                className="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
+                type="button"
+              >
+                <motion.div
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </motion.div>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={6} className="text-[11px] px-2 py-1">
+              {isOpen ? `Collapse ${title.toLowerCase()}` : `Expand ${title.toLowerCase()}`}
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       <AnimatePresence initial={false} mode="wait">
